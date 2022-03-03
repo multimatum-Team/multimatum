@@ -6,4 +6,5 @@
 
 Multimatum is a deadlines manager application for Android, made for the
 software development project course, spring semester 2022.
+Its main purpose is to provide the user a easy tool to display, manage and even share all deadlines.
 
