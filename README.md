@@ -10,4 +10,4 @@ Its main purpose is to provide the user a easy tool to display, manage and even 
 It will use QRCode to share the deadline and will have a database online and a cache to have access anytime
 to the deadline.
 
-
+Here's a [preview the of UI design](https://www.sketch.com/s/52c572ba-70dd-4a53-9adc-69485d2fa68a)
