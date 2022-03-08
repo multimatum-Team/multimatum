@@ -8,4 +8,6 @@
     <string name="main_settings_account_button">My account</string>
     <string name="main_settings_ui_section_title">Appearance</string>
     <string name="main_settings_dark_mode_button">Dark mode</string>
+    <string name="main_settings_notifications_section_title">Notifications</string>
+    <string name="main_settings_enable_notif_button">Enable notifications</string>
 </resources>
