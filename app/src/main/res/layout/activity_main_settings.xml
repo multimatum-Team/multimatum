@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/main_settings_activity_title"
-        android:textSize="48sp"
+        android:textSize="@dimen/main_settings_activity_title_font_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.068"
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/main_settings_account_section_title"
-            android:textSize="24sp" />
+            android:textSize="@dimen/main_settings_section_title_font_size" />
 
         <LinearLayout
             android:id="@+id/main_settings_main_vertical_box"
@@ -50,6 +50,7 @@
             android:backgroundTint="@color/white"
             android:text="@string/main_settings_account_button"
             android:textColor="@color/black"
+            android:textSize="@dimen/main_settings_button_font_size"
             app:icon="@android:drawable/ic_menu_myplaces"
             app:iconTint="@color/black" />
 
@@ -57,7 +58,7 @@
             android:id="@+id/main_settings_ui_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp" />
+            android:textSize="@dimen/main_settings_section_title_font_size" />
 
     </LinearLayout>
 
