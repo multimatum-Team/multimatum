@@ -46,27 +46,28 @@ data class Deadline(
             throw IllegalArgumentException()
         }
     }
+
     /**
      * Returns how much time was given for the task.
      */
     val duration: Period
-      get() = Period.between(startDate, endDate)
+        get() = Period.between(startDate, endDate)
 
     /**
      * Returns how much time is left to complete the task before the deadline.
      * If the deadline is due, return null.
      */
     val timeRemaining: Period?
-      get() =
-          if (isDue)
-            Period.between(LocalDate.now(), endDate)
-          else {
-            null
-          }
+        get() =
+            if (isDue)
+                null
+            else {
+                Period.between(LocalDate.now(), endDate)
+            }
 
     /**
      * Tells whether the deadline has passed.
      */
     val isDue: Boolean
-      get() = LocalDate.now() <= endDate
+        get() = LocalDate.now() > endDate
 }
