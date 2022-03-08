@@ -30,6 +30,18 @@
         app:layout_constraintTop_toBottomOf="@+id/main_settings_activity_title"
         app:layout_constraintVertical_bias="0.0">
 
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
         <TextView
             android:id="@+id/main_settings_accounts_section_title"
             android:layout_width="match_parent"
@@ -45,7 +57,7 @@
 
         <Button
             android:id="@+id/main_settings_account_button"
-            android:layout_width="175dp"
+            android:layout_width="match_parent"
             android:layout_height="42dp"
             android:backgroundTint="@color/white"
             android:text="@string/main_settings_account_button"
@@ -58,8 +70,15 @@
             android:id="@+id/main_settings_ui_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/main_settings_ui_section_title"
             android:textSize="@dimen/main_settings_section_title_font_size" />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/main_settings_dark_mode_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_settings_dark_mode_button"
+            android:textSize="@dimen/main_settings_toggle_font_size" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
