@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_settings_enable_notif_button"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainSettingsActivity">
@@ -78,6 +79,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/main_settings_dark_mode_button"
+            android:textSize="@dimen/main_settings_toggle_font_size" />
+
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/main_settings_notification_section_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_settings_notifications_section_title"
+            android:textSize="@dimen/main_settings_section_title_font_size" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_settings_enable_notif_button"
             android:textSize="@dimen/main_settings_toggle_font_size" />
     </LinearLayout>
 
