@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/main_settings_account_section_title"
-            android:textSize="24" />
+            android:textSize="24sp" />
 
         <LinearLayout
             android:id="@+id/main_settings_main_vertical_box"
@@ -57,7 +57,7 @@
             android:id="@+id/main_settings_ui_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24" />
+            android:textSize="24sp" />
 
     </LinearLayout>
 
