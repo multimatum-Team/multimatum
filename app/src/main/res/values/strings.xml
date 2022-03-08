@@ -6,5 +6,6 @@
     <string name="main_settings_activity_title">Settings</string>
     <string name="main_settings_account_section_title">Account</string>
     <string name="main_settings_account_button">My account</string>
-    <string name="main_settings_ui_section">Appearance</string>
+    <string name="main_settings_ui_section_title">Appearance</string>
+    <string name="main_settings_dark_mode_button">Dark mode</string>
 </resources>
