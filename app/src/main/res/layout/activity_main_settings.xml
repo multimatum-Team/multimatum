@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_settings_enable_notif_button"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainSettingsActivity">
@@ -95,7 +94,7 @@
             android:textSize="@dimen/main_settings_section_title_font_size" />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switch2"
+            android:id="@+id/main_settings_enable_notif_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/main_settings_enable_notif_button"
