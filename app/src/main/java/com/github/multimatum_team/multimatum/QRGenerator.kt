@@ -32,9 +32,10 @@ class QRGenerator : AppCompatActivity() {
         if(data.isEmpty()){
             Toast.makeText(this, "Enter some data", Toast.LENGTH_SHORT).show()
         } else {
+
+
+            //encode the data to the format QRCode
             val writer = QRCodeWriter()
-
-
             val bitmap = writer.encode(data, BarcodeFormat.QR_CODE, 512, 512)
             val width = bitmap.width
             val height = bitmap.height
@@ -44,6 +45,8 @@ class QRGenerator : AppCompatActivity() {
                     bmp.setPixel(x,y, if (bitmap[x,y]) Color.BLACK else Color.WHITE)
                 }
             }
+
+            //set the image
             findViewById<ImageView>(R.id.QRGenerated).setImageBitmap(bmp)
         }
 
