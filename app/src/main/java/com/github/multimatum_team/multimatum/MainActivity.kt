@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
 
 const val EXTRA_NAME = "com.github.multimatum_team.multimatum.main.name"
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -21,4 +23,10 @@ class MainActivity : AppCompatActivity() {
         }
         startActivity(intent)
     }
+
+    fun launchSettingsActivity(view: View){
+        val intent = Intent(this, MainSettingsActivity::class.java)
+        startActivity(intent)
+    }
+
 }
