@@ -57,7 +57,7 @@ class QRGeneratorTest2 {
     }
 
     @Test
-    fun ToastDisplayNoData(){
+    fun toastDisplayNoData(){
         Espresso.onView(ViewMatchers.withId(R.id.QRTextEdit)).perform(ViewActions.replaceText(""))
         Espresso.closeSoftKeyboard()
         Espresso.onView(ViewMatchers.withId(R.id.QRButton)).perform(ViewActions.click())

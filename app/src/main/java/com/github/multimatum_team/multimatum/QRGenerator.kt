@@ -18,6 +18,7 @@ class QRGenerator : AppCompatActivity() {
         setContentView(R.layout.activity_qrgenerator)
     }
 
+    //function to return to the main activity
     fun returnMain(view: View){
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
@@ -26,13 +27,12 @@ class QRGenerator : AppCompatActivity() {
 
     fun displayQRCode(view: View){
         val qrNameField = findViewById<EditText>(R.id.QRTextEdit)
-
         val data = qrNameField.text.toString().trim()
 
+        //Make a notification if there is no text
         if(data.isEmpty()){
             Toast.makeText(this, "Enter some data", Toast.LENGTH_SHORT).show()
         } else {
-
 
             //encode the data to the format QRCode
             val writer = QRCodeWriter()
