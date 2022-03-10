@@ -10,7 +10,7 @@
         android:id="@+id/mainGoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="displayGreeting"
+        android:onClick="openCodeScanner"
         android:text="@string/main_go_button_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
