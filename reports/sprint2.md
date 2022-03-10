@@ -24,6 +24,8 @@ often from now on, as we finally got most of the tooling to work.
 
 ### Lenny (Scrum master)
 
+I did an UI design preview on Sketch in order to provide an preview of the app structure. 
+
 ### Léo
 
 My goal for this week was to create a camera screen containing a QR-Code reading feature.
