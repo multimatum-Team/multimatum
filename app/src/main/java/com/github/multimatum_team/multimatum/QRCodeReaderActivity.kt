@@ -32,15 +32,14 @@ class QRCodeReaderActivity : AppCompatActivity() {
         // Callback for successful scanning
         codeScanner.decodeCallback = DecodeCallback {
             runOnUiThread {
-                Toast.makeText(this, "Scan result: ${it.text}", Toast.LENGTH_LONG).show()
+                generateCallbackTest("Scan result: ${it.text}")
             }
         }
 
         // Callback for the initialization error of the camera
-        codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
+        codeScanner.errorCallback = ErrorCallback {
             runOnUiThread {
-                Toast.makeText(this, "Camera initialization error: ${it.message}",
-                    Toast.LENGTH_LONG).show()
+                generateCallbackTest("Camera initialization error: ${it.message}")
             }
         }
 
@@ -48,5 +47,9 @@ class QRCodeReaderActivity : AppCompatActivity() {
         scannerView.setOnClickListener {
             codeScanner.startPreview()
         }
+    }
+
+    fun generateCallbackTest(text: String){
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show()
     }
 }
