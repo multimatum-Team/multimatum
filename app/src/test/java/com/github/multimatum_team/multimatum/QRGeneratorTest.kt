@@ -25,11 +25,12 @@ import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowToast
 
 
-@RunWith(AndroidJUnit4::class)
-class QRGeneratorTest2 {
+@RunWith(RobolectricTestRunner::class)
+class QRGeneratorTest {
     @get:Rule
     val activityRule = ActivityScenarioRule(QRGenerator::class.java)
 
