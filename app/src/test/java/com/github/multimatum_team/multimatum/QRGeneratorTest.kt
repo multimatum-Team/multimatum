@@ -25,8 +25,7 @@ import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-//import org.robolectric.RobolectricTestRunner
-//import org.robolectric.shadows.ShadowToast
+import org.robolectric.shadows.ShadowToast
 
 
 @RunWith(AndroidJUnit4::class)
@@ -37,7 +36,7 @@ class QRGeneratorTest {
     @Test
     fun goToQRTest() {
         Intents.init()
-        Espresso.onView(ViewMatchers.withId(R.id.returntoMainFromQR)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.returnToMainFromQR)).perform(ViewActions.click())
         Intents.intended(
             Matchers.allOf(
                 IntentMatchers.hasComponent(MainActivity::class.java.name),
@@ -50,22 +49,22 @@ class QRGeneratorTest {
     @Test
     fun qRDisplayTest() {
         val value = "Ceci est un test"
-        Espresso.onView(ViewMatchers.withId(R.id.QRTextEdit)).perform(ViewActions.replaceText(value))
+        Espresso.onView(ViewMatchers.withId(R.id.QRTextEdit))
+            .perform(ViewActions.replaceText(value))
         Espresso.closeSoftKeyboard()
         Espresso.onView(ViewMatchers.withId(R.id.QRButton)).perform(ViewActions.click())
 
         Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode(value)))
     }
-    /*
-    Test that only work with roboelectric
+
     @Test
-    fun toastDisplayNoData(){
+    fun toastDisplayNoData() {
         Espresso.onView(ViewMatchers.withId(R.id.QRTextEdit)).perform(ViewActions.replaceText(""))
         Espresso.closeSoftKeyboard()
         Espresso.onView(ViewMatchers.withId(R.id.QRButton)).perform(ViewActions.click())
         assertThat(ShadowToast.getTextOfLatestToast(), equalTo("Enter some data"))
     }
-    */
+
 
     /*
     QR Code matcher found in:

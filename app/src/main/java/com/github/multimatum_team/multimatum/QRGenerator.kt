@@ -19,18 +19,18 @@ class QRGenerator : AppCompatActivity() {
     }
 
     //function to return to the main activity
-    fun returnMain(view: View){
+    fun returnMain(view: View) {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
 
 
-    fun displayQRCode(view: View){
+    fun displayQRCode(view: View) {
         val qrNameField = findViewById<EditText>(R.id.QRTextEdit)
         val data = qrNameField.text.toString().trim()
 
         //Make a notification if there is no text
-        if(data.isEmpty()){
+        if (data.isEmpty()) {
             Toast.makeText(this, "Enter some data", Toast.LENGTH_SHORT).show()
         } else {
 
@@ -40,9 +40,9 @@ class QRGenerator : AppCompatActivity() {
             val width = bitmap.width
             val height = bitmap.height
             val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
-            for (x in 0 until width){
-                for(y in 0 until height){
-                    bmp.setPixel(x,y, if (bitmap[x,y]) Color.BLACK else Color.WHITE)
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    bmp.setPixel(x, y, if (bitmap[x, y]) Color.BLACK else Color.WHITE)
                 }
             }
 
