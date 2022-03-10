@@ -16,6 +16,13 @@ often from now on, as we finally got most of the tooling to work.
 
 ### Léo
 
+My goal for this week was to create a camera screen containing a QR-Code reading feature.
+The camera screen was not so hard to implementin itself, but the permission managment was quite hard.
+I had to learn that but it should be easier now. The QR-Code reader was relatively easy to implement
+using a library, but UI testing was very hard, because a did not find a way to simulate a QR-Code
+reading in the tests. So testing (and coverage) should be improved for next week.
+The time estimation was good, I worked approximately one hour more than expected.
+
 ### Louis
 
 I was assigned to make the log in system and the UI with it. 
