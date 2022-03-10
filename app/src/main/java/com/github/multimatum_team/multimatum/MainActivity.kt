@@ -15,6 +15,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
+    fun goQRGenerator(view:View){
+        val intent = Intent(this, QRGenerator::class.java)
+        startActivity(intent)
+    }
+
     fun displayGreeting(view: View) {
         val mainNameField = findViewById<EditText>(R.id.mainName)
         val intent = Intent(this, GreetingActivity::class.java).apply {

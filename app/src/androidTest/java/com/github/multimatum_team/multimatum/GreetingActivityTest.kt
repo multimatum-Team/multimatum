@@ -16,9 +16,10 @@ import org.junit.runner.RunWith
 class GreetingActivityTest {
 
     @Test
-    fun helloMessageTest(){
+    fun helloMessageTest() {
         Intents.init()
-        val intent = Intent(ApplicationProvider.getApplicationContext(), GreetingActivity::class.java)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), GreetingActivity::class.java)
         intent.putExtra(EXTRA_NAME, TEST_NAME)
         val activityScenario: ActivityScenario<GreetingActivity> = ActivityScenario.launch(intent)
         activityScenario.use {
