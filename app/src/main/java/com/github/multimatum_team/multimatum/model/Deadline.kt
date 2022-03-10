@@ -35,7 +35,7 @@ enum class DeadlineState {
  * @property endDate the time at which the work is due, must be
  *                   later than `startDate`
  * @constructor Creates a deadline from specified parameters
- * @throws IllegalArgumentException when startDate > end
+ * @throws IllegalArgumentException when title is empty or startDate > end
  */
 data class Deadline(
     val title: String,
