@@ -2,17 +2,31 @@ package com.github.multimatum_team.multimatum
 
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
-import org.junit.Test
+import io.mockk.every
+import io.mockk.mockkStatic
 import org.junit.Assert.*
-import java.lang.IllegalArgumentException
-import java.time.LocalDate
-import java.time.Month
-import java.time.Period
+import org.junit.Before
+import org.junit.Test
+import java.time.*
 
 /**
  * Unit tests for the Deadline class.
  */
 class DeadlineTests {
+    /**
+     * This snippet was inspired from
+     * https://nieldw.medium.com/unit-testing-fixing-the-system-clock-with-mockk-fc6991afb766
+     */
+
+    private val now = 1646920323881L
+    private val fixedClock = Clock.fixed(Instant.ofEpochMilli(now), ZoneId.of("UTC"))
+
+    @Before
+    fun `Fix the clock to ensure test reproducibility`() {
+        mockkStatic(Clock::class)
+        every { Clock.systemUTC() } returns fixedClock
+    }
+
     @Test
     fun `Constructor should return Deadline instance defining the right properties`() {
         val title = "Implement tests for Deadline class"
