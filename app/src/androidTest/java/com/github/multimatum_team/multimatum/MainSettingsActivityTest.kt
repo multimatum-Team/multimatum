@@ -20,11 +20,18 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MainSettingsActivityTest {
 
-    @Before fun initIntents(){ Intents.init() }
-    @After fun releaseIntents(){ Intents.release() }
+    @Before
+    fun initIntents() {
+        Intents.init()
+    }
+
+    @After
+    fun releaseIntents() {
+        Intents.release()
+    }
 
     @Test
-    fun disabling_notifications_on_button_disables_them_in_preferences(){
+    fun disabling_notifications_on_button_disables_them_in_preferences() {
         testScenario(
             initNotifEnabled = true, initDarkModeEnabled = false,
             clickedButtonId = R.id.main_settings_enable_notif_button,
@@ -33,7 +40,7 @@ class MainSettingsActivityTest {
     }
 
     @Test
-    fun enabling_notifications_on_button_enables_them_in_preferences(){
+    fun enabling_notifications_on_button_enables_them_in_preferences() {
         testScenario(
             initNotifEnabled = false, initDarkModeEnabled = false,
             clickedButtonId = R.id.main_settings_enable_notif_button,
@@ -42,7 +49,7 @@ class MainSettingsActivityTest {
     }
 
     @Test
-    fun disabling_dark_mode_on_button_disables_them_in_preferences(){
+    fun disabling_dark_mode_on_button_disables_them_in_preferences() {
         testScenario(
             initNotifEnabled = true, initDarkModeEnabled = true,
             clickedButtonId = R.id.main_settings_dark_mode_button,
@@ -51,7 +58,7 @@ class MainSettingsActivityTest {
     }
 
     @Test
-    fun enabling_dark_mode_on_button_enables_them_in_preferences(){
+    fun enabling_dark_mode_on_button_enables_them_in_preferences() {
         testScenario(
             initNotifEnabled = false, initDarkModeEnabled = false,
             clickedButtonId = R.id.main_settings_dark_mode_button,
@@ -63,10 +70,11 @@ class MainSettingsActivityTest {
     // and the expected final states of the buttons
     // The method checks that settings values are correctly written to SharedPreferences and
     // that the buttons are at the expected position at the end of the scenario
-    private fun testScenario(initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
-                             clickedButtonId: Int,
-                             expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean
-    ){
+    private fun testScenario(
+        initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
+        clickedButtonId: Int,
+        expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean
+    ) {
         val applicationContext = ApplicationProvider.getApplicationContext<Context>()
         val pref = applicationContext.getSharedPreferences(
             MainSettingsActivity.MAIN_SETTINGS_ACTIVITY_SHARED_PREF_ID,
@@ -78,7 +86,8 @@ class MainSettingsActivityTest {
         edit.putBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, initDarkModeEnabled)
         edit.apply()
         val intent = Intent(applicationContext, MainSettingsActivity::class.java)
-        val activityScenario: ActivityScenario<MainSettingsActivity> = ActivityScenario.launch(intent)
+        val activityScenario: ActivityScenario<MainSettingsActivity> =
+            ActivityScenario.launch(intent)
         activityScenario.use {
             onView(withId(clickedButtonId)).perform(click())
             onView(withId(R.id.main_settings_enable_notif_button)).check(matches(if (expectedFinalNotifEnabled) isChecked() else isNotChecked()))
@@ -87,8 +96,14 @@ class MainSettingsActivityTest {
         assertTrue(pref.contains(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY))
         assertTrue(pref.contains(MainSettingsActivity.DARK_MODE_PREF_KEY))
         // Default values are set so that test fails if those are returned (but this should not happen!)
-        assertEquals(expectedFinalNotifEnabled, pref.getBoolean(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY, !expectedFinalNotifEnabled))
-        assertEquals(expectedFinalDarkModeEnabled, pref.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, !expectedFinalDarkModeEnabled))
+        assertEquals(
+            expectedFinalNotifEnabled,
+            pref.getBoolean(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY, !expectedFinalNotifEnabled)
+        )
+        assertEquals(
+            expectedFinalDarkModeEnabled,
+            pref.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, !expectedFinalDarkModeEnabled)
+        )
     }
 
 }

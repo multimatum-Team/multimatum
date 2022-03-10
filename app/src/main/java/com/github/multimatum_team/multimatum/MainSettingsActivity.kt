@@ -1,7 +1,7 @@
 package com.github.multimatum_team.multimatum
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 
 class MainSettingsActivity : AppCompatActivity() {
@@ -24,8 +24,9 @@ class MainSettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun onSwitchStateChanged(key: String, currState: Boolean){
-        val prefEdit = getSharedPreferences(MAIN_SETTINGS_ACTIVITY_SHARED_PREF_ID, MODE_PRIVATE).edit()
+    private fun onSwitchStateChanged(key: String, currState: Boolean) {
+        val prefEdit =
+            getSharedPreferences(MAIN_SETTINGS_ACTIVITY_SHARED_PREF_ID, MODE_PRIVATE).edit()
         prefEdit.putBoolean(key, currState)
         prefEdit.apply()
     }
