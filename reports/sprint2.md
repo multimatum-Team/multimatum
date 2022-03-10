@@ -17,6 +17,12 @@ often from now on, as we finally got most of the tooling to work.
 
 ### Louis
 
+I was assigned to make the log in system and the UI with it. 
+It figured that i had to configure firebase to use its API.
+It takes me a lot more time than expected. The code is finished but not the UI and the test.
+
+For the next sprint i will finish this feature and done another little one. Maybe the possibility to
+mark task as done or the notification system.
 ### Valentin
 
 ### Overall team
