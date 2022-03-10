@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Multimatum">
         <activity
+            android:name=".MainSettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".QRGenerator"
             android:exported="false" />
         <activity
