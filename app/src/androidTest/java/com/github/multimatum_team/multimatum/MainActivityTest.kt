@@ -31,6 +31,7 @@ class MainActivityTest {
         Intents.release()
     }
 
+    /*
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
         android.Manifest.permission.CAMERA
@@ -43,4 +44,5 @@ class MainActivityTest {
         onView(withId(R.id.mainGoButton)).perform(click())
         intended(hasComponent(QRCodeReaderActivity::class.java.name))
     }
+    */
 }
