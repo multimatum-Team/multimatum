@@ -31,13 +31,11 @@ class DeadlineTests {
     fun `Constructor should return Deadline instance defining the right properties`() {
         val title = "Implement tests for Deadline class"
         val state = DeadlineState.DONE
-        val startDate = LocalDate.of(2022, Month.MARCH, 9)
-        val endDate = LocalDate.of(2022, Month.MARCH, 11)
-        val deadline = Deadline(title, state, startDate, endDate)
+        val date = LocalDate.of(2022, Month.MARCH, 11)
+        val deadline = Deadline(title, state, date)
         assertEquals(deadline.title, title)
         assertEquals(deadline.state, state)
-        assertEquals(deadline.startDate, startDate)
-        assertEquals(deadline.endDate, endDate)
+        assertEquals(deadline.date, date)
     }
 
     @Test
@@ -46,33 +44,9 @@ class DeadlineTests {
             Deadline(
                 "",
                 DeadlineState.TODO,
-                LocalDate.of(2022, Month.MARCH, 11),
-                LocalDate.of(2022, Month.MARCH, 9),
+                LocalDate.of(2022, Month.MARCH, 9)
             )
         }
-    }
-
-    @Test
-    fun `Constructor should throw IllegalArgumentException when start date is after end date`() {
-        assertThrows(IllegalArgumentException::class.java) {
-            Deadline(
-                "This task is ill formed",
-                DeadlineState.TODO,
-                LocalDate.of(2022, Month.MARCH, 11),
-                LocalDate.of(2022, Month.MARCH, 9),
-            )
-        }
-    }
-
-    @Test
-    fun `duration returns difference between endDate and startDate`() {
-        val deadline = Deadline(
-            "Implement tests for Deadline class",
-            DeadlineState.DONE,
-            LocalDate.of(2022, Month.MARCH, 9),
-            LocalDate.of(2022, Month.MARCH, 11)
-        )
-        assertEquals(deadline.duration, Period.ofDays(2))
     }
 
     @Test
@@ -82,7 +56,6 @@ class DeadlineTests {
         val deadline = Deadline(
             "Implement tests for Deadline class",
             DeadlineState.DONE,
-            now.minusDays(1),
             now.plus(days)
         )
         assertEquals(deadline.timeRemaining, days)
@@ -94,7 +67,6 @@ class DeadlineTests {
         val deadline = Deadline(
             "Implement tests for Deadline class",
             DeadlineState.DONE,
-            now.minusDays(3),
             now.minusDays(1)
         )
         assertNull(deadline.timeRemaining)
@@ -102,25 +74,21 @@ class DeadlineTests {
 
     @Test
     fun `isDue returns true when deadline has passed`() {
-        val now = LocalDate.now()
         val deadline = Deadline(
             "Implement tests for Deadline class",
             DeadlineState.DONE,
-            now.minusDays(3),
-            now.minusDays(1)
+            LocalDate.now().minusDays(1)
         )
         assertTrue(deadline.isDue)
     }
 
     @Test
     fun `isDue returns false if endDate is in the future`() {
-        val now = LocalDate.now()
         val days = Period.ofDays(3)
         val deadline = Deadline(
             "Implement tests for Deadline class",
             DeadlineState.DONE,
-            now.minusDays(1),
-            now.plus(days)
+            LocalDate.now().plus(days)
         )
         assertFalse(deadline.isDue)
     }
