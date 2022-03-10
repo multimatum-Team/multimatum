@@ -12,19 +12,18 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
 //import org.robolectric.shadows.ShadowToast
 
 
@@ -102,12 +101,16 @@ class QRGeneratorTest {
                 return try {
                     // Parse the bitmap and check it against expected value
                     QRCodeReader().decode(binary).text
-                } catch (e: NotFoundException) {
-                    throw IllegalArgumentException("The provided image is not a valid QRCode", e)
-                } catch (e: ChecksumException) {
-                    throw IllegalArgumentException("The provided image is not a valid QRCode", e)
-                } catch (e: FormatException) {
-                    throw IllegalArgumentException("The provided image is not a valid QRCode", e)
+                } catch (ex: Exception) {
+                    when (ex) {
+                        is NotFoundException, is ChecksumException, is FormatException -> {
+                            throw IllegalArgumentException(
+                                "The provided image is not a valid QRCode",
+                                ex
+                            )
+                        }
+                        else -> throw ex
+                    }
                 }
             }
 
