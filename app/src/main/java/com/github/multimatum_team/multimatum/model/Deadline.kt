@@ -25,13 +25,15 @@ enum class DeadlineState {
  *
  * The Deadline class represents a deadline, marked with a start date and an end date.
  * The deadline is also annotated by a state representing the advancement of the task.
- * The start date must occur before the end date, otherwise IllegalArgumentException is thrown.
+ * If the given title is empty, or if the start date occurs before the end date,
+ * IllegalArgumentException is thrown.
  *
- * @property title the title of the deadline
+ * @property title the title of the deadline (must be non empty)
  * @property state the advancement state of the deadline
  * @property startDate the time at which the deadline was given
  *                     (not necessarily the date of creation)
- * @property endDate the time at which the work is due
+ * @property endDate the time at which the work is due, must be
+ *                   later than `startDate`
  * @constructor Creates a deadline from specified parameters
  * @throws IllegalArgumentException when startDate > end
  */
@@ -42,6 +44,9 @@ data class Deadline(
     val endDate: LocalDate
 ) {
     init {
+        if (title.isEmpty()) {
+            throw IllegalArgumentException()
+        }
         if (startDate > endDate) {
             throw IllegalArgumentException()
         }

@@ -27,6 +27,18 @@ class DeadlineTests {
     }
 
     @Test
+    fun `Constructor should throw IllegalArgumentException when title is empty`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            Deadline(
+                "",
+                DeadlineState.TODO,
+                LocalDate.of(2022, Month.MARCH, 11),
+                LocalDate.of(2022, Month.MARCH, 9),
+            )
+        }
+    }
+
+    @Test
     fun `Constructor should throw IllegalArgumentException when start date is after end date`() {
         assertThrows(IllegalArgumentException::class.java) {
             Deadline(
