@@ -15,7 +15,7 @@ class QRCodeReaderActivityTest {
     )
 
     @Test
-    fun should_display_scanner_when_permissionsAreGranted() {
+    fun should_display_scanner_when_permissions_are_granted() {
         ActivityScenario.launch(QRCodeReaderActivity::class.java)
 
         Espresso.onView(ViewMatchers.withId(R.id.scanner_view))

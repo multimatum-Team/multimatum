@@ -10,6 +10,11 @@ import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
 
+/**
+ * The purpose of this activity is to provide the user an interface to scan QR-Codes.
+ * The main component of this activity is the scanner that as the capability to read
+ * and return the content of a QR-Code as a string.
+ */
 class QRCodeReaderActivity : AppCompatActivity() {
     private lateinit var codeScanner: CodeScanner
 
@@ -31,16 +36,12 @@ class QRCodeReaderActivity : AppCompatActivity() {
 
         // Callback for successful scanning
         codeScanner.decodeCallback = DecodeCallback {
-            runOnUiThread {
-                generateCallbackTest("Scan result: ${it.text}")
-            }
+            displayOnToast("Scan result: ${it.text}")
         }
 
         // Callback for the initialization error of the camera
         codeScanner.errorCallback = ErrorCallback {
-            runOnUiThread {
-                generateCallbackTest("Camera initialization error: ${it.message}")
-            }
+            displayOnToast("Camera initialization error: ${it.message}")
         }
 
         // Start the scanner
@@ -49,7 +50,9 @@ class QRCodeReaderActivity : AppCompatActivity() {
         }
     }
 
-    fun generateCallbackTest(text: String){
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+    private fun displayOnToast(text: String) {
+        runOnUiThread {
+            Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+        }
     }
 }
