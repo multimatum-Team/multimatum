@@ -50,7 +50,7 @@ class AccountActivity: AppCompatActivity() {
 
         //configure button
         findViewById<Button>(R.id.sign_in_button).setOnClickListener{
-            Log.d(TAG, "onCreate begin Google SignIn:"+account.id)
+            Log.d(TAG, "onCreate begin Google SignIn:")
             signIn()
         }
 
