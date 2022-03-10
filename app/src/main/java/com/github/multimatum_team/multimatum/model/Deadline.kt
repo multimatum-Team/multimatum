@@ -36,10 +36,10 @@ enum class DeadlineState {
  * @throws IllegalArgumentException when startDate > end
  */
 data class Deadline(
-    var title: String,
-    var state: DeadlineState,
-    var startDate: LocalDate,
-    var endDate: LocalDate
+    val title: String,
+    val state: DeadlineState,
+    val startDate: LocalDate,
+    val endDate: LocalDate
 ) {
     init {
         if (startDate > endDate) {
