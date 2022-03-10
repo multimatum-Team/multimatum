@@ -68,7 +68,7 @@ Overall we did achieve a decent result. Some of the features as Log in ended up 
 We had a meeting on wednesday where we shared our progression. We also talked a lot about how to design some features, at the end we manage to all agree on a commun vision of the app.
 During our work we discover many differents tools that may be intersting to use (Fragment, roboelectronic). We discussed them in our meeting. Yet we still need to read some documentation to understand them better in order to implement them properly in the project.
 
-Our time estimation were not good, we underestimate most of the job. There were a lot more documentation to read than we expected and we spend a lot of time on it.
+Our time estimation were not good, we underestimate most of the job. There were a lot more documentation to read than we expected and we spend a lot of time on it. Also we spent a lot of time with the CI part on finding how test for some features.
 
 For next week, we can continue to progress in the same direction by completing and add features.
 
