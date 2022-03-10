@@ -5,8 +5,9 @@ Sprint 2 summary
 
 ### Joseph
 
-The task I was assigned was not too difficult this week, but I struggled a lot to make the CI work
-properly, as a result I largely underestimated my workload.
+This week I was assigned to the creation of the deadline class.
+The task in itself wasn't too hard to implement but I struggled a lot to make the CI work  properly,
+as a result I largely underestimated my workload.
 
 I'm not sure how I could have anticipated this but hopefully such logistical issues won't happen too
 often from now on, as we finally got most of the tooling to work.
