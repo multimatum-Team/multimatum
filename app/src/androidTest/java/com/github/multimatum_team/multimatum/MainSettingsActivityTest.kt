@@ -5,9 +5,7 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -27,7 +25,7 @@ class MainSettingsActivityTest {
 
     @Test
     fun disabling_notifications_on_button_disables_them_in_preferences(){
-        runWriteToPrefTestScenario(
+        testScenario(
             initNotifEnabled = true, initDarkModeEnabled = false,
             clickedButtonId = R.id.main_settings_enable_notif_button,
             expectedFinalNotifEnabled = false, expectedFinalDarkModeEnabled = false
@@ -36,7 +34,7 @@ class MainSettingsActivityTest {
 
     @Test
     fun enabling_notifications_on_button_enables_them_in_preferences(){
-        runWriteToPrefTestScenario(
+        testScenario(
             initNotifEnabled = false, initDarkModeEnabled = false,
             clickedButtonId = R.id.main_settings_enable_notif_button,
             expectedFinalNotifEnabled = true, expectedFinalDarkModeEnabled = false
@@ -45,7 +43,7 @@ class MainSettingsActivityTest {
 
     @Test
     fun disabling_dark_mode_on_button_disables_them_in_preferences(){
-        runWriteToPrefTestScenario(
+        testScenario(
             initNotifEnabled = true, initDarkModeEnabled = true,
             clickedButtonId = R.id.main_settings_dark_mode_button,
             expectedFinalNotifEnabled = true, expectedFinalDarkModeEnabled = false
@@ -54,16 +52,20 @@ class MainSettingsActivityTest {
 
     @Test
     fun enabling_dark_mode_on_button_enables_them_in_preferences(){
-        runWriteToPrefTestScenario(
+        testScenario(
             initNotifEnabled = false, initDarkModeEnabled = false,
             clickedButtonId = R.id.main_settings_dark_mode_button,
             expectedFinalNotifEnabled = false, expectedFinalDarkModeEnabled = true
         )
     }
 
-    private fun runWriteToPrefTestScenario(initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
-                                           clickedButtonId: Int,
-                                           expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean
+    // The parameters are the initial state of the buttons, the button whose state will be changed
+    // and the expected final states of the buttons
+    // The method checks that settings values are correctly written to SharedPreferences and
+    // that the buttons are at the expected position at the end of the scenario
+    private fun testScenario(initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
+                             clickedButtonId: Int,
+                             expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean
     ){
         val applicationContext = ApplicationProvider.getApplicationContext<Context>()
         val pref = applicationContext.getSharedPreferences(

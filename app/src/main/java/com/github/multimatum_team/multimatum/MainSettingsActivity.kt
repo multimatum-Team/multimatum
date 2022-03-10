@@ -31,10 +31,22 @@ class MainSettingsActivity : AppCompatActivity() {
     }
 
     companion object {
+
+        /**
+         * Identifier for the SharedPreferences of this activity
+         */
         const val MAIN_SETTINGS_ACTIVITY_SHARED_PREF_ID =
             "com.github.multimatum_team.multimatum.MainSettingsActivity.SharedPrefId"
+
+        /**
+         * Key for the storage of whether dark mode is enabled in SharedPreferences
+         */
         const val DARK_MODE_PREF_KEY =
             "com.github.multimatum_team.multimatum.MainSettingsActivity.DarkMode"
+
+        /**
+         * Key for the storage of whether notifications are enabled in SharedPreferences
+         */
         const val NOTIF_ENABLED_PREF_KEY =
             "com.github.multimatum_team.multimatum.MainSettingsActivity.NotifEnabled"
     }
