@@ -24,7 +24,9 @@ often from now on, as we finally got most of the tooling to work.
 
 ### Lenny (Scrum master)
 
-I did an UI design preview on Sketch in order to provide an preview of the app structure. 
+I did an UI design preview on Sketch in order to provide an preview of the app structure.
+
+I didn't work for 8h this week since there wasn't any task left for me. I'll catch up the following week.
 
 ### Léo
 
@@ -60,3 +62,13 @@ e.g. a notification system for the app
 
 
 ### Overall team
+
+Overall we did achieve a decent result. Some of the features as Log in ended up being more complicated than expected, mostly it require to read a lot of documentation. We'll need more time to complete them. We also struggle to find a way to test some of the features (mostly the one with the QR code). 
+
+We had a meeting on wednesday where we share our progressions. We also talked a lot about how to design some features, at the end we manage to all agree on a commun vision of the app.
+During our work we discover many differents tools that may be intersting to use (Fragment, roboelectronic). We discussed them in our meeting. Yet we still need to read some documentation to understand them better in order to implement them properly in the project.
+
+Our time estimation were not good, we underestimate most of the job. There were a lot more documentation to read than we expected and we spend a lot of time on it.
+
+For next week, we can continue to progress in the same direction by completing and add features.
+
