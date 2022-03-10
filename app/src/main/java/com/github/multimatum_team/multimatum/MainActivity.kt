@@ -21,4 +21,11 @@ class MainActivity : AppCompatActivity() {
         }
         startActivity(intent)
     }
+
+    fun goToLoginScreen(view: View){
+        val intent = Intent(this, AccountActivity::class.java)
+        startActivity(intent)
+    }
+
+
 }
