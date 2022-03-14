@@ -17,14 +17,16 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Description
 import org.hamcrest.Matcher
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-//import org.robolectric.shadows.ShadowToast
+import org.robolectric.shadows.ShadowToast
 
 
 @RunWith(AndroidJUnit4::class)
@@ -55,8 +57,7 @@ class QRGeneratorTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode(value)))
     }
-    /*
-    Test to check the toast. Only work with robolectric
+
 
     @Test
     fun toastDisplayNoData() {
@@ -65,7 +66,7 @@ class QRGeneratorTest {
         Espresso.onView(ViewMatchers.withId(R.id.QRButton)).perform(ViewActions.click())
         assertThat(ShadowToast.getTextOfLatestToast(), equalTo("Enter some data"))
     }
-    */
+
 
     /*
     QR Code matcher found in:
