@@ -37,14 +37,9 @@ class MainActivityTest {
     }
 
     /*
-    @get:Rule
-
     @Test
-    fun should_switch_to_qr_code_activity_if_permission_granted() {
-        ActivityScenario.launch(MainActivity::class.java)
-        Intents.init()
-        onView(withId(R.id.mainGoButton)).perform(click())
-        intended(hasComponent(QRCodeReaderActivity::class.java.name))
+    fun scannerButtonRequestsPermissionWhenNeeded(){
+
     }
     */
 
@@ -56,10 +51,10 @@ class MainActivityTest {
     @Test
     fun goToQrCodeReader() {
         Intents.init()
-        Espresso.onView(ViewMatchers.withId(R.id.mainGoButton)).perform(ViewActions.click())
-        Intents.intended(
+        onView(withId(R.id.mainGoButton)).perform(click())
+        intended(
             Matchers.allOf(
-                IntentMatchers.hasComponent(QRCodeReaderActivity::class.java.name),
+                hasComponent(QRCodeReaderActivity::class.java.name),
                 IntentMatchers.toPackage("com.github.multimatum_team.multimatum")
             )
         )
