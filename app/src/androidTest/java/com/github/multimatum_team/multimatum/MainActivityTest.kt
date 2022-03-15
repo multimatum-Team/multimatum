@@ -37,8 +37,16 @@ class MainActivityTest {
 
     @Test
     fun scannerButtonRequestsPermissionWhenNeeded(){
+        Intents.init()
         onView(withId(R.id.mainGoButton)).perform(click())
-        onView(withText(arrayOf(android.Manifest.permission.CAMERA)[0])).check(matches(isDisplayed()))
+        //onView(withText(arrayOf(android.Manifest.permission.CAMERA)[0])).check(matches(isDisplayed()))
+        intended(
+            Matchers.allOf(
+                hasComponent(MainActivity::class.java.name),
+                IntentMatchers.toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+        Intents.release()
     }
 
     @get:Rule
