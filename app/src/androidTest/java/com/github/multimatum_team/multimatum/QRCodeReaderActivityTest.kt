@@ -20,7 +20,7 @@ class QRCodeReaderActivityTest {
         ActivityScenario.launch(QRCodeReaderActivity::class.java)
         onView(withId(R.id.scanner_view)).perform(ViewActions.click()).check(
             ViewAssertions.matches(
-                isNotSelected() // To be checked
+                isNotSelected()
             )
         )
     }
@@ -34,7 +34,7 @@ class QRCodeReaderActivityTest {
     fun shouldDisplayScannerWhenPermissionsAreGranted() {
         ActivityScenario.launch(QRCodeReaderActivity::class.java)
 
-        onView(ViewMatchers.withId(R.id.scanner_view))
+        onView(withId(R.id.scanner_view))
             .check(ViewAssertions.matches(isDisplayed()))
     }
 }

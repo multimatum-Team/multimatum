@@ -11,8 +11,7 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
@@ -36,12 +35,12 @@ class MainActivityTest {
         Intents.release()
     }
 
-    /*
     @Test
     fun scannerButtonRequestsPermissionWhenNeeded(){
-
+        Intents.init()
+        onView(withId(R.id.mainGoButton)).perform(click())
+        onView(withText(arrayOf(android.Manifest.permission.CAMERA)[0])).check(matches(isDisplayed()));
     }
-    */
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
