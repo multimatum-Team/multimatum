@@ -33,8 +33,10 @@ class QRCodeReaderActivityTest {
 
     @Test
     fun shouldDisplayScannerWhenPermissionsAreGranted() {
+        Intents.init()
         ActivityScenario.launch(QRCodeReaderActivity::class.java)
         onView(withId(R.id.scanner_view))
             .check(ViewAssertions.matches(isDisplayed()))
+        Intents.release()
     }
 }
