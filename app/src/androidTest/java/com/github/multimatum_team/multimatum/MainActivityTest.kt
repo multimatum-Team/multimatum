@@ -38,7 +38,7 @@ class MainActivityTest {
     @Test
     fun scannerButtonRequestsPermissionWhenNeeded(){
         onView(withId(R.id.mainGoButton)).perform(click())
-        onView(withText(arrayOf(android.Manifest.permission.CAMERA)[0])).check(matches(isDisplayed()))
+        onView(withText("Allow multimatum to take pictures and record video?")).check(matches(isDisplayed()))
     }
 
     @get:Rule
