@@ -21,14 +21,12 @@ class MainActivityTest {
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Test
-    fun initDisplayTest() {
+    fun goToQRTest() {
         Intents.init()
-        onView(withId(R.id.mainName)).perform(ViewActions.replaceText("Louis"))
-        Espresso.closeSoftKeyboard()
-        onView(withId(R.id.mainGoButton)).perform(ViewActions.click())
+        onView(withId(R.id.goToQR)).perform(ViewActions.click())
         Intents.intended(
             allOf(
-                hasExtra(EXTRA_NAME, "Louis"),
+                hasComponent(QRGenerator::class.java.name),
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
@@ -36,12 +34,12 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToQRTest() {
+    fun goToSetting() {
         Intents.init()
-        onView(withId(R.id.goToQR)).perform(ViewActions.click())
+        onView(withId(R.id.main_open_settings_but)).perform(ViewActions.click())
         Intents.intended(
             allOf(
-                hasComponent(QRGenerator::class.java.name),
+                hasComponent(MainSettingsActivity::class.java.name),
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
