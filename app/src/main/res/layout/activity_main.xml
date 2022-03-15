@@ -18,7 +18,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023"
-        app:srcCompat="@android:drawable/ic_menu_manage" />
+        app:srcCompat="@android:drawable/ic_menu_manage"
+        tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
 
     <Button
         android:id="@+id/goToQR"
@@ -36,10 +37,10 @@
         android:id="@+id/deadlineListView"
         android:layout_width="354dp"
         android:layout_height="563dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/goToQR"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/main_open_settings_but" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

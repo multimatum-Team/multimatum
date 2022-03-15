@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import java.time.LocalDate
 
@@ -21,18 +22,14 @@ class MainActivity : AppCompatActivity() {
         val listView = findViewById<ListView>(R.id.deadlineListView)
 
         //generate a list of deadline to test. To remove later and link it to the real list
-        fun demoList() = listOf(Deadline("number 1",DeadlineState.TODO, LocalDate.of(2022, 4,1)),
-            Deadline("number 2",DeadlineState.TODO, LocalDate.of(2022, 4,10)))
+        fun demoList() = listOf(Deadline("Number 1",DeadlineState.TODO, LocalDate.now().plusDays(1)),
+            Deadline("Number 2",DeadlineState.TODO, LocalDate.now().plusDays(7)),
+            Deadline("Number 3",DeadlineState.DONE, LocalDate.of(2022, 3,30)),
+            Deadline("Number 4",DeadlineState.TODO, LocalDate.of(2022, 3,1)))
 
-        //recuperate only the title of the list
-        val listItems = arrayOfNulls<String>(demoList().size)
-        for (i in 0 until demoList().size) {
-            val deadline = demoList()[i]
-            listItems[i] = deadline.title
-        }
 
         //put them on the listview.
-        val adapter = ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, listItems)
+        val adapter = DeadlineAdapter(this, demoList())
         listView.adapter = adapter
     }
 
