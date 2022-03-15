@@ -37,6 +37,7 @@ class MainActivityTest {
 
     @Test
     fun scannerButtonRequestsPermissionWhenNeeded(){
+        Intents.init()
         onView(withId(R.id.mainGoButton)).perform(click())
         //onView(withText(arrayOf(android.Manifest.permission.CAMERA)[0])).check(matches(isDisplayed()))
         intended(
