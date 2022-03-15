@@ -22,9 +22,9 @@ class QRCodeReaderActivityTest {
         ActivityScenario.launch(QRCodeReaderActivity::class.java)
         onView(ViewMatchers.withId(R.id.scanner_view)).perform(ViewActions.click()).check(
             ViewAssertions.matches(
-                not(
+                //not(
                     isDisplayed()
-                )
+                //)
             )
         )
     }
