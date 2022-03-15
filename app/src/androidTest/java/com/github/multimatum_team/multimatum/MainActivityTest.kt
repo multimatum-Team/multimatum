@@ -16,6 +16,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.Matchers
+import org.hamcrest.Matchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,9 +37,10 @@ class MainActivityTest {
     }
 
     @Test
-    fun scannerButtonRequestsPermissionWhenNeeded(){
+    fun scannerButtonDoesNotOpenQrCodeActivityIfPermissionNotGranted(){
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         onView(withId(R.id.mainGoButton)).perform(click())
-        onView(withText("Allow multimatum to take pictures and record video?")).check(matches(isDisplayed()))
+        onView(withId(R.id.qr_code_activity)).check(matches(not(isDisplayed())))
     }
 
     @get:Rule
