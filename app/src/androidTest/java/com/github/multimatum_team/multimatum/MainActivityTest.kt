@@ -34,7 +34,7 @@ class MainActivityTest {
             .check(matches(isDisplayed()))
         Intents.release()
     }
-
+    /*
     @Test
     fun scannerButtonRequestsPermissionWhenNeeded(){
         Intents.init()
@@ -48,7 +48,7 @@ class MainActivityTest {
         )
         Intents.release()
     }
-
+    */
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
         android.Manifest.permission.CAMERA
