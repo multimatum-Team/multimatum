@@ -36,11 +36,17 @@ class MainActivityTest {
         Intents.release()
     }
 
+    @get:Rule
+    val activityRule2 = ActivityScenarioRule(MainActivity::class.java)
+
     @Test
     fun scannerButtonDoesNotOpenQrCodeActivityIfPermissionNoGranted(){
-        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        Intents.init()
         onView(withId(R.id.mainGoButton)).perform(click())
-        onView(withId(R.id.mainGoButton)).noActivity().check(matches(isDisplayed()))
+        onView(withId(R.id.mainGoButton))
+            .noActivity()
+            .check(matches(isDisplayed()))
+        Intents.release()
     }
 
     @get:Rule
