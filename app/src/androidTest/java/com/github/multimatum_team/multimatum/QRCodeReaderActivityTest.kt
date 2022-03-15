@@ -8,6 +8,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isNotEnabled
 import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.Matchers.not
 import org.junit.Rule
@@ -22,9 +23,7 @@ class QRCodeReaderActivityTest {
         ActivityScenario.launch(QRCodeReaderActivity::class.java)
         onView(ViewMatchers.withId(R.id.scanner_view)).perform(ViewActions.click()).check(
             ViewAssertions.matches(
-                //not(
-                    isDisplayed()
-                //)
+                isNotEnabled()
             )
         )
     }
