@@ -48,14 +48,17 @@ class MainActivity : AppCompatActivity() {
     //Set a notification that will be triggered in a given time in ms.
     //you can pass a title/description and Id in parameter
     private fun setNotification(timeMS: Long, title: String, description: String, id: Int){
-        alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, ReminderBroadcastReceiver::class.java)
+        alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
+        val intent = Intent(this, ReminderBroadcastReceiver::class.java) //this create an intent of broadcast receiver
+        //Adding extra parameter that will be used in the broadcase receiver to create the notification
         intent.putExtra("title", title)
         intent.putExtra("description", description)
         intent.putExtra("id", id)
 
+        //set the receiver as pending intent
         pendingIntent = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_IMMUTABLE)
 
+        //set an alarm that will wake up the pending intent (receiver)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeMS, pendingIntent)
 
     }
