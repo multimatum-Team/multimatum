@@ -37,12 +37,12 @@ class DeadlineAdapterTest {
 
 
     @Test
-    fun testGetCount(){
+    fun `GetCount should give the correct count`(){
         Assert.assertEquals(adapter.count, 4)
     }
 
     @Test
-    fun testGetItems(){
+    fun `GetItem should give the correct deadline in the list`(){
         Assert.assertEquals(adapter.getItem(0), list[0])
         Assert.assertEquals(adapter.getItem(1), list[1])
         Assert.assertEquals(adapter.getItem(2), list[2])
@@ -50,7 +50,7 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun testGetItemId(){
+    fun `GetItemId should give the correct Id of an item`(){
         Assert.assertEquals(adapter.getItemId(0), 0.toLong())
         Assert.assertEquals(adapter.getItemId(1), 1.toLong())
         Assert.assertEquals(adapter.getItemId(2), 2.toLong())
@@ -58,7 +58,7 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun testGetViewFirstVerySoon(){
+    fun `GetView should show properly the first deadline who is due in 1 day in red`(){
         val parent = ListView(context)
         val listItemView: View = adapter.getView(0,null,parent)
         //check title
@@ -74,7 +74,7 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun testGetViewSecondSoon(){
+    fun `GetView should show properly the second deadline who is due in 7 day in orange`(){
         val parent = ListView(context)
         val listItemView: View = adapter.getView(1,null,parent)
         //check title
@@ -90,7 +90,7 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun testGetViewThirdDone(){
+    fun `GetView should show properly the third deadline who is already done`(){
         val parent = ListView(context)
         val listItemView: View = adapter.getView(2,null,parent)
         //check title
@@ -106,7 +106,7 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun testGetViewFourthAlreadyDue(){
+    fun `GetView should show properly the fourth deadline who is already due`(){
         val parent = ListView(context)
         val listItemView: View = adapter.getView(3,null,parent)
         //check title
