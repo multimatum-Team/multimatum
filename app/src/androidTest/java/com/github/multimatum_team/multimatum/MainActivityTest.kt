@@ -33,4 +33,11 @@ class MainActivityTest {
         Intents.release()
     }
 
+    @Test
+    fun launchAccountActivityIntent(){
+        Intents.init()
+        onView(withId(R.id.logInButton)).perform(ViewActions.click())
+        Intents.intended(toPackage("com.github.multimatum_team.multimatum"))
+        Intents.release()
+    }
 }

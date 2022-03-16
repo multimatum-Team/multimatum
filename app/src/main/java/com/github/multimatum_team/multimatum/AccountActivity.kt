@@ -20,6 +20,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.api.LogDescriptor
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.inappmessaging.internal.Logging.TAG
 import org.w3c.dom.Text
@@ -48,6 +49,7 @@ class AccountActivity: AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         checkUser()
 
+
         //configure button
         findViewById<SignInButton>(R.id.sign_in_button).visibility = View.VISIBLE
         findViewById<SignInButton>(R.id.sign_in_button).setOnClickListener{
@@ -62,7 +64,6 @@ class AccountActivity: AppCompatActivity() {
         //check if user is logged in or not
         val firebaseUser = firebaseAuth.currentUser
         if (firebaseUser != null){
-            //user is already logged in
             //TODO: start profile fragment
         }
     }
@@ -91,6 +92,8 @@ class AccountActivity: AppCompatActivity() {
             }catch (e: Exception){
                 Log.d(TAG, "onActivityResult: ${e.message}")
             }
+        }else{
+            Toast.makeText(this@AccountActivity, "Loggin faile due too wrong request Code", Toast.LENGTH_SHORT).show()
         }
     }
 
