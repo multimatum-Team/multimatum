@@ -50,6 +50,7 @@ class QRCodeReaderActivity : AppCompatActivity() {
         }
     }
 
+    // Useful function to display a given string using the Toast interface
     private fun displayOnToast(text: String) {
         runOnUiThread {
             Toast.makeText(this, text, Toast.LENGTH_LONG).show()

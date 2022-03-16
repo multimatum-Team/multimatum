@@ -32,6 +32,7 @@ class MainActivityTest {
     }
 
     /*
+    TEST FUNCTION TO DO WITH ROBOLECTRIC
     @get:Rule
     val activityRule2 = ActivityScenarioRule(MainActivity::class.java)
 
