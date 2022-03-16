@@ -21,14 +21,14 @@ class MainActivity : AppCompatActivity() {
         val listView = findViewById<ListView>(R.id.deadlineListView)
 
         //generate a list of deadline to demo. To remove later and link it to the real list
-        fun demoList() = listOf(Deadline("Number 1",DeadlineState.TODO, LocalDate.now().plusDays(1)),
+        val demoList = listOf(Deadline("Number 1",DeadlineState.TODO, LocalDate.now().plusDays(1)),
             Deadline("Number 2",DeadlineState.TODO, LocalDate.now().plusDays(7)),
             Deadline("Number 3",DeadlineState.DONE, LocalDate.of(2022, 3,30)),
             Deadline("Number 4",DeadlineState.TODO, LocalDate.of(2022, 3,1)))
 
 
         //put them on the listview.
-        val adapter = DeadlineAdapter(this, demoList())
+        val adapter = DeadlineAdapter(this, demoList)
         listView.adapter = adapter
     }
 

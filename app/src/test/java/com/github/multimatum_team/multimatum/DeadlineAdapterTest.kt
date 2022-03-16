@@ -62,15 +62,15 @@ class DeadlineAdapterTest {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(0,null,parent)
         //check title
-        Assert.assertEquals("Number 1",(listItemView.findViewById(R.id.deadline_list_title) as TextView).text)
-        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById(R.id.deadline_list_title) as TextView).typeface.style)
+        Assert.assertEquals("Number 1",(listItemView.findViewById<TextView>(R.id.deadline_list_title)).text)
+        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById<TextView>(R.id.deadline_list_title)).typeface.style)
         //check subtitle
-        Assert.assertEquals( "Due the ${list[0].date}", (listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).text)
-        Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).typeface.style)
+        Assert.assertEquals( "Due the ${list[0].date}", (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text)
+        Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).typeface.style)
         //check details
-        Assert.assertEquals( "Due in 1 Days", (listItemView.findViewById(R.id.deadline_list_detail) as TextView).text)
-        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
-        Assert.assertEquals(Color.RED,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).currentTextColor)
+        Assert.assertEquals( "Due in 1 Days", (listItemView.findViewById<TextView>(R.id.deadline_list_detail)).text)
+        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById<TextView>(R.id.deadline_list_detail)).typeface.style)
+        Assert.assertEquals(Color.RED,(listItemView.findViewById<TextView>(R.id.deadline_list_detail)).currentTextColor)
     }
 
     @Test
@@ -78,15 +78,15 @@ class DeadlineAdapterTest {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(1,null,parent)
         //check title
-        Assert.assertEquals("Number 2",(listItemView.findViewById(R.id.deadline_list_title) as TextView).text)
-        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById(R.id.deadline_list_title) as TextView).typeface.style)
+        Assert.assertEquals("Number 2",(listItemView.findViewById<TextView>(R.id.deadline_list_title)).text)
+        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById<TextView>(R.id.deadline_list_title)).typeface.style)
         //check subtitle
-        Assert.assertEquals( "Due the ${list[1].date}", (listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).text)
-        Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).typeface.style)
+        Assert.assertEquals( "Due the ${list[1].date}", (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text)
+        Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).typeface.style)
         //check details
-        Assert.assertEquals( "Due in 7 Days", (listItemView.findViewById(R.id.deadline_list_detail) as TextView).text)
-        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
-        Assert.assertEquals(Color.rgb(255, 165, 0),(listItemView.findViewById(R.id.deadline_list_detail) as TextView).currentTextColor)
+        Assert.assertEquals( "Due in 7 Days", (listItemView.findViewById<TextView>(R.id.deadline_list_detail)).text)
+        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById<TextView>(R.id.deadline_list_detail)).typeface.style)
+        Assert.assertEquals(Color.rgb(255, 165, 0),(listItemView.findViewById<TextView>(R.id.deadline_list_detail)).currentTextColor)
     }
 
     @Test
@@ -94,15 +94,15 @@ class DeadlineAdapterTest {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(2,null,parent)
         //check title
-        Assert.assertEquals("Number 3",(listItemView.findViewById(R.id.deadline_list_title) as TextView).text)
-        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById(R.id.deadline_list_title) as TextView).typeface.style)
+        Assert.assertEquals("Number 3",(listItemView.findViewById<TextView>(R.id.deadline_list_title)).text)
+        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById<TextView>(R.id.deadline_list_title)).typeface.style)
         //check subtitle
-        Assert.assertEquals( "Due the 2022-03-30", (listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).text)
-        Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).typeface.style)
+        Assert.assertEquals( "Due the 2022-03-30", (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text)
+        Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).typeface.style)
         //check details
-        Assert.assertEquals( "Done", (listItemView.findViewById(R.id.deadline_list_detail) as TextView).text)
-        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
-        Assert.assertEquals(Color.GREEN,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).currentTextColor)
+        Assert.assertEquals( "Done", (listItemView.findViewById<TextView>(R.id.deadline_list_detail)).text)
+        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById<TextView>(R.id.deadline_list_detail)).typeface.style)
+        Assert.assertEquals(Color.GREEN,(listItemView.findViewById<TextView>(R.id.deadline_list_detail)).currentTextColor)
     }
 
     @Test
@@ -110,15 +110,15 @@ class DeadlineAdapterTest {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(3,null,parent)
         //check title
-        Assert.assertEquals("Number 4",(listItemView.findViewById(R.id.deadline_list_title) as TextView).text)
-        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById(R.id.deadline_list_title) as TextView).typeface.style)
+        Assert.assertEquals("Number 4",(listItemView.findViewById<TextView>(R.id.deadline_list_title)).text)
+        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById<TextView>(R.id.deadline_list_title)).typeface.style)
         //check subtitle
-        Assert.assertEquals( "Due the 2022-03-01", (listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).text)
-        Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).typeface.style)
+        Assert.assertEquals( "Due the 2022-03-01", (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text)
+        Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).typeface.style)
         //check details
-        Assert.assertEquals( "Is already Due", (listItemView.findViewById(R.id.deadline_list_detail) as TextView).text)
-        Assert.assertEquals(Typeface.NORMAL,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
-        Assert.assertEquals(Color.BLACK,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).currentTextColor)
+        Assert.assertEquals( "Is already Due", (listItemView.findViewById<TextView>(R.id.deadline_list_detail)).text)
+        Assert.assertEquals(Typeface.NORMAL,(listItemView.findViewById<TextView>(R.id.deadline_list_detail)).typeface.style)
+        Assert.assertEquals(Color.BLACK,(listItemView.findViewById<TextView>(R.id.deadline_list_detail).currentTextColor))
     }
 
 }

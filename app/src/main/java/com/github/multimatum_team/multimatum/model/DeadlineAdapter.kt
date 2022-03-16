@@ -12,15 +12,15 @@ import android.widget.TextView
 import com.github.multimatum_team.multimatum.R
 
 /**
-Class who is used to show the deadline in a clear list.
+Class which is used to show the deadline in a clear list.
 Based on the tutorial:
 https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
  */
 class DeadlineAdapter(private val context: Context, private val dataSource: List<Deadline>) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline
-        const val urgent = 5
-        const val pressing = 10
+        const val URGENT = 5
+        const val PRESSING = 10
     }
 
     private val inflater: LayoutInflater =
@@ -44,11 +44,11 @@ class DeadlineAdapter(private val context: Context, private val dataSource: List
         // Get view for row item
         val rowView = inflater.inflate(R.layout.list_item_deadline, parent, false)
         // Get title element
-        val titleTextView = rowView.findViewById(R.id.deadline_list_title) as TextView
+        val titleTextView = rowView.findViewById<TextView>(R.id.deadline_list_title)
         // Get subtitle element
-        val subtitleTextView = rowView.findViewById(R.id.deadline_list_subtitle) as TextView
+        val subtitleTextView = rowView.findViewById<TextView>(R.id.deadline_list_subtitle)
         // Get detail element
-        val detailTextView = rowView.findViewById(R.id.deadline_list_detail) as TextView
+        val detailTextView = rowView.findViewById<TextView>(R.id.deadline_list_detail)
 
         val deadline = getItem(position) as Deadline
 
@@ -70,15 +70,14 @@ class DeadlineAdapter(private val context: Context, private val dataSource: List
             }
             deadline.isDue -> {
                 detail = context.getString(R.string.isAlreadyDue)
-
             }
             else -> {
-                detail = context.getString(R.string.DueInXDays,deadline.timeRemaining?.days.toString())
+                detail = context.getString(R.string.DueInXDays, deadline.timeRemaining!!.days.toString())
                 // If the remaining days is too small, put them in red or orange
-                if ((deadline.timeRemaining!!.days) < urgent) {
+                if ((deadline.timeRemaining!!.days) < URGENT) {
                     detailTextView.setTextColor(Color.RED)
                     detailTextView.setTypeface(null, Typeface.BOLD)
-                } else if ((deadline.timeRemaining!!.days) < pressing) {
+                } else if ((deadline.timeRemaining!!.days) < PRESSING) {
                     detailTextView.setTextColor(Color.rgb(255, 165, 0))
                     detailTextView.setTypeface(null, Typeface.BOLD)
                 }
