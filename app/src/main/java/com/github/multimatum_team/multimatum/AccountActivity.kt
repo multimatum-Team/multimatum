@@ -33,8 +33,8 @@ class AccountActivity: AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var firebaseAuth: FirebaseAuth
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account)
 
         //Configure sign-in to request user's credential
@@ -46,13 +46,15 @@ class AccountActivity: AppCompatActivity() {
 
         //init firebase auth
         firebaseAuth = FirebaseAuth.getInstance()
-        //TODO: checkUser() maybe usefull later
+        checkUser()
 
         //configure button
-        findViewById<Button>(R.id.sign_in_button).setOnClickListener{
+        findViewById<SignInButton>(R.id.sign_in_button).visibility = View.VISIBLE
+        findViewById<SignInButton>(R.id.sign_in_button).setOnClickListener{
             Log.d(TAG, "onCreate begin Google SignIn:")
             signIn()
         }
+
 
     }
 
@@ -61,6 +63,7 @@ class AccountActivity: AppCompatActivity() {
         val firebaseUser = firebaseAuth.currentUser
         if (firebaseUser != null){
             //user is already logged in
+            //TODO: start profile fragment
         }
     }
 
@@ -116,7 +119,7 @@ class AccountActivity: AppCompatActivity() {
                 Log.d(TAG, "firebaseAuthWithGoogleAccount: Existing user...\n$email")
                 Toast.makeText(this@AccountActivity, "LoggedIn...\n$email", Toast.LENGTH_SHORT).show()
             }
-            //TODO:start profile activity
+            //TODO:start profile fragment
 
         }.addOnFailureListener{ e-> 
             //login failed
@@ -132,13 +135,13 @@ class AccountActivity: AppCompatActivity() {
 
             // Signed in successfully, show authenticated UI.
             findViewById<SignInButton>(R.id.sign_in_button).visibility = View.GONE
-            findViewById<TextView>(R.id.sign_in_text).visibility = View.GONE
+            //findViewById<TextView>(R.id.sign_in_text).visibility = View.GONE
 
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             findViewById<SignInButton>(R.id.sign_in_button).visibility = View.VISIBLE
-            findViewById<TextView>(R.id.sign_in_text).visibility = View.VISIBLE
+            //findViewById<TextView>(R.id.sign_in_text).visibility = View.VISIBLE
 
         }
     }
