@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">multimatum</string>
-    <string name="main_go_button_text">Go!</string>
-    <string name="main_name_field_hint">Name: </string>
-    <string name="greeting_msg">Hello %1$s!</string>
     <string name="main_settings_activity_title">Settings</string>
     <string name="main_settings_account_section_title">Account</string>
     <string name="main_settings_account_button">My account</string>
@@ -11,4 +8,8 @@
     <string name="main_settings_notifications_section_title">Notifications</string>
     <string name="main_settings_enable_notif_button">Enable notifications</string>
     <string name="main_open_settings_but_content_descr">Settings button</string>
+    <string name="isAlreadyDue">Is already Due</string>
+    <string name="done">Done</string>
+    <string name="DueTheX">Due the %1s</string>
+    <string name="DueInXDays">Due in %1s Days</string>
 </resources>
