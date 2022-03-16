@@ -3,8 +3,19 @@
     <string name="main_go_button_text">Go!</string>
     <string name="main_name_field_hint">Name: </string>
     <string name="greeting_msg">Hello %1$s!</string>
+  
     <string name="need_to_synchronize_several_devices">Need to synchronize several devices ?</string>
     <string name="log_in">Log in</string>
     <string name="you_re_loggedin_as">You\'re Loggedin as:</string>
     <string name="email">Email</string>
+
+    <string name="main_settings_activity_title">Settings</string>
+    <string name="main_settings_account_section_title">Account</string>
+    <string name="main_settings_account_button">My account</string>
+    <string name="main_settings_ui_section_title">Appearance</string>
+    <string name="main_settings_dark_mode_button">Dark mode</string>
+    <string name="main_settings_notifications_section_title">Notifications</string>
+    <string name="main_settings_enable_notif_button">Enable notifications</string>
+    <string name="main_open_settings_but_content_descr">Settings button</string>
+  
 </resources>
