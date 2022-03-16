@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.github.multimatum_team.multimatum.R
-/*
+/**
 Class who is used to show the deadline in a clear list.
 Based on the tutorial:
 https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
@@ -31,6 +31,7 @@ class DeadlineAdapter(context: Context, private val dataSource: List<Deadline>) 
         return position.toLong()
     }
 
+    //Customise the units of the lists
     @SuppressLint("ViewHolder", "SetTextI18n")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         // Get view for row item
@@ -44,12 +45,15 @@ class DeadlineAdapter(context: Context, private val dataSource: List<Deadline>) 
 
         val deadline = getItem(position) as Deadline
 
+        //show the title
         titleTextView.text = deadline.title
         titleTextView.setTypeface(null, Typeface.BOLD)
 
+        //show the date
         subtitleTextView.text = "Due the ${deadline.date}"
         subtitleTextView.setTypeface(null, Typeface.ITALIC)
 
+        //show how much time left or if it is due or done.
         val detail: String
         when {
             deadline.state == DeadlineState.DONE -> {
@@ -60,6 +64,7 @@ class DeadlineAdapter(context: Context, private val dataSource: List<Deadline>) 
             }
             else -> {
                 detail = "Due in " + deadline.timeRemaining?.days + " Days"
+                //if the remaining days is too small, put them in red or orange
                 if ((deadline.timeRemaining!!.days) < 5) {
                     detailTextView.setTextColor(Color.RED)
                     detailTextView.setTypeface(null, Typeface.BOLD)
@@ -67,9 +72,7 @@ class DeadlineAdapter(context: Context, private val dataSource: List<Deadline>) 
                     detailTextView.setTextColor(Color.rgb(255, 165, 0))
                     detailTextView.setTypeface(null, Typeface.BOLD)
                 }
-
             }
-
         }
         detailTextView.text = detail
         return rowView
