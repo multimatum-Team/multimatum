@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     //here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
     fun triggerNotification(view:View) {
         var id = System.currentTimeMillis().toInt()
-        setNotification(System.currentTimeMillis()+1000, "asdf", "ouafouaf", id)
+        setNotification(System.currentTimeMillis()+4000, "asdf", "ouafouaf", id)
     }
 
     fun goQRGenerator(view:View){
