@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
@@ -11,7 +12,7 @@ class MainSettingsActivity : AppCompatActivity() {
     private lateinit var darkModeEnabledButton: SwitchCompat
     private lateinit var notifEnabledButton: SwitchCompat
 
-    @Inject lateinit var preferences: SharedPrefAccessor
+    @Inject lateinit var preferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,16 +30,12 @@ class MainSettingsActivity : AppCompatActivity() {
     }
 
     private fun onSwitchStateChanged(key: String, currState: Boolean) {
-        preferences.putBoolean(key, currState)
+        val edit = preferences.edit()
+        edit.putBoolean(key, currState)
+        edit.apply()
     }
 
     companion object {
-
-        /**
-         * Identifier for the SharedPreferences of this activity
-         */
-        const val MAIN_SETTINGS_ACTIVITY_SHARED_PREF_ID =
-            "com.github.multimatum_team.multimatum.MainSettingsActivity.SharedPrefId"
 
         /**
          * Key for the storage of whether dark mode is enabled in SharedPreferences
