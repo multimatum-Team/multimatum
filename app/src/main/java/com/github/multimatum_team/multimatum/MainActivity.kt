@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
-    // Function used to check the camera permission and QR Code scanner if the permission is granted
+    // Function used to check the camera permission and QR Code scanner if the permission is granted.
     fun openCodeScanner(view: View) {
         if (ContextCompat.checkSelfPermission(
                 this,
