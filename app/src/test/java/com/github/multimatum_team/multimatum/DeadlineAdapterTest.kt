@@ -89,6 +89,7 @@ class DeadlineAdapterTest {
         Assert.assertEquals(Color.rgb(255, 165, 0),(listItemView.findViewById(R.id.deadline_list_detail) as TextView).currentTextColor)
     }
 
+    @Test
     fun testGetViewThirdDone(){
         val parent = ListView(context)
         val listItemView: View = adapter.getView(2,null,parent)
@@ -100,10 +101,11 @@ class DeadlineAdapterTest {
         Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).typeface.style)
         //check details
         Assert.assertEquals( "Done", (listItemView.findViewById(R.id.deadline_list_detail) as TextView).text)
-        Assert.assertEquals(Typeface.DEFAULT,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
+        Assert.assertEquals(Typeface.NORMAL,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
         Assert.assertEquals(Color.BLACK,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).currentTextColor)
     }
 
+    @Test
     fun testGetViewFourthAlreadyDue(){
         val parent = ListView(context)
         val listItemView: View = adapter.getView(3,null,parent)
@@ -115,7 +117,7 @@ class DeadlineAdapterTest {
         Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).typeface.style)
         //check details
         Assert.assertEquals( "Is already Due", (listItemView.findViewById(R.id.deadline_list_detail) as TextView).text)
-        Assert.assertEquals(Typeface.DEFAULT,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
+        Assert.assertEquals(Typeface.NORMAL,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
         Assert.assertEquals(Color.BLACK,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).currentTextColor)
     }
 
