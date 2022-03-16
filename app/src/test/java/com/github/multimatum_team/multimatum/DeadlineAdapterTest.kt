@@ -101,8 +101,8 @@ class DeadlineAdapterTest {
         Assert.assertEquals(Typeface.ITALIC,(listItemView.findViewById(R.id.deadline_list_subtitle) as TextView).typeface.style)
         //check details
         Assert.assertEquals( "Done", (listItemView.findViewById(R.id.deadline_list_detail) as TextView).text)
-        Assert.assertEquals(Typeface.NORMAL,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
-        Assert.assertEquals(Color.BLACK,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).currentTextColor)
+        Assert.assertEquals(Typeface.BOLD,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).typeface.style)
+        Assert.assertEquals(Color.GREEN,(listItemView.findViewById(R.id.deadline_list_detail) as TextView).currentTextColor)
     }
 
     @Test

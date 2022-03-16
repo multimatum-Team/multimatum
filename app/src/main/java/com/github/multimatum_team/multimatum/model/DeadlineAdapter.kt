@@ -65,9 +65,12 @@ class DeadlineAdapter(private val context: Context, private val dataSource: List
         when {
             deadline.state == DeadlineState.DONE -> {
                 detail = context.getString(R.string.done)
+                detailTextView.setTextColor(Color.GREEN)
+                detailTextView.setTypeface(null, Typeface.BOLD)
             }
             deadline.isDue -> {
                 detail = context.getString(R.string.isAlreadyDue)
+
             }
             else -> {
                 detail = context.getString(R.string.DueInXDays,deadline.timeRemaining?.days.toString())
