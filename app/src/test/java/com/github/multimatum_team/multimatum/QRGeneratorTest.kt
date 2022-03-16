@@ -28,7 +28,9 @@ import org.junit.runner.RunWith
 
 import org.robolectric.shadows.ShadowToast
 
-
+/**
+ * Tests for the QRGenerator class.
+ */
 @RunWith(AndroidJUnit4::class)
 class QRGeneratorTest {
     @get:Rule
