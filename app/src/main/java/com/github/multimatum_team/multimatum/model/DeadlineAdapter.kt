@@ -15,7 +15,14 @@ Class who is used to show the deadline in a clear list.
 Based on the tutorial:
 https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
  */
+
+
 class DeadlineAdapter(context: Context, private val dataSource: List<Deadline>) : BaseAdapter() {
+    companion object{
+        //value who define when there is not much time left for a deadline
+        const val urgent = 5
+        const val pressing = 10
+    }
     private val inflater: LayoutInflater
             = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
@@ -31,7 +38,7 @@ class DeadlineAdapter(context: Context, private val dataSource: List<Deadline>) 
         return position.toLong()
     }
 
-    //Customise the units of the lists
+    //Customise the units of the list
     @SuppressLint("ViewHolder", "SetTextI18n")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         // Get view for row item
@@ -65,10 +72,10 @@ class DeadlineAdapter(context: Context, private val dataSource: List<Deadline>) 
             else -> {
                 detail = "Due in " + deadline.timeRemaining?.days + " Days"
                 //if the remaining days is too small, put them in red or orange
-                if ((deadline.timeRemaining!!.days) < 5) {
+                if ((deadline.timeRemaining!!.days) < urgent) {
                     detailTextView.setTextColor(Color.RED)
                     detailTextView.setTypeface(null, Typeface.BOLD)
-                } else if ((deadline.timeRemaining!!.days) < 10) {
+                } else if ((deadline.timeRemaining!!.days) < pressing) {
                     detailTextView.setTextColor(Color.rgb(255, 165, 0))
                     detailTextView.setTypeface(null, Typeface.BOLD)
                 }

@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum
 
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
