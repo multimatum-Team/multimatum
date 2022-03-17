@@ -138,13 +138,11 @@ class AccountActivity: AppCompatActivity() {
 
             // Signed in successfully, show authenticated UI.
             findViewById<SignInButton>(R.id.sign_in_button).visibility = View.GONE
-            //findViewById<TextView>(R.id.sign_in_text).visibility = View.GONE
 
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             findViewById<SignInButton>(R.id.sign_in_button).visibility = View.VISIBLE
-            //findViewById<TextView>(R.id.sign_in_text).visibility = View.VISIBLE
 
         }
     }
