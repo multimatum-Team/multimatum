@@ -11,7 +11,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
-/*
+/**
     Activity that allow the user to generate a QR Code.
     The user write in the TextField what he want encoded in QR Code and press the button Generate
     to make the encoded data appear in a ImageView.
