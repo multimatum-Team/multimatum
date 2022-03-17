@@ -15,7 +15,8 @@
             android:exported="false"/>
         <activity
             android:name=".AccountActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity"
+            android:exported="false"/>
       
         <activity
             android:name=".QRGenerator"

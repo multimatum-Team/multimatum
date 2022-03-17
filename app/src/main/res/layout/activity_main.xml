@@ -58,7 +58,7 @@
         android:layout_marginBottom="36dp"
         android:backgroundTint="@android:color/white"
         android:onClick="goToLoginScreen"
-        android:text="@string/log_in"
+        android:text="@string/log_in_text"
         android:textColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
