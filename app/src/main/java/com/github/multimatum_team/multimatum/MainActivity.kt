@@ -2,17 +2,18 @@ package com.github.multimatum_team.multimatum
 
 import android.content.Intent
 import android.os.Build
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ListView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import java.time.LocalDate
-
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,6 +39,23 @@ class MainActivity : AppCompatActivity() {
     fun goQRGenerator(view:View){
         val intent = Intent(this, QRGenerator::class.java)
         startActivity(intent)
+    }
+
+    fun openCodeScanner(view: View) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.CAMERA),
+                123
+            )
+        } else {
+            val intent = Intent(this, QRCodeReaderActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun launchSettingsActivity(view: View) {

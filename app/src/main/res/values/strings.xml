@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">multimatum</string>
     <string name="log_in_text">Log in</string>
+    <string name="qr_code_scanner_button_text">Scanner</string>
     <string name="main_settings_activity_title">Settings</string>
     <string name="main_settings_account_section_title">Account</string>
     <string name="main_settings_account_button">My account</string>
