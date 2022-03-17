@@ -30,9 +30,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    //Create a notification channel for reminder notifications
-    //Creating an existing notification channel with its original values performs no operation,
-    // so it's safe to call this code when starting an app.
+    /*
+    Create a notification channel for reminder notifications
+    Creating an existing notification channel with its original values performs no operation,
+    so it's safe to call this code when starting an app.
+    */
     private fun createNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channelName :CharSequence = "reminders channel"
@@ -45,8 +47,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //Set a notification that will be triggered in a given time in ms.
-    //you can pass a title/description and Id in parameter
+    /*
+    Set a notification that will be triggered in a given time in ms.
+    you can pass a title/description and Id in parameter
+    */
     private fun setNotification(timeMS: Long, title: String, description: String, id: Int){
         alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
         val intent = Intent(this, ReminderBroadcastReceiver::class.java) //this create an intent of broadcast receiver
@@ -63,8 +67,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    //this button trigger a basics notification in 1 sec
-    //here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
+    /*
+    This button trigger a basics notification in 1 sec
+    here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
+    */
     fun triggerNotification(view:View) {
         var id = System.currentTimeMillis().toInt()
         setNotification(System.currentTimeMillis()+4000, "asdf", "ouafouaf", id)
