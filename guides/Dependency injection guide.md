@@ -54,6 +54,8 @@ var hiltRule = HiltAndroidRule(this)
 @InstallIn(SingletonComponent::class)
 object TestDependenciesProvider { ... }
 ```
+This object can simply be located inside the test class.
+
 7. As in point 3, create a function that returns the instance that you want to inject for tests and annotate the function with `@Provides`.
 If you want to inject a mock, declare it in an object so that both this function and the tests can access it.
 
