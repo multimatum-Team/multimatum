@@ -18,6 +18,8 @@ I switched back to a synchronous interface to get something merged.
 
 ### Lenny
 
+I did some functions to set notifications. I didn't get time to make any test, implementing features that could be tested already took me 8hours. Next week I'll implement those tests.
+
 ### Léo
 
 ### Louis
