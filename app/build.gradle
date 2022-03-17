@@ -3,7 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'jacoco'
     id 'com.google.gms.google-services'
+    id 'dagger.hilt.android.plugin'
 }
+
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdk 31
@@ -15,7 +18,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.github.multimatum_team.multimatum.MultimatumTestRunner"
     }
 
     buildTypes {
@@ -38,6 +41,7 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            returnDefaultValues = true
         }
     }
 }
@@ -51,6 +55,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
     implementation 'com.google.android.gms:play-services-base:18.0.1'
     implementation 'com.google.firebase:firebase-inappmessaging:20.1.2'
+    implementation 'com.google.dagger:hilt-android:2.38.1'
+    kapt 'com.google.dagger:hilt-android-compiler:2.38.1'
     implementation 'com.github.yuriy-budiyev:code-scanner:2.1.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.6'
@@ -69,6 +75,22 @@ dependencies {
     //implementation for the QRCode Generator
     implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
     implementation 'com.google.zxing:core:3.4.0'
+
+    // Hilt testing dependencies, taken from https://developer.android.com/training/dependency-injection/hilt-testing
+    // For Robolectric tests.
+    testImplementation("com.google.dagger:hilt-android-testing:2.38.1")
+    // ...with Kotlin.
+    kaptTest("com.google.dagger:hilt-android-compiler:2.38.1")
+    // For instrumented tests.
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.38.1")
+    // ...with Kotlin.
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.38.1")
+
+    // Mockito
+    androidTestImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
+    androidTestImplementation 'org.mockito:mockito-core:4.4.0'
+    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
+    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
 }
 
 tasks.withType(Test) {
@@ -108,4 +130,9 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
 
 connectedCheck {
     finalizedBy jacocoTestReport
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }

@@ -2,6 +2,7 @@ package com.github.multimatum_team.multimatum
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -9,24 +10,36 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import dagger.hilt.components.SingletonComponent
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.*
 
-@RunWith(AndroidJUnit4::class)
+@UninstallModules(DependenciesProvider::class)
+@HiltAndroidTest
 class MainSettingsActivityTest {
 
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
     @Before
-    fun initIntents() {
+    fun init() {
+        hiltRule.inject()
         Intents.init()
     }
 
     @After
-    fun releaseIntents() {
+    fun release(){
         Intents.release()
     }
 
@@ -74,36 +87,51 @@ class MainSettingsActivityTest {
         initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
         clickedButtonId: Int,
         expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean
-    ) {
+    ){
+        `when`(mockSharedPreferences.getBoolean(eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY), any()))
+            .thenReturn(initNotifEnabled)
+        `when`(mockSharedPreferences.getBoolean(eq(MainSettingsActivity.DARK_MODE_PREF_KEY), any()))
+            .thenReturn(initDarkModeEnabled)
+        val mockEditor: SharedPreferences.Editor = mock()
+        `when`(mockEditor.putBoolean(eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY), any())).then {
+            assertEquals(expectedFinalNotifEnabled, it.getArgument(1))
+            mockEditor
+        }
+        `when`(mockEditor.putBoolean(eq(MainSettingsActivity.DARK_MODE_PREF_KEY), any())).then {
+            assertEquals(expectedFinalDarkModeEnabled, it.getArgument(1))
+            mockEditor
+        }
+        `when`(mockEditor.apply()).then { /* do nothing */ }
+        `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
         val applicationContext = ApplicationProvider.getApplicationContext<Context>()
-        val pref = applicationContext.getSharedPreferences(
-            MainSettingsActivity.MAIN_SETTINGS_ACTIVITY_SHARED_PREF_ID,
-            Context.MODE_PRIVATE
-        )
-        val edit = pref.edit()
-        edit.clear()
-        edit.putBoolean(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY, initNotifEnabled)
-        edit.putBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, initDarkModeEnabled)
-        edit.apply()
         val intent = Intent(applicationContext, MainSettingsActivity::class.java)
         val activityScenario: ActivityScenario<MainSettingsActivity> =
             ActivityScenario.launch(intent)
         activityScenario.use {
+            checkButtonPosition(R.id.main_settings_enable_notif_button, initNotifEnabled)
+            checkButtonPosition(R.id.main_settings_dark_mode_button, initDarkModeEnabled)
             onView(withId(clickedButtonId)).perform(click())
-            onView(withId(R.id.main_settings_enable_notif_button)).check(matches(if (expectedFinalNotifEnabled) isChecked() else isNotChecked()))
-            onView(withId(R.id.main_settings_dark_mode_button)).check(matches(if (expectedFinalDarkModeEnabled) isChecked() else isNotChecked()))
+            checkButtonPosition(R.id.main_settings_enable_notif_button, expectedFinalNotifEnabled)
+            checkButtonPosition(R.id.main_settings_dark_mode_button, expectedFinalDarkModeEnabled)
         }
-        assertTrue(pref.contains(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY))
-        assertTrue(pref.contains(MainSettingsActivity.DARK_MODE_PREF_KEY))
-        // Default values are set so that test fails if those are returned (but this should not happen!)
-        assertEquals(
-            expectedFinalNotifEnabled,
-            pref.getBoolean(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY, !expectedFinalNotifEnabled)
-        )
-        assertEquals(
-            expectedFinalDarkModeEnabled,
-            pref.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, !expectedFinalDarkModeEnabled)
-        )
+    }
+
+    private fun checkButtonPosition(buttonId: Int, expectedEnabled: Boolean) {
+        val matcher = if (expectedEnabled) isChecked() else isNotChecked()
+        onView(withId(buttonId)).check(matches(matcher))
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestDependenciesProvider {
+
+        @Provides
+        fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
+
+    }
+
+    companion object {
+        val mockSharedPreferences: SharedPreferences = mock()
     }
 
 }
