@@ -2,6 +2,12 @@ Sprint 3 summary
 ================
 
 ### Florian
+This week, I have developped a Adapter for the deadline allowing to make a customised
+list for the deadlines. With it, we can see the title, the date, and if it is done,
+already due or the remaining time for the deadline. If the remaining time is small,
+it will be displayed in red or orange. I wanted to add a button to add deadlines
+and a detailed view of a deadline when you click on it but I was really too short
+on time and I will do it next sprint.
 
 ### Joseph
 
