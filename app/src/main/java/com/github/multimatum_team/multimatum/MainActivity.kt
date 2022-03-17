@@ -24,10 +24,10 @@ import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import java.time.LocalDate
 
+
 class MainActivity : AppCompatActivity() {
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
