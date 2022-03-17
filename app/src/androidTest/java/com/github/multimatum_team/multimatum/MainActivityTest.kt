@@ -1,12 +1,9 @@
 package com.github.multimatum_team.multimatum
 
-import android.provider.AlarmClock.EXTRA_MESSAGE
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
+import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -23,13 +20,28 @@ class MainActivityTest {
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Test
-    fun initDisplayTest() {
+    fun goToQRTest() {
         Intents.init()
-        onView(withId(R.id.mainName)).perform(ViewActions.replaceText("Louis"))
-        Espresso.closeSoftKeyboard()
-        onView(withId(R.id.mainGoButton)).perform(ViewActions.click())
-        Intents.intended(allOf(hasExtra(EXTRA_NAME, "Louis"),
-            toPackage("com.github.multimatum_team.multimatum")))
+        onView(withId(R.id.goToQR)).perform(ViewActions.click())
+        Intents.intended(
+            allOf(
+                hasComponent(QRGenerator::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+        Intents.release()
+    }
+
+    @Test
+    fun goToSetting() {
+        Intents.init()
+        onView(withId(R.id.main_open_settings_but)).perform(ViewActions.click())
+        Intents.intended(
+            allOf(
+                hasComponent(MainSettingsActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
         Intents.release()
     }
 
