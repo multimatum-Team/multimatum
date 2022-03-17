@@ -21,6 +21,11 @@ class MainActivityTest {
     @get:Rule
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
+    @get:Rule
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.CAMERA
+    )
+
     @Test
     fun initDisplayTest() {
         Intents.init()
@@ -48,11 +53,6 @@ class MainActivityTest {
         )
         Intents.release()
     }
-
-    @get:Rule
-    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-        android.Manifest.permission.CAMERA
-    )
 
     @Test
     fun buttonOpensQrCodeReader() {
