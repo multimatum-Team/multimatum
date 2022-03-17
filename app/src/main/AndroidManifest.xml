@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.multimatum_team.multimatum">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:name=".MultimatumApp"
         android:allowBackup="true"
@@ -11,13 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Multimatum">
         <activity
+            android:name=".QRCodeReaderActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainSettingsActivity"
             android:exported="false" />
         <activity
             android:name=".QRGenerator"
-            android:exported="false" />
-        <activity
-            android:name=".GreetingActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
