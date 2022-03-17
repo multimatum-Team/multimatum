@@ -35,6 +35,7 @@ use another provider).
 The `applicationContext` argument might not be useful depending on what you want to inject and is not mandatory.
 Once you did that, ![dependency-icon](./dependency-icon.jpg) should appear on the left of the function (in Android Studio),
 and clicking on it should lead to the `@Inject` class member that you created.
+
 4. Create the test class and annotate it as follows:
 ```Kotlin
 @UninstallModules(DependenciesProvider::class)
