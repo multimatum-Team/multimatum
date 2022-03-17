@@ -108,10 +108,17 @@ class MainSettingsActivityTest {
         val activityScenario: ActivityScenario<MainSettingsActivity> =
             ActivityScenario.launch(intent)
         activityScenario.use {
+            checkButtonPosition(R.id.main_settings_enable_notif_button, initNotifEnabled)
+            checkButtonPosition(R.id.main_settings_dark_mode_button, initDarkModeEnabled)
             onView(withId(clickedButtonId)).perform(click())
-            onView(withId(R.id.main_settings_enable_notif_button)).check(matches(if (expectedFinalNotifEnabled) isChecked() else isNotChecked()))
-            onView(withId(R.id.main_settings_dark_mode_button)).check(matches(if (expectedFinalDarkModeEnabled) isChecked() else isNotChecked()))
+            checkButtonPosition(R.id.main_settings_enable_notif_button, expectedFinalNotifEnabled)
+            checkButtonPosition(R.id.main_settings_dark_mode_button, expectedFinalDarkModeEnabled)
         }
+    }
+
+    private fun checkButtonPosition(buttonId: Int, expectedEnabled: Boolean) {
+        val matcher = if (expectedEnabled) isChecked() else isNotChecked()
+        onView(withId(buttonId)).check(matches(matcher))
     }
 
     @Module
