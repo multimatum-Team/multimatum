@@ -6,6 +6,7 @@ Sprint <n> summary
 ### Joseph
 
 ### Lenny
+I did functions to test notifications. I had no time to make test, If I stopped after half of the time to focus on making test, I'ld have nothing to test. Next sprint I'll work on testing notifications, which comes with a bunch of challenges.
 
 ### Léo
 
