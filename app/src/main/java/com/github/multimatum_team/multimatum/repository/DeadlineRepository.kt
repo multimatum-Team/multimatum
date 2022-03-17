@@ -1,8 +1,6 @@
 package com.github.multimatum_team.multimatum.repository
 
 import com.github.multimatum_team.multimatum.model.Deadline
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import java.time.LocalDate
 
 /**
