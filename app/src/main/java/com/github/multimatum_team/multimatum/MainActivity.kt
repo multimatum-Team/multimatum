@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ListView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pendingIntent: PendingIntent
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -118,6 +120,11 @@ class MainActivity : AppCompatActivity() {
 
     fun launchSettingsActivity(view: View) {
         val intent = Intent(this, MainSettingsActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun goToLoginScreen(view: View){
+        val intent = Intent(this, AccountActivity::class.java)
         startActivity(intent)
     }
 

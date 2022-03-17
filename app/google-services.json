@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "774591614502",
+    "project_id": "multimatum-675e4",
+    "storage_bucket": "multimatum-675e4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774591614502:android:9927189345e3dca97da0e7",
+        "android_client_info": {
+          "package_name": "com.github.multimatum_team.multimatum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "774591614502-e0kij87sh7f9aup6t2vtitg3dsadduvf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXC2DH6UC_dvvFsLRMxDOhouJSp4GIwzk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "774591614502-e0kij87sh7f9aup6t2vtitg3dsadduvf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -14,15 +14,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Multimatum">
+
         <activity
             android:name=".QRCodeReaderActivity"
             android:exported="false" />
         <activity
             android:name=".MainSettingsActivity"
-            android:exported="false" />
+            android:exported="false"/>
+        <activity
+            android:name=".AccountActivity"
+            android:parentActivityName=".MainActivity"
+            android:exported="false"/>
+      
         <activity
             android:name=".QRGenerator"
             android:exported="false" />
+      
         <activity
             android:name=".MainActivity"
             android:exported="true">

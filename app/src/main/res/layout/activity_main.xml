@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:onClick="goToLoginScreen"
     tools:context=".MainActivity">
 
     <ImageButton
@@ -31,7 +32,7 @@
         android:text="QR Generator"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText"/>
 
     <Button
         android:id="@+id/triggerNotif"
@@ -72,5 +73,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_begin="20dp" />
+
+    <Button
+        android:id="@+id/logInButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="36dp"
+        android:backgroundTint="@android:color/white"
+        android:onClick="goToLoginScreen"
+        android:text="@string/log_in_text"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
