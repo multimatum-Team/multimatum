@@ -32,22 +32,16 @@
         android:text="QR Generator"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText"/>
 
     <ListView
         android:id="@+id/deadlineListView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="354dp"
+        android:layout_height="416dp"
         app:layout_constraintBottom_toTopOf="@+id/goToQR"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_open_settings_but"
-        app:layout_constraintVertical_bias="0.421">
-
-    </ListView>
+        app:layout_constraintTop_toBottomOf="@+id/main_open_settings_but" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
