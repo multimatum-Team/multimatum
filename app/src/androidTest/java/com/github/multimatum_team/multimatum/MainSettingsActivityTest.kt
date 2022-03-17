@@ -22,6 +22,8 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.*
 
 @UninstallModules(DependenciesProvider::class)
 @HiltAndroidTest
@@ -77,14 +79,30 @@ class MainSettingsActivityTest {
         )
     }
 
+    // The parameters are the initial state of the buttons, the button whose state will be changed
+    // and the expected final states of the buttons
+    // The method checks that settings values are correctly written to SharedPreferences and
+    // that the buttons are at the expected position at the end of the scenario
     private fun testScenario(
         initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
         clickedButtonId: Int,
         expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean
     ){
-        fakeStorage.clear()
-        fakeStorage[MainSettingsActivity.NOTIF_ENABLED_PREF_KEY] = initNotifEnabled
-        fakeStorage[MainSettingsActivity.DARK_MODE_PREF_KEY] = initDarkModeEnabled
+        `when`(mockSharedPreferences.getBoolean(eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY), any()))
+            .thenReturn(initNotifEnabled)
+        `when`(mockSharedPreferences.getBoolean(eq(MainSettingsActivity.DARK_MODE_PREF_KEY), any()))
+            .thenReturn(initDarkModeEnabled)
+        val mockEditor: SharedPreferences.Editor = mock()
+        `when`(mockEditor.putBoolean(eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY), any())).then {
+            assertEquals(expectedFinalNotifEnabled, it.getArgument(1))
+            mockEditor
+        }
+        `when`(mockEditor.putBoolean(eq(MainSettingsActivity.DARK_MODE_PREF_KEY), any())).then {
+            assertEquals(expectedFinalDarkModeEnabled, it.getArgument(1))
+            mockEditor
+        }
+        `when`(mockEditor.apply()).then { /* do nothing */ }
+        `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
         val applicationContext = ApplicationProvider.getApplicationContext<Context>()
         val intent = Intent(applicationContext, MainSettingsActivity::class.java)
         val activityScenario: ActivityScenario<MainSettingsActivity> =
@@ -94,16 +112,6 @@ class MainSettingsActivityTest {
             onView(withId(R.id.main_settings_enable_notif_button)).check(matches(if (expectedFinalNotifEnabled) isChecked() else isNotChecked()))
             onView(withId(R.id.main_settings_dark_mode_button)).check(matches(if (expectedFinalDarkModeEnabled) isChecked() else isNotChecked()))
         }
-        assertTrue(fakeStorage.contains(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY))
-        assertTrue(fakeStorage.contains(MainSettingsActivity.DARK_MODE_PREF_KEY))
-        assertEquals(
-            expectedFinalNotifEnabled,
-            fakeStorage[MainSettingsActivity.NOTIF_ENABLED_PREF_KEY]
-        )
-        assertEquals(
-            expectedFinalDarkModeEnabled,
-            fakeStorage[MainSettingsActivity.DARK_MODE_PREF_KEY]
-        )
     }
 
     @Module
@@ -111,35 +119,12 @@ class MainSettingsActivityTest {
     object TestDependenciesProvider {
 
         @Provides
-        fun provideSharedPreferences(): SharedPreferences =
-            MockSharedPreferencesForMainSettingsActivityTests()
+        fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
 
     }
 
     companion object {
-        val fakeStorage = mutableMapOf<String, Boolean>()
-    }
-
-    class MockSharedPreferencesForMainSettingsActivityTests(): MockSharedPreferencesBase {
-
-        override fun getBoolean(key: String?, defValue: Boolean): Boolean {
-            assertTrue(fakeStorage.containsKey(key))
-            return fakeStorage[key]!!
-        }
-
-        override fun edit(): SharedPreferences.Editor = Editor()
-
-        class Editor: MockSharedPreferencesBase.Editor {
-
-            override fun putBoolean(key: String?, value: Boolean): SharedPreferences.Editor {
-                fakeStorage[key!!] = value
-                return this
-            }
-
-            override fun apply() {  /* Do nothing */  }
-
-        }
-
+        val mockSharedPreferences: SharedPreferences = mock()
     }
 
 }

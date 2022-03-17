@@ -40,6 +40,7 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            returnDefaultValues = true
         }
     }
 }
@@ -78,6 +79,12 @@ dependencies {
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.38.1")
     // ...with Kotlin.
     kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.38.1")
+
+    // Mockito
+    androidTestImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
+    androidTestImplementation 'org.mockito:mockito-core:4.4.0'
+    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
+    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
 }
 
 tasks.withType(Test) {
