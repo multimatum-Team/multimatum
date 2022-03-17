@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:onClick="goToLoginScreen"
     tools:context=".MainActivity">
 
     <ImageButton
@@ -25,12 +26,37 @@
         android:id="@+id/goToQR"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="36dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="16dp"
         android:onClick="goQRGenerator"
         android:text="QR Generator"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/triggerNotif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="100dp"
+        android:onClick="triggerNotification"
+        android:text="Trigger Notif"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/goToQrCodeReader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="openCodeScanner"
+        android:text="@string/qr_code_scanner_button_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.744"
+        app:layout_constraintStart_toEndOf="@+id/goToQR"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.947"
         tools:ignore="HardcodedText" />
 
     <ListView
@@ -49,5 +75,17 @@
         android:orientation="vertical"
         app:layout_constraintGuide_begin="20dp" />
 
+    <Button
+        android:id="@+id/logInButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="28dp"
+        android:backgroundTint="@android:color/white"
+        android:onClick="goToLoginScreen"
+        android:text="@string/log_in_text"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@+id/goToQR"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
