@@ -36,15 +36,14 @@ class MainActivity : AppCompatActivity() {
     so it's safe to call this code when starting an app.
     */
     private fun createNotificationChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channelName :CharSequence = "reminders channel"
-            val description = "channel for reminders notifications"
-            val channel = NotificationChannel("remindersChannel", channelName, NotificationManager.IMPORTANCE_DEFAULT)
-            channel.description=description
-            val notificationManager = getSystemService(NotificationManager::class.java)
+        val channelName :CharSequence = "reminders channel"
+        val description = "channel for reminders notifications"
+        val channel = NotificationChannel("remindersChannel", channelName, NotificationManager.IMPORTANCE_DEFAULT)
+        val notificationManager = getSystemService(NotificationManager::class.java)
 
-            notificationManager.createNotificationChannel(channel)
-        }
+        channel.description=description
+
+        notificationManager.createNotificationChannel(channel)
     }
 
     /*
