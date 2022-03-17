@@ -7,6 +7,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.Matchers.allOf
 import org.junit.Rule
 import org.junit.Test
@@ -18,6 +19,11 @@ class MainActivityTest {
 
     @get:Rule
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.CAMERA
+    )
 
     @Test
     fun goToQRTest() {
@@ -39,6 +45,19 @@ class MainActivityTest {
         Intents.intended(
             allOf(
                 hasComponent(MainSettingsActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+        Intents.release()
+    }
+
+    @Test
+    fun buttonOpensQrCodeReader() {
+        Intents.init()
+        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+        Intents.intended(
+            allOf(
+                hasComponent(QRCodeReaderActivity::class.java.name),
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
