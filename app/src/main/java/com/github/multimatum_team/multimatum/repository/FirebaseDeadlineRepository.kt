@@ -15,6 +15,9 @@ class FirebaseDeadlineRepository : DeadlineRepository {
     private val deadlinesRef
         get() = database.getReference("deadlines")
 
+    /**
+     * Fetch all deadlines from the database.
+     */
     override fun fetchAll(): List<Deadline> =
         Tasks.await(deadlinesRef.orderByChild("date").get().onSuccessTask { task ->
             Tasks.forResult(task.children.map { deadlineSnapshot ->
@@ -22,6 +25,9 @@ class FirebaseDeadlineRepository : DeadlineRepository {
             })
         })
 
+    /**
+     * Insert new deadline in the database.
+     */
     override fun put(deadline: Deadline) {
         val deadlineMap = HashMap<String, Any>()
         deadlineMap["title"] = deadline.title
