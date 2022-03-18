@@ -28,6 +28,11 @@ I did some functions to set notifications. I didn't get time to make any test, i
 
 ### Léo
 
+I finished the implementation of the QR-Code Reader that I started last week. Now, we can access the scanner usign a button on the main screen.
+The scanner has been tested manually and with automated tests. It was the main goal of this week, and now it reached a very good test coverage.
+Some new tests using Robolectric will probably be added in the future. For next week, I want to add a new button to return from the scanner to the main screen.
+The main goal for next week's sprint is to add a calendar view for the tasks.
+
 ### Louis
 
 I finished the login and it's testing, i struggle with the CI. I didn't find a way to test result 
