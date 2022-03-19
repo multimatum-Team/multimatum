@@ -2,15 +2,20 @@ package com.github.multimatum_team.multimatum
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.Context.SENSOR_SERVICE
 import android.content.SharedPreferences
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import java.util.*
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(SingletonComponent::class)
 object DependenciesProvider {
 
     private const val SHARED_PREF_ID = "com.github.multimatum_team.multimatum.SharedPrefId"
@@ -18,5 +23,10 @@ object DependenciesProvider {
     @Provides
     fun provideSharedPreferences(@ApplicationContext applicationContext: Context): SharedPreferences =
         applicationContext.getSharedPreferences(SHARED_PREF_ID, MODE_PRIVATE)
+
+    @Provides
+    fun provideAccelerometer(@ApplicationContext applicationContext: Context): SensorManager =
+        applicationContext.getSystemService(SENSOR_SERVICE) as SensorManager
+
 
 }
