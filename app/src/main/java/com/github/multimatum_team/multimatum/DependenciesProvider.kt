@@ -4,15 +4,12 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Context.SENSOR_SERVICE
 import android.content.SharedPreferences
-import android.hardware.Sensor
 import android.hardware.SensorManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import java.util.*
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -25,7 +22,7 @@ object DependenciesProvider {
         applicationContext.getSharedPreferences(SHARED_PREF_ID, MODE_PRIVATE)
 
     @Provides
-    fun provideAccelerometer(@ApplicationContext applicationContext: Context): SensorManager =
+    fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
         applicationContext.getSystemService(SENSOR_SERVICE) as SensorManager
 
 
