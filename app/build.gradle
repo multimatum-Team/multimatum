@@ -4,9 +4,8 @@ plugins {
     id 'jacoco'
     id 'com.google.gms.google-services'
     id 'dagger.hilt.android.plugin'
+    id 'kotlin-kapt'
 }
-
-apply plugin: 'kotlin-kapt'
 
 android {
     compileSdk 31
