@@ -95,12 +95,15 @@ dependencies {
     androidTestImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
     androidTestImplementation 'org.mockito:mockito-core:4.4.0'
     androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
-    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
+    testImplementation 'org.mockito:mockito-core:4.4.0'
+    testImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
 }
 
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
+    jacoco.includes = ["com.application.*"]
 }
 
 task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
