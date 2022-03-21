@@ -44,6 +44,9 @@ android {
             returnDefaultValues = true
         }
     }
+    testCoverage {
+        jacocoVersion = "0.8.7"
+    }
 }
 
 dependencies {
@@ -98,7 +101,6 @@ dependencies {
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
-    jacoco.includes = ["com.application.*"]
 }
 
 task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
