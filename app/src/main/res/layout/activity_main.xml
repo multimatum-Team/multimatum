@@ -41,7 +41,7 @@
         android:layout_marginEnd="36dp"
         android:layout_marginBottom="100dp"
         android:onClick="triggerNotification"
-        android:text="Trigger Notif"
+        android:text="@string/TriggerNotif"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

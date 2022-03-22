@@ -17,6 +17,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.hamcrest.Matchers.allOf
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -40,11 +41,16 @@ class MainActivityTest {
     @Before
     fun init() {
         hiltRule.inject()
+        Intents.init()
+    }
+
+    @After
+    fun release(){
+        Intents.release()
     }
 
     @Test
     fun goToQRTest() {
-        Intents.init()
         onView(withId(R.id.goToQR)).perform(ViewActions.click())
         Intents.intended(
             allOf(
@@ -52,12 +58,10 @@ class MainActivityTest {
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
-        Intents.release()
     }
 
     @Test
     fun goToSetting() {
-        Intents.init()
         onView(withId(R.id.main_open_settings_but)).perform(ViewActions.click())
         Intents.intended(
             allOf(
@@ -65,19 +69,16 @@ class MainActivityTest {
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
-        Intents.release()
     }
 
     @Test
     fun launchAccountActivityIntent(){
-        Intents.init()
         onView(withId(R.id.logInButton)).perform(ViewActions.click())
         Intents.intended(toPackage("com.github.multimatum_team.multimatum"))
-        Intents.release()
     }
 
+    @Test
     fun buttonOpensQrCodeReader() {
-        Intents.init()
         onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
         Intents.intended(
             allOf(
@@ -85,7 +86,6 @@ class MainActivityTest {
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
-        Intents.release()
     }
 
     @Module
