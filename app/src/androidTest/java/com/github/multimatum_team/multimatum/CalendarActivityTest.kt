@@ -12,6 +12,6 @@ class CalendarActivityTest {
     fun shouldDisplayCalendarWhenLaunched(){
         ActivityScenario.launch(CalendarActivity::class.java)
         Espresso.onView(ViewMatchers.withId(R.id.calendar_view))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            .check(ViewAssertions.matches(ViewMatchers.isClickable()))
     }
 }

@@ -19,8 +19,13 @@ class CalendarActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initCalendar()
+    }
+
+    private fun initCalendar(){
         setContentView(R.layout.activity_calendar)
     }
+
     /*
     The purpose of this function is to provide the user the ability to add a new
     deadline easily using directly the calendar to select the date.
