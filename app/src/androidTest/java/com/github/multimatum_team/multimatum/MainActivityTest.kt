@@ -1,14 +1,17 @@
 package com.github.multimatum_team.multimatum
 
 import android.content.SharedPreferences
+import android.widget.ListView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
+import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.rule.GrantPermissionRule
+import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.model.DeadlineAdapter
+import com.github.multimatum_team.multimatum.model.DeadlineState
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +24,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDate
 
 
 @UninstallModules(DependenciesProvider::class)
@@ -72,6 +76,22 @@ class MainActivityTest {
     }
 
     @Test
+    fun goToDeadlineDetails(){
+        val listView = onView(withId(R.id.deadlineListView)) as ListView
+        listView.performItemClick(listView.adapter.getView(0,null, null), 0, 0)
+        Intents.intended(
+            allOf(
+                hasComponent(DeadlineDetailsActivity::class.java.name),
+                hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
+                hasExtra("com.github.multimatum_team.multimatum.deadline.details.date", LocalDate.now().plusDays(7)),
+                hasExtra("com.github.multimatum_team.multimatum.deadline.details.state", DeadlineState.TODO),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+
+    }
+
+    @Test
     fun launchAccountActivityIntent(){
         onView(withId(R.id.logInButton)).perform(ViewActions.click())
         Intents.intended(toPackage("com.github.multimatum_team.multimatum"))
@@ -95,6 +115,12 @@ class MainActivityTest {
         @Provides
         fun provideSharedPreferences(): SharedPreferences =
             MainSettingsActivityTest.mockSharedPreferences
+
+        @Provides
+        fun provideDemoList(): List<Deadline> =
+            listOf(Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),
+                Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3,30)),
+                Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3,1)))
 
     }
 

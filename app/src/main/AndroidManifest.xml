@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.multimatum_team.multimatum">
 
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -14,22 +13,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Multimatum">
-
+        <activity
+            android:name=".DeadlineDetailsActivity"
+            android:exported="false" />
         <activity
             android:name=".QRCodeReaderActivity"
             android:exported="false" />
         <activity
             android:name=".MainSettingsActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".AccountActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="false"/>
-      
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".QRGenerator"
             android:exported="false" />
-      
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -40,7 +39,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".ReminderBroadcastReceiver"/>
+        <receiver android:name=".ReminderBroadcastReceiver" />
     </application>
 
 </manifest>
