@@ -60,7 +60,7 @@
         tools:ignore="HardcodedText" />
 
     <Button
-        android:id="@+id/goToCalendar"
+        android:id="@+id/goToCalendarButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="openCalendar"
