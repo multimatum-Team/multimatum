@@ -15,6 +15,6 @@ class CalendarActivityTest {
     @Test
     fun shouldDisplayCalendarAtOpening() {
         Espresso.onView(ViewMatchers.withId(R.id.calendar_view))
-            .check(ViewAssertions.matches(ViewMatchers.isClickable()))
+            .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
     }
 }
