@@ -116,6 +116,7 @@ class MainActivityTest {
         fun provideSharedPreferences(): SharedPreferences =
             MainSettingsActivityTest.mockSharedPreferences
 
+
         @Provides
         fun provideDemoList(): List<Deadline> =
             listOf(Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),

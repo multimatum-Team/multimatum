@@ -133,16 +133,4 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    @Module
-    @InstallIn(SingletonComponent::class)
-    object DependenciesProvider {
-
-        @Provides fun provideDemoList(): List<Deadline> =
-            listOf(Deadline("Number 1", DeadlineState.TODO, LocalDate.now().plusDays(1)),
-                Deadline("Number 2", DeadlineState.TODO, LocalDate.now().plusDays(7)),
-                Deadline("Number 3", DeadlineState.DONE, LocalDate.of(2022, 3,30)),
-                Deadline("Number 4", DeadlineState.TODO, LocalDate.of(2022, 3,1)))
-
-    }
-
 }
