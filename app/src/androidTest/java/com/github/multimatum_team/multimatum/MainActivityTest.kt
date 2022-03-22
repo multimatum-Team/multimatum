@@ -2,12 +2,16 @@ package com.github.multimatum_team.multimatum
 
 import android.content.SharedPreferences
 import android.widget.ListView
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
@@ -19,11 +23,12 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.time.LocalDate
 
 
@@ -77,8 +82,8 @@ class MainActivityTest {
 
     @Test
     fun goToDeadlineDetails(){
-        val listView = onView(withId(R.id.deadlineListView)) as ListView
-        listView.performItemClick(listView.adapter.getView(0,null, null), 0, 0)
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0).perform(longClick())
+
         Intents.intended(
             allOf(
                 hasComponent(DeadlineDetailsActivity::class.java.name),
@@ -115,7 +120,6 @@ class MainActivityTest {
         @Provides
         fun provideSharedPreferences(): SharedPreferences =
             MainSettingsActivityTest.mockSharedPreferences
-
 
         @Provides
         fun provideDemoList(): List<Deadline> =

@@ -23,9 +23,10 @@ object DependenciesProvider {
         applicationContext.getSharedPreferences(SHARED_PREF_ID, MODE_PRIVATE)
 
     @Provides
-    fun provideDemoList(): List<Deadline> = listOf(
-            Deadline("Number 1", DeadlineState.TODO, LocalDate.now().plusDays(1)),
-            Deadline("Number 2", DeadlineState.TODO, LocalDate.now().plusDays(7)),
-            Deadline("Number 3", DeadlineState.DONE, LocalDate.of(2022, 3,30)),
-            Deadline("Number 4", DeadlineState.TODO, LocalDate.of(2022, 3,1)))
+    fun providesDemoList(): List<Deadline> = listOf(
+    Deadline("Number 1", DeadlineState.TODO, LocalDate.now().plusDays(1)),
+    Deadline("Number 2", DeadlineState.TODO, LocalDate.now().plusDays(7)),
+    Deadline("Number 3", DeadlineState.DONE, LocalDate.of(2022, 3,30)),
+    Deadline("Number 4", DeadlineState.TODO, LocalDate.of(2022, 3,1)))
+
 }
