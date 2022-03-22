@@ -1,14 +1,18 @@
 package com.github.multimatum_team.multimatum
 
+import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import androidx.core.content.ContextCompat.startActivity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import dagger.Module
 import dagger.Provides
@@ -59,6 +63,13 @@ class MainSettingsActivityTest {
             clickedButtonId = R.id.main_settings_enable_notif_button,
             expectedFinalNotifEnabled = true, expectedFinalDarkModeEnabled = false
         )
+    }
+
+    @Test
+    fun launchAccountActivityIntent(){
+        ActivityScenario.launch(MainSettingsActivity::class.java)
+        onView(withId(R.id.main_settings_account_button)).perform(click())
+        Intents.intended(IntentMatchers.toPackage("com.github.multimatum_team.multimatum"))
     }
 
     @Test

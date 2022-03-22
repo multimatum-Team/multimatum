@@ -72,12 +72,6 @@ class MainActivityTest {
     }
 
     @Test
-    fun launchAccountActivityIntent(){
-        onView(withId(R.id.logInButton)).perform(ViewActions.click())
-        Intents.intended(toPackage("com.github.multimatum_team.multimatum"))
-    }
-
-    @Test
     fun buttonOpensQrCodeReader() {
         onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
         Intents.intended(

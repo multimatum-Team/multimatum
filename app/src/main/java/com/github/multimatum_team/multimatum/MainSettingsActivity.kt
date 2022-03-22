@@ -1,7 +1,9 @@
 package com.github.multimatum_team.multimatum
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,5 +52,9 @@ class MainSettingsActivity : AppCompatActivity() {
             "com.github.multimatum_team.multimatum.MainSettingsActivity.NotifEnabled"
     }
 
+    fun goToLoginScreen(view: View){
+        val intent = Intent(this, AccountActivity::class.java)
+        startActivity(intent)
+    }
 }
 

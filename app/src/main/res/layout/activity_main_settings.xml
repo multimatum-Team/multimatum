@@ -56,6 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:backgroundTint="@color/white"
+            android:onClick="goToLoginScreen"
             android:text="@string/main_settings_account_button"
             android:textColor="@color/black"
             android:textSize="@dimen/main_settings_button_font_size"
