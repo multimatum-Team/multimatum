@@ -17,6 +17,9 @@
             android:name=".DeadlineDetailsActivity"
             android:exported="false" />
         <activity
+            android:name=".CalendarActivity"
+            android:exported="false" />
+        <activity
             android:name=".QRCodeReaderActivity"
             android:exported="false" />
         <activity
