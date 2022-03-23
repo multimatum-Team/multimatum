@@ -36,13 +36,13 @@ class DeadlineNotification {
         Set a notification that will be triggered in a given time in ms.
         you can pass a title/description and Id in parameter
         */
-        fun setNotification(timeMS: Long, title: String, description: String, id: Int, context: Context){
+        fun setNotification(deadline: Deadline, context: Context){
             alarmManager = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
             val intent = Intent(context, ReminderBroadcastReceiver::class.java) //this create an intent of broadcast receiver
             //Adding extra parameter that will be used in the broadcase receiver to create the notification
-            intent.putExtra("title", title)
-            intent.putExtra("description", description)
-            intent.putExtra("id", id)
+            intent.putExtra("title", deadline.title)
+            intent.putExtra("description", deadline.description)
+            intent.putExtra("id", deadline.id)
 
             //set the receiver as pending intent
             pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE)
