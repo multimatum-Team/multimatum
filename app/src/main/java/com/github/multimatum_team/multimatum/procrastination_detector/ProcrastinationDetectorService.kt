@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.IBinder
 import android.widget.Toast
+import com.github.multimatum_team.multimatum.R
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.abs
@@ -48,7 +49,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         if (currentTime >= lastDetection + MIN_PERIOD_BETWEEN_NOTIF){
             val currentPosition = event!!.values.toTypedArray()
             if (lastPosition != null && l1Distance(currentPosition, lastPosition!!) > MOVE_DETECTION_THRESHOLD) {
-                toast("Hey! Why is this phone moving? You should be working!")
+                toast(applicationContext.getString(R.string.stop_procrastinating_msg))
             }
             lastPosition = currentPosition
             lastDetection = currentTime
