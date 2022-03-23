@@ -55,7 +55,6 @@ class MainActivity : AppCompatActivity() {
     here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
     */
     fun triggerNotification(view:View) {
-        var id = System.currentTimeMillis().toInt()
         DeadlineNotification.setNotification(Deadline("notifDeadline", DeadlineState.TODO, LocalDate.now()), this)
     }
 

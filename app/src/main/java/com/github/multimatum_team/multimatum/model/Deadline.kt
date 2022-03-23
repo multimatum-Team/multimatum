@@ -37,7 +37,7 @@ data class Deadline(
     val title: String,
     val state: DeadlineState,
     val date: LocalDate,
-    val description: String = ""
+    val description: String = "",
     val id: Int = 0
 ) {
     init {
