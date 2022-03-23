@@ -27,7 +27,7 @@ import java.lang.Exception
 
 const val RC_SIGN_IN = 123
 
-class AccountActivity: AppCompatActivity() {
+class AccountActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var firebaseAuth: FirebaseAuth
 
@@ -40,8 +40,9 @@ class AccountActivity: AppCompatActivity() {
 
 
         //Configure sign-in to request user's credential
-        val gso: GoogleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
+        val gso: GoogleSignInOptions =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
         //configure client
         googleSignInClient = GoogleSignIn.getClient(this, gso)
         val account = GoogleSignIn.getLastSignedInAccount(this)
@@ -51,9 +52,9 @@ class AccountActivity: AppCompatActivity() {
         checkUser()
 
 
-        //configure button
+        // configure button
         findViewById<SignInButton>(R.id.sign_in_button).visibility = VISIBLE
-        findViewById<SignInButton>(R.id.sign_in_button).setOnClickListener{
+        findViewById<SignInButton>(R.id.sign_in_button).setOnClickListener {
             Log.d(TAG, "onCreate begin Google SignIn:")
             signIn()
         }
@@ -64,21 +65,22 @@ class AccountActivity: AppCompatActivity() {
         checkUser()
     }
 
-    private fun checkUser(){
-        //check if user is logged in or not
+    // check if user is loged or not
+    private fun checkUser() {
         val firebaseUser = firebaseAuth.currentUser
-        if (firebaseUser != null){
+        if (firebaseUser != null) {
             launchFrag()
         }
     }
 
-    private fun launchFrag(){
+    private fun launchFrag() {
         findViewById<SignInButton>(R.id.sign_in_button).visibility = GONE
-        val fragment = supportFragmentManager.findFragmentById(R.id.profile_frag)?:ProfileFragment()
+        val fragment =
+            supportFragmentManager.findFragmentById(R.id.profile_frag) ?: ProfileFragment()
         supportFragmentManager.beginTransaction().replace(R.id.accout, fragment).commit()
     }
 
-    private fun signIn(){
+    private fun signIn() {
         val signInIntent: Intent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
@@ -93,14 +95,18 @@ class AccountActivity: AppCompatActivity() {
             // a listener.
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
-            try{
+            try {
                 val account = task.getResult(ApiException::class.java)!!
                 firebaseAuthWithGoogleAccount(account)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d(TAG, "onActivityResult: ${e.message}")
             }
-        }else{
-            Toast.makeText(this@AccountActivity, "Login fail due too wrong request Code", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(
+                this@AccountActivity,
+                "Login fail due too wrong request Code",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -112,18 +118,27 @@ class AccountActivity: AppCompatActivity() {
             val firebasUser = firebaseAuth.currentUser
             //get user info
             val email = firebasUser!!.email
-            if (authResult.additionalUserInfo!!.isNewUser){
+            if (authResult.additionalUserInfo!!.isNewUser) {
                 //new account
-                Toast.makeText(this@AccountActivity, "Account created...\n$email", Toast.LENGTH_SHORT).show()
-            }else{
+                Toast.makeText(
+                    this@AccountActivity,
+                    "Account created...\n$email",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
                 //existing user
-                Toast.makeText(this@AccountActivity, "LoggedIn...\n$email", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AccountActivity, "LoggedIn...\n$email", Toast.LENGTH_SHORT)
+                    .show()
             }
             launchFrag()
 
-        }.addOnFailureListener{ e-> 
+        }.addOnFailureListener { e ->
             //login failed
-            Toast.makeText(this@AccountActivity, "Loggin Failed due to ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this@AccountActivity,
+                "Loggin Failed due to ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

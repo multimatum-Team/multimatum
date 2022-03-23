@@ -27,10 +27,12 @@ class ProfileFragment : Fragment() {
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
-        view.findViewById<Button>(R.id.log_out_button).setOnClickListener{
+        view.findViewById<Button>(R.id.log_out_button).setOnClickListener {
             firebaseAuth.signOut()
             checkUser(view)
         }
@@ -38,18 +40,19 @@ class ProfileFragment : Fragment() {
         return view
     }
 
-    private fun checkUser(view: View){
+    private fun checkUser(view: View) {
         val firebaseUser = firebaseAuth.currentUser
-        if (firebaseUser == null){
+        if (firebaseUser == null) {
             //user not logged in
             startActivity(Intent(this.context, AccountActivity::class.java))
-        }else{
+        } else {
             //user logged in
             //get info
             updateUI(firebaseUser, view)
         }
     }
-    private fun updateUI(user: FirebaseUser?, view: View){
+
+    private fun updateUI(user: FirebaseUser?, view: View) {
         val email = user?.email
         view.findViewById<TextView>(R.id.Email).text = email
     }
