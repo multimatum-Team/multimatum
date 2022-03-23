@@ -13,7 +13,7 @@ import java.time.Period
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
- * In the future, It should have a delete and modify button to change the deadline list.
+ * In the future, It should have a delete and modify button to change the deadline.
  */
 class DeadlineDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,8 +25,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         val date = intent.getSerializableExtra(EXTRA_DATE) as LocalDate
         val state = intent.getSerializableExtra(EXTRA_STATE) as DeadlineState
 
+        // Set the texts for the title and the date of the deadline
         findViewById<TextView>(R.id.titleDeadlineDetails).text = title
         findViewById<TextView>(R.id.dateDeadlineDetails).text = getString(R.string.DueTheX, date)
+
+        // Set the detail text to inform the user if it is due, done or the remaining time
         val detailView = findViewById<TextView>(R.id.detailsDeadlineDetails)
         when {
             state == DeadlineState.DONE -> {
