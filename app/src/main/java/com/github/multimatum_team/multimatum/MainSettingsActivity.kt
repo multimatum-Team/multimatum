@@ -52,20 +52,8 @@ class MainSettingsActivity : AppCompatActivity() {
         }
         procrastinationDetectEnabledButton.setOnCheckedChangeListener { _, newState ->
             when (newState) {
-                true -> {
-                    startService(
-                        Intent(
-                            applicationContext,
-                            ProcrastinationDetectorService::class.java
-                        )
-                    )
-                }
-                false -> stopService(
-                    Intent(
-                        applicationContext,
-                        ProcrastinationDetectorService::class.java
-                    )
-                )
+                true -> startService(Intent(applicationContext, ProcrastinationDetectorService::class.java))
+                false -> stopService(Intent(applicationContext, ProcrastinationDetectorService::class.java))
             }
             writeNewState(PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY, newState)
         }
