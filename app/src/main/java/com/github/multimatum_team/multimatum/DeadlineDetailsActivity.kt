@@ -26,7 +26,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         val state = intent.getSerializableExtra(EXTRA_STATE) as DeadlineState
 
         findViewById<TextView>(R.id.titleDeadlineDetails).text = title
-        findViewById<TextView>(R.id.dateDeadlineDetails).text = getString(R.string.DueTheX,date)
+        findViewById<TextView>(R.id.dateDeadlineDetails).text = getString(R.string.DueTheX, date)
         val detailView = findViewById<TextView>(R.id.detailsDeadlineDetails)
         when {
             state == DeadlineState.DONE -> {
@@ -36,16 +36,19 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                 detailView.text = getString(R.string.isAlreadyDue)
             }
             else -> {
-                detailView.text = getString(R.string.DueInXDays, Period.between(now(),date).days.toString())
+                detailView.text =
+                    getString(R.string.DueInXDays, Period.between(now(), date).days.toString())
             }
         }
 
     }
 
     companion object {
-        private const val EXTRA_TITLE = "com.github.multimatum_team.multimatum.deadline.details.title"
+        private const val EXTRA_TITLE =
+            "com.github.multimatum_team.multimatum.deadline.details.title"
         private const val EXTRA_DATE = "com.github.multimatum_team.multimatum.deadline.details.date"
-        private const val EXTRA_STATE = "com.github.multimatum_team.multimatum.deadline.details.state"
+        private const val EXTRA_STATE =
+            "com.github.multimatum_team.multimatum.deadline.details.state"
 
         // Launch an Intent to access this activity with a Deadline data
         fun newIntent(context: Context, deadline: Deadline): Intent {

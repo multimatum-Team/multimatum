@@ -49,7 +49,7 @@ class MainActivityTest {
     }
 
     @After
-    fun release(){
+    fun release() {
         Intents.release()
     }
 
@@ -76,15 +76,22 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToDeadlineDetails(){
-        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0).perform(longClick())
+    fun goToDeadlineDetails() {
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
+            .perform(longClick())
 
         Intents.intended(
             allOf(
                 hasComponent(DeadlineDetailsActivity::class.java.name),
                 hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
-                hasExtra("com.github.multimatum_team.multimatum.deadline.details.date", LocalDate.now().plusDays(7)),
-                hasExtra("com.github.multimatum_team.multimatum.deadline.details.state", DeadlineState.TODO),
+                hasExtra(
+                    "com.github.multimatum_team.multimatum.deadline.details.date",
+                    LocalDate.now().plusDays(7)
+                ),
+                hasExtra(
+                    "com.github.multimatum_team.multimatum.deadline.details.state",
+                    DeadlineState.TODO
+                ),
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
@@ -92,7 +99,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun launchAccountActivityIntent(){
+    fun launchAccountActivityIntent() {
         onView(withId(R.id.logInButton)).perform(ViewActions.click())
         Intents.intended(toPackage("com.github.multimatum_team.multimatum"))
     }
@@ -118,9 +125,11 @@ class MainActivityTest {
 
         @Provides
         fun provideDemoList(): List<Deadline> =
-            listOf(Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),
-                Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3,30)),
-                Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3,1)))
+            listOf(
+                Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),
+                Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
+                Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
+            )
 
     }
 

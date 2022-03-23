@@ -10,7 +10,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import dagger.Module
@@ -25,7 +24,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import java.time.LocalDate
@@ -44,7 +42,7 @@ class MainSettingsActivityTest {
     }
 
     @After
-    fun release(){
+    fun release() {
         Intents.release()
     }
 
@@ -92,8 +90,13 @@ class MainSettingsActivityTest {
         initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
         clickedButtonId: Int,
         expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean
-    ){
-        `when`(mockSharedPreferences.getBoolean(eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY), any()))
+    ) {
+        `when`(
+            mockSharedPreferences.getBoolean(
+                eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY),
+                any()
+            )
+        )
             .thenReturn(initNotifEnabled)
         `when`(mockSharedPreferences.getBoolean(eq(MainSettingsActivity.DARK_MODE_PREF_KEY), any()))
             .thenReturn(initDarkModeEnabled)
@@ -137,8 +140,8 @@ class MainSettingsActivityTest {
         fun provideDemoList(): List<Deadline> =
             listOf(
                 Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),
-                Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3,30)),
-                Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3,1))
+                Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
+                Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
             )
 
     }
