@@ -72,6 +72,25 @@ class MainActivityTest {
     }
 
     @Test
+
+    fun goToCalendar() {
+        onView(withId(R.id.goToCalendarButton)).perform(ViewActions.click())
+        Intents.intended(
+            allOf(
+                hasComponent(CalendarActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+    }
+
+    @Test
+    fun launchAccountActivityIntent(){
+        onView(withId(R.id.logInButton)).perform(ViewActions.click())
+        Intents.intended(toPackage("com.github.multimatum_team.multimatum"))
+    }
+
+    @Test
+
     fun buttonOpensQrCodeReader() {
         onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
         Intents.intended(
