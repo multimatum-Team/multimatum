@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import java.time.LocalDate
-import java.time.LocalDate.*
 import java.time.Period
 
 /**
@@ -26,21 +25,22 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         val state = intent.getSerializableExtra(EXTRA_STATE) as DeadlineState
 
         // Set the texts for the title and the date of the deadline
-        findViewById<TextView>(R.id.titleDeadlineDetails).text = title
-        findViewById<TextView>(R.id.dateDeadlineDetails).text = getString(R.string.DueTheX, date)
+        findViewById<TextView>(R.id.deadline_details_activity_title).text = title
+        findViewById<TextView>(R.id.deadline_details_activity_date).text = getString(R.string.DueTheX, date)
 
         // Set the detail text to inform the user if it is due, done or the remaining time
-        val detailView = findViewById<TextView>(R.id.detailsDeadlineDetails)
+        val detailView = findViewById<TextView>(R.id.deadline_details_activity_done_or_due)
+        val actualDate = LocalDate.now()
         when {
             state == DeadlineState.DONE -> {
                 detailView.text = getString(R.string.done)
             }
-            date.isBefore(now()) -> {
+            date.isBefore(actualDate) -> {
                 detailView.text = getString(R.string.isAlreadyDue)
             }
             else -> {
                 detailView.text =
-                    getString(R.string.DueInXDays, Period.between(now(), date).days.toString())
+                    getString(R.string.DueInXDays, Period.between(actualDate, date).days.toString())
             }
         }
 

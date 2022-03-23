@@ -27,17 +27,11 @@ class DeadlineDetailsTest {
             Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        onView(withId(R.id.titleDeadlineDetails)).check(matches(withText("Test 1")))
-        onView(withId(R.id.dateDeadlineDetails)).check(
-            matches(
-                withText(
-                    "Due the ${
-                        LocalDate.now().plusDays(7)
-                    }"
-                )
-            )
+        onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
+        onView(withId(R.id.deadline_details_activity_date))
+            .check(matches(withText("Due the ${LocalDate.now().plusDays(7)}"))
         )
-        onView(withId(R.id.detailsDeadlineDetails)).check(matches(withText("Due in 7 Days")))
+        onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 7 Days")))
     }
 
     @Test
@@ -47,17 +41,10 @@ class DeadlineDetailsTest {
             Deadline("Test 2", DeadlineState.DONE, LocalDate.now().plusDays(7))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        onView(withId(R.id.titleDeadlineDetails)).check(matches(withText("Test 2")))
-        onView(withId(R.id.dateDeadlineDetails)).check(
-            matches(
-                withText(
-                    "Due the ${
-                        LocalDate.now().plusDays(7)
-                    }"
-                )
-            )
-        )
-        onView(withId(R.id.detailsDeadlineDetails)).check(matches(withText("Done")))
+        onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
+        onView(withId(R.id.deadline_details_activity_date))
+            .check(matches(withText("Due the ${LocalDate.now().plusDays(7)}")))
+        onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
     }
 
     @Test
@@ -67,16 +54,9 @@ class DeadlineDetailsTest {
             Deadline("Test 3", DeadlineState.TODO, LocalDate.now().minusDays(2))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        onView(withId(R.id.titleDeadlineDetails)).check(matches(withText("Test 3")))
-        onView(withId(R.id.dateDeadlineDetails)).check(
-            matches(
-                withText(
-                    "Due the ${
-                        LocalDate.now().minusDays(2)
-                    }"
-                )
-            )
-        )
-        onView(withId(R.id.detailsDeadlineDetails)).check(matches(withText("Is already Due")))
+        onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
+        onView(withId(R.id.deadline_details_activity_date))
+            .check(matches(withText("Due the ${LocalDate.now().minusDays(2)}")))
+        onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Is already Due")))
     }
 }

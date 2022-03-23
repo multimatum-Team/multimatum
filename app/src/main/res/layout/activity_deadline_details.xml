@@ -7,7 +7,7 @@
     tools:context=".DeadlineDetailsActivity">
 
     <TextView
-        android:id="@+id/titleDeadlineDetails"
+        android:id="@+id/deadline_details_activity_title"
         android:layout_width="350dp"
         android:layout_height="57dp"
         android:layout_marginTop="15dp"
@@ -21,7 +21,7 @@
         tools:text="title" />
 
     <TextView
-        android:id="@+id/dateDeadlineDetails"
+        android:id="@+id/deadline_details_activity_date"
         android:layout_width="350dp"
         android:layout_height="35dp"
         android:layout_marginTop="10dp"
@@ -30,11 +30,11 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleDeadlineDetails"
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_title"
         tools:text="date" />
 
     <TextView
-        android:id="@+id/detailsDeadlineDetails"
+        android:id="@+id/deadline_details_activity_done_or_due"
         android:layout_width="350dp"
         android:layout_height="78dp"
         android:layout_marginTop="10dp"
@@ -42,7 +42,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateDeadlineDetails"
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_date"
         tools:text="details" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
