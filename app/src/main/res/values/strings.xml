@@ -15,4 +15,9 @@
     <string name="DueTheX">Due the %1s</string>
     <string name="DueInXDays">Due in %1s Days</string>
     <string name="TriggerNotif">Trigger Notif</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="you_re_loggedin_as">You\'re LoggedIn as</string>
+    <string name="email">Email</string>
+    <string name="logout">LOGOUT</string>
 </resources>

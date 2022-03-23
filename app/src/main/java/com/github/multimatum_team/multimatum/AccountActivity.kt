@@ -2,12 +2,12 @@ package com.github.multimatum_team.multimatum
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.*
@@ -18,14 +18,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.api.LogDescriptor
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.inappmessaging.internal.Logging.TAG
-import org.w3c.dom.Text
 import java.lang.Exception
-import kotlin.math.log
 
 
 const val RC_SIGN_IN = 123
@@ -51,7 +47,7 @@ class AccountActivity: AppCompatActivity() {
 
 
         //configure button
-        findViewById<SignInButton>(R.id.sign_in_button).visibility = View.VISIBLE
+        findViewById<SignInButton>(R.id.sign_in_button).visibility = VISIBLE
         findViewById<SignInButton>(R.id.sign_in_button).setOnClickListener{
             Log.d(TAG, "onCreate begin Google SignIn:")
             signIn()
@@ -60,12 +56,23 @@ class AccountActivity: AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        checkUser()
+    }
+
     private fun checkUser(){
         //check if user is logged in or not
         val firebaseUser = firebaseAuth.currentUser
         if (firebaseUser != null){
-            //TODO: start profile fragment
+            launchFrag()
         }
+    }
+
+    private fun launchFrag(){
+        findViewById<SignInButton>(R.id.sign_in_button).visibility = GONE
+        val fragment = supportFragmentManager.findFragmentById(R.id.profile_frag)?:ProfileFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.accout, fragment).commit()
     }
 
     private fun signIn(){
@@ -81,69 +88,51 @@ class AccountActivity: AppCompatActivity() {
         if (requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
-            Log.d(TAG, "onActivityResult: Google SignIn intent result")
-
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
             try{
                 val account = task.getResult(ApiException::class.java)!!
-                Log.d(TAG, "firebaseAuthWithGoogle:"+account.id)
                 firebaseAuthWithGoogleAccount(account)
             }catch (e: Exception){
                 Log.d(TAG, "onActivityResult: ${e.message}")
             }
         }else{
-            Toast.makeText(this@AccountActivity, "Loggin faile due too wrong request Code", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@AccountActivity, "Login fail due too wrong request Code", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun firebaseAuthWithGoogleAccount(account: GoogleSignInAccount) {
-        Log.d(TAG, "firebaseAuthWithGoogleAccount: begin firebase auth with google account")
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         firebaseAuth.signInWithCredential(credential).addOnSuccessListener { authResult ->
             //log in success
-            Log.d(TAG, "firebaseAuthWithGoogleAccount: LoggedIn")
-
             //get loggedIn user
             val firebasUser = firebaseAuth.currentUser
             //get user info
-            val uid = firebasUser!!.uid
-            val email = firebasUser.email
-
-            Log.d(TAG, "firebaseAuthWithGoogleAccount: Uid: $uid")
-            Log.d(TAG, "firebaseAuthWithGoogleAccount: Email: $email")
-
+            val email = firebasUser!!.email
             if (authResult.additionalUserInfo!!.isNewUser){
                 //new account
-                Log.d(TAG, "firebaseAuthWithGoogleAccount: Account created...\n")
                 Toast.makeText(this@AccountActivity, "Account created...\n$email", Toast.LENGTH_SHORT).show()
             }else{
                 //existing user
-                Log.d(TAG, "firebaseAuthWithGoogleAccount: Existing user...\n$email")
                 Toast.makeText(this@AccountActivity, "LoggedIn...\n$email", Toast.LENGTH_SHORT).show()
             }
-            //TODO:start profile fragment
+            launchFrag()
 
         }.addOnFailureListener{ e-> 
             //login failed
-            Log.d(TAG, "firebaseAuthWithGoogleAccount: Loggin Failed du to ${e.message}")
             Toast.makeText(this@AccountActivity, "Loggin Failed due to ${e.message}", Toast.LENGTH_SHORT).show()
-
         }
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
-            val account = completedTask.getResult(ApiException::class.java)
-
             // Signed in successfully, show authenticated UI.
-            findViewById<SignInButton>(R.id.sign_in_button).visibility = View.GONE
+            findViewById<SignInButton>(R.id.sign_in_button).visibility = GONE
 
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            findViewById<SignInButton>(R.id.sign_in_button).visibility = View.VISIBLE
-
+            findViewById<SignInButton>(R.id.sign_in_button).visibility = VISIBLE
         }
     }
 }
