@@ -11,10 +11,12 @@ import android.content.Intent
 import android.os.Build
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ListView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.viewModelScope
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ActivityCompat
@@ -22,10 +24,15 @@ import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
+import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private lateinit var viewModel: DeadlineListViewModel;
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
 
@@ -42,10 +49,15 @@ class MainActivity : AppCompatActivity() {
             Deadline("Number 3",DeadlineState.DONE, LocalDate.of(2022, 3,30)),
             Deadline("Number 4",DeadlineState.TODO, LocalDate.of(2022, 3,1)))
 
+        val deadlineRepository = FirebaseDeadlineRepository()
+        viewModel = DeadlineListViewModel(deadlineRepository)
 
         //put them on the listview.
-        val adapter = DeadlineAdapter(this, demoList)
+        val adapter = DeadlineAdapter(this)
         listView.adapter = adapter
+        viewModel.deadlines.observe(this) { plants ->
+            adapter.submitList(plants)
+        }
 
         createNotificationChannel()
 
