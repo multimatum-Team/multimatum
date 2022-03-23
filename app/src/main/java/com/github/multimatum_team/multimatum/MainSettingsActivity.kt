@@ -16,8 +16,6 @@ class MainSettingsActivity : AppCompatActivity() {
     private lateinit var notifEnabledButton: SwitchCompat
     private lateinit var procrastinationDetectEnabledButton: SwitchCompat
 
-    // TODO constants
-
     @Inject lateinit var preferences: SharedPreferences
 
     // to be able to check if a sensor is available
@@ -49,10 +47,13 @@ class MainSettingsActivity : AppCompatActivity() {
             writeNewState(PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY, newState)
         }
         val sensorPresent = sensorFound()
-        procrastinationDetectEnabledButton.alpha = if (sensorPresent) 1.0F else 0.5F
+        // if no sensor available then button should be gray to show that it is disabled
+        procrastinationDetectEnabledButton.alpha =
+            if (sensorPresent) BUTTON_ALPHA_NORMAL else BUTTON_ALPHA_DISABLED
         if (!sensorPresent){
-            procrastinationDetectEnabledButton.text =
-                procrastinationDetectEnabledButton.text.toString() + " (disabled: missing sensor on device)"
+            procrastinationDetectEnabledButton.text = applicationContext.getString(
+                R.string.missing_sensor_msg, procrastinationDetectEnabledButton.text
+            )
         }
         procrastinationDetectEnabledButton.isClickable = sensorPresent
     }
@@ -85,6 +86,9 @@ class MainSettingsActivity : AppCompatActivity() {
          */
         const val PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY =
             "com.github.multimatum_team.multimatum.MainSettingsActivity.ProcrastinationFighterEnabled"
+
+        private const val BUTTON_ALPHA_NORMAL = 1F
+        private const val BUTTON_ALPHA_DISABLED = 0.5F
     }
 
 }

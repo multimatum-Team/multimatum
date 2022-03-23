@@ -31,8 +31,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        // TODO see whether we need it
-        throw UnsupportedOperationException("cannot bind procrastinationDetectorService")
+        throw UnsupportedOperationException("cannot bind procrastinationDetectorService: not implemented")
     }
 
     override fun onDestroy() {
@@ -47,7 +46,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent?) {
         val currentTime = System.currentTimeMillis()
         if (currentTime >= lastDetection + MIN_PERIOD_BETWEEN_NOTIF){
-            val currentPosition = event!!.values.toTypedArray()    // TODO check if really want to crash if null
+            val currentPosition = event!!.values.toTypedArray()
             if (lastPosition != null && l1Distance(currentPosition, lastPosition!!) > MOVE_DETECTION_THRESHOLD) {
                 toast("Hey! Why is this phone moving? You should be working!")
             }
@@ -69,8 +68,13 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     }
 
     companion object {
-        private const val MIN_PERIOD_BETWEEN_NOTIF = 2000L
+
+        /**
+         * The sensor used by this service to detect movements
+         */
         const val REF_SENSOR = Sensor.TYPE_GRAVITY
+
+        private const val MIN_PERIOD_BETWEEN_NOTIF = 2000L
         private const val MOVE_DETECTION_THRESHOLD = 0.1
     }
 

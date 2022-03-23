@@ -16,4 +16,5 @@
     <string name="done">Done</string>
     <string name="DueTheX">Due the %1s</string>
     <string name="DueInXDays">Due in %1s Days</string>
+    <string name="missing_sensor_msg">"%1s (disabled: missing sensor on device)"</string>
 </resources>
