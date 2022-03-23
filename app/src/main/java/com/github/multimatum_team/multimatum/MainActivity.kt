@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     */
     fun triggerNotification(view:View) {
         var id = System.currentTimeMillis().toInt()
-        DeadlineNotification.setNotification(System.currentTimeMillis()+4000, "asdf", "ouafouaf", id, this)
+        DeadlineNotification.setNotification(Deadline("notifDeadline", DeadlineState.TODO, LocalDate.now()), this)
     }
 
     fun goQRGenerator(view:View){
