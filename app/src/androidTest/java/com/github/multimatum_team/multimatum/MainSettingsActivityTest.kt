@@ -131,8 +131,7 @@ class MainSettingsActivityTest {
         fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
 
         @Provides
-        fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
-            DependenciesProvider.provideSensorManager(applicationContext)
+        fun provideSensorManager(): SensorManager = mock()
 
     }
 
