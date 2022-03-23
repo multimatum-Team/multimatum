@@ -128,4 +128,9 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun openCalendar(view: View){
+        val intent = Intent(this, CalendarActivity::class.java)
+        startActivity(intent)
+    }
+
 }

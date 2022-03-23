@@ -17,7 +17,9 @@
             android:name=".procrastination_detector.ProcrastinationDetectorService"
             android:enabled="true"
             android:exported="false" />
-
+        <activity
+            android:name=".CalendarActivity"
+            android:exported="false" />
         <activity
             android:name=".QRCodeReaderActivity"
             android:exported="false" />
