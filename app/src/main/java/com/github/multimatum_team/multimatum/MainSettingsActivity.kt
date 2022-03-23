@@ -24,38 +24,66 @@ class MainSettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_settings)
-        darkModeEnabledButton = findViewById(R.id.main_settings_dark_mode_button)
-        notifEnabledButton = findViewById(R.id.main_settings_enable_notif_button)
-        procrastinationDetectEnabledButton = findViewById(R.id.main_settings_enable_procrastination_fighter_button)
-        darkModeEnabledButton.isChecked = preferences.getBoolean(DARK_MODE_PREF_KEY, false)
-        notifEnabledButton.isChecked = preferences.getBoolean(NOTIF_ENABLED_PREF_KEY, true)
-        procrastinationDetectEnabledButton.isChecked = preferences.getBoolean(
-            PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY, false)
+        assignWidgets()
+        loadWidgetsState()
+        setWidgetListeners()
+        disableProcrastinationFighterButtonIfSensorNotFound()
+    }
+
+    private fun disableProcrastinationFighterButtonIfSensorNotFound() {
+        val sensorPresent = sensorFound()
+        // if no sensor available then button should be gray to show that it is disabled
+        procrastinationDetectEnabledButton.alpha =
+            if (sensorPresent) BUTTON_ALPHA_NORMAL else BUTTON_ALPHA_DISABLED
+        if (!sensorPresent) {
+            procrastinationDetectEnabledButton.text = applicationContext.getString(
+                R.string.missing_sensor_msg, procrastinationDetectEnabledButton.text
+            )
+        }
+        procrastinationDetectEnabledButton.isClickable = sensorPresent
+    }
+
+    private fun setWidgetListeners() {
         darkModeEnabledButton.setOnCheckedChangeListener { _, newState ->
             writeNewState(DARK_MODE_PREF_KEY, newState)
         }
         notifEnabledButton.setOnCheckedChangeListener { _, newState ->
             writeNewState(NOTIF_ENABLED_PREF_KEY, newState)
         }
-        procrastinationDetectEnabledButton.setOnCheckedChangeListener {_, newState ->
-            when(newState){
+        procrastinationDetectEnabledButton.setOnCheckedChangeListener { _, newState ->
+            when (newState) {
                 true -> {
-                    startService(Intent(applicationContext, ProcrastinationDetectorService::class.java))
+                    startService(
+                        Intent(
+                            applicationContext,
+                            ProcrastinationDetectorService::class.java
+                        )
+                    )
                 }
-                false -> stopService(Intent(applicationContext, ProcrastinationDetectorService::class.java))
+                false -> stopService(
+                    Intent(
+                        applicationContext,
+                        ProcrastinationDetectorService::class.java
+                    )
+                )
             }
             writeNewState(PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY, newState)
         }
-        val sensorPresent = sensorFound()
-        // if no sensor available then button should be gray to show that it is disabled
-        procrastinationDetectEnabledButton.alpha =
-            if (sensorPresent) BUTTON_ALPHA_NORMAL else BUTTON_ALPHA_DISABLED
-        if (!sensorPresent){
-            procrastinationDetectEnabledButton.text = applicationContext.getString(
-                R.string.missing_sensor_msg, procrastinationDetectEnabledButton.text
-            )
-        }
-        procrastinationDetectEnabledButton.isClickable = sensorPresent
+    }
+
+    private fun loadWidgetsState() {
+        darkModeEnabledButton.isChecked = preferences.getBoolean(DARK_MODE_PREF_KEY, false)
+        notifEnabledButton.isChecked = preferences.getBoolean(NOTIF_ENABLED_PREF_KEY, true)
+        procrastinationDetectEnabledButton.isChecked = preferences.getBoolean(
+            PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY, false
+        )
+    }
+
+    private fun assignWidgets() {
+        darkModeEnabledButton = findViewById(R.id.main_settings_dark_mode_button)
+        notifEnabledButton = findViewById(R.id.main_settings_enable_notif_button)
+        procrastinationDetectEnabledButton =
+            findViewById(R.id.main_settings_enable_procrastination_fighter_button)
     }
 
     private fun writeNewState(key: String, currState: Boolean) {
