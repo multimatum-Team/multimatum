@@ -1,21 +1,7 @@
 package com.github.multimatum_team.multimatum
 
-import android.app.AlarmManager
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.multimatum_team.multimatum.model.DeadlineNotification
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Robolectric
-import org.robolectric.Shadows.shadowOf
-import org.robolectric.shadows.ShadowLooper
-import java.sql.Time
-import java.util.concurrent.TimeUnit
 
 
 @RunWith(AndroidJUnit4::class)

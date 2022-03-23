@@ -1,12 +1,5 @@
 package com.github.multimatum_team.multimatum
 
-import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.ClipDescription
-import android.content.Context
-import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.os.Build
 import android.content.pm.PackageManager
@@ -15,13 +8,10 @@ import android.view.View
 import android.widget.ListView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
-import com.github.multimatum_team.multimatum.model.DeadlineNotification
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import java.time.LocalDate
 

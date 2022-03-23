@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum.model
+package com.github.multimatum_team.multimatum
 
 import android.app.AlarmManager
 import android.app.NotificationChannel
@@ -7,10 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import com.github.multimatum_team.multimatum.MainActivity
-import com.github.multimatum_team.multimatum.ReminderBroadcastReceiver
+import com.github.multimatum_team.multimatum.model.Deadline
 
 class DeadlineNotification {
     companion object {
