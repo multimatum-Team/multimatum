@@ -1,6 +1,13 @@
 package com.github.multimatum_team.multimatum.repository
 
+import android.content.Context
 import com.github.multimatum_team.multimatum.model.Deadline
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalDate
 
 /**
@@ -12,16 +19,16 @@ interface DeadlineRepository {
     /**
      * Fetch all user-defined deadlines from the repository.
      */
-    fun fetchAll(): List<Deadline>
+    suspend fun fetchAll(): List<Deadline>
 
     /**
      * Fetch all deadlines occurring after a given date from the repository.
      */
-    fun fetchAfter(dateLimit: LocalDate): List<Deadline> =
+    suspend fun fetchAfter(dateLimit: LocalDate): List<Deadline> =
         fetchAll().filter { it.date > dateLimit }
 
     /**
      * Add new deadline to the repository.
      */
-    fun put(deadline: Deadline)
+    suspend fun put(deadline: Deadline)
 }
