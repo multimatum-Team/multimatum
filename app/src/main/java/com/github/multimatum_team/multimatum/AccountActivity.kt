@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.inappmessaging.internal.Logging.TAG
@@ -33,6 +34,10 @@ class AccountActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account)
+
+        //Important for testing
+        FirebaseApp.initializeApp(this)
+
 
         //Configure sign-in to request user's credential
         val gso: GoogleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -52,8 +57,6 @@ class AccountActivity: AppCompatActivity() {
             Log.d(TAG, "onCreate begin Google SignIn:")
             signIn()
         }
-
-
     }
 
     override fun onResume() {

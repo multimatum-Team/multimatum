@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         val listView = findViewById<ListView>(R.id.deadlineListView)
 
         //generate a list of deadline to demo. To remove later and link it to the real list
