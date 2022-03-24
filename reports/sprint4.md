@@ -22,7 +22,11 @@ I am happy with this week's work, everything worked as expected and in the estim
 on it, work on a better layout and if possible connect it to the database. More tests have to be made.
 
 ### Louis
-
+This week I did the log out system and the profile page using fragment. The log out system was pretty easy but when i tried to test it i struggled a lot.
+At it's imply some parts og the same mechanics as login i assume this is not really testable. The fragment part take me more time because I have to figure out 
+how it's work. Finally I helped Josehp on the UI part of synchronizing app with the data base. I had to understand how the synchronization works and how to use the listView
+it was not so simple. Unfortunately I didn't did the part on sorting deadlines by done attribute because it requires the synchronization works.  
+I'll do it next sprint.
 ### Valentin
 My task for this week was to start working on a movement detection system, the goal being that the app can detect when the user is not working
 and give him/her a warning (i.e. this is the feature that Yugesh suggested to us on the first meeting because we must use a sensor). I cannot say
