@@ -17,14 +17,14 @@ Class which is used to show the deadline in a clear list.
 Based on the tutorial:
 https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
  */
-class DeadlineAdapter(private val context: Context, private var dataSource: List<Deadline> = listOf()) : BaseAdapter() {
+class DeadlineAdapter(private val context: Context) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline
         const val URGENT = 5
         const val PRESSING = 10
     }
 
-    //private var dataSource: List<Deadline> = listOf()
+    private var dataSource: List<Deadline> = listOf()
 
     private val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
