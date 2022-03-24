@@ -13,14 +13,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
-import java.time.LocalDate
-import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadow.api.Shadow;
+import org.mockito.Mockito.mock;
 
-
+@RunWith(AndroidJUnit4::class)
 class ReminderBroadcastReceiverTest {
     private var mReminderBroadcastReceiver: ReminderBroadcastReceiver? = null
     private var mContext: Context? = null
@@ -40,7 +35,7 @@ class ReminderBroadcastReceiverTest {
         val id = 12
         val intent = Intent(mContext, ReminderBroadcastReceiver::class.java) //this create an intent of broadcast receiver
         //Adding extra parameter that will be used in the broadcase receiver to create the notification
-        DeadlineNotification.pendingIntent = PendingIntent.getBroadcast(mContext, id, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getBroadcast(mContext, id, intent, PendingIntent.FLAG_IMMUTABLE)
         intent.putExtra("title", titleText)
         intent.putExtra("description", descrText)
         intent.putExtra("id", id)
@@ -49,18 +44,14 @@ class ReminderBroadcastReceiverTest {
 
         //here we're looking for the notificationManager that have been
         val notificationService: NotificationManager = mContext!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val shadowNotificationManager =
-            shadowOf(notificationService)
 
-        Assert.assertEquals(1, shadowNotificationManager.size())
 
-        val notification: Notification = shadowNotificationManager.allNotifications[0]
+        Assert.assertEquals(1, notificationService.getActiveNotifications().size)
+
+        val notification: Notification = notificationService.getActiveNotifications().get(0).notification
 
         val contentIntent: PendingIntent = notification.contentIntent
 
-        val nextIntent = shadowOf(contentIntent).savedIntent
-
-        val nextClassName = nextIntent.component!!.className
-        Assert.assertEquals(nextClassName, MainActivity::class.java.getName())
+        Assert.assertEquals(contentIntent, MainActivity::class.java.getName())
     }
 }
