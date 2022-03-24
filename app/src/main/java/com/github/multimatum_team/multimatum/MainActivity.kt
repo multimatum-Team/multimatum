@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         viewModel.deadlines.observe(this) { deadlines ->
             Log.d("deadlines", deadlines.toString())
             adapter.submitList(deadlines)
-            adapter.notifyDataSetChanged()
         }
 
         createNotificationChannel()

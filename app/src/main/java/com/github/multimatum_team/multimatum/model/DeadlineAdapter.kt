@@ -32,6 +32,7 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
     fun submitList(deadlines: List<Deadline>) {
         Log.d("deadlines", deadlines.toString())
         dataSource = deadlines
+        notifyDataSetChanged()
     }
 
     override fun getCount(): Int {
