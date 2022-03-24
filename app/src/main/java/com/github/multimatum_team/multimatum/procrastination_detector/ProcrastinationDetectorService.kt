@@ -13,6 +13,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.abs
 
+/**
+ * This service detects the movements of the phone to deduce whether the user is
+ * working or not, and can display a reminder if necessary
+ */
 @AndroidEntryPoint
 class ProcrastinationDetectorService : Service(), SensorEventListener {
     @Inject lateinit var sensorManager: SensorManager
@@ -64,6 +68,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         return dx + dy + dz
     }
 
+    // Displays a toast with the given text
     private fun toast(text: String) {
         Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT).show()
     }
@@ -76,6 +81,11 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         const val REF_SENSOR = Sensor.TYPE_GRAVITY
 
         private const val MIN_PERIOD_BETWEEN_NOTIF = 2000L
+
+        /**
+         * Experimentally obtained threshold. It has not unit because it refers to the output of
+         * the sensors, which have no unit themselves
+         */
         private const val MOVE_DETECTION_THRESHOLD = 0.1
     }
 

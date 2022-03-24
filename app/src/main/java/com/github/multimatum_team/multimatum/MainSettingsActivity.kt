@@ -25,11 +25,17 @@ class MainSettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_settings)
         assignWidgets()
-        loadWidgetsState()
+        loadButtonsState()
         setWidgetListeners()
         disableProcrastinationFighterButtonIfSensorNotFound()
     }
 
+    /*
+        If the sensor used by ProcrastinationFighterService was not found,
+        the button to start it is blocked and a message is displayed.
+        This can happen mainly because the phone is not equipped with such
+        a sensor
+     */
     private fun disableProcrastinationFighterButtonIfSensorNotFound() {
         val sensorPresent = sensorFound()
         // if no sensor available then button should be gray to show that it is disabled
@@ -43,6 +49,7 @@ class MainSettingsActivity : AppCompatActivity() {
         procrastinationDetectEnabledButton.isClickable = sensorPresent
     }
 
+    // sets all the necessary listeners on the UI widgets
     private fun setWidgetListeners() {
         darkModeEnabledButton.setOnCheckedChangeListener { _, newState ->
             writeNewState(DARK_MODE_PREF_KEY, newState)
@@ -59,7 +66,8 @@ class MainSettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadWidgetsState() {
+    // sets the buttons to the state they had last time the app was stopped
+    private fun loadButtonsState() {
         darkModeEnabledButton.isChecked = preferences.getBoolean(DARK_MODE_PREF_KEY, false)
         notifEnabledButton.isChecked = preferences.getBoolean(NOTIF_ENABLED_PREF_KEY, true)
         procrastinationDetectEnabledButton.isChecked = preferences.getBoolean(
@@ -67,6 +75,7 @@ class MainSettingsActivity : AppCompatActivity() {
         )
     }
 
+    // assigns the widget attributes using findViewById
     private fun assignWidgets() {
         darkModeEnabledButton = findViewById(R.id.main_settings_dark_mode_button)
         notifEnabledButton = findViewById(R.id.main_settings_enable_notif_button)
@@ -74,12 +83,14 @@ class MainSettingsActivity : AppCompatActivity() {
             findViewById(R.id.main_settings_enable_procrastination_fighter_button)
     }
 
+    // writes the key/state pair to SharedPreferences
     private fun writeNewState(key: String, currState: Boolean) {
         val edit = preferences.edit()
         edit.putBoolean(key, currState)
         edit.apply()
     }
 
+    // returns true iff the sensor that ProcrastinationDetectionService will use has been found
     private fun sensorFound(): Boolean =
         sensorManager.getDefaultSensor(ProcrastinationDetectorService.REF_SENSOR) != null
 
