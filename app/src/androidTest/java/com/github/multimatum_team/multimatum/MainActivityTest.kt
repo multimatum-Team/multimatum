@@ -93,7 +93,7 @@ class MainActivityTest {
                 hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.date",
-                    LocalDate.now().plusDays(7)
+                    LocalDate.of(2022, 3, 1)
                 ),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.state",
@@ -149,9 +149,9 @@ class MainActivityTest {
         fun provideDeadlineRepository(): DeadlineRepository =
             MockDeadlineRepository(
                 listOf(
-                    Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),
+                    Deadline("Test 1", DeadlineState.TODO, LocalDate.of(2022, 3, 1)),
                     Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
-                    Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
+                    Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 7))
                 )
             )
     }
