@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
+
+        FirebaseFirestore.getInstance().clearPersistence()
 
         val deadlineRepository = FirebaseDeadlineRepository()
         viewModel = DeadlineListViewModel(deadlineRepository)
@@ -132,7 +135,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun openCalendar(view: View){
+    fun openCalendar(view: View) {
         val intent = Intent(this, CalendarActivity::class.java)
         startActivity(intent)
     }
