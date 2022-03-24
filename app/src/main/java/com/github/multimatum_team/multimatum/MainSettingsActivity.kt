@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import com.github.multimatum_team.multimatum.procrastination_detector.ProcrastinationDetectorService
@@ -118,5 +119,9 @@ class MainSettingsActivity : AppCompatActivity() {
         private const val BUTTON_ALPHA_DISABLED = 0.5F
     }
 
+    fun goToLoginScreen(view: View){
+        val intent = Intent(this, AccountActivity::class.java)
+        startActivity(intent)
+    }
 }
 
