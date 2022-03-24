@@ -21,6 +21,9 @@
             android:enabled="true"
             android:exported="false" />
         <activity
+            android:name=".DeadlineDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".CalendarActivity"
             android:exported="false" />
         <activity

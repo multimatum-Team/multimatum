@@ -2,15 +2,18 @@ package com.github.multimatum_team.multimatum
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.test.espresso.Espresso.onData
 import android.hardware.SensorManager
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
+import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.rule.GrantPermissionRule
+import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.model.DeadlineState
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,11 +22,12 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDate
 
 
 @UninstallModules(DependenciesProvider::class)
@@ -48,7 +52,7 @@ class MainActivityTest {
     }
 
     @After
-    fun release(){
+    fun release() {
         Intents.release()
     }
 
@@ -72,6 +76,29 @@ class MainActivityTest {
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
+    }
+
+    @Test
+    fun goToDeadlineDetails() {
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
+            .perform(longClick())
+
+        Intents.intended(
+            allOf(
+                hasComponent(DeadlineDetailsActivity::class.java.name),
+                hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
+                hasExtra(
+                    "com.github.multimatum_team.multimatum.deadline.details.date",
+                    LocalDate.now().plusDays(7)
+                ),
+                hasExtra(
+                    "com.github.multimatum_team.multimatum.deadline.details.state",
+                    DeadlineState.TODO
+                ),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+
     }
 
     @Test
@@ -104,6 +131,14 @@ class MainActivityTest {
         fun provideSharedPreferences(): SharedPreferences =
             MainSettingsActivityTest.mockSharedPreferences
 
+        @Provides
+        fun provideDemoList(): List<Deadline> =
+            listOf(
+                Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),
+                Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
+                Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
+            )
+            
         @Provides
         fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
             DependenciesProvider.provideSensorManager(applicationContext)
