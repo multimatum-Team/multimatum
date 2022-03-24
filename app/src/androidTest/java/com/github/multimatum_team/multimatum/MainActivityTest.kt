@@ -1,6 +1,8 @@
 package com.github.multimatum_team.multimatum
 
+import android.content.Context
 import android.content.SharedPreferences
+import android.hardware.SensorManager
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
@@ -12,6 +14,7 @@ import androidx.test.rule.GrantPermissionRule
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -106,6 +109,10 @@ class MainActivityTest {
         @Provides
         fun provideSharedPreferences(): SharedPreferences =
             MainSettingsActivityTest.mockSharedPreferences
+
+        @Provides
+        fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
+            DependenciesProvider.provideSensorManager(applicationContext)
 
     }
 

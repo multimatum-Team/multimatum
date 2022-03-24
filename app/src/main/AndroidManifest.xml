@@ -13,6 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Multimatum">
+        <service
+            android:name=".procrastination_detector.ProcrastinationDetectorService"
+            android:enabled="true"
+            android:exported="false" />
         <activity
             android:name=".CalendarActivity"
             android:exported="false" />
