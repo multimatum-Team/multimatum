@@ -2,6 +2,7 @@ package com.github.multimatum_team.multimatum.repository
 
 import com.github.multimatum_team.multimatum.model.Deadline
 import java.time.LocalDate
+import java.util.function.Function
 
 /**
  * An interface for the deadline database.
@@ -24,4 +25,9 @@ interface DeadlineRepository {
      * Add new deadline to the repository.
      */
     suspend fun put(deadline: Deadline)
+
+    /**
+     * Add listener for database updates.
+     */
+    fun onUpdate(callback: (List<Deadline>) -> Unit)
 }
