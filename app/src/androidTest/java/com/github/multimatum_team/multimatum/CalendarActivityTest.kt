@@ -1,7 +1,6 @@
 package com.github.multimatum_team.multimatum
 
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -17,6 +16,7 @@ import dagger.hilt.components.SingletonComponent
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Singleton
 
 @UninstallModules(RepositoryModule::class)
 @HiltAndroidTest
@@ -41,6 +41,7 @@ class CalendarActivityTest {
     @Module
     @InstallIn(SingletonComponent::class)
     object TestDeadlineRepositoryModule {
+        @Singleton
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
             MockDeadlineRepository(listOf())

@@ -16,13 +16,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
-import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
+import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var deadlineRepository: DeadlineRepository
+
     private lateinit var viewModel: DeadlineListViewModel
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
@@ -34,12 +37,8 @@ class MainActivity : AppCompatActivity() {
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
 
-        FirebaseFirestore.getInstance().clearPersistence()
-
-        val deadlineRepository = FirebaseDeadlineRepository()
         viewModel = DeadlineListViewModel(deadlineRepository)
 
-        //put them on the listview.
         val adapter = DeadlineAdapter(this)
 
         listView.adapter = adapter
