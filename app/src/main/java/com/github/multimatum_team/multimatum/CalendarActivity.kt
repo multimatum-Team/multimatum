@@ -41,7 +41,8 @@ class CalendarActivity : AppCompatActivity() {
 
         // Add the new event to the deadline list
         val deadline = Deadline(deadlineTitle, DeadlineState.TODO, selectedDate)
-        val adapter = DeadlineAdapter(this, listOf(deadline))
+        val adapter = DeadlineAdapter(this)
+        adapter.submitList(listOf(deadline))
         listView.adapter = adapter
 
         // Reset the text input for future use
