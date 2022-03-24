@@ -10,10 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import java.lang.NullPointerException
 
+/**
+ * This class provides function to manage notifications
+ */
 class DeadlineNotification {
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
-    /*
+
+    /**
     Create a notification channel for reminder notifications
     Creating an existing notification channel with its original values performs no operation,
     so it's safe to call this code when starting an app.
@@ -29,7 +33,7 @@ class DeadlineNotification {
         notificationManager.createNotificationChannel(channel)
     }
 
-    /*
+    /**
     Set a notification that will be triggered in a given time in ms.
     you can pass a title/description and Id in parameter
     */
@@ -42,7 +46,7 @@ class DeadlineNotification {
         intent.putExtra("id", deadline.id)
 
         //set the receiver as pending intent
-        pendingIntent = PendingIntent.getBroadcast(context, deadline.id, intent, PendingIntent.FLAG_IMMUTABLE)
+        pendingIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_IMMUTABLE)
 
         val timeMS: Long = System.currentTimeMillis()+1000 //get milis from deadline.date (LocalDate)
 

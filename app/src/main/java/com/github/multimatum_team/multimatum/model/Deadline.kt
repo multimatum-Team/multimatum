@@ -38,7 +38,7 @@ data class Deadline(
     val state: DeadlineState,
     val date: LocalDate,
     val description: String = "",
-    val id: Int = 0
+    val id: String = ""
 ) {
     init {
         if (title.isEmpty()) {
