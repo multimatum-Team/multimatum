@@ -24,6 +24,9 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
 
     private val deadlinesRef = database.collection("deadlines")
 
+    /**
+     * Convert a deadline into a hashmap, so that we can send the deadline data to Firebase.
+     */
     private fun serializeDeadline(deadline: Deadline): HashMap<String, *> =
         hashMapOf(
             "title" to deadline.title,
@@ -36,6 +39,9 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
             )
         )
 
+    /**
+     * Convert a document snapshot from Firebase to a Deadline instance.
+     */
     private fun deserializeDeadline(deadlineSnapshot: DocumentSnapshot): Deadline {
         val title = deadlineSnapshot["title"] as String
         val state = DeadlineState.values()[(deadlineSnapshot["state"] as Long).toInt()]
