@@ -30,7 +30,6 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     fun submitList(deadlines: List<Deadline>) {
-        Log.d("deadlines", deadlines.toString())
         dataSource = deadlines
         notifyDataSetChanged()
     }
