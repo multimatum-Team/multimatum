@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum
 
 import android.app.Activity
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -36,7 +37,7 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         //send the notification
-        val notificationManager = NotificationManagerCompat.from(context)
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(notifId, notifBuilder.build())
     }
 }
