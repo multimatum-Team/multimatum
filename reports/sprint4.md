@@ -1,4 +1,4 @@
-Sprint <n> summary
+Sprint 4 summary
 ================
 
 ### Florian
@@ -7,8 +7,8 @@ At the beginning of the sprint, I have updated the bootcamp in hope to made the 
 However, this fix wasn't enough so I had to find another way to correct it. Now the CI detects correctly the coverage,
 which improve our coverage by almost 10% with all the tests previously not detected. Unfortunatly, after the fixes,
 I hadn't the time to make all of what I have planned, so I only made an activity that show the details of a deadline and
-wasn't able to implement the "Add" button for the deadline within my 8 hours, thus I will do it in the next sprint with the 
-"Modify" button for the deadlines. 
+wasn't able to implement the "Add" button for the deadline within my 8 hours, thus I will do it in the next sprint with the
+"Modify" button for the deadlines.
 
 ### Joseph
 
@@ -19,5 +19,12 @@ wasn't able to implement the "Add" button for the deadline within my 8 hours, th
 ### Louis
 
 ### Valentin
+My task for this week was to start working on a movement detection system, the goal being that the app can detect when the user is not working
+and give him/her a warning (i.e. this is the feature that Yugesh suggested to us on the first meeting because we must use a sensor). I cannot say
+that it went well... On the good side, the app is now able to detect when the user moves his phone. But currently it only works when the app is
+open. Furthermore, although I spent more time working on tests than on the feature, I did not manage to make working tests for this feature. I tried
+to mock the sensor, but the classes that should be mocked are final. I tried several strategies to overcome that, but it did not work. As a result,
+my time estimate was largely exceeded. So next week I will very probably have to work on these tests, and possibly on making the movement detection
+work even when the app is not in use.
 
 ### Overall team
