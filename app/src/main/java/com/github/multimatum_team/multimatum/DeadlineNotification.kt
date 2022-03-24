@@ -44,7 +44,7 @@ class DeadlineNotification {
             //set the receiver as pending intent
             pendingIntent = PendingIntent.getBroadcast(context, deadline.id, intent, PendingIntent.FLAG_IMMUTABLE)
 
-            val timeMS: Long = 0 //get milis from deadline.date (LocalDate)
+            val timeMS: Long = System.currentTimeMillis()+1000 //get milis from deadline.date (LocalDate)
 
             //set an alarm that will wake up the pending intent (receiver)
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeMS, pendingIntent)

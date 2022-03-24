@@ -21,7 +21,6 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
 
         val intent2 = Intent(context, MainActivity::class.java)
         intent2!!.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
         //this is the intent where the user will be send when clicking on the notification
         val pendingIntent = PendingIntent.getActivity(context, 0, intent2, PendingIntent.FLAG_IMMUTABLE)
 
