@@ -17,22 +17,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDate
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: DeadlineListViewModel
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
-    @Inject
-    lateinit var demoList: List<Deadline>
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set when you maintain your finger on an item of the list, launch the detail activity
         listView.setOnItemLongClickListener { _, _, position, _ ->
-            val selectedDeadline = demoList[position]
+            val selectedDeadline = adapter.getItem(position)
             val detailIntent = DeadlineDetailsActivity.newIntent(this, selectedDeadline)
             startActivity(detailIntent)
             // Last line necessary to use this function

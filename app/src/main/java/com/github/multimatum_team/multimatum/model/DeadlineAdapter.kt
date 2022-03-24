@@ -37,7 +37,7 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         return dataSource.size
     }
 
-    override fun getItem(position: Int): Any {
+    override fun getItem(position: Int): Deadline {
         return dataSource[position]
     }
 
