@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         listView.adapter = adapter
         viewModel.deadlines.observe(this) { deadlines ->
             Log.d("deadlines", deadlines.toString())
-            adapter.submitList(deadlines)
+            adapter.setDeadlines(deadlines)
         }
 
         // Set when you maintain your finger on an item of the list, launch the detail activity

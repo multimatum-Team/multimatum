@@ -34,7 +34,7 @@ class DeadlineAdapterTest {
             Deadline("Number 3", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
             Deadline("Number 4", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
         )
-        adapter.submitList(list)
+        adapter.setDeadlines(list)
     }
 
     @Test
