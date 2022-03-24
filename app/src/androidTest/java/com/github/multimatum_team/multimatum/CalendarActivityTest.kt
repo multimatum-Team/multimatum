@@ -38,14 +38,6 @@ class CalendarActivityTest {
             .check(ViewAssertions.matches(ViewMatchers.isClickable()))
     }
 
-    @Test
-    fun addingDeadlineToListviewDisplaysIt() {
-        Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
-            .perform(ViewActions.typeText("Test"))
-        Espresso.onView(ViewMatchers.withId(R.id.calendar_add_deadline_button))
-            .perform(ViewActions.click())
-    }
-
     @Module
     @InstallIn(SingletonComponent::class)
     object TestDeadlineRepositoryModule {
