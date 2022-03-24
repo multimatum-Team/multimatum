@@ -13,6 +13,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
 import java.time.ZoneId
+import java.time.temporal.ChronoField
 import javax.inject.Inject
 
 /**
@@ -27,7 +28,12 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
         hashMapOf(
             "title" to deadline.title,
             "state" to deadline.state.ordinal,
-            "date" to deadline.date.toEpochDay()
+            "date" to Timestamp(
+                deadline.date
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .getLong(ChronoField.INSTANT_SECONDS),
+                0
+            )
         )
 
     private fun deserializeDeadline(deadlineSnapshot: DocumentSnapshot): Deadline {
