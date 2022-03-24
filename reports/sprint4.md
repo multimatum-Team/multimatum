@@ -14,6 +14,9 @@ wasn't able to implement the "Add" button for the deadline within my 8 hours, th
 
 ### Lenny
 
+I tried to implement test for the notification. I struggled a lot, I only manage to have 1 test working and the coverage is really bad. I spend a lot of time on it. 
+I also refactor notification as a separate class.
+
 ### Léo
 
 For this week, I implemented a feature that allow the user to select a day using a calendar to add a deadline to it. A new activity containing a new calendar view
