@@ -55,8 +55,9 @@ class MainActivity : AppCompatActivity() {
         //put them on the listview.
         val adapter = DeadlineAdapter(this)
         listView.adapter = adapter
-        viewModel.deadlines.observe(this) { plants ->
-            adapter.submitList(plants)
+        viewModel.deadlines.observe(this) { deadlines ->
+            Log.d("deadlines", deadlines.toString())
+            adapter.submitList(deadlines)
         }
 
         createNotificationChannel()
