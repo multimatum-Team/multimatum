@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ClipDescription
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
@@ -32,7 +33,7 @@ import java.time.LocalDate
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: DeadlineListViewModel;
+    private lateinit var viewModel: DeadlineListViewModel
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
 
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.deadlines.observe(this) { deadlines ->
             Log.d("deadlines", deadlines.toString())
             adapter.submitList(deadlines)
+            adapter.notifyDataSetChanged()
         }
 
         createNotificationChannel()
