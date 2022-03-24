@@ -18,6 +18,9 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.google.firebase.FirebaseApp
+import java.time.LocalDate
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
