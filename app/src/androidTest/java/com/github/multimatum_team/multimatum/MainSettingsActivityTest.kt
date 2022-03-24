@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.hardware.SensorManager
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -15,6 +16,7 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -143,6 +145,9 @@ class MainSettingsActivityTest {
                 Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
                 Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
             )
+            
+        @Provides
+        fun provideSensorManager(): SensorManager = mock()
 
     }
 
