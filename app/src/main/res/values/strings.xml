@@ -12,11 +12,15 @@
     <string name="main_settings_dark_mode_button">Dark mode</string>
     <string name="main_settings_notifications_section_title">Notifications</string>
     <string name="main_settings_enable_notif_button">Enable notifications</string>
+    <string name="main_settings_procrastination_fighter_section_title">Procrastination fighter</string>
+    <string name="main_settings_enable_procrastination_fighter_button">Notify me when I am procrastinating</string>
     <string name="main_open_settings_but_content_descr">Settings button</string>
     <string name="isAlreadyDue">Is already Due</string>
     <string name="done">Done</string>
     <string name="DueTheX">Due the %1s</string>
     <string name="DueInXDays">Due in %1s Days</string>
+    <string name="missing_sensor_msg">"%1s (disabled: missing sensor on device)"</string>
+    <string name="stop_procrastinating_msg">"Hey! Why is this phone moving? You should be working!"</string>
     <string name="TriggerNotif">Trigger Notif</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

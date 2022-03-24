@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.core.content.ContextCompat.startActivity
+import android.hardware.SensorManager
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -17,6 +18,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -138,6 +140,9 @@ class MainSettingsActivityTest {
 
         @Provides
         fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
+
+        @Provides
+        fun provideSensorManager(): SensorManager = mock()
 
     }
 
