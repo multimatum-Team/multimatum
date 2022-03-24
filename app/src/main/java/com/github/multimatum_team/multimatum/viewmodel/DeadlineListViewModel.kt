@@ -20,12 +20,10 @@ class DeadlineListViewModel @Inject constructor(
         viewModelScope.launch {
             _deadlines.value = deadlineRepository.fetchAll()
         }
+
+        deadlineRepository.onUpdate { _deadlines.value = it }
     }
 
     val deadlines: LiveData<List<Deadline>>
-        get() {
-            deadlineRepository.onUpdate { _deadlines.value = it }
-
-            return _deadlines
-        }
+        get() = _deadlines
 }
