@@ -16,6 +16,11 @@ wasn't able to implement the "Add" button for the deadline within my 8 hours, th
 
 ### Léo
 
+For this week, I implemented a feature that allow the user to select a day using a calendar to add a deadline to it. A new activity containing a new calendar view
+was implemented, including a text field for the title of the deadline and a button to add it. I also removed the "Action Bar" of the app. The corresponding tests were also done.
+I am happy with this week's work, everything worked as expected and in the estimated time. Next week, I will continue to work on the calendar to potentially display the deadlines
+on it, work on a better layout and if possible connect it to the database. More tests have to be made.
+
 ### Louis
 
 ### Valentin
