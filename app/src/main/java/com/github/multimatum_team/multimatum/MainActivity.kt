@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.google.firebase.FirebaseApp
 import java.time.LocalDate
 
 
@@ -33,7 +34,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
         val listView = findViewById<ListView>(R.id.deadlineListView)
 
         //generate a list of deadline to demo. To remove later and link it to the real list

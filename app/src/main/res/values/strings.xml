@@ -22,4 +22,9 @@
     <string name="missing_sensor_msg">"%1s (disabled: missing sensor on device)"</string>
     <string name="stop_procrastinating_msg">"Hey! Why is this phone moving? You should be working!"</string>
     <string name="TriggerNotif">Trigger Notif</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="you_re_loggedin_as">You\'re LoggedIn as</string>
+    <string name="email">Email</string>
+    <string name="logout">LOGOUT</string>
 </resources>
