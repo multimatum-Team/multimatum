@@ -8,10 +8,13 @@ import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import com.github.multimatum_team.multimatum.util.getOrAwaitValue
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.UninstallModules
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -23,7 +26,6 @@ import java.time.LocalDate
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
 @ExperimentalCoroutinesApi
-@UninstallModules(DependenciesProvider::class)
 class DeadlineListViewModelTest {
     private val deadlines: List<Deadline> = listOf(
         Deadline("Deadline 1", DeadlineState.DONE, LocalDate.of(2022, 3, 17)),
@@ -36,6 +38,8 @@ class DeadlineListViewModelTest {
 
     @Before
     fun setUp() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+        hiltRule.inject()
         repository = MockDeadlineRepository(deadlines)
         viewModel = DeadlineListViewModel(repository)
     }
@@ -45,8 +49,11 @@ class DeadlineListViewModelTest {
     @get:Rule
     val executorRule: TestRule = InstantTaskExecutorRule()
 
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
     @Test
-    fun liveDataInitiallyContainsRepositoryContents() {
+    fun liveDataInitiallyContainsRepositoryContents() = runTest {
         assertEquals(viewModel.deadlines.getOrAwaitValue(), deadlines)
     }
 
@@ -55,7 +62,8 @@ class DeadlineListViewModelTest {
         val newDeadline = Deadline("Deadline 4", DeadlineState.TODO, LocalDate.of(2022, 5, 2))
         val newDeadlineList = deadlines.toMutableList()
         newDeadlineList.add(newDeadline)
-        repository.put(newDeadline)
-        assertEquals(viewModel.deadlines.getOrAwaitValue(), newDeadlineList)
+        repository.put(newDeadline).run {
+            assertEquals(viewModel.deadlines.getOrAwaitValue(), newDeadlineList)
+        }
     }
 }
