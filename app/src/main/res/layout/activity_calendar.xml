@@ -43,14 +43,4 @@
             tools:ignore="TextContrastCheck,TextContrastCheck" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <ListView
-        android:id="@+id/calendar_deadline_listview"
-        android:layout_width="365dp"
-        android:layout_height="223dp"
-        app:layout_constraintBottom_toTopOf="@+id/textInputLayoutCalendar"
-        app:layout_constraintEnd_toEndOf="@+id/calendar_view"
-        app:layout_constraintStart_toStartOf="@+id/calendar_view"
-        app:layout_constraintTop_toTopOf="@+id/calendar_view"
-        app:layout_constraintVertical_bias="0.976" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -26,8 +26,6 @@ class CalendarActivityTest {
             .perform(ViewActions.typeText("Test"))
         Espresso.onView(ViewMatchers.withId(R.id.calendar_add_deadline_button))
             .perform(ViewActions.click())
-        Espresso.onData(allOf()).inAdapterView(ViewMatchers.withId(R.id.calendar_deadline_listview))
-            .atPosition(0).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
 }
