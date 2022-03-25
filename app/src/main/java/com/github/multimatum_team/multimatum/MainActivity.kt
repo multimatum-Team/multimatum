@@ -12,10 +12,13 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
+import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,7 +57,6 @@ class MainActivity : AppCompatActivity() {
             // Last line necessary to use this function
             true
         }
-        createNotificationChannel()
     }
 
     /*
