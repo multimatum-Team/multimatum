@@ -45,11 +45,11 @@ class DeadlineNotificationTest {
         verify(mockedNotificationService,times(1)).createNotificationChannel(channel)
 
     }
-/*
+
     /*Test if testSetNotification actually set an alarm.
     * I abuse of mocking here, there's probably a better way to do it with shadow (because here for example "PendingIntent" cannot be mocked so we have to use Mockito.any())
     * */
-    @Test
+    /*@Test
     fun testSetNotification(){
         val deadlineNotification = DeadlineNotification()
         var mockedAlarmManager = Mockito.mock(AlarmManager::class.java)
