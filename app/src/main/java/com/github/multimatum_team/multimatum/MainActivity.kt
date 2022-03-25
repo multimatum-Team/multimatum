@@ -5,29 +5,30 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
-import android.os.Build
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ListView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
+import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.google.firebase.FirebaseApp
-import java.time.LocalDate
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var deadlineRepository: DeadlineRepository
+
+    private lateinit var viewModel: DeadlineListViewModel
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
-    @Inject
-    lateinit var demoList: List<Deadline>
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,13 +37,19 @@ class MainActivity : AppCompatActivity() {
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
 
-        // Put them on the listview.
-        val adapter = DeadlineAdapter(this, demoList)
+        viewModel = DeadlineListViewModel(deadlineRepository)
+
+        val adapter = DeadlineAdapter(this)
+
         listView.adapter = adapter
+        viewModel.deadlines.observe(this) { deadlines ->
+            Log.d("deadlines", deadlines.toString())
+            adapter.setDeadlines(deadlines)
+        }
 
         // Set when you maintain your finger on an item of the list, launch the detail activity
         listView.setOnItemLongClickListener { _, _, position, _ ->
-            val selectedDeadline = demoList[position]
+            val selectedDeadline = adapter.getItem(position)
             val detailIntent = DeadlineDetailsActivity.newIntent(this, selectedDeadline)
             startActivity(detailIntent)
             // Last line necessary to use this function
@@ -50,7 +57,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         createNotificationChannel()
-
     }
 
     /*
@@ -84,7 +90,8 @@ class MainActivity : AppCompatActivity() {
             this,
             ReminderBroadcastReceiver::class.java
         ) //this create an intent of broadcast receiver
-        //Adding extra parameter that will be used in the broadcast receiver to create the notification
+
+        //Adding extra parameter that will be used in the broadcase receiver to create the notification
         intent.putExtra("title", title)
         intent.putExtra("description", description)
         intent.putExtra("id", id)
@@ -102,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
     */
     fun triggerNotification(view: View) {
-        val id = System.currentTimeMillis().toInt()
+        var id = System.currentTimeMillis().toInt()
         setNotification(System.currentTimeMillis() + 4000, "asdf", "ouafouaf", id)
     }
 
@@ -138,7 +145,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun openCalendar(view: View){
+    fun openCalendar(view: View) {
         val intent = Intent(this, CalendarActivity::class.java)
         startActivity(intent)
     }
