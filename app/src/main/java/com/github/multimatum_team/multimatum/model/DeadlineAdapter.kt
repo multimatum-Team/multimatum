@@ -16,21 +16,28 @@ Class which is used to show the deadline in a clear list.
 Based on the tutorial:
 https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
  */
-class DeadlineAdapter(private val context: Context, private val dataSource: List<Deadline>) : BaseAdapter() {
+class DeadlineAdapter(private val context: Context) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline
         const val URGENT = 5
         const val PRESSING = 10
     }
 
+    private var dataSource: List<Deadline> = listOf()
+
     private val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+    fun setDeadlines(deadlines: List<Deadline>) {
+        dataSource = deadlines
+        notifyDataSetChanged()
+    }
 
     override fun getCount(): Int {
         return dataSource.size
     }
 
-    override fun getItem(position: Int): Any {
+    override fun getItem(position: Int): Deadline {
         return dataSource[position]
     }
 
@@ -39,7 +46,7 @@ class DeadlineAdapter(private val context: Context, private val dataSource: List
     }
 
     // Customise the units of the list
-    @SuppressLint( "ViewHolder")
+    @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         // Get view for row item
         val rowView = inflater.inflate(R.layout.list_item_deadline, parent, false)
@@ -57,7 +64,7 @@ class DeadlineAdapter(private val context: Context, private val dataSource: List
         titleTextView.setTypeface(null, Typeface.BOLD)
 
         // Show the date
-        subtitleTextView.text = context.getString(R.string.DueTheX,deadline.date)
+        subtitleTextView.text = context.getString(R.string.DueTheX, deadline.date)
         subtitleTextView.setTypeface(null, Typeface.ITALIC)
 
         // Show how much time left or if it is due or done.
@@ -72,7 +79,8 @@ class DeadlineAdapter(private val context: Context, private val dataSource: List
                 detail = context.getString(R.string.isAlreadyDue)
             }
             else -> {
-                detail = context.getString(R.string.DueInXDays, deadline.timeRemaining!!.days.toString())
+                detail =
+                    context.getString(R.string.DueInXDays, deadline.timeRemaining!!.days.toString())
                 // If the remaining days is too small, put them in red or orange
                 if ((deadline.timeRemaining!!.days) < URGENT) {
                     detailTextView.setTextColor(Color.RED)

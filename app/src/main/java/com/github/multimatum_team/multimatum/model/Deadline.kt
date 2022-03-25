@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.model
 
+import com.google.type.Date
 import java.time.LocalDate
 import java.time.Period
 

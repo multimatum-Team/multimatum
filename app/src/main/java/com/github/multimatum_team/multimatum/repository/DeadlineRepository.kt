@@ -12,16 +12,21 @@ interface DeadlineRepository {
     /**
      * Fetch all user-defined deadlines from the repository.
      */
-    fun fetchAll(): List<Deadline>
+    suspend fun fetchAll(): List<Deadline>
 
     /**
      * Fetch all deadlines occurring after a given date from the repository.
      */
-    fun fetchAfter(dateLimit: LocalDate): List<Deadline> =
+    suspend fun fetchAfter(dateLimit: LocalDate): List<Deadline> =
         fetchAll().filter { it.date > dateLimit }
 
     /**
      * Add new deadline to the repository.
      */
-    fun put(deadline: Deadline)
+    suspend fun put(deadline: Deadline)
+
+    /**
+     * Add listener for database updates.
+     */
+    fun onUpdate(callback: (List<Deadline>) -> Unit)
 }
