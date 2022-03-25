@@ -12,6 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -37,6 +38,11 @@ class ReminderBroadcastReceiverTest {
         mReminderBroadcastReceiver = ReminderBroadcastReceiver()
         mContext = mock(Context::class.java)
         mockedNotificationService = mock(NotificationManager::class.java)
+    }
+
+    @Test
+    fun emptyTest(){
+        assertEquals(1, 1)
     }
 
     /*
