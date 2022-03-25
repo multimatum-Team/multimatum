@@ -1,18 +1,26 @@
 package com.github.multimatum_team.multimatum
 
+import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import androidx.core.content.ContextCompat.startActivity
+import android.hardware.SensorManager
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.model.DeadlineState
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -24,6 +32,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
+import java.time.LocalDate
 
 @UninstallModules(DependenciesProvider::class)
 @HiltAndroidTest
@@ -39,7 +48,7 @@ class MainSettingsActivityTest {
     }
 
     @After
-    fun release(){
+    fun release() {
         Intents.release()
     }
 
@@ -59,6 +68,13 @@ class MainSettingsActivityTest {
             clickedButtonId = R.id.main_settings_enable_notif_button,
             expectedFinalNotifEnabled = true, expectedFinalDarkModeEnabled = false
         )
+    }
+
+    @Test
+    fun launchAccountActivityIntent(){
+        ActivityScenario.launch(MainSettingsActivity::class.java)
+        onView(withId(R.id.main_settings_account_button)).perform(click())
+        Intents.intended(IntentMatchers.toPackage("com.github.multimatum_team.multimatum"))
     }
 
     @Test
@@ -87,8 +103,13 @@ class MainSettingsActivityTest {
         initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
         clickedButtonId: Int,
         expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean
-    ){
-        `when`(mockSharedPreferences.getBoolean(eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY), any()))
+    ) {
+        `when`(
+            mockSharedPreferences.getBoolean(
+                eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY),
+                any()
+            )
+        )
             .thenReturn(initNotifEnabled)
         `when`(mockSharedPreferences.getBoolean(eq(MainSettingsActivity.DARK_MODE_PREF_KEY), any()))
             .thenReturn(initDarkModeEnabled)
@@ -127,6 +148,17 @@ class MainSettingsActivityTest {
 
         @Provides
         fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
+
+        @Provides
+        fun provideDemoList(): List<Deadline> =
+            listOf(
+                Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),
+                Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
+                Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
+            )
+            
+        @Provides
+        fun provideSensorManager(): SensorManager = mock()
 
     }
 

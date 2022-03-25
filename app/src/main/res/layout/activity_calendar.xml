@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CalendarActivity">
+
+    <CalendarView
+        android:id="@+id/calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="299dp" />
+
+    <Button
+        android:id="@+id/calendar_add_deadline_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/calender_add_new_deadline_button_text"
+        android:onClick="addNewDeadlineCalendar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@+id/calendar_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutCalendar"
+        android:layout_width="389dp"
+        android:layout_height="64dp"
+        app:layout_constraintBottom_toTopOf="@+id/calendar_add_deadline_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputEditCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/calendar_deadline_input_text"
+            android:textColorHint="#616161"
+            tools:ignore="TextContrastCheck,TextContrastCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ListView
+        android:id="@+id/calendar_deadline_listview"
+        android:layout_width="365dp"
+        android:layout_height="223dp"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayoutCalendar"
+        app:layout_constraintEnd_toEndOf="@+id/calendar_view"
+        app:layout_constraintStart_toStartOf="@+id/calendar_view"
+        app:layout_constraintTop_toTopOf="@+id/calendar_view"
+        app:layout_constraintVertical_bias="0.976" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -56,6 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:backgroundTint="@color/white"
+            android:onClick="goToLoginScreen"
             android:text="@string/main_settings_account_button"
             android:textColor="@color/black"
             android:textSize="@dimen/main_settings_button_font_size"
@@ -94,6 +95,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/main_settings_enable_notif_button"
+            android:textSize="@dimen/main_settings_toggle_font_size" />
+
+        <TextView
+            android:id="@+id/main_settings_procrastination_fighter_section_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_settings_procrastination_fighter_section_title"
+            android:textSize="@dimen/main_settings_section_title_font_size" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/main_settings_enable_procrastination_fighter_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_settings_enable_procrastination_fighter_button"
             android:textSize="@dimen/main_settings_toggle_font_size" />
     </LinearLayout>
 
