@@ -2,8 +2,8 @@ package com.github.multimatum_team.multimatum
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.test.espresso.Espresso.onData
 import android.hardware.SensorManager
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.longClick
@@ -14,6 +14,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.rule.GrantPermissionRule
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,15 +24,17 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.anything
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
+import javax.inject.Singleton
 
 
-@UninstallModules(DependenciesProvider::class)
+@UninstallModules(DependenciesProvider::class, RepositoryModule::class)
 @HiltAndroidTest
 class MainActivityTest {
 
@@ -89,7 +93,7 @@ class MainActivityTest {
                 hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.date",
-                    LocalDate.now().plusDays(7)
+                    LocalDate.of(2022, 3, 1)
                 ),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.state",
@@ -132,17 +136,23 @@ class MainActivityTest {
             MainSettingsActivityTest.mockSharedPreferences
 
         @Provides
-        fun provideDemoList(): List<Deadline> =
-            listOf(
-                Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),
-                Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
-                Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
-            )
-            
-        @Provides
         fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
             DependenciesProvider.provideSensorManager(applicationContext)
 
     }
 
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestDeadlineRepositoryModule {
+        @Singleton
+        @Provides
+        fun provideDeadlineRepository(): DeadlineRepository =
+            MockDeadlineRepository(
+                listOf(
+                    Deadline("Test 1", DeadlineState.TODO, LocalDate.of(2022, 3, 1)),
+                    Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
+                    Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 7))
+                )
+            )
+    }
 }
