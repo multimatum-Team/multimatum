@@ -1,12 +1,6 @@
 package com.github.multimatum_team.multimatum
 
-<<<<<<< HEAD
-=======
-import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
->>>>>>> main
+
 import android.content.Intent
 import android.os.Build
 import android.content.pm.PackageManager
