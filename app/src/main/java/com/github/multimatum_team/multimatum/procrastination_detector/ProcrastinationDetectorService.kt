@@ -6,6 +6,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Binder
 import android.os.IBinder
 import android.widget.Toast
 import com.github.multimatum_team.multimatum.R
@@ -26,17 +27,19 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     private var lastDetection: Long = 0L
     private var lastPosition: Array<Float>? = null  // null only at initialization
 
+    private val binder = PdsBinder()
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         val refSensor = sensorManager.getDefaultSensor(REF_SENSOR)
             ?: throw IllegalStateException("missing sensor")
-        super.onCreate()
         sensorManager.registerListener(this, refSensor, SensorManager.SENSOR_DELAY_NORMAL)
         toast("Procrastination fighter is enabled")
         return START_STICKY  // service must restart as soon as possible if preempted
     }
 
     override fun onBind(intent: Intent): IBinder {
-        throw UnsupportedOperationException("cannot bind procrastinationDetectorService: not implemented")
+        return binder
     }
 
     override fun onDestroy() {
@@ -87,6 +90,10 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          * the sensors, which have no unit themselves
          */
         private const val MOVE_DETECTION_THRESHOLD = 0.1
+    }
+
+    inner class PdsBinder: Binder() {
+        fun getService(): ProcrastinationDetectorService = this@ProcrastinationDetectorService
     }
 
 }
