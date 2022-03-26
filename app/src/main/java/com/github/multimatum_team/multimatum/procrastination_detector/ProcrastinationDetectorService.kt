@@ -34,7 +34,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         val refSensor = sensorManager.getDefaultSensor(REF_SENSOR)
             ?: throw IllegalStateException("missing sensor")
         sensorManager.registerListener(this, refSensor, SensorManager.SENSOR_DELAY_NORMAL)
-        toast("Procrastination fighter is enabled")
+        toast(getString(R.string.procrastination_fighter_enable_msg))
         return START_STICKY  // service must restart as soon as possible if preempted
     }
 
@@ -46,7 +46,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         super.onDestroy()
         val refSensor = sensorManager.getDefaultSensor(REF_SENSOR)
         sensorManager.unregisterListener(this, refSensor)
-        toast("Procrastination fighter is disabled")
+        toast(getString(R.string.procrastination_fighter_disabled_msg))
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { /* Nothing to do */ }
