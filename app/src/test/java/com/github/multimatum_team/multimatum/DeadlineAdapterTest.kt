@@ -7,18 +7,38 @@ import android.view.View
 import android.widget.ListView
 import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.util.MockClockService
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import dagger.hilt.components.SingletonComponent
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
+import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
+@UninstallModules(ClockModule::class)
 class DeadlineAdapterTest {
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var clockService: ClockService
+
     private lateinit var adapter: DeadlineAdapter
     private var context: Application? = null
     private lateinit var list: List<Deadline>
@@ -26,11 +46,12 @@ class DeadlineAdapterTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
+        hiltRule.inject()
         context = ApplicationProvider.getApplicationContext()
         adapter = DeadlineAdapter(context!!)
         list = listOf(
-            Deadline("Number 1", DeadlineState.TODO, LocalDate.now().plusDays(1)),
-            Deadline("Number 2", DeadlineState.TODO, LocalDate.now().plusDays(7)),
+            Deadline("Number 1", DeadlineState.TODO, clockService.now().plusDays(1)),
+            Deadline("Number 2", DeadlineState.TODO, clockService.now().plusDays(7)),
             Deadline("Number 3", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
             Deadline("Number 4", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
         )
@@ -206,4 +227,11 @@ class DeadlineAdapterTest {
         )
     }
 
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestClockModule {
+        @Provides
+        fun provideClockService(): ClockService =
+            MockClockService(LocalDate.of(2022, 3, 12))
+    }
 }
