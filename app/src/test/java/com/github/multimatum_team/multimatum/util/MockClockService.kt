@@ -5,7 +5,6 @@ import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.temporal.ChronoField
 
 /**
  * A mock class to simulate a fixed clock.
