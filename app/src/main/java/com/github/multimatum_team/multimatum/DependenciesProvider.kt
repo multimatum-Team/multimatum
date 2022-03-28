@@ -9,6 +9,9 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
 import android.hardware.SensorManager
+import android.os.SystemClock
+import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.service.SystemClockService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +33,14 @@ object DependenciesProvider {
     @Provides
     fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
         applicationContext.getSystemService(SENSOR_SERVICE) as SensorManager
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object ClockModule {
+    @Provides
+    fun provideClockService(): ClockService =
+        SystemClockService()
 }
 
 @Module
