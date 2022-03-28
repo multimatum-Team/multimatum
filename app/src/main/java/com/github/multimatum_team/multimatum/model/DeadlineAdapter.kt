@@ -16,7 +16,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import java.time.Period
-import javax.inject.Inject
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -29,7 +28,7 @@ Class which is used to show the deadline in a clear list.
 Based on the tutorial:
 https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
  */
-class DeadlineAdapter @Inject constructor(private val context: Context) : BaseAdapter() {
+class DeadlineAdapter(private val context: Context) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline
         const val URGENT = 5
