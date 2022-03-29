@@ -23,9 +23,6 @@ class MockDeadlineRepository(deadlines: List<Deadline>) : DeadlineRepository {
     private fun notifyUpdateListeners() =
         updateListeners.forEach { it(deadlines) }
 
-    override suspend fun fetch(id: String): Deadline? =
-        deadlines[id]
-
     override suspend fun fetchAll(): Map<DeadlineID, Deadline> = deadlines
 
     override suspend fun put(deadline: Deadline): DeadlineID {
