@@ -1,8 +1,6 @@
 package com.github.multimatum_team.multimatum.model
 
-import com.google.type.Date
 import java.time.LocalDate
-import java.time.Period
 
 /**
  * The state of a deadline.
@@ -44,22 +42,4 @@ data class Deadline(
             throw IllegalArgumentException()
         }
     }
-
-    /**
-     * Returns how much time is left to complete the task before the deadline.
-     * If the deadline is due, return null.
-     */
-    val timeRemaining: Period?
-        get() =
-            if (isDue)
-                null
-            else {
-                Period.between(LocalDate.now(), date)
-            }
-
-    /**
-     * Tells whether the deadline has passed.
-     */
-    val isDue: Boolean
-        get() = LocalDate.now() > date
 }
