@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = DeadlineAdapter(this)
 
         listView.adapter = adapter
-        viewModel.deadlines.observe(this) { deadlines ->
+        viewModel.getDeadlines().observe(this) { deadlines ->
             Log.d("deadlines", deadlines.toString())
             adapter.setDeadlines(deadlines)
         }

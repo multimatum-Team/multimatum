@@ -30,6 +30,6 @@ class DeadlineListViewModel @Inject constructor(
         deadlineRepository.onUpdate { _deadlines.value = it }
     }
 
-    val deadlines: LiveData<Map<DeadlineID, Deadline>>
-        get() = _deadlines
+    fun getDeadlines(): LiveData<Map<DeadlineID, Deadline>> =
+        _deadlines
 }

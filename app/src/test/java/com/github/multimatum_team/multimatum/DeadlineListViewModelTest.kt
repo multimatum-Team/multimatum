@@ -54,7 +54,7 @@ class DeadlineListViewModelTest {
 
     @Test
     fun `LiveData initially contains repository contents`() = runTest {
-        val deadlines = viewModel.deadlines.getOrAwaitValue()
+        val deadlines = viewModel.getDeadlines().getOrAwaitValue()
         assertEquals(deadlines["0"], Deadline("Deadline 1", DeadlineState.DONE, LocalDate.of(2022, 3, 17)))
         assertEquals(deadlines["1"], Deadline("Deadline 2", DeadlineState.DONE, LocalDate.of(2022, 3, 20)))
         assertEquals(deadlines["2"], Deadline("Deadline 3", DeadlineState.TODO, LocalDate.of(2022, 4, 15)))
@@ -66,7 +66,7 @@ class DeadlineListViewModelTest {
         val newDeadlineList = deadlines.toMutableList()
         newDeadlineList.add(newDeadline)
         repository.put(newDeadline).run {
-            assertEquals(viewModel.deadlines.getOrAwaitValue()[this]!!, newDeadline)
+            assertEquals(viewModel.getDeadlines().getOrAwaitValue()[this]!!, newDeadline)
         }
     }
 }
