@@ -3,10 +3,12 @@ package com.github.multimatum_team.multimatum
 import android.os.Bundle
 import android.view.View
 import android.widget.CalendarView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
@@ -18,6 +20,8 @@ import javax.inject.Inject
 class CalendarActivity : AppCompatActivity() {
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
+
+    private val viewModel: DeadlineListViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +49,7 @@ class CalendarActivity : AppCompatActivity() {
 
         // Add the new event to the deadline list
         val deadline = Deadline(deadlineTitle, DeadlineState.TODO, selectedDate)
-        runBlocking { deadlineRepository.put(deadline) }
+        viewModel.addDeadline(deadline)
 
         // Reset the text input for future use
         editText.setText("")

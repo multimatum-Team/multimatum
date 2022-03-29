@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ListView
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,7 +27,8 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
 
-    private lateinit var viewModel: DeadlineListViewModel
+    private val viewModel: DeadlineListViewModel by viewModels()
+
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
 
@@ -36,8 +38,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
-
-        viewModel = DeadlineListViewModel(deadlineRepository)
 
         val adapter = DeadlineAdapter(this)
 
