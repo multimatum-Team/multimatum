@@ -78,6 +78,16 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
             .id
 
     /**
+     * Remove a deadline from the Firebase database.
+     */
+    override suspend fun delete(id: DeadlineID) {
+        deadlinesRef
+            .document(id)
+            .delete()
+            .await()
+    }
+
+    /**
      * Add listener for firebase updates.
      */
     override fun onUpdate(callback: (Map<DeadlineID, Deadline>) -> Unit) {

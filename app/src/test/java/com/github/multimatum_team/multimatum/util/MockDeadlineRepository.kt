@@ -35,6 +35,10 @@ class MockDeadlineRepository(deadlines: List<Deadline>) : DeadlineRepository {
         return id
     }
 
+    override suspend fun delete(id: DeadlineID) {
+        deadlines.remove(id)
+    }
+
     override fun onUpdate(callback: (Map<DeadlineID, Deadline>) -> Unit) {
         updateListeners.add(callback)
     }

@@ -7,14 +7,15 @@ typealias DeadlineID = String
 
 /**
  * An interface for the deadline database.
- * A minimal implementation of this interface requires defining `fetch`, `fetchAll` and `put`.
+ * A minimal implementation of this interface requires defining `fetchAll`, `put` and `delete`.
  * The other methods have a default implementation which may be overridden for performance purposes.
  */
 interface DeadlineRepository {
     /**
      * Fetch a single deadline from its ID.
      */
-    suspend fun fetch(id: String): Deadline?
+    suspend fun fetch(id: String): Deadline? =
+        fetchAll()[id]
 
     /**
      * Fetch all user-defined deadlines from the repository.
@@ -31,6 +32,11 @@ interface DeadlineRepository {
      * Add a new deadline to the repository, returning the freshly generated ID of the new deadline.
      */
     suspend fun put(deadline: Deadline): DeadlineID
+
+    /**
+     * Remove a deadline from the repository.
+     */
+    suspend fun delete(id: DeadlineID)
 
     /**
      * Add listener for database updates.
