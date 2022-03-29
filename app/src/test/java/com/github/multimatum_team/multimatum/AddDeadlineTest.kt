@@ -24,6 +24,10 @@ import org.junit.runner.RunWith
 import org.robolectric.shadows.ShadowToast
 import javax.inject.Singleton
 
+
+/**
+ * Class test for AddDeadlineActivity
+ */
 @UninstallModules(RepositoryModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
