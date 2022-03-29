@@ -15,7 +15,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 /**
- *  Activity who create a deadline using a DatePick
+ *  Activity who create a deadline using a DatePicker
  */
 @AndroidEntryPoint
 class AddDeadlineActivity : AppCompatActivity() {
