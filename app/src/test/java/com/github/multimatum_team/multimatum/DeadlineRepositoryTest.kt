@@ -23,9 +23,9 @@ class DeadlineRepositoryTest {
         val date = LocalDate.of(2022, 3, 18)
         val deadlines = runBlocking { repository.fetchAfter(date) }
         assertEquals(
-            deadlines, listOf(
-                Deadline("Deadline 2", DeadlineState.DONE, LocalDate.of(2022, 3, 20)),
-                Deadline("Deadline 3", DeadlineState.TODO, LocalDate.of(2022, 4, 15)),
+            deadlines, mapOf(
+                "1" to Deadline("Deadline 2", DeadlineState.DONE, LocalDate.of(2022, 3, 20)),
+                "2" to Deadline("Deadline 3", DeadlineState.TODO, LocalDate.of(2022, 4, 15)),
             )
         )
     }
