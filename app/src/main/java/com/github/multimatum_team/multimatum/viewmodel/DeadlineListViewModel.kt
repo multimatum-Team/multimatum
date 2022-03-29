@@ -30,13 +30,22 @@ class DeadlineListViewModel @Inject constructor(
         deadlineRepository.onUpdate { _deadlines.value = it }
     }
 
+    /**
+     * Get all deadlines.
+     */
     fun getDeadlines(): LiveData<Map<DeadlineID, Deadline>> =
         _deadlines
 
+    /**
+     * Add a new deadline to the repository.
+     */
     fun addDeadline(deadline: Deadline) = viewModelScope.launch {
         deadlineRepository.put(deadline)
     }
 
+    /**
+     * Remove a deadline from the repository.
+     */
     fun deleteDeadline(id: DeadlineID) = viewModelScope.launch {
         deadlineRepository.delete(id)
     }
