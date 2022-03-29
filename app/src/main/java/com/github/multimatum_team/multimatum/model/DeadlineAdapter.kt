@@ -33,6 +33,11 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         notifyDataSetChanged()
     }
 
+    fun removeDeadline(position: Int) {
+        dataSource = dataSource.minus(getItem(position))
+        notifyDataSetChanged()
+    }
+
     override fun getCount(): Int {
         return dataSource.size
     }

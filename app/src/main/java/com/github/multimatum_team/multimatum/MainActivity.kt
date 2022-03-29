@@ -118,6 +118,11 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun goToAddDeadline(view: View) {
+        val intent = Intent(this, AddDeadlineActivity::class.java)
+        startActivity(intent)
+    }
+
     fun openCodeScanner(view: View) {
         if (ContextCompat.checkSelfPermission(
                 this,
