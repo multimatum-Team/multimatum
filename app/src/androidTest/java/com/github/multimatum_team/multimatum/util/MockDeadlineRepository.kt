@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum.util
 
 import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 
 /**
@@ -8,21 +9,33 @@ import com.github.multimatum_team.multimatum.repository.DeadlineRepository
  * This way the tests are completely independent from Firebase or network availability.
  */
 class MockDeadlineRepository(deadlines: List<Deadline>) : DeadlineRepository {
-    private val deadlines: MutableList<Deadline> = deadlines.toMutableList()
+    private val deadlines: MutableMap<DeadlineID, Deadline> =
+        deadlines
+            .mapIndexed { i, deadline -> i.toString() to deadline }
+            .toMap()
+            .toMutableMap()
 
-    private val updateListeners: MutableList<(List<Deadline>) -> Unit> = mutableListOf()
+    private var counter: Int = deadlines.size + 1
+
+    private val updateListeners: MutableList<(Map<DeadlineID, Deadline>) -> Unit> =
+        mutableListOf()
 
     private fun notifyUpdateListeners() =
         updateListeners.forEach { it(deadlines) }
 
-    override suspend fun fetchAll(): List<Deadline> = deadlines.sortedBy { it.date }
+    override suspend fun fetch(id: String): Deadline? =
+        deadlines[id]
 
-    override suspend fun put(deadline: Deadline) {
-        deadlines.add(deadline)
+    override suspend fun fetchAll(): Map<DeadlineID, Deadline> = deadlines
+
+    override suspend fun put(deadline: Deadline): DeadlineID {
+        val id = (counter++).toString()
+        deadlines[id] = deadline
         notifyUpdateListeners()
+        return id
     }
 
-    override fun onUpdate(callback: (List<Deadline>) -> Unit) {
+    override fun onUpdate(callback: (Map<DeadlineID, Deadline>) -> Unit) {
         updateListeners.add(callback)
     }
 }
