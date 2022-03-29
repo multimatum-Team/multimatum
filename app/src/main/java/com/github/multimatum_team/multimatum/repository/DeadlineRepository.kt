@@ -7,7 +7,8 @@ typealias DeadlineID = String
 
 /**
  * An interface for the deadline database.
- * A minimal implementation of this interface requires defining `fetchAll`, `put` and `delete`.
+ * A minimal implementation of this interface requires defining `fetchAll`, `put`, `modify` and
+ * `delete`.
  * The other methods have a default implementation which may be overridden for performance purposes.
  */
 interface DeadlineRepository {
@@ -32,6 +33,11 @@ interface DeadlineRepository {
      * Add a new deadline to the repository, returning the freshly generated ID of the new deadline.
      */
     suspend fun put(deadline: Deadline): DeadlineID
+
+    /**
+     * Modify an existing deadline to a new value.
+     */
+    suspend fun modify(id: DeadlineID, newDeadline: Deadline)
 
     /**
      * Remove a deadline from the repository.

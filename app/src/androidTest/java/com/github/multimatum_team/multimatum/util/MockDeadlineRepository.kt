@@ -35,6 +35,10 @@ class MockDeadlineRepository(deadlines: List<Deadline>) : DeadlineRepository {
         return id
     }
 
+    override suspend fun modify(id: DeadlineID, newDeadline: Deadline) {
+        deadlines[id] = newDeadline
+    }
+
     override suspend fun delete(id: DeadlineID) {
         deadlines.remove(id)
     }

@@ -78,6 +78,15 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
             .id
 
     /**
+     * Change existing deadline value in the database.
+     */
+    override suspend fun modify(id: DeadlineID, newDeadline: Deadline) {
+        deadlinesRef
+            .document(id)
+            .set(serializeDeadline(newDeadline))
+    }
+
+    /**
      * Remove a deadline from the Firebase database.
      */
     override suspend fun delete(id: DeadlineID) {
