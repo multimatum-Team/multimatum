@@ -25,9 +25,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_deadline)
-
-        val datePicker = findViewById<DatePicker>(R.id.add_deadline_date_picker)
-        datePicker.init(2022, 1, 1, null)
     }
 
     fun addDeadline(view: View) {
@@ -41,13 +38,13 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         // Check if the title is not empty
         if (titleDeadline == "") {
-            Toast.makeText(this, "Enter a title", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
             // Add the deadline
             val deadline = Deadline(titleDeadline, DeadlineState.TODO, dateDeadline)
             runBlocking { deadlineRepository.put(deadline) }
 
-            Toast.makeText(this, "Deadline created.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
 
             // Reset the text input for future use
             editText.text = ""

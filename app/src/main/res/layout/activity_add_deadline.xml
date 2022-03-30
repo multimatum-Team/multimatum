@@ -25,6 +25,7 @@
             android:ems="10"
             android:hint="@string/write_title_here"
             android:inputType="textPersonName"
+            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum
 
+import android.content.Context
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.contrib.PickerActions
@@ -33,10 +34,10 @@ import javax.inject.Singleton
 @RunWith(AndroidJUnit4::class)
 class AddDeadlineTest {
 
-    @get:Rule
+    @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
+    @get:Rule(order = 1)
     val activityRule = ActivityScenarioRule(AddDeadlineActivity::class.java)
 
     @Before
@@ -49,6 +50,8 @@ class AddDeadlineTest {
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_select_title))
             .perform(ViewActions.replaceText(""))
         Espresso.closeSoftKeyboard()
+        Espresso.onView(ViewMatchers.withId(R.id.add_deadline_date_picker))
+            .perform(PickerActions.setDate(2022, 5, 8))
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_button)).perform(ViewActions.click())
         MatcherAssert.assertThat(
             ShadowToast.getTextOfLatestToast(),
