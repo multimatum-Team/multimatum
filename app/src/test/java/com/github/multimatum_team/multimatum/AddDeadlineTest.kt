@@ -22,6 +22,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.shadows.ShadowToast
 import javax.inject.Singleton
 
@@ -53,10 +54,8 @@ class AddDeadlineTest {
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_date_picker))
             .perform(PickerActions.setDate(2022, 5, 8))
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_button)).perform(ViewActions.click())
-        MatcherAssert.assertThat(
-            ShadowToast.getTextOfLatestToast(),
-            CoreMatchers.equalTo("Enter a title")
-        )
+        MatcherAssert.assertThat(ShadowToast.getTextOfLatestToast(),
+            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.enter_a_title)))
     }
 
     @Test
@@ -67,10 +66,8 @@ class AddDeadlineTest {
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_date_picker))
             .perform(PickerActions.setDate(2022, 5, 8))
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_button)).perform(ViewActions.click())
-        MatcherAssert.assertThat(
-            ShadowToast.getTextOfLatestToast(),
-            CoreMatchers.equalTo("Deadline created.")
-        )
+        MatcherAssert.assertThat(ShadowToast.getTextOfLatestToast(),
+            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created)))
     }
 
     @Module
