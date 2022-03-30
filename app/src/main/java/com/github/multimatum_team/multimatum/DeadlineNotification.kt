@@ -37,7 +37,7 @@ class DeadlineNotification {
     Set a notification that will be triggered in a given time in ms.
     you can pass a title/description and Id in parameter
     */
-    fun setNotification(deadline: Deadline, context: Context){
+    fun setNotification(deadline: Deadline, context: Context, triggerTime: Long){
         alarmManager = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
         val intent = Intent(context, ReminderBroadcastReceiver::class.java) //this create an intent of broadcast receiver
         //Adding extra parameter that will be used in the broadcase receiver to create the notification
@@ -48,10 +48,8 @@ class DeadlineNotification {
         //set the receiver as pending intent
         pendingIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_IMMUTABLE)
 
-        val timeMS: Long = System.currentTimeMillis()+1000 //get milis from deadline.date (LocalDate)
-
         //set an alarm that will wake up the pending intent (receiver)
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeMS, pendingIntent)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
 
     }
 }
