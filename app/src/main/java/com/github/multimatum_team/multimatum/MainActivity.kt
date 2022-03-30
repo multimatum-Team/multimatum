@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,6 +11,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AbsListView
+import android.widget.AdapterView
 import android.widget.ListView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -19,6 +22,8 @@ import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.hudomju.swipe.SwipeToDismissTouchListener
+import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -55,8 +60,43 @@ class MainActivity : AppCompatActivity() {
             // Last line necessary to use this function
             true
         }
-
+        setDeleteOnSweep(listView, viewModel)
         createNotificationChannel()
+    }
+
+    // Set the ListView to delete an item by sweeping it
+    // Based on the tutorial:
+    // https://demonuts.com/android-listview-swipe-delete/
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setDeleteOnSweep(lv : ListView, viewModel: DeadlineListViewModel){
+
+        // Create a Listener who will delete the given deadline if swept
+        val touchListener = SwipeToDismissTouchListener(
+            ListViewAdapter(lv),
+            object : SwipeToDismissTouchListener.DismissCallbacks<ListViewAdapter?> {
+                override fun canDismiss(position: Int): Boolean {
+                    return true
+                }
+                override fun onDismiss(view: ListViewAdapter?, position: Int) {
+                        val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
+                        val (idToDelete, deadlineToDelete) = adapter.getItem(position)
+                        viewModel.deleteDeadline(idToDelete)
+                        adapter.setDeadlines(viewModel.getDeadlines().value!!)
+
+                }
+            })
+
+        // Set it on the ListView
+        lv.setOnTouchListener(touchListener)
+        lv.setOnScrollListener(touchListener.makeScrollListener() as AbsListView.OnScrollListener)
+
+        // If the Undo text is clicked, undo the deletion
+        lv.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, _, _ ->
+                if (touchListener.existPendingDismisses()) {
+                    touchListener.undoPendingDismiss()
+                }
+            }
     }
 
     /*
@@ -91,7 +131,7 @@ class MainActivity : AppCompatActivity() {
             ReminderBroadcastReceiver::class.java
         ) //this create an intent of broadcast receiver
 
-        //Adding extra parameter that will be used in the broadcase receiver to create the notification
+        //Adding extra parameter that will be used in the broadcast receiver to create the notification
         intent.putExtra("title", title)
         intent.putExtra("description", description)
         intent.putExtra("id", id)
@@ -109,7 +149,7 @@ class MainActivity : AppCompatActivity() {
     here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
     */
     fun triggerNotification(view: View) {
-        var id = System.currentTimeMillis().toInt()
+        val id = System.currentTimeMillis().toInt()
         setNotification(System.currentTimeMillis() + 4000, "asdf", "ouafouaf", id)
     }
 
