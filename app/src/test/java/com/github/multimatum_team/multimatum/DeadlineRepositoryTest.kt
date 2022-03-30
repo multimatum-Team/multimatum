@@ -9,31 +9,32 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class DeadlineRepositoryTest {
     private val repository: DeadlineRepository = MockDeadlineRepository(
         listOf(
-            Deadline("Deadline 1", DeadlineState.DONE, LocalDate.of(2022, 3, 17)),
-            Deadline("Deadline 2", DeadlineState.DONE, LocalDate.of(2022, 3, 20)),
-            Deadline("Deadline 3", DeadlineState.TODO, LocalDate.of(2022, 4, 15)),
+            Deadline("Deadline 1", DeadlineState.DONE, LocalDateTime.of(2022, 3, 17, 0, 0)),
+            Deadline("Deadline 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 20, 0, 0)),
+            Deadline("Deadline 3", DeadlineState.TODO, LocalDateTime.of(2022, 4, 15, 0, 0)),
         )
     )
 
     @Test
     fun `Default implementation of fetch returns the right deadline`() = runTest {
-        assertEquals(repository.fetch("0"), Deadline("Deadline 1", DeadlineState.DONE, LocalDate.of(2022, 3, 17)))
-        assertEquals(repository.fetch("1"), Deadline("Deadline 2", DeadlineState.DONE, LocalDate.of(2022, 3, 20)))
-        assertEquals(repository.fetch("2"), Deadline("Deadline 3", DeadlineState.TODO, LocalDate.of(2022, 4, 15)))
+        assertEquals(repository.fetch("0"), Deadline("Deadline 1", DeadlineState.DONE, LocalDateTime.of(2022, 3, 17, 0, 0)))
+        assertEquals(repository.fetch("1"), Deadline("Deadline 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 20, 0, 0)))
+        assertEquals(repository.fetch("2"), Deadline("Deadline 3", DeadlineState.TODO, LocalDateTime.of(2022, 4, 15, 0, 0)))
     }
 
     @Test
     fun `fetchAfter returns deadlines due after the given date`() {
-        val date = LocalDate.of(2022, 3, 18)
+        val date = LocalDateTime.of(2022, 3, 18, 0, 0)
         val deadlines = runBlocking { repository.fetchAfter(date) }
         assertEquals(
             deadlines, mapOf(
-                "1" to Deadline("Deadline 2", DeadlineState.DONE, LocalDate.of(2022, 3, 20)),
-                "2" to Deadline("Deadline 3", DeadlineState.TODO, LocalDate.of(2022, 4, 15)),
+                "1" to Deadline("Deadline 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 20, 0, 0)),
+                "2" to Deadline("Deadline 3", DeadlineState.TODO, LocalDateTime.of(2022, 4, 15, 0 ,0)),
             )
         )
     }

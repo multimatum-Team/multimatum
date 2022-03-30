@@ -2,6 +2,7 @@ package com.github.multimatum_team.multimatum.service
 
 import java.time.Clock
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * An interface for providing date and time.
@@ -15,6 +16,6 @@ interface ClockService {
     /**
      * Get the local date provided by the clock.
      */
-    fun now(): LocalDate =
-        LocalDate.now(getClock())
+    fun now(): LocalDateTime =
+        LocalDateTime.now(getClock())
 }

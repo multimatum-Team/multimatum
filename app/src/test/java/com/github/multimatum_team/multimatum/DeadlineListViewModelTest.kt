@@ -22,15 +22,16 @@ import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
 @ExperimentalCoroutinesApi
 class DeadlineListViewModelTest {
     private val deadlines: List<Deadline> = listOf(
-        Deadline("Deadline 1", DeadlineState.DONE, LocalDate.of(2022, 3, 17)),
-        Deadline("Deadline 2", DeadlineState.DONE, LocalDate.of(2022, 3, 20)),
-        Deadline("Deadline 3", DeadlineState.TODO, LocalDate.of(2022, 4, 15)),
+        Deadline("Deadline 1", DeadlineState.DONE, LocalDateTime.of(2022, 3, 17, 0, 0)),
+        Deadline("Deadline 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 20,0 , 0)),
+        Deadline("Deadline 3", DeadlineState.TODO, LocalDateTime.of(2022, 4, 15, 0, 0)),
     )
     private lateinit var repository: DeadlineRepository
 
@@ -55,14 +56,14 @@ class DeadlineListViewModelTest {
     @Test
     fun `LiveData initially contains repository contents`() = runTest {
         val deadlines = viewModel.getDeadlines().getOrAwaitValue()
-        assertEquals(deadlines["0"], Deadline("Deadline 1", DeadlineState.DONE, LocalDate.of(2022, 3, 17)))
-        assertEquals(deadlines["1"], Deadline("Deadline 2", DeadlineState.DONE, LocalDate.of(2022, 3, 20)))
-        assertEquals(deadlines["2"], Deadline("Deadline 3", DeadlineState.TODO, LocalDate.of(2022, 4, 15)))
+        assertEquals(deadlines["0"], Deadline("Deadline 1", DeadlineState.DONE, LocalDateTime.of(2022, 3, 17, 0, 0)))
+        assertEquals(deadlines["1"], Deadline("Deadline 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 20, 0, 0)))
+        assertEquals(deadlines["2"], Deadline("Deadline 3", DeadlineState.TODO, LocalDateTime.of(2022, 4, 15, 0, 0)))
     }
 
     @Test
     fun `LiveData is updated when new deadline is put into the repository`() = runTest {
-        val newDeadline = Deadline("Deadline 4", DeadlineState.TODO, LocalDate.of(2022, 5, 2))
+        val newDeadline = Deadline("Deadline 4", DeadlineState.TODO, LocalDateTime.of(2022, 5, 2, 0, 0))
         val newDeadlineList = deadlines.toMutableList()
         newDeadlineList.add(newDeadline)
         repository.put(newDeadline).run {

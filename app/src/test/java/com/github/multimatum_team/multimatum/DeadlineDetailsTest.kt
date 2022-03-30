@@ -12,6 +12,7 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 /**
@@ -25,7 +26,7 @@ class DeadlineDetailsTest {
         val intent = DeadlineDetailsActivity.newIntent(
             ApplicationProvider.getApplicationContext(),
             "1",
-            Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7))
+            Deadline("Test 1", DeadlineState.TODO, LocalDateTime.now().plusDays(7))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
@@ -40,7 +41,7 @@ class DeadlineDetailsTest {
         val intent = DeadlineDetailsActivity.newIntent(
             ApplicationProvider.getApplicationContext(),
             "2",
-            Deadline("Test 2", DeadlineState.DONE, LocalDate.now().plusDays(7))
+            Deadline("Test 2", DeadlineState.DONE, LocalDateTime.now().plusDays(7))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
@@ -54,12 +55,12 @@ class DeadlineDetailsTest {
         val intent = DeadlineDetailsActivity.newIntent(
             ApplicationProvider.getApplicationContext(),
             "3",
-            Deadline("Test 3", DeadlineState.TODO, LocalDate.now().minusDays(2))
+            Deadline("Test 3", DeadlineState.TODO, LocalDateTime.now().minusDays(2))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${LocalDate.now().minusDays(2)}")))
+            .check(matches(withText("Due the ${LocalDateTime.now().minusDays(2)}")))
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Is already Due")))
     }
 }

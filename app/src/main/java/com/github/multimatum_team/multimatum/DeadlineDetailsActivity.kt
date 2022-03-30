@@ -63,7 +63,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
             detailIntent.putExtra(EXTRA_ID, id)
             detailIntent.putExtra(EXTRA_TITLE, deadline.title)
-            detailIntent.putExtra(EXTRA_DATE, deadline.date)
+            detailIntent.putExtra(EXTRA_DATE, deadline.dateTime)
             detailIntent.putExtra(EXTRA_STATE, deadline.state)
 
             return detailIntent

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Chronometer
 import android.widget.TextView
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.repository.DeadlineID
@@ -17,6 +18,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import java.time.Period
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @EntryPoint
@@ -49,7 +51,7 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
 
     fun setDeadlines(deadlines: Map<DeadlineID, Deadline>) {
         dataSource = deadlines.toSortedMap { id1, id2 ->
-            compareValues(deadlines[id1]!!.date, deadlines[id2]!!.date)
+            compareValues(deadlines[id1]!!.dateTime, deadlines[id2]!!.dateTime)
         }
         notifyDataSetChanged()
     }
@@ -85,7 +87,7 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         titleTextView.setTypeface(null, Typeface.BOLD)
 
         // Show the date
-        subtitleTextView.text = context.getString(R.string.DueTheX, deadline.date)
+        subtitleTextView.text = context.getString(R.string.DueTheX, deadline.dateTime)
         subtitleTextView.setTypeface(null, Typeface.ITALIC)
 
         // Show how much time left or if it is due or done.
@@ -96,18 +98,18 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
                 detailTextView.setTextColor(Color.GREEN)
                 detailTextView.setTypeface(null, Typeface.BOLD)
             }
-            clockService.now() > deadline.date -> {
+            clockService.now() > deadline.dateTime -> {
                 detail = context.getString(R.string.isAlreadyDue)
             }
             else -> {
-                val timeRemaining = Period.between(clockService.now(), deadline.date)
+                val timeRemaining = clockService.now().until(deadline.dateTime, ChronoUnit.HOURS)
                 detail =
-                    context.getString(R.string.DueInXDays, timeRemaining.days.toString())
+                    context.getString(R.string.DueInXDays, timeRemaining.toString())
                 // If the remaining days is too small, put them in red or orange
-                if (timeRemaining.days < URGENT) {
+                if (timeRemaining < URGENT) {
                     detailTextView.setTextColor(Color.RED)
                     detailTextView.setTypeface(null, Typeface.BOLD)
-                } else if (timeRemaining.days < PRESSING) {
+                } else if (timeRemaining < PRESSING) {
                     detailTextView.setTextColor(Color.rgb(255, 165, 0))
                     detailTextView.setTypeface(null, Typeface.BOLD)
                 }

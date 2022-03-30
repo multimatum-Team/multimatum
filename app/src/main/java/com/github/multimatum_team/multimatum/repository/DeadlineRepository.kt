@@ -2,6 +2,7 @@ package com.github.multimatum_team.multimatum.repository
 
 import com.github.multimatum_team.multimatum.model.Deadline
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 typealias DeadlineID = String
 
@@ -26,8 +27,8 @@ interface DeadlineRepository {
     /**
      * Fetch all deadlines occurring after a given date from the repository.
      */
-    suspend fun fetchAfter(dateLimit: LocalDate): Map<DeadlineID, Deadline> =
-        fetchAll().filterValues { it.date > dateLimit }
+    suspend fun fetchAfter(dateLimit: LocalDateTime): Map<DeadlineID, Deadline> =
+        fetchAll().filterValues { it.dateTime > dateLimit }
 
     /**
      * Add a new deadline to the repository, returning the freshly generated ID of the new deadline.

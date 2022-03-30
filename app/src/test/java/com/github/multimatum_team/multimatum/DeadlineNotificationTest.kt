@@ -19,6 +19,7 @@ import org.robolectric.Shadows
 import org.robolectric.shadows.ShadowAlarmManager
 import org.robolectric.shadows.ShadowNotificationManager
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @RunWith(AndroidJUnit4::class)
 class DeadlineNotificationTest {
@@ -70,7 +71,7 @@ class DeadlineNotificationTest {
         val alarmManager = ApplicationProvider.getApplicationContext<Context>().getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
         val triggerAtTime = System.currentTimeMillis()
-        deadlineNotification.setNotification(Deadline("notifDeadline", DeadlineState.TODO, LocalDate.now()), context, triggerAtTime)
+        deadlineNotification.setNotification(Deadline("notifDeadline", DeadlineState.TODO, LocalDateTime.now()), context, triggerAtTime)
 
         Assert.assertEquals(triggerAtTime, shadowAlarmManager.peekNextScheduledAlarm().triggerAtTime)
     }

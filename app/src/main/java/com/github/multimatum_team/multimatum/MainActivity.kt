@@ -20,6 +20,7 @@ import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity() {
     here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
     */
     fun triggerNotification(view:View) {
-        DeadlineNotification().setNotification(Deadline("notifDeadline", DeadlineState.TODO, LocalDate.now()), this,  System.currentTimeMillis()+1000)
+        DeadlineNotification().setNotification(Deadline("notifDeadline", DeadlineState.TODO, LocalDateTime.now()), this,  System.currentTimeMillis()+1000)
     }
 
     fun goQRGenerator(view: View) {

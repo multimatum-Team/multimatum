@@ -45,7 +45,7 @@ class CalendarActivity : AppCompatActivity() {
         // Getting the entered text and the selected date
         val deadlineTitle = editText.text.toString()
         val selectedDate =
-            Instant.ofEpochMilli(calendar.date).atZone(ZoneId.systemDefault()).toLocalDate()
+            Instant.ofEpochMilli(calendar.date).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
         // Add the new event to the deadline list
         val deadline = Deadline(deadlineTitle, DeadlineState.TODO, selectedDate)
