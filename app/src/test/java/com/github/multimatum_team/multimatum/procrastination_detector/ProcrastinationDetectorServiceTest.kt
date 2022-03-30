@@ -4,10 +4,12 @@ import android.content.SharedPreferences
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
+import android.widget.Toast
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ServiceTestRule
 import com.github.multimatum_team.multimatum.DependenciesProvider
+import com.github.multimatum_team.multimatum.R
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,6 +31,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isA
 import org.mockito.kotlin.mock
 import org.robolectric.Robolectric
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.shadows.ShadowToast
 import java.util.*
 import javax.inject.Singleton
@@ -91,7 +94,27 @@ class ProcrastinationDetectorServiceTest {
         service.onSensorChanged(mockSensorEvent)
         configureMockSensorEventFor(mockSensorEvent, 10f, 10f, 10f, 5_000_000_000)
         service.onSensorChanged(mockSensorEvent)
-        assertThat(ShadowToast.getTextOfLatestToast(), equalTo("Hey! Why is this phone moving? You should be working!"))
+        assertThat(
+            ShadowToast.getTextOfLatestToast(),
+            equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.stop_procrastinating_msg))
+        )
+        controller.destroy()
+    }
+
+    private val TINY_CHANGE = 1e-5.toFloat()
+    private val FAKE_TOAST_TEXT = "<fake_toast_text>"
+
+    @Test
+    fun toast_should_not_be_displayed_when_sensor_detected_tiny_change() {
+        val mockSensorEvent: SensorEvent = mock()
+        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(mockSensor)
+        val service = controller.create().startCommand(0, 0).get()
+        configureMockSensorEventFor(mockSensorEvent, 0f, 0f, 0f, 2_000_000_000)
+        service.onSensorChanged(mockSensorEvent)
+        configureMockSensorEventFor(mockSensorEvent, TINY_CHANGE, TINY_CHANGE, TINY_CHANGE, 5_000_000_000)
+        Toast.makeText(RuntimeEnvironment.getApplication().applicationContext, FAKE_TOAST_TEXT, Toast.LENGTH_SHORT).show()
+        service.onSensorChanged(mockSensorEvent)
+        assertThat(ShadowToast.getTextOfLatestToast(), equalTo(FAKE_TOAST_TEXT))
         controller.destroy()
     }
 
