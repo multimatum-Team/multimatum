@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ListView
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,7 +27,8 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
 
-    private lateinit var viewModel: DeadlineListViewModel
+    private val viewModel: DeadlineListViewModel by viewModels()
+
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
 
@@ -37,20 +39,18 @@ class MainActivity : AppCompatActivity() {
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
 
-        viewModel = DeadlineListViewModel(deadlineRepository)
-
         val adapter = DeadlineAdapter(this)
 
         listView.adapter = adapter
-        viewModel.deadlines.observe(this) { deadlines ->
+        viewModel.getDeadlines().observe(this) { deadlines ->
             Log.d("deadlines", deadlines.toString())
             adapter.setDeadlines(deadlines)
         }
 
         // Set when you maintain your finger on an item of the list, launch the detail activity
         listView.setOnItemLongClickListener { _, _, position, _ ->
-            val selectedDeadline = adapter.getItem(position)
-            val detailIntent = DeadlineDetailsActivity.newIntent(this, selectedDeadline)
+            val (id, selectedDeadline) = adapter.getItem(position)
+            val detailIntent = DeadlineDetailsActivity.newIntent(this, id, selectedDeadline)
             startActivity(detailIntent)
             // Last line necessary to use this function
             true
