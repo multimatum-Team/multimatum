@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
     // Based on the tutorial:
     // https://demonuts.com/android-listview-swipe-delete/
     @SuppressLint("ClickableViewAccessibility")
-    private fun setDeleteOnSweep(lv : ListView, viewModel: DeadlineListViewModel){
+    private fun setDeleteOnSweep(lv: ListView, viewModel: DeadlineListViewModel) {
 
         // Create a Listener who will delete the given deadline if swept
         val touchListener = SwipeToDismissTouchListener(
@@ -79,11 +79,12 @@ class MainActivity : AppCompatActivity() {
                 override fun canDismiss(position: Int): Boolean {
                     return true
                 }
+
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
-                        val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
-                        val (idToDelete, _) = adapter.getItem(position)
-                        viewModel.deleteDeadline(idToDelete)
-                        adapter.setDeadlines(viewModel.getDeadlines().value!!)
+                    val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
+                    val (idToDelete, _) = adapter.getItem(position)
+                    viewModel.deleteDeadline(idToDelete)
+                    adapter.setDeadlines(viewModel.getDeadlines().value!!)
 
                 }
             })
@@ -105,8 +106,14 @@ class MainActivity : AppCompatActivity() {
     This button trigger a basics notification in 1 sec
     here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
     */
-    fun triggerNotification(view:View) {
-        DeadlineNotification().setNotification(Deadline("notifDeadline", DeadlineState.TODO, LocalDate.now()), this,  System.currentTimeMillis()+1000)
+    fun triggerNotification(view: View) {
+        DeadlineNotification().setNotification(
+            Deadline(
+                "notifDeadline",
+                DeadlineState.TODO,
+                LocalDate.now()
+            ), this, System.currentTimeMillis() + 1000
+        )
     }
 
     fun goQRGenerator(view: View) {
