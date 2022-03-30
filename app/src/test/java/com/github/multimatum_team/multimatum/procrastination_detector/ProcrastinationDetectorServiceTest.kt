@@ -2,6 +2,7 @@ package com.github.multimatum_team.multimatum.procrastination_detector
 
 import android.content.SharedPreferences
 import android.hardware.Sensor
+import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -16,6 +17,7 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.equalTo
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -27,6 +29,8 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isA
 import org.mockito.kotlin.mock
 import org.robolectric.Robolectric
+import org.robolectric.shadows.ShadowToast
+import java.util.*
 import javax.inject.Singleton
 
 @UninstallModules(DependenciesProvider::class)
@@ -52,8 +56,11 @@ class ProcrastinationDetectorServiceTest {
         Intents.release()
     }
 
+    // TODO test involving toasts and fake sensor values
+    // TODO test on button to start service (in MainActivityTest)
+
     @Test
-    fun registrationTest(){
+    fun service_should_be_registered_as_listener_and_then_unregistered(){
         var wasRegistered = false
         var wasUnregistered = false
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(mockSensor)
@@ -67,13 +74,36 @@ class ProcrastinationDetectorServiceTest {
             wasUnregistered = true
             true
         }
-
-        controller.create().startCommand(0, 0).get()
+        controller.create().startCommand(0, 0)
         assertThat("ProcrastinationDetectorService should be registered as a listener",
             wasRegistered, `is`(true))
         controller.destroy()
         assertThat("ProcrastinationDetectorService should be unregistered",
             wasUnregistered, `is`(true))
+    }
+
+    @Test
+    fun toast_should_be_displayed_when_sensor_detected_major_change() {
+        val mockSensorEvent: SensorEvent = mock()
+        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(mockSensor)
+        val service = controller.create().startCommand(0, 0).get()
+        configureMockSensorEventFor(mockSensorEvent, 0f, 0f, 0f, 2_000_000_000)
+        service.onSensorChanged(mockSensorEvent)
+        configureMockSensorEventFor(mockSensorEvent, 10f, 10f, 10f, 5_000_000_000)
+        service.onSensorChanged(mockSensorEvent)
+        assertThat(ShadowToast.getTextOfLatestToast(), equalTo("Hey! Why is this phone moving? You should be working!"))
+        controller.destroy()
+    }
+
+    private fun configureMockSensorEventFor(mockSensorEvent: SensorEvent, x: Float, y: Float, z: Float, timestampNanosec: Long) {
+        forceSet(mockSensorEvent, "values", floatArrayOf(x, y, z))
+        forceSet(mockSensorEvent, "timestamp", timestampNanosec)
+    }
+
+    private fun forceSet(obj: Any, fieldName: String, value: Any){
+        val valuesField = SensorEvent::class.java.getField(fieldName)
+        valuesField.isAccessible = true
+        valuesField.set(obj, value)
     }
 
     companion object {
