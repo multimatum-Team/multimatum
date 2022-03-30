@@ -19,12 +19,20 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class AddDeadlineActivity : AppCompatActivity() {
+
+    companion object {
+        // Temporary value that will be link later to the actual day
+        private val initDate : LocalDate = LocalDate.of(2022,1,1)
+    }
+
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_deadline)
+        val datePicker = findViewById<DatePicker>(R.id.add_deadline_date_picker)
+        datePicker.init(initDate.year,initDate.month.value,initDate.dayOfMonth, null)
     }
 
     fun addDeadline(view: View) {
@@ -34,7 +42,7 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         // Getting the entered text and the selected date
         val titleDeadline = editText.text.toString()
-        val dateDeadline = LocalDate.of(datePicker.year, datePicker.month, datePicker.dayOfMonth)
+        val dateDeadline = LocalDate.of(datePicker.year, datePicker.month + 1, datePicker.dayOfMonth)
 
         // Check if the title is not empty
         if (titleDeadline == "") {
