@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum.procrastination_detector
+package com.github.multimatum_team.multimatum.service
 
 import android.app.Service
 import android.content.Intent

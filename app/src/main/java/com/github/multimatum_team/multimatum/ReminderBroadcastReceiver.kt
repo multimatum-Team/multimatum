@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum
 
 import android.app.Activity
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -21,7 +22,6 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
 
         val intent2 = Intent(context, MainActivity::class.java)
         intent2!!.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
         //this is the intent where the user will be send when clicking on the notification
         val pendingIntent = PendingIntent.getActivity(context, 0, intent2, PendingIntent.FLAG_IMMUTABLE)
 
@@ -37,7 +37,7 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         //send the notification
-        val notificationManager = NotificationManagerCompat.from(context)
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(notifId, notifBuilder.build())
     }
 }

@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import com.github.multimatum_team.multimatum.procrastination_detector.ProcrastinationDetectorService
+import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

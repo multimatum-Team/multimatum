@@ -20,7 +20,7 @@
             android:exported="false" />
 
         <service
-            android:name=".procrastination_detector.ProcrastinationDetectorService"
+            android:name=".service.ProcrastinationDetectorService"
             android:enabled="true"
             android:exported="false" />
 

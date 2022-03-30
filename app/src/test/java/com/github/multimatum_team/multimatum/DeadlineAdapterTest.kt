@@ -11,30 +11,52 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.DeadlineID
+import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.util.MockClockService
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import dagger.hilt.components.SingletonComponent
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
+import java.util.*
+import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
+@UninstallModules(ClockModule::class)
 class DeadlineAdapterTest {
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var clockService: ClockService
+
     private lateinit var adapter: DeadlineAdapter
     private var context: Application? = null
-    private lateinit var list: List<Deadline>
+    private lateinit var deadlines: Map<DeadlineID, Deadline>
 
     @Before
     @Throws(Exception::class)
     fun setUp() {
+        hiltRule.inject()
         context = ApplicationProvider.getApplicationContext()
         adapter = DeadlineAdapter(context!!)
-        list = listOf(
-            Deadline("Number 1", DeadlineState.TODO, LocalDate.now().plusDays(1)),
-            Deadline("Number 2", DeadlineState.TODO, LocalDate.now().plusDays(7)),
-            Deadline("Number 3", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
-            Deadline("Number 4", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
+        deadlines = mapOf(
+            "1" to Deadline("Number 1", DeadlineState.TODO, LocalDate.of(2022, 3, 1)),
+            "2" to Deadline("Number 2", DeadlineState.TODO, LocalDate.of(2022, 3, 13)),
+            "3" to Deadline("Number 3", DeadlineState.TODO, LocalDate.of(2022, 3, 19)),
+            "4" to Deadline("Number 4", DeadlineState.DONE, LocalDate.of(2022, 3, 30))
         )
-        adapter.setDeadlines(list)
+        adapter.setDeadlines(deadlines)
     }
 
     @Test
@@ -43,11 +65,11 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun `GetItem should give the correct deadline in the list`() {
-        Assert.assertEquals(adapter.getItem(0), list[0])
-        Assert.assertEquals(adapter.getItem(1), list[1])
-        Assert.assertEquals(adapter.getItem(2), list[2])
-        Assert.assertEquals(adapter.getItem(3), list[3])
+    fun `GetItem should give the correct deadlines sorted by dates`() {
+        Assert.assertEquals(adapter.getItem(0), deadlines.entries.toList()[0].toPair())
+        Assert.assertEquals(adapter.getItem(1), deadlines.entries.toList()[1].toPair())
+        Assert.assertEquals(adapter.getItem(2), deadlines.entries.toList()[2].toPair())
+        Assert.assertEquals(adapter.getItem(3), deadlines.entries.toList()[3].toPair())
     }
 
     @Test
@@ -61,10 +83,10 @@ class DeadlineAdapterTest {
     @Test
     fun `GetView should show properly the first deadline who is due in 1 day in red`() {
         val parent = ListView(context)
-        val listItemView: View = adapter.getView(0, null, parent)
+        val listItemView: View = adapter.getView(1, null, parent)
         //check title
         Assert.assertEquals(
-            "Number 1",
+            "Number 2",
             (listItemView.findViewById<TextView>(R.id.deadline_list_title)).text
         )
         Assert.assertEquals(
@@ -73,7 +95,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the ${list[0].date}",
+            "Due the ${deadlines["2"]!!.date}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -98,10 +120,10 @@ class DeadlineAdapterTest {
     @Test
     fun `GetView should show properly the second deadline who is due in 7 day in orange`() {
         val parent = ListView(context)
-        val listItemView: View = adapter.getView(1, null, parent)
+        val listItemView: View = adapter.getView(2, null, parent)
         //check title
         Assert.assertEquals(
-            "Number 2",
+            "Number 3",
             (listItemView.findViewById<TextView>(R.id.deadline_list_title)).text
         )
         Assert.assertEquals(
@@ -110,7 +132,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the ${list[1].date}",
+            "Due the ${deadlines["3"]!!.date}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -135,10 +157,10 @@ class DeadlineAdapterTest {
     @Test
     fun `GetView should show properly the third deadline who is already done`() {
         val parent = ListView(context)
-        val listItemView: View = adapter.getView(2, null, parent)
+        val listItemView: View = adapter.getView(3, null, parent)
         //check title
         Assert.assertEquals(
-            "Number 3",
+            "Number 4",
             (listItemView.findViewById<TextView>(R.id.deadline_list_title)).text
         )
         Assert.assertEquals(
@@ -172,10 +194,10 @@ class DeadlineAdapterTest {
     @Test
     fun `GetView should show properly the fourth deadline who is already due`() {
         val parent = ListView(context)
-        val listItemView: View = adapter.getView(3, null, parent)
+        val listItemView: View = adapter.getView(0, null, parent)
         //check title
         Assert.assertEquals(
-            "Number 4",
+            "Number 1",
             (listItemView.findViewById<TextView>(R.id.deadline_list_title)).text
         )
         Assert.assertEquals(
@@ -206,4 +228,11 @@ class DeadlineAdapterTest {
         )
     }
 
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestClockModule {
+        @Provides
+        fun provideClockService(): ClockService =
+            MockClockService(LocalDate.of(2022, 3, 12))
+    }
 }
