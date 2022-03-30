@@ -9,29 +9,54 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.util.MockClockService
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import dagger.hilt.components.SingletonComponent
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.inject.Inject
 
 
 /**
  * Tests for the DeadlineDetailsActivity class
  */
 @RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
+@UninstallModules(ClockModule::class)
 class DeadlineDetailsTest {
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var clockService: ClockService
+
+    @Before
+    @Throws(Exception::class)
+    fun setUp() {
+        hiltRule.inject()
+    }
 
     @Test
     fun `Given a deadline not yet due or done, the activity should display it`() {
         val intent = DeadlineDetailsActivity.newIntent(
             ApplicationProvider.getApplicationContext(),
             "1",
-            Deadline("Test 1", DeadlineState.TODO, LocalDateTime.now().plusDays(7))
+            Deadline("Test 1", DeadlineState.TODO, clockService.now().plusDays(7))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${LocalDate.now().plusDays(7)}"))
+            .check(matches(withText("Due the ${clockService.now().plusDays(7)}"))
         )
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 7 Days")))
     }
@@ -41,12 +66,12 @@ class DeadlineDetailsTest {
         val intent = DeadlineDetailsActivity.newIntent(
             ApplicationProvider.getApplicationContext(),
             "2",
-            Deadline("Test 2", DeadlineState.DONE, LocalDateTime.now().plusDays(7))
+            Deadline("Test 2", DeadlineState.DONE, clockService.now().plusDays(7))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${LocalDate.now().plusDays(7)}")))
+            .check(matches(withText("Due the ${clockService.now().plusDays(7)}")))
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
     }
 
@@ -55,12 +80,20 @@ class DeadlineDetailsTest {
         val intent = DeadlineDetailsActivity.newIntent(
             ApplicationProvider.getApplicationContext(),
             "3",
-            Deadline("Test 3", DeadlineState.TODO, LocalDateTime.now().minusDays(2))
+            Deadline("Test 3", DeadlineState.TODO, clockService.now().minusDays(2))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${LocalDateTime.now().minusDays(2)}")))
+            .check(matches(withText("Due the ${clockService.now().minusDays(2)}")))
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Is already Due")))
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestClockModule {
+        @Provides
+        fun provideClockService(): ClockService =
+            MockClockService(LocalDateTime.of(2022, 3, 12, 0, 0))
     }
 }

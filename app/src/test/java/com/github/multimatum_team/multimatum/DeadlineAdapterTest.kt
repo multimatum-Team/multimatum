@@ -170,7 +170,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the 2022-03-30",
+            "Due the 2022-03-30T13:00",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -207,7 +207,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the 2022-03-01",
+            "Due the 2022-03-01T10:00",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -234,6 +234,6 @@ class DeadlineAdapterTest {
     object TestClockModule {
         @Provides
         fun provideClockService(): ClockService =
-            MockClockService(LocalDate.of(2022, 3, 12))
+            MockClockService(LocalDateTime.of(2022, 3, 12, 0, 1))
     }
 }

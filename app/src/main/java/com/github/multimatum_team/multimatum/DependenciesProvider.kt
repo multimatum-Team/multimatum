@@ -38,6 +38,7 @@ object DependenciesProvider {
 @Module
 @InstallIn(SingletonComponent::class)
 object ClockModule {
+    @Singleton
     @Provides
     fun provideClockService(): ClockService =
         SystemClockService()
