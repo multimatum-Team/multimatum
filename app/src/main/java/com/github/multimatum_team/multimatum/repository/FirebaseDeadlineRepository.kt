@@ -5,9 +5,7 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -55,40 +53,65 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
     }
 
     /**
+     * Fetch a single deadline given its unique ID.
+     */
+    override suspend fun fetch(id: DeadlineID): Deadline =
+        deserializeDeadline(deadlinesRef.document(id).get().await())
+
+    /**
      * Fetch all deadlines from the database.
      */
-    override suspend fun fetchAll(): List<Deadline> =
+    override suspend fun fetchAll(): Map<DeadlineID, Deadline> =
         deadlinesRef
             .get()
             .await()
             .documents
-            .map { deserializeDeadline(it) }
+            .associate { it.id to deserializeDeadline(it) }
 
     /**
      * Insert new deadline in the database.
      */
-    override suspend fun put(deadline: Deadline) {
+    override suspend fun put(deadline: Deadline): DeadlineID =
         deadlinesRef
             .add(serializeDeadline(deadline))
+            .await()
+            .id
+
+    /**
+     * Change existing deadline value in the database.
+     */
+    override suspend fun modify(id: DeadlineID, newDeadline: Deadline) {
+        deadlinesRef
+            .document(id)
+            .set(serializeDeadline(newDeadline))
+    }
+
+    /**
+     * Remove a deadline from the Firebase database.
+     */
+    override suspend fun delete(id: DeadlineID) {
+        deadlinesRef
+            .document(id)
+            .delete()
             .await()
     }
 
     /**
      * Add listener for firebase updates.
      */
-    override fun onUpdate(callback: (List<Deadline>) -> Unit) {
+    override fun onUpdate(callback: (Map<DeadlineID, Deadline>) -> Unit) {
         deadlinesRef
-            .addSnapshotListener(EventListener<QuerySnapshot> { deadlineSnapshots, error ->
+            .addSnapshotListener { deadlineSnapshots, error ->
                 if (error != null) {
                     Log.w("FirebaseDeadlineRepository", "Failed to retrieve data from database")
-                    return@EventListener
+                    return@addSnapshotListener
                 }
 
-                val deadlineList: MutableList<Deadline> = mutableListOf()
+                val deadlineMap: MutableMap<DeadlineID, Deadline> = mutableMapOf()
                 deadlineSnapshots!!.forEach { deadlineSnapshot ->
-                    deadlineList.add(deserializeDeadline(deadlineSnapshot))
+                    deadlineMap[deadlineSnapshot.id] = deserializeDeadline(deadlineSnapshot)
                 }
-                callback(deadlineList)
-            })
+                callback(deadlineMap)
+            }
     }
 }
