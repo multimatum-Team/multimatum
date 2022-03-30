@@ -102,7 +102,7 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
                 detail = context.getString(R.string.isAlreadyDue)
             }
             else -> {
-                val timeRemaining = clockService.now().until(deadline.dateTime, ChronoUnit.HOURS)
+                val timeRemaining = clockService.now().until(deadline.dateTime, ChronoUnit.DAYS)
                 detail =
                     context.getString(R.string.DueInXDays, timeRemaining.toString())
                 // If the remaining days is too small, put them in red or orange

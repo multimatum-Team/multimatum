@@ -33,6 +33,7 @@ import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @UninstallModules(DependenciesProvider::class)
 @HiltAndroidTest
@@ -152,9 +153,9 @@ class MainSettingsActivityTest {
         @Provides
         fun provideDemoList(): List<Deadline> =
             listOf(
-                Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7)),
-                Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
-                Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 1))
+                Deadline("Test 1", DeadlineState.TODO, LocalDateTime.now().plusDays(7)),
+                Deadline("Test 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 0, 0)),
+                Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 1, 0, 0))
             )
             
         @Provides

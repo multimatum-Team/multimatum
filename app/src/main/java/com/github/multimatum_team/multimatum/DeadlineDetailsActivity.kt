@@ -9,7 +9,9 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
+import java.time.temporal.ChronoUnit
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
@@ -22,7 +24,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Recuperate the Deadline from the intent
         val title = intent.getStringExtra(EXTRA_TITLE)
-        val date = intent.getSerializableExtra(EXTRA_DATE) as LocalDate
+        val date = intent.getSerializableExtra(EXTRA_DATE) as LocalDateTime
         val state = intent.getSerializableExtra(EXTRA_STATE) as DeadlineState
 
         // Set the texts for the title and the date of the deadline
@@ -32,7 +34,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Set the detail text to inform the user if it is due, done or the remaining time
         val detailView = findViewById<TextView>(R.id.deadline_details_activity_done_or_due)
-        val actualDate = LocalDate.now()
+        val actualDate = LocalDateTime.now()
         when {
             state == DeadlineState.DONE -> {
                 detailView.text = getString(R.string.done)
@@ -42,7 +44,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             }
             else -> {
                 detailView.text =
-                    getString(R.string.DueInXDays, Period.between(actualDate, date).days.toString())
+                    getString(R.string.DueInXDays, actualDate.until(date, ChronoUnit.DAYS).toString())
             }
         }
 
