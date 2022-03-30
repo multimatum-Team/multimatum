@@ -2,10 +2,6 @@ package com.github.multimatum_team.multimatum
 
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -66,8 +62,8 @@ class MainActivity : AppCompatActivity() {
             // Last line necessary to use this function
             true
         }
+
         setDeleteOnSweep(listView, viewModel)
-        createNotificationChannel()
     }
 
     // Set the ListView to delete an item by sweeping it
@@ -85,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
                         val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
-                        val (idToDelete, deadlineToDelete) = adapter.getItem(position)
+                        val (idToDelete, _) = adapter.getItem(position)
                         viewModel.deleteDeadline(idToDelete)
                         adapter.setDeadlines(viewModel.getDeadlines().value!!)
 
