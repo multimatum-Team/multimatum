@@ -35,7 +35,9 @@ enum class DeadlineState {
 data class Deadline(
     val title: String,
     val state: DeadlineState,
-    val date: LocalDate
+    val date: LocalDate,
+    val description: String = "",
+    val id: String = ""
 ) {
     init {
         if (title.isEmpty()) {
