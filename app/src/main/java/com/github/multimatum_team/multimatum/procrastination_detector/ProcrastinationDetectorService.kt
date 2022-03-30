@@ -52,9 +52,10 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { /* Nothing to do */ }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        val currentTime = System.currentTimeMillis()
-        if (currentTime >= lastDetection + MIN_PERIOD_BETWEEN_NOTIF){
-            val currentPosition = event!!.values.toTypedArray()
+        requireNotNull(event)
+        val currentTime = event.timestamp
+        if (currentTime >= lastDetection + MIN_PERIOD_BETWEEN_NOTIF_NANOSEC){
+            val currentPosition = event.values.toTypedArray()
             if (lastPosition != null && l1Distance(currentPosition, lastPosition!!) > MOVE_DETECTION_THRESHOLD) {
                 toast(applicationContext.getString(R.string.stop_procrastinating_msg))
             }
@@ -83,7 +84,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          */
         const val REF_SENSOR = Sensor.TYPE_GRAVITY
 
-        private const val MIN_PERIOD_BETWEEN_NOTIF = 2000L
+        private const val MIN_PERIOD_BETWEEN_NOTIF_NANOSEC = 2_000_000_000L
 
         /**
          * Experimentally obtained threshold. It has not unit because it refers to the output of
