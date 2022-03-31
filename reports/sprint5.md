@@ -12,6 +12,17 @@ addition to fix the adapter and improve it.
 
 ### Joseph
 
+This week I worked on refactoring the repository to allow referring to
+deadlines by ID, so that Florian and Léo could continue working on the UI
+side. On the way, I realized that our tests were not reproducible because our
+code depended on the time (system clock). I added a simple refactor that
+solves this issue by using our dependency injection infrastructure that
+Valentin worked on the previous weeks. My time estimates were quite accurate
+this week, though I worked an hour less than the recommended 7h. Next week,
+I will either work on adding multi-user support or help Louis setup the
+Firebase emulator suite which will allow us to test the actual Firebase
+repository and sign-in, thus greatly increasing our coverage.
+
 ### Lenny
 
 ### Léo
