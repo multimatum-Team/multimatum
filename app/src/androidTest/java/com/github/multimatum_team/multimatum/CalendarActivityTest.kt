@@ -61,7 +61,7 @@ class CalendarActivityTest {
         Espresso.onView(ViewMatchers.withId(R.id.calendar_view))
             .perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
-            .check(ViewAssertions.matches(ViewMatchers.isClickable()))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
     @Module
