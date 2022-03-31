@@ -10,6 +10,20 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.github.multimatum_team.multimatum.R
+import com.github.multimatum_team.multimatum.repository.DeadlineID
+import com.github.multimatum_team.multimatum.service.ClockService
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import java.time.Period
+import java.util.*
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface ClockServiceEntryPoint {
+    fun provideClockService(): ClockService
+}
 
 /**
 Class which is used to show the deadline in a clear list.
@@ -23,13 +37,20 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         const val PRESSING = 10
     }
 
-    private var dataSource: List<Deadline> = listOf()
+    var clockService: ClockService =
+        EntryPointAccessors
+            .fromApplication(context, ClockServiceEntryPoint::class.java)
+            .provideClockService()
+
+    private var dataSource: SortedMap<DeadlineID, Deadline> = sortedMapOf()
 
     private val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    fun setDeadlines(deadlines: List<Deadline>) {
-        dataSource = deadlines
+    fun setDeadlines(deadlines: Map<DeadlineID, Deadline>) {
+        dataSource = deadlines.toSortedMap { id1, id2 ->
+            compareValues(deadlines[id1]!!.date, deadlines[id2]!!.date)
+        }
         notifyDataSetChanged()
     }
 
@@ -37,8 +58,8 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         return dataSource.size
     }
 
-    override fun getItem(position: Int): Deadline {
-        return dataSource[position]
+    override fun getItem(position: Int): Pair<DeadlineID, Deadline> {
+        return dataSource.entries.toList()[position].toPair()
     }
 
     override fun getItemId(position: Int): Long {
@@ -57,7 +78,7 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         // Get detail element
         val detailTextView = rowView.findViewById<TextView>(R.id.deadline_list_detail)
 
-        val deadline = getItem(position) as Deadline
+        val (_, deadline) = getItem(position)
 
         // Show the title
         titleTextView.text = deadline.title
@@ -75,17 +96,18 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
                 detailTextView.setTextColor(Color.GREEN)
                 detailTextView.setTypeface(null, Typeface.BOLD)
             }
-            deadline.isDue -> {
+            clockService.now() > deadline.date -> {
                 detail = context.getString(R.string.isAlreadyDue)
             }
             else -> {
+                val timeRemaining = Period.between(clockService.now(), deadline.date)
                 detail =
-                    context.getString(R.string.DueInXDays, deadline.timeRemaining!!.days.toString())
+                    context.getString(R.string.DueInXDays, timeRemaining.days.toString())
                 // If the remaining days is too small, put them in red or orange
-                if ((deadline.timeRemaining!!.days) < URGENT) {
+                if (timeRemaining.days < URGENT) {
                     detailTextView.setTextColor(Color.RED)
                     detailTextView.setTypeface(null, Typeface.BOLD)
-                } else if ((deadline.timeRemaining!!.days) < PRESSING) {
+                } else if (timeRemaining.days < PRESSING) {
                     detailTextView.setTextColor(Color.rgb(255, 165, 0))
                     detailTextView.setTypeface(null, Typeface.BOLD)
                 }

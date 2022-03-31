@@ -68,6 +68,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.activity:activity-ktx:1.4.0"
     kapt 'com.google.dagger:hilt-android-compiler:2.38.1'
     kapt 'androidx.lifecycle:lifecycle-compiler:2.4.1'
     implementation 'com.github.yuriy-budiyev:code-scanner:2.1.0'

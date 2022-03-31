@@ -24,6 +24,7 @@ class DeadlineDetailsTest {
     fun `Given a deadline not yet due or done, the activity should display it`() {
         val intent = DeadlineDetailsActivity.newIntent(
             ApplicationProvider.getApplicationContext(),
+            "1",
             Deadline("Test 1", DeadlineState.TODO, LocalDate.now().plusDays(7))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
@@ -38,6 +39,7 @@ class DeadlineDetailsTest {
     fun `Given a deadline already done, the activity should display it`() {
         val intent = DeadlineDetailsActivity.newIntent(
             ApplicationProvider.getApplicationContext(),
+            "2",
             Deadline("Test 2", DeadlineState.DONE, LocalDate.now().plusDays(7))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
@@ -51,6 +53,7 @@ class DeadlineDetailsTest {
     fun `Given a deadline already due, the activity should display it`() {
         val intent = DeadlineDetailsActivity.newIntent(
             ApplicationProvider.getApplicationContext(),
+            "3",
             Deadline("Test 3", DeadlineState.TODO, LocalDate.now().minusDays(2))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)

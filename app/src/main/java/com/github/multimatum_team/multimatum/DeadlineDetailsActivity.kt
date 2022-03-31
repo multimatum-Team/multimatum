@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.DeadlineID
 import java.time.LocalDate
 import java.time.Period
 
@@ -26,7 +27,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Set the texts for the title and the date of the deadline
         findViewById<TextView>(R.id.deadline_details_activity_title).text = title
-        findViewById<TextView>(R.id.deadline_details_activity_date).text = getString(R.string.DueTheX, date)
+        findViewById<TextView>(R.id.deadline_details_activity_date).text =
+            getString(R.string.DueTheX, date)
 
         // Set the detail text to inform the user if it is due, done or the remaining time
         val detailView = findViewById<TextView>(R.id.deadline_details_activity_done_or_due)
@@ -47,6 +49,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val EXTRA_ID =
+            "com.github.multimatum_team.deadline.details.id"
         private const val EXTRA_TITLE =
             "com.github.multimatum_team.multimatum.deadline.details.title"
         private const val EXTRA_DATE = "com.github.multimatum_team.multimatum.deadline.details.date"
@@ -54,9 +58,10 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             "com.github.multimatum_team.multimatum.deadline.details.state"
 
         // Launch an Intent to access this activity with a Deadline data
-        fun newIntent(context: Context, deadline: Deadline): Intent {
+        fun newIntent(context: Context, id: DeadlineID, deadline: Deadline): Intent {
             val detailIntent = Intent(context, DeadlineDetailsActivity::class.java)
 
+            detailIntent.putExtra(EXTRA_ID, id)
             detailIntent.putExtra(EXTRA_TITLE, deadline.title)
             detailIntent.putExtra(EXTRA_DATE, deadline.date)
             detailIntent.putExtra(EXTRA_STATE, deadline.state)

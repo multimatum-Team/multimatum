@@ -53,17 +53,20 @@ class DeadlineListViewModelTest {
     var hiltRule = HiltAndroidRule(this)
 
     @Test
-    fun liveDataInitiallyContainsRepositoryContents() = runTest {
-        assertEquals(viewModel.deadlines.getOrAwaitValue(), deadlines)
+    fun `LiveData initially contains repository contents`() = runTest {
+        val deadlines = viewModel.getDeadlines().getOrAwaitValue()
+        assertEquals(deadlines["0"], Deadline("Deadline 1", DeadlineState.DONE, LocalDate.of(2022, 3, 17)))
+        assertEquals(deadlines["1"], Deadline("Deadline 2", DeadlineState.DONE, LocalDate.of(2022, 3, 20)))
+        assertEquals(deadlines["2"], Deadline("Deadline 3", DeadlineState.TODO, LocalDate.of(2022, 4, 15)))
     }
 
     @Test
-    fun liveDataIsUpdatedWhenNewDeadlineIsPutIntoRepository() = runTest {
+    fun `LiveData is updated when new deadline is put into the repository`() = runTest {
         val newDeadline = Deadline("Deadline 4", DeadlineState.TODO, LocalDate.of(2022, 5, 2))
         val newDeadlineList = deadlines.toMutableList()
         newDeadlineList.add(newDeadline)
         repository.put(newDeadline).run {
-            assertEquals(viewModel.deadlines.getOrAwaitValue(), newDeadlineList)
+            assertEquals(viewModel.getDeadlines().getOrAwaitValue()[this]!!, newDeadline)
         }
     }
 }

@@ -93,7 +93,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          * The sensor used by this service to detect movements
          */
         const val REF_SENSOR = Sensor.TYPE_GRAVITY
-
+      
         private const val MIN_PERIOD_BETWEEN_NOTIF_NANOSEC = 2_000_000_000L
 
         /**
