@@ -23,12 +23,12 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
     lateinit var deadlineRepository: DeadlineRepository
 
     override fun onReceive(context: Context, intent: Intent?) {
-        var channelId = "remindersChannel"
+        val channelId = "remindersChannel"
 
         //retrieving some parameters for the notification
-        var title = intent!!.getStringExtra("title")
-        var content = intent!!.getStringExtra("description")
-        var notificationId = intent!!.getStringExtra("id")
+        val title = intent!!.getStringExtra("title")
+        val content = intent!!.getStringExtra("description")
+        val notificationId = intent!!.getStringExtra("id")
 
 
         val intent2 = Intent(context, MainActivity::class.java)
