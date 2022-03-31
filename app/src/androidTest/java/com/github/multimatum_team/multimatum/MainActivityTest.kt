@@ -38,6 +38,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Singleton
 
 
@@ -100,7 +101,7 @@ class MainActivityTest {
                 hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.date",
-                    LocalDate.of(2022, 3, 1)
+                    LocalDateTime.of(2022, 3, 1,0 , 0)
                 ),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.state",
@@ -202,9 +203,9 @@ class MainActivityTest {
         fun provideDeadlineRepository(): DeadlineRepository =
             MockDeadlineRepository(
                 listOf(
-                    Deadline("Test 1", DeadlineState.TODO, LocalDate.of(2022, 3, 1)),
-                    Deadline("Test 2", DeadlineState.DONE, LocalDate.of(2022, 3, 30)),
-                    Deadline("Test 3", DeadlineState.TODO, LocalDate.of(2022, 3, 7))
+                    Deadline("Test 1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 1, 0, 0)),
+                    Deadline("Test 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 0, 0)),
+                    Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 7, 0, 0))
                 )
             )
     }

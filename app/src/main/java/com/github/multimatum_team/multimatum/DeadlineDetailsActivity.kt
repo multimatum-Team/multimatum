@@ -5,24 +5,39 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.github.multimatum_team.multimatum.model.ClockServiceEntryPoint
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
+import com.github.multimatum_team.multimatum.service.ClockService
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
+import java.time.temporal.ChronoUnit
+import javax.inject.Inject
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
  * In the future, It should have a delete and modify button to change the deadline.
  */
+@AndroidEntryPoint
 class DeadlineDetailsActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var clockService: ClockService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
 
         // Recuperate the Deadline from the intent
         val title = intent.getStringExtra(EXTRA_TITLE)
-        val date = intent.getSerializableExtra(EXTRA_DATE) as LocalDate
+        val date = intent.getSerializableExtra(EXTRA_DATE) as LocalDateTime
         val state = intent.getSerializableExtra(EXTRA_STATE) as DeadlineState
 
         // Set the texts for the title and the date of the deadline
@@ -32,7 +47,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Set the detail text to inform the user if it is due, done or the remaining time
         val detailView = findViewById<TextView>(R.id.deadline_details_activity_done_or_due)
-        val actualDate = LocalDate.now()
+        val actualDate = clockService.now()
         when {
             state == DeadlineState.DONE -> {
                 detailView.text = getString(R.string.done)
@@ -42,7 +57,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             }
             else -> {
                 detailView.text =
-                    getString(R.string.DueInXDays, Period.between(actualDate, date).days.toString())
+                    getString(R.string.DueInXDays, actualDate.until(date, ChronoUnit.DAYS).toString())
             }
         }
 
@@ -63,7 +78,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
             detailIntent.putExtra(EXTRA_ID, id)
             detailIntent.putExtra(EXTRA_TITLE, deadline.title)
-            detailIntent.putExtra(EXTRA_DATE, deadline.date)
+            detailIntent.putExtra(EXTRA_DATE, deadline.dateTime)
             detailIntent.putExtra(EXTRA_STATE, deadline.state)
 
             return detailIntent

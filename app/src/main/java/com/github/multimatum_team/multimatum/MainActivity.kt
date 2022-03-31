@@ -25,6 +25,7 @@ import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -106,12 +107,13 @@ class MainActivity : AppCompatActivity() {
     This button trigger a basics notification in 1 sec
     here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
     */
+
     fun triggerNotification(view: View) {
         DeadlineNotification().setNotification(
             Deadline(
                 "notifDeadline",
                 DeadlineState.TODO,
-                LocalDate.now()
+                LocalDateTime.now()
             ), this, System.currentTimeMillis() + 1000
         )
     }

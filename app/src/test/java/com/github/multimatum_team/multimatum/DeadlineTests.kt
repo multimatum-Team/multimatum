@@ -6,6 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Month
 
 /**
@@ -16,11 +17,11 @@ class DeadlineTests {
     fun `Constructor should return Deadline instance defining the right properties`() {
         val title = "Implement tests for Deadline class"
         val state = DeadlineState.DONE
-        val date = LocalDate.of(2022, Month.MARCH, 11)
+        val date = LocalDateTime.of(2022, Month.MARCH, 11, 0, 0)
         val deadline = Deadline(title, state, date)
         assertEquals(deadline.title, title)
         assertEquals(deadline.state, state)
-        assertEquals(deadline.date, date)
+        assertEquals(deadline.dateTime, date)
     }
 
     @Test
@@ -29,7 +30,7 @@ class DeadlineTests {
             Deadline(
                 "",
                 DeadlineState.TODO,
-                LocalDate.of(2022, Month.MARCH, 9)
+                LocalDateTime.of(2022, Month.MARCH, 9, 0, 0)
             )
         }
     }

@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum.model
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * The state of a deadline.
@@ -35,7 +36,7 @@ enum class DeadlineState {
 data class Deadline(
     val title: String,
     val state: DeadlineState,
-    val date: LocalDate,
+    val dateTime: LocalDateTime,
     val description: String = "",
     val id: String = ""
 ) {

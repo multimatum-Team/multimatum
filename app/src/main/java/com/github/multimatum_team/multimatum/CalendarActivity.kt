@@ -18,12 +18,13 @@ import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 
 @AndroidEntryPoint
 class CalendarActivity : AppCompatActivity() {
     private val viewModel: DeadlineListViewModel by viewModels()
-    private var selectedDate: LocalDate = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate()
+    private var selectedDate: LocalDateTime = Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +44,7 @@ class CalendarActivity : AppCompatActivity() {
 
         // Update the selected date in case of a selection in the calendar
         calendar.setOnDateChangeListener { _, year, month, day ->
-            selectedDate = LocalDate.of(year, month + 1, day)
+            selectedDate = LocalDateTime.of(year, month + 1, day, 0, 0)
         }
     }
 
@@ -104,6 +105,7 @@ class CalendarActivity : AppCompatActivity() {
 
         // Getting the entered text and the selected date
         val deadlineTitle = editText.text.toString()
+
 
         // Add the new event to the deadline list
         val deadline = Deadline(deadlineTitle, DeadlineState.TODO, selectedDate)
