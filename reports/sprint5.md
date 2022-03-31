@@ -39,5 +39,10 @@ If it's not finish before friday I will just let it as it is.
 Next week I planned to work on generating QRCode from deadline.
 
 ### Valentin
+My task for this sprint was to test the ProcrastinationDetectorService that I have implemented last sprint. At first I
+didn't really know how to test a service, but I finally came across Robolectric ServiceController on the Internet. Also
+on the net, I found a way of mocking final classes with Mockito, which simplified the tests. So overall it went well and,
+unlike usual, I stayed within my time estimate. Next week I will still be working on ProcrastinationDetectorService, the
+goal being this time to make it work even when the app is not running.
 
 ### Overall team
