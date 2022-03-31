@@ -3,10 +3,14 @@ package com.github.multimatum_team.multimatum
 import android.content.Context
 import android.content.SharedPreferences
 import android.hardware.SensorManager
+import android.view.View
+import android.widget.ListView
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.longClick
+import androidx.test.espresso.action.ViewActions.swipeLeft
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -24,8 +28,11 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import org.hamcrest.Description
+import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.anything
+import org.hamcrest.TypeSafeMatcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -117,6 +124,17 @@ class MainActivityTest {
     }
 
     @Test
+    fun goToAddDeadlineActivity() {
+        onView(withId(R.id.main_go_to_add_deadline)).perform(ViewActions.click())
+        Intents.intended(
+            allOf(
+                hasComponent(AddDeadlineActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+    }
+
+    @Test
     fun buttonOpensQrCodeReader() {
         onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
         Intents.intended(
@@ -125,6 +143,41 @@ class MainActivityTest {
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
+    }
+
+    @Test
+    fun swipeDeadlineTwiceShouldDelete() {
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
+            .perform(swipeLeft())
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
+            .perform(swipeLeft())
+        onView(withId(R.id.deadlineListView)).check(matches(withListSize(2)))
+    }
+
+    @Test
+    fun swipeDeadlineOnceAndClickUndoShouldUndo() {
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
+            .perform(swipeLeft())
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
+            .perform(ViewActions.click())
+        onView(withId(R.id.deadlineListView)).check(matches(withListSize(3)))
+    }
+
+    /*
+    ListView matcher found in:
+   https://stackoverflow.com/questions/30361068/assert-proper-number-of-items-in-list-with-espresso
+     */
+    private fun withListSize(size: Int): Matcher<in View>? {
+        return object : TypeSafeMatcher<View?>() {
+            override fun matchesSafely(view: View?): Boolean {
+                return (view as ListView).count == size
+            }
+
+            override fun describeTo(description: Description) {
+                description.appendText("ListView should have $size items")
+            }
+
+        }
     }
 
     @Module

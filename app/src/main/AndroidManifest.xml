@@ -13,13 +13,17 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        tools:ignore="ExtraText"
-        android:theme="@style/Theme.Multimatum">
+        android:theme="@style/Theme.Multimatum"
+        tools:ignore="ExtraText">
+        <activity
+            android:name=".AddDeadlineActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.ProcrastinationDetectorService"
             android:enabled="true"
             android:exported="false" />
+
         <activity
             android:name=".DeadlineDetailsActivity"
             android:exported="false" />
@@ -34,12 +38,12 @@
             android:exported="false" />
         <activity
             android:name=".AccountActivity"
-            android:parentActivityName=".MainSettingsActivity"
-            android:exported="false"/>
+            android:exported="false"
+            android:parentActivityName=".MainSettingsActivity" />
         <activity
             android:name=".QRGenerator"
-            android:parentActivityName=".MainSettingsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainSettingsActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -49,6 +53,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <receiver android:name=".ReminderBroadcastReceiver" />
     </application>
+
 </manifest>
