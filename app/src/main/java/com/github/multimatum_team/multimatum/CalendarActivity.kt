@@ -1,54 +1,114 @@
 package com.github.multimatum_team.multimatum
 
+import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.CalendarView
+import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class CalendarActivity : AppCompatActivity() {
-    @Inject
-    lateinit var deadlineRepository: DeadlineRepository
-
     private val viewModel: DeadlineListViewModel by viewModels()
+    private var selectedDate: LocalDate = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initCalendar()
+        initTextInput()
     }
 
+    /*
+    This function initialize the calender, it allows the app to listen to
+    an eventual date selection by the user.
+     */
     private fun initCalendar() {
         setContentView(R.layout.activity_calendar)
+
+        // Get the calendar view
+        val calendar = findViewById<CalendarView>(R.id.calendar_view)
+
+        // Update the selected date in case of a selection in the calendar
+        calendar.setOnDateChangeListener { _, year, month, day ->
+            selectedDate = LocalDate.of(year, month + 1, day)
+        }
+    }
+
+    /*
+    This function allows the user to add a new deadline directly, using the "ENTER" key (more intuitive).
+     */
+    private fun initTextInput() {
+        val edit = findViewById<TextInputEditText>(R.id.textInputEditCalendar)
+
+        // Adding a listener to handle the "ENTER" key pressed.
+        edit.setOnKeyListener { v, keycode, event ->
+            if ((keycode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                // Enter is a new shortcut to add a deadline (intuitive)
+                addNewDeadlineCalendar(v)
+
+                // Hide the keyboard and clear the focus on the text input
+                edit.clearFocus()
+                val view = this.currentFocus
+                if (view != null) {
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+                // The listener has consumed the event
+                return@setOnKeyListener true
+            }
+            false
+        }
+    }
+
+    /*
+    This function allows the user to exit the text input intuitively, just by clicking outside
+     */
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            // We are in the case were the user has touched outside
+            val v = currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    // If the user has touched a place outside the keyboard, remove the focus and keyboard
+                    v.clearFocus()
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
     }
 
     /*
     The purpose of this function is to provide the user the ability to add a new
     deadline easily using directly the calendar to select the date.
-    ***TO DO***: store deadline and display them on the calendar.
      */
     fun addNewDeadlineCalendar(view: View) {
         // Getting the necessary views
         val editText = findViewById<TextInputEditText>(R.id.textInputEditCalendar)
-        val calendar = findViewById<CalendarView>(R.id.calendar_view)
 
         // Getting the entered text and the selected date
         val deadlineTitle = editText.text.toString()
-        val selectedDate =
-            Instant.ofEpochMilli(calendar.date).atZone(ZoneId.systemDefault()).toLocalDateTime()
+
 
         // Add the new event to the deadline list
         val deadline = Deadline(deadlineTitle, DeadlineState.TODO, selectedDate)
+
         viewModel.addDeadline(deadline)
 
         // Reset the text input for future use
