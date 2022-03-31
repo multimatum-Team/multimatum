@@ -20,7 +20,8 @@ import kotlin.math.abs
  */
 @AndroidEntryPoint
 class ProcrastinationDetectorService : Service(), SensorEventListener {
-    @Inject lateinit var sensorManager: SensorManager
+    @Inject
+    lateinit var sensorManager: SensorManager
 
     // TODO make it remain enabled when app is stopped
 
@@ -49,14 +50,19 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         toast(getString(R.string.procrastination_fighter_disabled_msg))
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { /* Nothing to do */ }
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { /* Nothing to do */
+    }
 
     override fun onSensorChanged(event: SensorEvent?) {
         requireNotNull(event)
         val currentTime = event.timestamp
-        if (currentTime >= lastDetection + MIN_PERIOD_BETWEEN_NOTIF_NANOSEC){
+        if (currentTime >= lastDetection + MIN_PERIOD_BETWEEN_NOTIF_NANOSEC) {
             val currentPosition = event.values.toTypedArray()
-            if (lastPosition != null && l1Distance(currentPosition, lastPosition!!) > MOVE_DETECTION_THRESHOLD) {
+            if (lastPosition != null && l1Distance(
+                    currentPosition,
+                    lastPosition!!
+                ) > MOVE_DETECTION_THRESHOLD
+            ) {
                 toast(applicationContext.getString(R.string.stop_procrastinating_msg))
             }
             lastPosition = currentPosition
@@ -93,7 +99,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         private const val MOVE_DETECTION_THRESHOLD = 0.1
     }
 
-    inner class PdsBinder: Binder() {
+    inner class PdsBinder : Binder() {
         fun getService(): ProcrastinationDetectorService = this@ProcrastinationDetectorService
     }
 

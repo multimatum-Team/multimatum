@@ -60,41 +60,62 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @After
-    fun release(){
+    fun release() {
         Intents.release()
     }
 
     @Test
-    fun service_should_be_registered_as_listener_and_then_unregistered(){
+    fun service_should_be_registered_as_listener_and_then_unregistered() {
         val mockSensor: Sensor = mock()
         var wasRegistered = false
         var wasUnregistered = false
-        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(mockSensor)
-        `when`(mockSensorManager.registerListener(isA<ProcrastinationDetectorService>(), eq(mockSensor), any())).then {
+        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
+            mockSensor
+        )
+        `when`(
+            mockSensorManager.registerListener(
+                isA<ProcrastinationDetectorService>(),
+                eq(mockSensor),
+                any()
+            )
+        ).then {
             wasRegistered = true
             true
         }
-        `when`(mockSensorManager.unregisterListener(isA<ProcrastinationDetectorService>(), eq(mockSensor))).then {
-            assertThat("ProcrastinationDetectorService should be registered as a listener before being unregistered",
-                wasRegistered, `is`(true))
+        `when`(
+            mockSensorManager.unregisterListener(
+                isA<ProcrastinationDetectorService>(),
+                eq(mockSensor)
+            )
+        ).then {
+            assertThat(
+                "ProcrastinationDetectorService should be registered as a listener before being unregistered",
+                wasRegistered, `is`(true)
+            )
             wasUnregistered = true
             true
         }
         // create the controller; this calls onStartCommand on the service, which should call registerListener
         controller.create().startCommand(0, 0)
-        assertThat("ProcrastinationDetectorService should be registered as a listener",
-            wasRegistered, `is`(true))
+        assertThat(
+            "ProcrastinationDetectorService should be registered as a listener",
+            wasRegistered, `is`(true)
+        )
         // the call to destroy calls onDestroy on the service, which should call unregisterListener
         controller.destroy()
-        assertThat("ProcrastinationDetectorService should be unregistered",
-            wasUnregistered, `is`(true))
+        assertThat(
+            "ProcrastinationDetectorService should be unregistered",
+            wasUnregistered, `is`(true)
+        )
     }
 
     @Test
     fun toast_should_be_displayed_when_sensor_detected_major_change() {
         val mockSensor: Sensor = mock()
         val mockSensorEvent: SensorEvent = mock()
-        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(mockSensor)
+        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
+            mockSensor
+        )
         val service = controller.create().startCommand(0, 0).get()
         simulate2successiveToastEvents(
             0f, 0f, 0f, 2_000_000_000,     // 1st event
@@ -109,7 +130,9 @@ class ProcrastinationDetectorServiceTest {
     fun toast_should_not_be_displayed_when_sensor_detected_tiny_change() {
         val mockSensor: Sensor = mock()
         val mockSensorEvent: SensorEvent = mock()
-        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(mockSensor)
+        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
+            mockSensor
+        )
         val service = controller.create().startCommand(0, 0).get()
         simulate2successiveToastEvents(
             0f, 0f, 0f, 2_000_000_000,                  // 1st event
@@ -121,18 +144,21 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun on_bind_should_return_a_binder_that_is_able_to_provide_the_bound_service(){
+    fun on_bind_should_return_a_binder_that_is_able_to_provide_the_bound_service() {
         val service = controller.create().startCommand(0, 0).get()
         val dummyIntent = Intent(applicationContext, javaClass)
-        when (val binder = service.onBind(dummyIntent)){
-            is ProcrastinationDetectorService.PdsBinder -> assertThat(binder.getService(), equalTo(service))
+        when (val binder = service.onBind(dummyIntent)) {
+            is ProcrastinationDetectorService.PdsBinder -> assertThat(
+                binder.getService(),
+                equalTo(service)
+            )
             else -> fail("onBind should return a PdsBinder")
         }
         controller.destroy()
     }
 
     @Test
-    fun onStartCommand_throws_when_sensor_not_found(){
+    fun onStartCommand_throws_when_sensor_not_found() {
         `when`(mockSensorManager.getDefaultSensor(any())).thenReturn(null)
         assertThrows(IllegalStateException::class.java) {
             controller.create().startCommand(0, 0)
@@ -144,7 +170,9 @@ class ProcrastinationDetectorServiceTest {
     fun toast_should_not_be_displayed_when_another_toast_has_been_displayed_too_recently() {
         val mockSensor: Sensor = mock()
         val mockSensorEvent: SensorEvent = mock()
-        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(mockSensor)
+        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
+            mockSensor
+        )
         val service = controller.create().startCommand(0, 0).get()
         simulate2successiveToastEvents(
             0f, 0f, 0f, 2_000_000_000,     // 1st event
@@ -163,9 +191,11 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun onSensorChanged_throws_on_invalid_array_in_event(){
+    fun onSensorChanged_throws_on_invalid_array_in_event() {
         val mockSensor: Sensor = mock()
-        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(mockSensor)
+        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
+            mockSensor
+        )
         val service = controller.create().startCommand(0, 0).get()
         val mockSensorEvent: SensorEvent = mock()
         // configure and trigger 1st event
@@ -174,7 +204,7 @@ class ProcrastinationDetectorServiceTest {
         // configure 2nd event (with invalid data)
         forceSet(mockSensorEvent, "values", floatArrayOf(1f, 2f, 3f, 4f, 5f))
         forceSet(mockSensorEvent, "timestamp", 10_000_000_000)
-        assertThrows(IllegalArgumentException::class.java){
+        assertThrows(IllegalArgumentException::class.java) {
             // trigger 2nd event
             service.onSensorChanged(mockSensorEvent)
         }
@@ -190,7 +220,7 @@ class ProcrastinationDetectorServiceTest {
         x1: Float, y1: Float, z1: Float, timestamp1: Long,  // data for 1st event
         x2: Float, y2: Float, z2: Float, timestamp2: Long,  // data for 2nd event
         mockSensorEvent: SensorEvent, service: ProcrastinationDetectorService
-    ){
+    ) {
         // configure and trigger 1st event
         configureMockSensorEventFor(mockSensorEvent, x1, y1, z1, timestamp1)
         service.onSensorChanged(mockSensorEvent)
@@ -203,23 +233,25 @@ class ProcrastinationDetectorServiceTest {
         service.onSensorChanged(mockSensorEvent)
     }
 
-    private fun assertThatLastToastTextWas(expectedText: String){
+    private fun assertThatLastToastTextWas(expectedText: String) {
         assertThat(ShadowToast.getTextOfLatestToast(), equalTo(expectedText))
     }
 
-    private fun makeFakeToast(){
+    private fun makeFakeToast() {
         Toast.makeText(applicationContext, FAKE_TOAST_TEXT, Toast.LENGTH_SHORT).show()
     }
 
     // Configures a MockSensorEvent to simulate an event with values x, y and z and that happened at the given timestamp
-    private fun configureMockSensorEventFor(mockSensorEvent: SensorEvent, x: Float, y: Float, z: Float,
-                                            timestampNanosec: Long) {
+    private fun configureMockSensorEventFor(
+        mockSensorEvent: SensorEvent, x: Float, y: Float, z: Float,
+        timestampNanosec: Long
+    ) {
         forceSet(mockSensorEvent, "values", floatArrayOf(x, y, z))
         forceSet(mockSensorEvent, "timestamp", timestampNanosec)
     }
 
     // Set a field in an object, bypassing immutability if needed
-    private fun forceSet(obj: Any, fieldName: String, value: Any){
+    private fun forceSet(obj: Any, fieldName: String, value: Any) {
         val valuesField = SensorEvent::class.java.getField(fieldName)
         valuesField.isAccessible = true
         valuesField.set(obj, value)
