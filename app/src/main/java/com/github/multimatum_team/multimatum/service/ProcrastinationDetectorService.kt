@@ -25,7 +25,8 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
 
     // TODO make it remain enabled when app is stopped
 
-    private var lastDetection: Long = 0L
+    // data relative to the last time a movement was detected
+    private var lastDetectionTimestamp: Long = 0L
     private var lastPosition: Array<Float>? = null  // null only at initialization
 
     private val binder = PdsBinder()
@@ -50,14 +51,17 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         toast(getString(R.string.procrastination_fighter_disabled_msg))
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { /* Nothing to do */
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        /* Nothing to do */
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
         requireNotNull(event)
         val currentTime = event.timestamp
-        if (currentTime >= lastDetection + MIN_PERIOD_BETWEEN_NOTIF_NANOSEC) {
-            val currentPosition = event.values.toTypedArray()
+        // check whether enough time has passed since the last detection (o.w. do nothing)
+        if (currentTime >= lastDetectionTimestamp + MIN_PERIOD_BETWEEN_NOTIF_NANOSEC) {
+            val currentPosition = event.values.toTypedArray()  // values measured by the sensor
+            // check whether there was a sufficient move to trigger the toast
             if (lastPosition != null && l1Distance(
                     currentPosition,
                     lastPosition!!
@@ -66,7 +70,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
                 toast(applicationContext.getString(R.string.stop_procrastinating_msg))
             }
             lastPosition = currentPosition
-            lastDetection = currentTime
+            lastDetectionTimestamp = currentTime
         }
     }
 
