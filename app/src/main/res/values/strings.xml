@@ -27,6 +27,8 @@
     <string name="you_re_loggedin_as">You\'re LoggedIn as</string>
     <string name="email">Email</string>
     <string name="logout">LOGOUT</string>
+    <string name="procrastination_fighter_enable_msg">Procrastination fighter is enabled</string>
+    <string name="procrastination_fighter_disabled_msg">Procrastination fighter is disabled</string>
     <string name="deleted">Deleted</string>
     <string name="undo">Undo</string>
     <string name="write_title_here">Write Title here</string>
