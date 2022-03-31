@@ -27,4 +27,10 @@
     <string name="you_re_loggedin_as">You\'re LoggedIn as</string>
     <string name="email">Email</string>
     <string name="logout">LOGOUT</string>
+    <string name="deleted">Deleted</string>
+    <string name="undo">Undo</string>
+    <string name="write_title_here">Write Title here</string>
+    <string name="add_deadline_button_cont_descr">Add Deadline Button</string>
+    <string name="enter_a_title">Enter a title</string>
+    <string name="deadline_created">Deadline created.</string>
 </resources>
