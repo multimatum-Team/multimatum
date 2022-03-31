@@ -36,6 +36,7 @@ difficult than I thought, so I will see. Next week, I want to convert the calend
 ### Louis
 I slightly improve the coverage of the account activity but I am struggling on testing some result.
 If it's not finish before friday I will just let it as it is.
+Edit: I did wrong manipulation with git branching, I break all what I've done.
 Next week I planned to work on generating QRCode from deadline.
 
 ### Valentin
