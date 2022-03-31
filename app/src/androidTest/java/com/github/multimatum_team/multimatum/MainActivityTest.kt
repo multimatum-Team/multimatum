@@ -124,6 +124,17 @@ class MainActivityTest {
     }
 
     @Test
+    fun goToAddDeadlineActivity() {
+        onView(withId(R.id.main_go_to_add_deadline)).perform(ViewActions.click())
+        Intents.intended(
+            allOf(
+                hasComponent(AddDeadlineActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+    }
+
+    @Test
     fun buttonOpensQrCodeReader() {
         onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
         Intents.intended(
