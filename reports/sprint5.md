@@ -1,4 +1,4 @@
-Sprint <n> summary
+Sprint 5 summary
 ================
 
 ### Florian
@@ -15,6 +15,12 @@ addition to fix the adapter and improve it.
 ### Lenny
 
 ### Léo
+During this week, my job was to expand the calendar feature in many ways (that have changed a bit). First, I had some bugs
+to solve with the calendar. After that, the feature to add deadline using the calendar had to be adapted, beacause of the
+new ViewModel structure. Then, I added new intuitive features to the calendar. The user can now exit the text input field
+by simply touching outside, and can easily add a deadline by pressing enter instead of pressing the "ADD" button. Finally,
+more tests have been added. I also wanted to display the deadlines on the calendar, but it appears that it is far more
+difficult than I thought, so I will see. Next week, I want to convert the calendar activity to fragment.
 
 ### Louis
 
