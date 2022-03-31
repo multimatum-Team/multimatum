@@ -1,7 +1,11 @@
 package com.github.multimatum_team.multimatum.model
 
+import android.provider.Settings.Global.getString
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZoneOffset.UTC
 
 /**
  * The state of a deadline.
@@ -21,6 +25,11 @@ enum class DeadlineState {
 }
 
 /**
+ * by default we assume we're in UTC time zone
+ */
+private val DEFAULT_TIME_ZONE: ZoneOffset = UTC
+
+/**
  * A deadline.
  *
  * The Deadline class represents a deadline at a given date.
@@ -29,7 +38,9 @@ enum class DeadlineState {
  *
  * @property title the title of the deadline (must be non empty)
  * @property state the advancement state of the deadline
- * @property date the time at which the work is due
+ * @property dateTime the time at which the work is due
+ * @property description some description of the deadline, by default empty
+ * @property zoneOffset zone offset of the deadline due date, default: UTC
  * @constructor Creates a deadline from specified parameters
  * @throws IllegalArgumentException when title is empty or startDate > end
  */
@@ -38,7 +49,7 @@ data class Deadline(
     val state: DeadlineState,
     val dateTime: LocalDateTime,
     val description: String = "",
-    val id: String = ""
+    val zoneOffset: ZoneOffset = DEFAULT_TIME_ZONE
 ) {
     init {
         if (title.isEmpty()) {

@@ -107,14 +107,14 @@ class MainActivity : AppCompatActivity() {
     This button trigger a basics notification in 1 sec
     here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
     */
-
     fun triggerNotification(view: View) {
         DeadlineNotification().setNotification(
-            Deadline(
-                "notifDeadline",
-                DeadlineState.TODO,
-                LocalDateTime.now()
-            ), this, System.currentTimeMillis() + 1000
+            Pair(
+                "someID",
+                Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(3))
+            ),
+            this,
+            0
         )
     }
 
