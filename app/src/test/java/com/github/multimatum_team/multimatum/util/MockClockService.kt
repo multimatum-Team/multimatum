@@ -7,7 +7,7 @@ import java.time.*
  * A mock class to simulate a fixed clock.
  * This lets us write more reproducible tests.
  */
-class MockClockService(private var dateTime: LocalDateTime) : ClockService {
+class MockClockService(private val dateTime: LocalDateTime) : ClockService {
     override fun getClock(): Clock =
         Clock.fixed(
             Instant.ofEpochSecond(dateTime.toLocalDate().atStartOfDay(ZoneId.of("UTC")).toEpochSecond()),

@@ -35,8 +35,8 @@ https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
 class DeadlineAdapter(private val context: Context) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline
-        const val URGENT = 5
-        const val PRESSING = 10
+        const val URGENT_THRESHOLD_DAYS = 5
+        const val PRESSING_THRESHOLD_DAYS = 10
     }
 
     var clockService: ClockService =
@@ -106,10 +106,10 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
                 detail =
                     context.getString(R.string.DueInXDays, timeRemaining.toString())
                 // If the remaining days is too small, put them in red or orange
-                if (timeRemaining < URGENT) {
+                if (timeRemaining < URGENT_THRESHOLD_DAYS) {
                     detailTextView.setTextColor(Color.RED)
                     detailTextView.setTypeface(null, Typeface.BOLD)
-                } else if (timeRemaining < PRESSING) {
+                } else if (timeRemaining < PRESSING_THRESHOLD_DAYS) {
                     detailTextView.setTextColor(Color.rgb(255, 165, 0))
                     detailTextView.setTypeface(null, Typeface.BOLD)
                 }

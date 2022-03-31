@@ -12,6 +12,7 @@ import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 /**
@@ -22,7 +23,7 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     companion object {
         // Temporary value that will be link later to the actual day
-        private val initDate : LocalDate = LocalDate.of(2022,1,1)
+        private val initDate : LocalDateTime = LocalDateTime.of(2022,1,1, 0, 0)
     }
 
     @Inject
@@ -42,7 +43,7 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         // Getting the entered text and the selected date
         val titleDeadline = editText.text.toString()
-        val dateDeadline = LocalDate.of(datePicker.year, datePicker.month + 1, datePicker.dayOfMonth)
+        val dateDeadline = LocalDateTime.of(datePicker.year, datePicker.month + 1, datePicker.dayOfMonth, 23, 59)
 
         // Check if the title is not empty
         if (titleDeadline == "") {
