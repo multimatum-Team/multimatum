@@ -44,7 +44,6 @@ class DeadlineNotificationTest {
     private lateinit var shadowNotificationManager: ShadowNotificationManager
 
 
-
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
@@ -59,16 +58,22 @@ class DeadlineNotificationTest {
         deadlineNotification = DeadlineNotification()
         hiltRule.inject()
         var notificationManager =
-            ApplicationProvider.getApplicationContext<Context>().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            ApplicationProvider.getApplicationContext<Context>()
+                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         shadowNotificationManager = Shadows.shadowOf(notificationManager)
 
     }
+
     /*
     * Test if createNotification channel creates a notification channel with the right parameters
     *  */
     @Test
-    fun testCreateNotificationChannel(){
-        val channel = NotificationChannel("remindersChannel", "reminders channel", NotificationManager.IMPORTANCE_DEFAULT)
+    fun testCreateNotificationChannel() {
+        val channel = NotificationChannel(
+            "remindersChannel",
+            "reminders channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
         channel.description = "channel for reminders notifications"
 
         deadlineNotification.createNotificationChannel(context)
@@ -81,34 +86,50 @@ class DeadlineNotificationTest {
     * I abuse of mocking here, there's probably a better way to do it with shadow (because here for example "PendingIntent" cannot be mocked so we have to use Mockito.any())
     * */
     @Test
-    fun testSetNotification(){
+    fun testSetNotification() {
         val reminderBroadcastReceiver: ReminderBroadcastReceiver = ReminderBroadcastReceiver()
         reminderBroadcastReceiver.onReceive(context, Intent())
 
         Assert.assertEquals(1, shadowNotificationManager.size())
-        val alarmManager = ApplicationProvider.getApplicationContext<Context>().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmManager = ApplicationProvider.getApplicationContext<Context>()
+            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
-        val idDeadline = Pair("someFirebaseID", Deadline("notifDeadline", DeadlineState.TODO, clockService.now()))
+        val idDeadline = Pair(
+            "someFirebaseID",
+            Deadline("notifDeadline", DeadlineState.TODO, clockService.now())
+        )
         val timeBeforeDue = Duration.of(5, ChronoUnit.HOURS).toMillis()
 
         deadlineNotification.setNotification(idDeadline, context, timeBeforeDue)
 
-        val triggerAtTime = idDeadline.second.dateTime.toInstant(idDeadline.second.zoneOffset).toEpochMilli() - timeBeforeDue
-        Assert.assertEquals(triggerAtTime, shadowAlarmManager.peekNextScheduledAlarm().triggerAtTime)
+        val triggerAtTime = idDeadline.second.dateTime.toInstant(idDeadline.second.zoneOffset)
+            .toEpochMilli() - timeBeforeDue
+        Assert.assertEquals(
+            triggerAtTime,
+            shadowAlarmManager.peekNextScheduledAlarm().triggerAtTime
+        )
     }
 
     @Test
-    fun testCancelNotification(){
-        val alarmManager = ApplicationProvider.getApplicationContext<Context>().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    fun testCancelNotification() {
+        val alarmManager = ApplicationProvider.getApplicationContext<Context>()
+            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
-        
-        val idDeadline = Pair("someFirebaseID", Deadline("notifDeadline", DeadlineState.TODO, clockService.now()))
+
+        val idDeadline = Pair(
+            "someFirebaseID",
+            Deadline("notifDeadline", DeadlineState.TODO, clockService.now())
+        )
         val timeBeforeDue = Duration.of(5, ChronoUnit.HOURS).toMillis()
 
         deadlineNotification.setNotification(idDeadline, context, timeBeforeDue)
 
-        val triggerAtTime = idDeadline.second.dateTime.toInstant(idDeadline.second.zoneOffset).toEpochMilli() - timeBeforeDue
-        Assert.assertEquals(triggerAtTime, shadowAlarmManager.peekNextScheduledAlarm().triggerAtTime)
+        val triggerAtTime = idDeadline.second.dateTime.toInstant(idDeadline.second.zoneOffset)
+            .toEpochMilli() - timeBeforeDue
+        Assert.assertEquals(
+            triggerAtTime,
+            shadowAlarmManager.peekNextScheduledAlarm().triggerAtTime
+        )
 
         deadlineNotification.cancelNotification(idDeadline, context)
 

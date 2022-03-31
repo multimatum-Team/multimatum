@@ -34,7 +34,8 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
         val intent2 = Intent(context, MainActivity::class.java)
         intent2!!.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         //this is the intent where the user will be send when clicking on the notification
-        val pendingIntent = PendingIntent.getActivity(context, 0, intent2, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent =
+            PendingIntent.getActivity(context, 0, intent2, PendingIntent.FLAG_IMMUTABLE)
 
         //Builder of the notification
         val notificationBuilder = NotificationCompat.Builder(context!!, channelId)
@@ -48,7 +49,8 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         //send the notification
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(notificationId.hashCode(), notificationBuilder.build())
     }
 }

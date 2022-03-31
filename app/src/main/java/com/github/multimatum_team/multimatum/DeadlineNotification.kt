@@ -22,14 +22,19 @@ class DeadlineNotification {
     Create a notification channel for reminder notifications
     Creating an existing notification channel with its original values performs no operation,
     so it's safe to call this code when starting an app.
-    */
-    fun createNotificationChannel(context: Context){
-        val channelName :CharSequence = "reminders channel"
+     */
+    fun createNotificationChannel(context: Context) {
+        val channelName: CharSequence = "reminders channel"
         val description = "channel for reminders notifications"
-        val channel = NotificationChannel("remindersChannel", channelName, NotificationManager.IMPORTANCE_DEFAULT)
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channel = NotificationChannel(
+            "remindersChannel",
+            channelName,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        channel.description=description
+        channel.description = description
 
         notificationManager.createNotificationChannel(channel)
     }
@@ -42,21 +47,31 @@ class DeadlineNotification {
      *
      * @return void
      */
-    fun setNotification(deadlinePair: Pair<DeadlineID, Deadline>, context: Context, timeBeforeDeadline: Long){
+    fun setNotification(
+        deadlinePair: Pair<DeadlineID, Deadline>,
+        context: Context,
+        timeBeforeDeadline: Long
+    ) {
         val id: DeadlineID = deadlinePair.first
         val deadline: Deadline = deadlinePair.second
-        alarmManager = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
-        val intent = Intent(context, ReminderBroadcastReceiver::class.java) //this create an intent of broadcast receiver
+        alarmManager =
+            context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
+        val intent = Intent(
+            context,
+            ReminderBroadcastReceiver::class.java
+        ) //this create an intent of broadcast receiver
         //Adding extra parameter that will be used in the broadcase receiver to create the notification
         intent.putExtra("title", deadline.title)
         intent.putExtra("description", deadline.description)
         intent.putExtra("id", id)
 
         //compute the time where the alarm will be triggered in millis.
-        val alarmTriggerTime = deadline.dateTime.atZone(deadline.zoneOffset).toInstant().toEpochMilli()-timeBeforeDeadline
+        val alarmTriggerTime = deadline.dateTime.atZone(deadline.zoneOffset).toInstant()
+            .toEpochMilli() - timeBeforeDeadline
 
         //set the receiver as pending intent
-        pendingIntent = PendingIntent.getBroadcast(context, id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
+        pendingIntent =
+            PendingIntent.getBroadcast(context, id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
 
         //set an alarm that will wake up the pending intent (receiver)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTriggerTime, pendingIntent)
@@ -66,18 +81,23 @@ class DeadlineNotification {
     /**
      * Delete notification for a given deadline
      */
-    fun cancelNotification(deadlinePair: Pair<DeadlineID, Deadline>, context: Context){
+    fun cancelNotification(deadlinePair: Pair<DeadlineID, Deadline>, context: Context) {
         val id: DeadlineID = deadlinePair.first
         val deadline: Deadline = deadlinePair.second
-        val intent = Intent(context, ReminderBroadcastReceiver::class.java) //this create an intent of broadcast receiver
+        val intent = Intent(
+            context,
+            ReminderBroadcastReceiver::class.java
+        ) //this create an intent of broadcast receiver
         //Adding extra parameter that will be used in the broadcase receiver to create the notification
         intent.putExtra("title", deadline.title)
         intent.putExtra("description", deadline.description)
         intent.putExtra("id", id)
 
-        pendingIntent = PendingIntent.getBroadcast(context, id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
+        pendingIntent =
+            PendingIntent.getBroadcast(context, id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
 
-        alarmManager = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
+        alarmManager =
+            context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
         alarmManager.cancel(pendingIntent)
     }
 }
