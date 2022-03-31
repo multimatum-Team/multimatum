@@ -2,15 +2,12 @@ package com.github.multimatum_team.multimatum
 
 import android.view.KeyEvent
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.ViewAction
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,8 +23,6 @@ import javax.inject.Singleton
 @UninstallModules(RepositoryModule::class)
 @HiltAndroidTest
 class CalendarActivityTest {
-    lateinit var deadlineList: DeadlineListViewModel
-
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
@@ -46,11 +41,11 @@ class CalendarActivityTest {
     }
 
     @Test
-    fun textInputScreenReleasedAfterAddingDeadline() {
+    fun textInputScreenReleasedAfterAddingDeadlineWithButton() {
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase"))
-            .perform(ViewActions.closeSoftKeyboard())
+            .perform(closeSoftKeyboard())
         Espresso.onView(ViewMatchers.withId(R.id.calendar_add_deadline_button))
             .perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
@@ -58,7 +53,7 @@ class CalendarActivityTest {
     }
 
     @Test
-    fun deadlineCanBeAddedUsingEnterKey() {
+    fun textInputScreenReleasedAfterAddingDeadlineWithEnterKey() {
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase2"))
@@ -66,18 +61,6 @@ class CalendarActivityTest {
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .check(ViewAssertions.matches(ViewMatchers.isClickable()))
     }
-
-    /*
-    @Test
-    fun keyboardDisappearWhenTouchedOutside() {
-        Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
-            .perform(click())
-        Espresso.onView(ViewMatchers.withId(R.id.calendar_view))
-            .perform(TouchUtils.clickView())
-        Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
-            .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
-    }
-    */
 
     @Module
     @InstallIn(SingletonComponent::class)

@@ -20,9 +20,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
-
-//import javax.inject.Inject
-
 @AndroidEntryPoint
 class CalendarActivity : AppCompatActivity() {
     private val viewModel: DeadlineListViewModel by viewModels()
@@ -55,8 +52,10 @@ class CalendarActivity : AppCompatActivity() {
      */
     private fun initTextInput() {
         val edit = findViewById<TextInputEditText>(R.id.textInputEditCalendar)
+
+        // Adding a listener to handle the "ENTER" key pressed.
         edit.setOnKeyListener { v, keycode, event ->
-            if (keycode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+            if ((keycode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
                 // Enter is a new shortcut to add a deadline (intuitive)
                 addNewDeadlineCalendar(v)
 
