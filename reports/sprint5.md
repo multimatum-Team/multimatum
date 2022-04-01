@@ -24,6 +24,8 @@ Firebase emulator suite which will allow us to test the actual Firebase
 repository and sign-in, thus greatly increasing our coverage.
 
 ### Lenny
+I started by finishing fixing the PR of last week, I manage to get 100% coverage on my notifications functions. Then I refactor the code in order to switch from localDate to LocalDateTime for the deadline due date. At the same time I also generalise the usage of the homemade clockService to ensure reliable testing by mocking the `now()` function. Then I adjust notifications to make them work with fireBase unique ID assigned to deadlines (this is not merged yet since we still have discussion on some detail in the PR (mostly with timeZone management)). I also add a function to remove notification. At this point I still have to add some modification for handling multiple notifications for a single deadline.
+Next week I will finish to merge my PR and I'll finish notifications and add a menu to set notification when creating new deadlines.
 
 ### Léo
 During this week, my job was to expand the calendar feature in many ways (that have changed a bit). First, I had some bugs
