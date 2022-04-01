@@ -49,3 +49,6 @@ unlike usual, I stayed within my time estimate. Next week I will still be workin
 goal being this time to make it work even when the app is not running.
 
 ### Overall team
+The main look of the app has not changed a lot, but there was a lot of work that has be done "in
+the shadow" by the team. We corrected bugs, refactored the app in a lot of different ways and significantly increased the test coverage. Some new "intuitive" features were added. Now that it
+is done, the team can focus again on more "concrete" stuff on the app.
