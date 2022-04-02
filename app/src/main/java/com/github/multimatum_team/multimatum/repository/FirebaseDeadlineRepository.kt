@@ -30,7 +30,12 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
         hashMapOf(
             "title" to deadline.title,
             "state" to deadline.state.ordinal,
-            "date" to deadline.dateTime
+            "date" to Timestamp(
+                deadline.dateTime
+                    .atZone(ZoneId.systemDefault())
+                    .toEpochSecond(),
+                0
+            )
         )
 
     /**
