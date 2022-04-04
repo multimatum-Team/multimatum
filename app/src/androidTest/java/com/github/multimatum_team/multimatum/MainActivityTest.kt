@@ -8,14 +8,18 @@ import android.view.View
 import android.widget.ListView
 import androidx.test.InstrumentationRegistry.getTargetContext
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.action.ViewActions.swipeLeft
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -189,12 +193,7 @@ class MainActivityTest {
     fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
         onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
         denyPermission()
-        Intents.intended(
-            allOf(
-                hasComponent(MainActivity::class.java.name),
-                toPackage("com.github.multimatum_team.multimatum")
-            )
-        )
+        onView(withId(R.id.goToQrCodeReader)).check(matches(ViewMatchers.isDisplayed()))
     }
 
     @Test
@@ -254,12 +253,14 @@ class MainActivityTest {
     private fun denyPermission() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         if (Build.VERSION.SDK_INT >= 23) {
-            val denyPermission = UiDevice.getInstance(instrumentation).findObject(UiSelector().text(
-                when {
-                    Build.VERSION.SDK_INT in 24..28 -> "DENY"
-                    else -> "Deny"
-                }
-            ))
+            val denyPermission = UiDevice.getInstance(instrumentation).findObject(
+                UiSelector().text(
+                    when {
+                        Build.VERSION.SDK_INT in 24..28 -> "DENY"
+                        else -> "Deny"
+                    }
+                )
+            )
             if (denyPermission.exists()) {
                 denyPermission.click()
             }
