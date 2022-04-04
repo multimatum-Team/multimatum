@@ -18,6 +18,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/calender_add_new_deadline_button_text"
+        android:background="@drawable/circle_button"
+        style="@style/Widget.MaterialComponents.Button.Icon"
+        app:icon="@drawable/ic_add_deadline"
         android:onClick="addNewDeadlineCalendar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,6 +42,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/calendar_deadline_input_text"
+            android:inputType="text"
+            android:maxLines="1"
+            android:imeOptions="actionDone"
             android:textColorHint="#616161"
             tools:ignore="TextContrastCheck,TextContrastCheck" />
     </com.google.android.material.textfield.TextInputLayout>

@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum
 
-
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -24,7 +23,6 @@ import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -142,6 +140,24 @@ class MainActivity : AppCompatActivity() {
         } else {
             val intent = Intent(this, QRCodeReaderActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    /*
+    Overriding this function allows the app to start the QR-Code scanner immediately
+    if the camera permission is granted.
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 123) {
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                val intent = Intent(this, QRCodeReaderActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 
