@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum
 import android.content.Context
 import android.content.SharedPreferences
 import android.hardware.SensorManager
+import android.os.Build
 import android.view.View
 import android.widget.ListView
 import androidx.test.InstrumentationRegistry.getTargetContext
@@ -19,6 +20,8 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiSelector
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
@@ -55,10 +58,12 @@ class MainActivityTest {
     @get:Rule(order = 1)
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
+    /*
     @get:Rule(order = 2)
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
         android.Manifest.permission.CAMERA
     )
+    */
 
     @Before
     fun init() {
@@ -138,6 +143,7 @@ class MainActivityTest {
         )
     }
 
+    /*
     @Test
     fun buttonOpensQrCodeReader() {
         onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
@@ -158,6 +164,31 @@ class MainActivityTest {
     @Test
     fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
         onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+        Intents.intended(
+            allOf(
+                hasComponent(MainActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+    }
+    */
+
+    @Test
+    fun buttonOpensQrCodeReader() {
+        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+        grantPermission()
+        Intents.intended(
+            allOf(
+                hasComponent(QRCodeReaderActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+    }
+
+    @Test
+    fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
+        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+        denyPermission()
         Intents.intended(
             allOf(
                 hasComponent(MainActivity::class.java.name),
@@ -198,6 +229,40 @@ class MainActivityTest {
                 description.appendText("ListView should have $size items")
             }
 
+        }
+    }
+
+    private fun grantPermission() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        if (Build.VERSION.SDK_INT >= 23) {
+            val allowPermission = UiDevice.getInstance(instrumentation).findObject(
+                UiSelector().text(
+                    when {
+                        Build.VERSION.SDK_INT == 23 -> "Allow"
+                        Build.VERSION.SDK_INT <= 28 -> "ALLOW"
+                        Build.VERSION.SDK_INT == 29 -> "Allow only while using the app"
+                        else -> "While using the app"
+                    }
+                )
+            )
+            if (allowPermission.exists()) {
+                allowPermission.click()
+            }
+        }
+    }
+
+    private fun denyPermission() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        if (Build.VERSION.SDK_INT >= 23) {
+            val denyPermission = UiDevice.getInstance(instrumentation).findObject(UiSelector().text(
+                when {
+                    Build.VERSION.SDK_INT in 24..28 -> "DENY"
+                    else -> "Deny"
+                }
+            ))
+            if (denyPermission.exists()) {
+                denyPermission.click()
+            }
         }
     }
 
