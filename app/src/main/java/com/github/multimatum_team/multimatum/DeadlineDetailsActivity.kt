@@ -36,7 +36,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Set the texts for the title and the date of the deadline
         findViewById<TextView>(R.id.deadline_details_activity_title).text = title
         findViewById<TextView>(R.id.deadline_details_activity_date).text =
-            getString(R.string.DueTheXatX, date.toLocalDate(),date.toLocalTime())
+            getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
 
         // Set the detail text to inform the user if it is due, done or the remaining time
         val detailView = findViewById<TextView>(R.id.deadline_details_activity_done_or_due)
@@ -50,11 +50,16 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             }
             else -> {
                 val remainingTime = actualDate.until(date, ChronoUnit.DAYS)
-
                 detailView.text = if (remainingTime <= 0) {
-                    getString(R.string.DueInXHours, actualDate.until(date, ChronoUnit.HOURS).toString())
+                    getString(
+                        R.string.DueInXHours,
+                        actualDate.until(date, ChronoUnit.HOURS).toString()
+                    )
                 } else {
-                    getString(R.string.DueInXDays, actualDate.until(date, ChronoUnit.DAYS).toString())
+                    getString(
+                        R.string.DueInXDays,
+                        actualDate.until(date, ChronoUnit.DAYS).toString()
+                    )
                 }
             }
         }
