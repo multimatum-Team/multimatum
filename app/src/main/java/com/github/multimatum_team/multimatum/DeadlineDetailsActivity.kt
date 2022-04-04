@@ -5,19 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.github.multimatum_team.multimatum.model.ClockServiceEntryPoint
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Period
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
@@ -43,7 +36,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Set the texts for the title and the date of the deadline
         findViewById<TextView>(R.id.deadline_details_activity_title).text = title
         findViewById<TextView>(R.id.deadline_details_activity_date).text =
-            getString(R.string.DueTheX, date)
+            getString(R.string.DueTheXatX, date.toLocalDate(),date.toLocalTime())
 
         // Set the detail text to inform the user if it is due, done or the remaining time
         val detailView = findViewById<TextView>(R.id.deadline_details_activity_done_or_due)
@@ -56,8 +49,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                 detailView.text = getString(R.string.isAlreadyDue)
             }
             else -> {
-                detailView.text =
+                val remainingTime = actualDate.until(date, ChronoUnit.DAYS)
+
+                detailView.text = if (remainingTime <= 0) {
+                    getString(R.string.DueInXHours, actualDate.until(date, ChronoUnit.HOURS).toString())
+                } else {
                     getString(R.string.DueInXDays, actualDate.until(date, ChronoUnit.DAYS).toString())
+                }
             }
         }
 

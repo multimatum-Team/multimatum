@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.Chronometer
 import android.widget.TextView
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.repository.DeadlineID
@@ -17,7 +16,6 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import java.time.Period
 import java.time.temporal.ChronoUnit
 import java.util.*
 
@@ -87,7 +85,11 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         titleTextView.setTypeface(null, Typeface.BOLD)
 
         // Show the date
-        subtitleTextView.text = context.getString(R.string.DueTheX, deadline.dateTime)
+        subtitleTextView.text = context.getString(
+            R.string.DueTheXatX,
+            deadline.dateTime.toLocalDate(),
+            deadline.dateTime.toLocalTime()
+        )
         subtitleTextView.setTypeface(null, Typeface.ITALIC)
 
         // Show how much time left or if it is due or done.
@@ -103,9 +105,17 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
             }
             else -> {
                 val timeRemaining = clockService.now().until(deadline.dateTime, ChronoUnit.DAYS)
-                detail =
+
+                // If the timeRemaining is less than a day, show the hours left
+                detail = if (timeRemaining <= 0) {
+                    val hoursRemaining =
+                        clockService.now().until(deadline.dateTime, ChronoUnit.HOURS)
+                    context.getString(R.string.DueInXHours, hoursRemaining.toString())
+                } else {
                     context.getString(R.string.DueInXDays, timeRemaining.toString())
-                // If the remaining days is too small, put them in red or orange
+                }
+
+                // If the remaining days is too small, put the text in red or orange
                 if (timeRemaining < URGENT_THRESHOLD_DAYS) {
                     detailTextView.setTextColor(Color.RED)
                     detailTextView.setTypeface(null, Typeface.BOLD)

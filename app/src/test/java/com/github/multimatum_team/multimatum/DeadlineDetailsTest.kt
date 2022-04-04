@@ -56,7 +56,7 @@ class DeadlineDetailsTest {
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${clockService.now().plusDays(7)}"))
+            .check(matches(withText("Due the ${clockService.now().plusDays(7).toLocalDate()} at ${clockService.now().plusDays(7).toLocalTime()}"))
         )
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 7 Days")))
     }
@@ -71,7 +71,7 @@ class DeadlineDetailsTest {
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${clockService.now().plusDays(7)}")))
+            .check(matches(withText("Due the ${clockService.now().plusDays(7).toLocalDate()} at ${clockService.now().plusDays(7).toLocalTime()}")))
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
     }
 
@@ -85,8 +85,22 @@ class DeadlineDetailsTest {
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${clockService.now().minusDays(2)}")))
+            .check(matches(withText("Due the ${clockService.now().minusDays(2).toLocalDate()} at ${clockService.now().plusDays(7).toLocalTime()}")))
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Is already Due")))
+    }
+
+    @Test
+    fun `Given a deadline with only a few hours left, the activity should display it`() {
+        val intent = DeadlineDetailsActivity.newIntent(
+            ApplicationProvider.getApplicationContext(),
+            "4",
+            Deadline("Test 4", DeadlineState.TODO, clockService.now().plusHours(6))
+        )
+        ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 4")))
+        onView(withId(R.id.deadline_details_activity_date))
+            .check(matches(withText("Due the ${clockService.now().plusHours(6).toLocalDate()} at ${clockService.now().plusHours(6).toLocalTime()}")))
+        onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 6 Hours")))
     }
 
     @Module
