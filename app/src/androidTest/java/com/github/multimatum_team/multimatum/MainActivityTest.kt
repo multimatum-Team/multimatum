@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.hardware.SensorManager
 import android.view.View
 import android.widget.ListView
+import androidx.test.InstrumentationRegistry.getTargetContext
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
@@ -15,6 +17,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -101,7 +104,7 @@ class MainActivityTest {
                 hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.date",
-                    LocalDateTime.of(2022, 3, 1,0 , 0)
+                    LocalDateTime.of(2022, 3, 1, 0, 0)
                 ),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.state",
@@ -141,6 +144,23 @@ class MainActivityTest {
         Intents.intended(
             allOf(
                 hasComponent(QRCodeReaderActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+    }
+
+    @Before
+    fun tearDown() {
+        InstrumentationRegistry.getInstrumentation().uiAutomation
+            .executeShellCommand("pm revoke com.github.multimatum_team.multimatum android.permission.CAMERA")
+    }
+
+    @Test
+    fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
+        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+        Intents.intended(
+            allOf(
+                hasComponent(MainActivity::class.java.name),
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
