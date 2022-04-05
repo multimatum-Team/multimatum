@@ -69,8 +69,9 @@ class DeadlineNotification {
 
         //compute the time where the alarm will be triggered in millis.
         val alarmTriggerTime = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
-            .toEpochMilli()
+            .toEpochMilli() - timeBeforeDeadline
 
+        Log.i("timebefore", timeBeforeDeadline.toString())
         //set the receiver as pending intent
         pendingIntent =
             PendingIntent.getBroadcast(context, id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)

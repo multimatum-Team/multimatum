@@ -26,8 +26,10 @@ import com.google.firebase.ktx.Firebase
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -106,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-    This button trigger a basics notification in 1 sec
+    This button trigger a basics notification in 2 sec
     here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
     */
     fun triggerNotification(view: View) {
@@ -116,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(5))
             ),
             this,
-            2
+            Duration.of(3, ChronoUnit.SECONDS).toMillis()
         )
     }
 
