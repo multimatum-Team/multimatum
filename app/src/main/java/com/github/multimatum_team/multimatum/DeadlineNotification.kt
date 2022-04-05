@@ -42,7 +42,9 @@ class DeadlineNotification {
     /**
      * Set a notification for a deadline in a given time before it is due.
      *
-     * For example, to set an alarm (=notif) 1 hours before the deadline is due, use "setNotification(Pair(deadline_id, deadline), context, Duration.of(1, ChronoUnit.HOURS).toMillis())
+     * For example, to set an alarm (=notif) 1 hours before the deadline is due,
+     * use "setNotification(Pair(deadline_id, deadline), context, Duration.of(1, ChronoUnit.HOURS).toMillis())
+     *
      * @param timeBeforeDeadline : time in ms before the deadline, when the alarm has to be triggered
      *
      * @return void
