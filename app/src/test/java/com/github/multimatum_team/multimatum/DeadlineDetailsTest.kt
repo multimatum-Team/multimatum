@@ -56,7 +56,7 @@ class DeadlineDetailsTest {
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${clockService.now().plusDays(7)}"))
+            .check(matches(withText("Due the ${clockService.now().plusDays(7).toLocalDate()} at ${clockService.now().plusDays(7).toLocalTime()}"))
         )
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 7 Days")))
     }
@@ -71,7 +71,7 @@ class DeadlineDetailsTest {
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${clockService.now().plusDays(7)}")))
+            .check(matches(withText("Due the ${clockService.now().plusDays(7).toLocalDate()} at ${clockService.now().plusDays(7).toLocalTime()}")))
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
     }
 
@@ -85,7 +85,7 @@ class DeadlineDetailsTest {
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the ${clockService.now().minusDays(2)}")))
+            .check(matches(withText("Due the ${clockService.now().minusDays(2).toLocalDate()} at ${clockService.now().minusDays(2).toLocalTime()}")))
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Is already Due")))
     }
 

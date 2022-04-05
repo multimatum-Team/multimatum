@@ -59,7 +59,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         dateView.text = getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
 
         // Set the View to be unmodifiable at the start and remove displacement of the texts
-        fixArrangementView()
+        fixArrangement()
 
         // Setup the CheckBox to set done
         doneButton.isChecked = (state == DeadlineState.DONE)
@@ -122,7 +122,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     // Remove the displacement of texts that can happen
     // and setup them for the creation of the Activity
-    private fun fixArrangementView() {
+    private fun fixArrangement() {
         editTitle(true)
         editTitle(false)
         dateView.isClickable = false
@@ -173,7 +173,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         datePickerDialog.show()
     }
 
-    //Setup a TimePickerDialog that will select a time for the deadline and show it
+    //Setup a TimePickerDialog that will select a time for the deadline, show it and update the details
     private fun selectTime() {
         // Set what will happen when a time is selected
         val timeSetListener =
