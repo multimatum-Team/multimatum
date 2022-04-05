@@ -94,7 +94,12 @@ class DeadlineNotification {
         intent.putExtra("id", deadlineId)
 
         pendingIntent =
-            PendingIntent.getBroadcast(context, deadlineId.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(
+                context,
+                deadlineId.hashCode(),
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
 
         alarmManager =
             context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager

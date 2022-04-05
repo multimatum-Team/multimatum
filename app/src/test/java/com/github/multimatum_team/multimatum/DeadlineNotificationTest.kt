@@ -82,7 +82,7 @@ class DeadlineNotificationTest {
 
     /**
      * Test if testSetNotification actually set an alarm.
-    * */
+    */
     @Test
     fun testSetNotification() {
         val reminderBroadcastReceiver: ReminderBroadcastReceiver = ReminderBroadcastReceiver()

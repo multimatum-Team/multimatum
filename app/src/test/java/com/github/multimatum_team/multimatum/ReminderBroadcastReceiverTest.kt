@@ -25,7 +25,7 @@ class ReminderBroadcastReceiverTest {
 
     /**
     * Test if the broadCast receiver launch a notification when "onReceive" is called
-    * */
+    */
     @Test
     fun testNotificationLaunchOnReceive(){
         val notificationManager =
