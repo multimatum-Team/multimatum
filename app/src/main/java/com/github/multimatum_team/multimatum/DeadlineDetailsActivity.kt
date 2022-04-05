@@ -40,6 +40,14 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Set the detail text to inform the user if it is due, done or the remaining time
         val detailView = findViewById<TextView>(R.id.deadline_details_activity_done_or_due)
+        setDetailText(detailView, state, date)
+
+    }
+
+    /*
+     Set the detail text to inform the user if it is due, done or the remaining time
+     */
+    private fun setDetailText(detailView: TextView, state: DeadlineState, date: LocalDateTime) {
         val actualDate = clockService.now()
         when {
             state == DeadlineState.DONE -> {
@@ -50,20 +58,19 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             }
             else -> {
                 val remainingTime = actualDate.until(date, ChronoUnit.DAYS)
-                detailView.text = if (remainingTime <= 0) {
-                    getString(
-                        R.string.DueInXHours,
-                        actualDate.until(date, ChronoUnit.HOURS).toString()
-                    )
+                val dueIn: Int
+                val until: String
+
+                if (remainingTime <= 0) {
+                    dueIn = R.string.DueInXHours
+                    until = actualDate.until(date, ChronoUnit.HOURS).toString()
                 } else {
-                    getString(
-                        R.string.DueInXDays,
-                        actualDate.until(date, ChronoUnit.DAYS).toString()
-                    )
+                    dueIn = R.string.DueInXDays
+                    until = actualDate.until(date, ChronoUnit.DAYS).toString()
                 }
+                detailView.text = getString(dueIn, until)
             }
         }
-
     }
 
     companion object {
