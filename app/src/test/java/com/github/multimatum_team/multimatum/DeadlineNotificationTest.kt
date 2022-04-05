@@ -63,8 +63,8 @@ class DeadlineNotificationTest {
     }
 
     /**
-    * Test if createNotification channel creates a notification channel with the right parameters
-    *  */
+     * Test if createNotification channel creates a notification channel with the right parameters
+     */
     @Test
     fun testCreateNotificationChannel() {
         val channel = NotificationChannel(
@@ -82,7 +82,7 @@ class DeadlineNotificationTest {
 
     /**
      * Test if testSetNotification actually set an alarm.
-    */
+     */
     @Test
     fun testSetNotification() {
         val reminderBroadcastReceiver: ReminderBroadcastReceiver = ReminderBroadcastReceiver()
