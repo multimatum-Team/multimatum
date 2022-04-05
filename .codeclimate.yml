@@ -1,7 +1,7 @@
 checks:
   similar-code:
     config:
-      threshold: 5
+      threshold: 250
 
 exclude_patterns:
   - "**/test/"
