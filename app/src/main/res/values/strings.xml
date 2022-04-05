@@ -18,6 +18,7 @@
     <string name="isAlreadyDue">Is already Due</string>
     <string name="done">Done</string>
     <string name="DueTheX">Due the %1s</string>
+    <string name="DueTheXatX">Due the %1s at %1s</string>
     <string name="DueInXDays">Due in %1s Days</string>
     <string name="missing_sensor_msg">"%1s (disabled: missing sensor on device)"</string>
     <string name="stop_procrastinating_msg">"Hey! Why is this phone moving? You should be working!"</string>
