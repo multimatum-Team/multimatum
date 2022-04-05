@@ -58,17 +58,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             }
             else -> {
                 val remainingTime = actualDate.until(date, ChronoUnit.DAYS)
-                val dueIn: Int
-                val until: String
-
-                if (remainingTime <= 0) {
-                    dueIn = R.string.DueInXHours
-                    until = actualDate.until(date, ChronoUnit.HOURS).toString()
+                detailView.text = if (remainingTime <= 0) {
+                    getString(R.string.DueInXHours, actualDate.until(date, ChronoUnit.HOURS).toString())
                 } else {
-                    dueIn = R.string.DueInXDays
-                    until = actualDate.until(date, ChronoUnit.DAYS).toString()
+                    getString(R.string.DueInXDays,actualDate.until(date, ChronoUnit.DAYS).toString())
                 }
-                detailView.text = getString(dueIn, until)
             }
         }
     }
