@@ -35,4 +35,5 @@
     <string name="add_deadline_button_cont_descr">Add Deadline Button</string>
     <string name="enter_a_title">Enter a title</string>
     <string name="deadline_created">Deadline created.</string>
+    <string name="generate_qrcode">Generate QRCode</string>
 </resources>

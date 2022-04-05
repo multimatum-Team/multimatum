@@ -3,8 +3,11 @@ package com.github.multimatum_team.multimatum
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.github.multimatum_team.multimatum.model.ClockServiceEntryPoint
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -63,6 +66,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
+    fun goQRGenerator(view: View) {
+        val intent = Intent(this, QRGenerator::class.java)
+        startActivity(intent)
+    }
+
     companion object {
         private const val EXTRA_ID =
             "com.github.multimatum_team.deadline.details.id"
@@ -83,5 +91,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
             return detailIntent
         }
+
     }
 }
