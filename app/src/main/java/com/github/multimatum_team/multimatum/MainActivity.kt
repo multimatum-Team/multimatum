@@ -107,14 +107,13 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    /*
-    This button trigger a basics notification in 2 sec
-    here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
-    */
+    /**
+     * This button trigger a basics notification in 2 sec
+     */
     fun triggerNotification(view: View) {
         DeadlineNotification().setNotification(
             Pair(
-                "someID",
+                "someID", //in real deadline present in the List, deadline will have Firebase UId which will be used here.
                 Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(5))
             ),
             this,

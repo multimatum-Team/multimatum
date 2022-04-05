@@ -62,7 +62,7 @@ class DeadlineNotificationTest {
 
     }
 
-    /*
+    /**
     * Test if createNotification channel creates a notification channel with the right parameters
     *  */
     @Test
@@ -80,8 +80,8 @@ class DeadlineNotificationTest {
 
     }
 
-    /*Test if testSetNotification actually set an alarm.
-    * I abuse of mocking here, there's probably a better way to do it with shadow (because here for example "PendingIntent" cannot be mocked so we have to use Mockito.any())
+    /**
+     * Test if testSetNotification actually set an alarm.
     * */
     @Test
     fun testSetNotification() {
@@ -108,6 +108,9 @@ class DeadlineNotificationTest {
         )
     }
 
+    /**
+     * Test if a notification get properly cancel after a call to the method
+     */
     @Test
     fun testCancelNotification() {
         val alarmManager = ApplicationProvider.getApplicationContext<Context>()
@@ -134,6 +137,9 @@ class DeadlineNotificationTest {
         Assert.assertEquals(0, shadowAlarmManager.scheduledAlarms.size)
     }
 
+    /**
+     * Inject a clockService to ensure test safety when using Java's 'LocalDateTime.now()'
+     */
     @Module
     @InstallIn(SingletonComponent::class)
     object TestClockModule {

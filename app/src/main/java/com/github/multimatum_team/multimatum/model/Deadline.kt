@@ -1,11 +1,6 @@
 package com.github.multimatum_team.multimatum.model
 
-import android.provider.Settings.Global.getString
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.ZoneOffset.UTC
 
 /**
  * The state of a deadline.
@@ -35,7 +30,6 @@ enum class DeadlineState {
  * @property state the advancement state of the deadline
  * @property dateTime the time at which the work is due
  * @property description some description of the deadline, by default empty
- * @property zoneOffset zone offset of the deadline due date, default: UTC
  * @constructor Creates a deadline from specified parameters
  * @throws IllegalArgumentException when title is empty or startDate > end
  */

@@ -23,7 +23,7 @@ class ReminderBroadcastReceiverTest {
         context = ApplicationProvider.getApplicationContext<Context>()
     }
 
-    /*
+    /**
     * Test if the broadCast receiver launch a notification when "onReceive" is called
     * */
     @Test

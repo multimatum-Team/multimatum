@@ -6,11 +6,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.repository.DeadlineID
-import java.lang.NullPointerException
 import java.time.ZoneId
 
 /**
@@ -61,8 +59,9 @@ class DeadlineNotification {
         val intent = Intent(
             context,
             ReminderBroadcastReceiver::class.java
-        ) //this create an intent of broadcast receiver
-        //Adding extra parameter that will be used in the broadcase receiver to create the notification
+        )
+        //this create an intent of broadcast receiver
+        //Adding extra parameter that will be used in the broadcast receiver to create the notification
         intent.putExtra("title", deadline.title)
         intent.putExtra("description", deadline.description)
         intent.putExtra("id", id)
