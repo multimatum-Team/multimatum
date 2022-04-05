@@ -11,12 +11,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.temporal.ChronoUnit
+import javax.inject.Inject
 
 
 /**
@@ -25,8 +25,11 @@ import java.time.temporal.ChronoUnit
 @AndroidEntryPoint
 class AddDeadlineActivity : AppCompatActivity() {
 
-    private var selectedDate: LocalDateTime =
-        Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime().truncatedTo(ChronoUnit.HOURS)
+    @Inject
+    lateinit var clockService: ClockService
+
+    private lateinit var selectedDate: LocalDateTime
+
 
     private val viewModel: DeadlineListViewModel by viewModels()
     private lateinit var textDate: TextView
@@ -37,11 +40,14 @@ class AddDeadlineActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_deadline)
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
+        selectedDate = clockService.now().truncatedTo(ChronoUnit.HOURS)
         textDate.text = selectedDate.toLocalDate().toString()
         textTime.text = selectedDate.toLocalTime().toString()
     }
 
-    //Setup a DatePickerDialog that will select a date for the deadline and show it
+    /**
+     * Setup a DatePickerDialog that will select a date for the deadline and show it
+     */
     fun selectDate(view: View) {
         // Set what will happen when a date is selected
         val dateSetListener =
@@ -63,7 +69,9 @@ class AddDeadlineActivity : AppCompatActivity() {
         datePickerDialog.show()
     }
 
-    //Setup a TimePickerDialog that will select a time for the deadline and show it
+    /**
+     * Setup a TimePickerDialog that will select a time for the deadline and show it
+     */
     fun selectTime(view: View) {
         // Set what will happen when a time is selected
         val timeSetListener =
@@ -84,6 +92,9 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     }
 
+    /**
+     *  Add a deadline based on the data recuperated on the other TextViews
+     */
     fun addDeadline(view: View) {
         // Getting the necessary views
         val editText = findViewById<TextView>(R.id.add_deadline_select_title)

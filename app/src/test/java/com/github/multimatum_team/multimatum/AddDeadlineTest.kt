@@ -14,6 +14,8 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.util.MockClockService
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import dagger.Module
 import dagger.Provides
@@ -34,13 +36,14 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.shadows.ShadowDatePickerDialog
 import org.robolectric.shadows.ShadowTimePickerDialog
 import org.robolectric.shadows.ShadowToast
+import java.time.LocalDateTime
 import javax.inject.Singleton
 
 
 /**
  * Class test for AddDeadlineActivity
  */
-@UninstallModules(RepositoryModule::class)
+@UninstallModules(RepositoryModule::class, ClockModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class AddDeadlineTest {
@@ -130,6 +133,14 @@ class AddDeadlineTest {
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
             MockDeadlineRepository(listOf())
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestClockModule {
+        @Provides
+        fun provideClockService(): ClockService =
+            MockClockService(LocalDateTime.of(2022, 3, 12, 0, 0))
     }
 
 
