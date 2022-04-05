@@ -27,8 +27,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.shadows.ShadowAlertDialog
-import org.robolectric.shadows.ShadowDatePickerDialog
-import org.robolectric.shadows.ShadowTimePickerDialog
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -62,14 +60,9 @@ class DeadlineDetailsTest {
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(
-                matches(
-                    withText(
-                        "Due the ${
-                            clockService.now().plusDays(7).toLocalDate()
-                        } at ${clockService.now().plusDays(7).toLocalTime()}"
-                    )
-                )
+            .check(matches(withText(
+                        "Due the ${clockService.now().plusDays(7).toLocalDate()} " +
+                                "at ${clockService.now().plusDays(7).toLocalTime()}"))
             )
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 7 Days")))
     }
@@ -84,14 +77,9 @@ class DeadlineDetailsTest {
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(
-                matches(
-                    withText(
-                        "Due the ${
-                            clockService.now().plusDays(7).toLocalDate()
-                        } at ${clockService.now().plusDays(7).toLocalTime()}"
-                    )
-                )
+            .check(matches(withText(
+                        "Due the ${clockService.now().plusDays(7).toLocalDate()} " +
+                                "at ${clockService.now().plusDays(7).toLocalTime()}"))
             )
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
     }
@@ -106,14 +94,9 @@ class DeadlineDetailsTest {
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
         onView(withId(R.id.deadline_details_activity_date))
-            .check(
-                matches(
-                    withText(
-                        "Due the ${
-                            clockService.now().minusDays(2).toLocalDate()
-                        } at ${clockService.now().minusDays(2).toLocalTime()}"
-                    )
-                )
+            .check(matches(withText(
+                        "Due the ${clockService.now().minusDays(2).toLocalDate()} " +
+                                "at ${clockService.now().minusDays(2).toLocalTime()}"))
             )
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Is already Due")))
     }
@@ -129,12 +112,12 @@ class DeadlineDetailsTest {
         // Go in Modify Mode
         onView(withId(R.id.deadline_details_activity_modify)).perform(ViewActions.click())
 
-        //Modify the text
+        // Modify the text
         onView(withId(R.id.deadline_details_activity_title)).perform(ViewActions.replaceText("Test 66"))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 66")))
 
-        //Modify the date
+        // Modify the date
         onView(withId(R.id.deadline_details_activity_date))
             .perform(ViewActions.click())
         val dateDialog = ShadowAlertDialog.getLatestDialog() as DatePickerDialog
@@ -142,6 +125,7 @@ class DeadlineDetailsTest {
         dateDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).performClick()
         println(ShadowAlertDialog.getShownDialogs())
 
+        // An action is necessary to let the time to ShadowAlertDialog to find the TimeDialog
         onView(withId(R.id.deadline_details_activity_set_done)).perform(ViewActions.click())
 
         // Modify the time
@@ -149,6 +133,7 @@ class DeadlineDetailsTest {
         timeDialog.updateTime(10, 10)
         timeDialog.getButton(TimePickerDialog.BUTTON_POSITIVE).performClick()
 
+        // Check the date and the time
         onView(withId(R.id.deadline_details_activity_date))
             .check(matches(withText("Due the 2022-11-23 at 10:10")))
 

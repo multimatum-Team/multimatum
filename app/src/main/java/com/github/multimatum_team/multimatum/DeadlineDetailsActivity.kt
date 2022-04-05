@@ -29,7 +29,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     @Inject
     lateinit var clockService: ClockService
 
-    private var modifyMode: Boolean = true
+    private var editMode: Boolean = true
 
     private lateinit var titleView: EditText
     private lateinit var dateView: TextView
@@ -61,7 +61,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Set the View to be unmodifiable at the start and remove displacement of the texts
         fixArrangement()
 
-        // Setup the CheckBox to set done
+        // Setup the CheckBox to be checked if done
         doneButton.isChecked = (state == DeadlineState.DONE)
         doneButton.setOnCheckedChangeListener { _, isChecked ->
             state = if (isChecked) DeadlineState.DONE else DeadlineState.TODO
@@ -73,14 +73,31 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
-
+    // This display a DatePickerDialog and afterward a TimePickerDialog to modify the date
     fun changeDateAndTime(view: View) {
-        selectDate()
+        val dateSetListener =
+            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                date = LocalDateTime.of(
+                    // monthOfYear is based on an enum that begin with 0
+                    // thus we need to increase it by one to have the true date
+                    year, monthOfYear + 1, dayOfMonth,
+                    date.hour, date.minute
+                )
+                selectTime()
+            }
 
+        // Prepare the datePickerDialog
+        val datePickerDialog = DatePickerDialog(
+            this, dateSetListener,
+            date.year, date.month.ordinal, date.dayOfMonth
+        )
+        // Show the Dialog on the screen
+        datePickerDialog.show()
     }
 
+    // Function that put the activity to the Edit Mode or to the Uneditable Mode
     fun goToModifyOrBack(view: View) {
-        if (modifyMode) {
+        if (editMode) {
             editTitle(true)
             findViewById<ImageButton>(R.id.deadline_details_activity_modify)
                 .setImageResource(android.R.drawable.checkbox_on_background)
@@ -104,10 +121,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             //TODO: modify the deadline in the repository
 
         }
-        modifyMode = modifyMode.not()
+        editMode = editMode.not()
 
     }
 
+    // Shift the TitleView to a modify state or to a uneditable state
     private fun editTitle(edit: Boolean) {
         if (edit) {
             titleView.isEnabled = true
@@ -121,16 +139,20 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
-    // Remove the displacement of texts that can happen
-    // and setup them for the creation of the Activity
+    // When we go the first time to the Modify Mode, it happened that the TextView
+    // shifted a little. This function do the shift at the very beginning of the
+    // activity to fix it
+    // TODO: Find a way to setup the layout to remove this problem
     private fun fixArrangement() {
         editTitle(true)
         editTitle(false)
         dateView.isClickable = false
+        doneButton.isClickable = false
         dateView.setBackgroundResource(android.R.drawable.btn_default)
         dateView.setBackgroundResource(android.R.color.transparent)
     }
 
+    // Update the information shown in the TextView detailView
     private fun updateDetail() {
         val actualDate = clockService.now()
         when {
@@ -141,66 +163,35 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                 detailView.text = getString(R.string.isAlreadyDue)
             }
             else -> {
-                detailView.text =
-                    getString(
+                detailView.text = getString(
                         R.string.DueInXDays,
-                        actualDate.until(date, ChronoUnit.DAYS).toString()
-                    )
+                        actualDate.until(date, ChronoUnit.DAYS).toString())
             }
         }
     }
 
-    // Setup a DatePickerDialog that will select a date for the deadline and show it
-    private fun selectDate() {
-        // Set what will happen when a date is selected
-        val dateSetListener =
-            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                date = LocalDateTime.of(
-                    // monthOfYear is based on an enum that begin with 0
-                    // thus we need to increase it by one to have the true date
-                    year, monthOfYear + 1, dayOfMonth,
-                    date.hour, date.minute
-                )
-                selectTime()
-            }
 
-        // Prepare the datePickerDialog
-        val datePickerDialog = DatePickerDialog(
-            this, dateSetListener,
-            date.year, date.month.ordinal, date.dayOfMonth
-        )
-
-
-
-        // Show the Dialog on the screen
-        datePickerDialog.show()
-
-    }
-
-    //Setup a TimePickerDialog that will select a time for the deadline, show it and update the details
+    // Setup a TimePickerDialog that will select a time for the deadline, show it and update the details
     private fun selectTime() {
         // Set what will happen when a time is selected
         val timeSetListener =
             TimePickerDialog.OnTimeSetListener { _, hoursOfDay, minutes ->
                 date = LocalDateTime.of(
                     date.year, date.monthValue, date.dayOfMonth,
-                    hoursOfDay, minutes
-                )
+                    hoursOfDay, minutes)
 
                 dateView.text =
                     getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
+
                 updateDetail()
             }
 
         // Prepare the datePickerDialog
-        val timePickerDialog = TimePickerDialog(
-            this, timeSetListener,
-            date.hour, date.minute, true
-        )
+        val timePickerDialog = TimePickerDialog(this, timeSetListener,
+            date.hour, date.minute, true)
 
         // Show the Dialog on the screen
         timePickerDialog.show()
-
     }
 
     companion object {
