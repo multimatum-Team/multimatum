@@ -21,13 +21,10 @@ import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -112,10 +109,8 @@ class MainActivity : AppCompatActivity() {
      */
     fun triggerNotification(view: View) {
         DeadlineNotification().setNotification(
-            Pair(
-                "someID", //in real deadline present in the List, deadline will have Firebase UId which will be used here.
-                Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(5))
-            ),
+            "someID",
+            Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(5)),
             this,
             Duration.of(3, ChronoUnit.SECONDS).toMillis()
         )

@@ -92,15 +92,13 @@ class DeadlineNotificationTest {
         val alarmManager = ApplicationProvider.getApplicationContext<Context>()
             .getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
-        val idDeadline = Pair(
-            "someFirebaseID",
-            Deadline("notifDeadline", DeadlineState.TODO, clockService.now())
-        )
+        val id = "someFirebaseID"
+        val deadline = Deadline("notifDeadline", DeadlineState.TODO, clockService.now())
         val timeBeforeDue = Duration.of(5, ChronoUnit.HOURS).toMillis()
 
-        deadlineNotification.setNotification(idDeadline, context, timeBeforeDue)
+        deadlineNotification.setNotification(id, deadline, context, timeBeforeDue)
 
-        val triggerAtTime = idDeadline.second.dateTime.atZone(ZoneId.systemDefault()).toInstant()
+        val triggerAtTime = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
             .toEpochMilli() - timeBeforeDue
         Assert.assertEquals(
             triggerAtTime,
@@ -117,22 +115,20 @@ class DeadlineNotificationTest {
             .getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
 
-        val idDeadline = Pair(
-            "someFirebaseID",
-            Deadline("notifDeadline", DeadlineState.TODO, clockService.now())
-        )
+        val id = "someFirebaseID"
+        val deadline = Deadline("notifDeadline", DeadlineState.TODO, clockService.now())
         val timeBeforeDue = Duration.of(5, ChronoUnit.HOURS).toMillis()
 
-        deadlineNotification.setNotification(idDeadline, context, timeBeforeDue)
+        deadlineNotification.setNotification(id, deadline, context, timeBeforeDue)
 
-        val triggerAtTime = idDeadline.second.dateTime.atZone(ZoneId.systemDefault()).toInstant()
+        val triggerAtTime = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
             .toEpochMilli() - timeBeforeDue
         Assert.assertEquals(
             triggerAtTime,
             shadowAlarmManager.peekNextScheduledAlarm().triggerAtTime
         )
 
-        deadlineNotification.cancelNotification(idDeadline, context)
+        deadlineNotification.cancelNotification(id, deadline, context)
 
         Assert.assertEquals(0, shadowAlarmManager.scheduledAlarms.size)
     }

@@ -50,12 +50,11 @@ class DeadlineNotification {
      * @return void
      */
     fun setNotification(
-        deadlinePair: Pair<DeadlineID, Deadline>,
+        id: DeadlineID,
+        deadline: Deadline,
         context: Context,
         timeBeforeDeadline: Long
     ) {
-        val id: DeadlineID = deadlinePair.first
-        val deadline: Deadline = deadlinePair.second
         alarmManager =
             context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
         val intent = Intent(
@@ -84,9 +83,7 @@ class DeadlineNotification {
     /**
      * Delete notification for a given deadline
      */
-    fun cancelNotification(deadlinePair: Pair<DeadlineID, Deadline>, context: Context) {
-        val id: DeadlineID = deadlinePair.first
-        val deadline: Deadline = deadlinePair.second
+    fun cancelNotification(deadlineId: DeadlineID, deadline: Deadline, context: Context) {
         val intent = Intent(
             context,
             ReminderBroadcastReceiver::class.java
@@ -94,10 +91,10 @@ class DeadlineNotification {
         //Adding extra parameter that will be used in the broadcase receiver to create the notification
         intent.putExtra("title", deadline.title)
         intent.putExtra("description", deadline.description)
-        intent.putExtra("id", id)
+        intent.putExtra("id", deadlineId)
 
         pendingIntent =
-            PendingIntent.getBroadcast(context, id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, deadlineId.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
 
         alarmManager =
             context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
