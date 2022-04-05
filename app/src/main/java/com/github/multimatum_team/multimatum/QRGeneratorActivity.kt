@@ -26,7 +26,8 @@ class QRGeneratorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrgenerator)
-        id = intent.getStringExtra(EXTRA_ID) as DeadlineID
+        id = intent.getStringExtra(EXTRA_ID).toString()
+        displayQRCode()
     }
 
     //function to return to the main activity
@@ -36,8 +37,7 @@ class QRGeneratorActivity : AppCompatActivity() {
     }
 
 
-    fun displayQRCode(view: View) {
-        val qrNameField = findViewById<EditText>(R.id.QRTextEdit)
+    fun displayQRCode() {
         val data = id
 
         //Make a notification if there is no text

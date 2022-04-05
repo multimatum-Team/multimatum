@@ -12,8 +12,8 @@ import com.google.zxing.qrcode.QRCodeWriter
  */
 class QRCodeGenerator(data: String) {
 
-    val writer = QRCodeWriter()
-    lateinit var bitmap: BitMatrix
+    private val writer = QRCodeWriter()
+    private val bitmap: BitMatrix =  writer.encode(data, BarcodeFormat.QR_CODE, 512, 512)
 
     /**
      * generate a QRCode from data saved by constructor
