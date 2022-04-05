@@ -21,6 +21,8 @@ import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -111,10 +113,10 @@ class MainActivity : AppCompatActivity() {
         DeadlineNotification().setNotification(
             Pair(
                 "someID",
-                Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(3))
+                Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(5))
             ),
             this,
-            0
+            2
         )
     }
 

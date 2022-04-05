@@ -25,11 +25,6 @@ enum class DeadlineState {
 }
 
 /**
- * by default we assume we're in UTC time zone
- */
-private val DEFAULT_TIME_ZONE: ZoneOffset = UTC
-
-/**
  * A deadline.
  *
  * The Deadline class represents a deadline at a given date.
@@ -48,8 +43,7 @@ data class Deadline(
     val title: String,
     val state: DeadlineState,
     val dateTime: LocalDateTime,
-    val description: String = "",
-    val zoneOffset: ZoneOffset = DEFAULT_TIME_ZONE
+    val description: String = ""
 ) {
     init {
         if (title.isEmpty()) {
