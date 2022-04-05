@@ -76,6 +76,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     fun changeDateAndTime(view: View) {
         selectDate()
+
     }
 
     fun goToModifyOrBack(view: View) {
@@ -169,8 +170,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             date.year, date.month.ordinal, date.dayOfMonth
         )
 
+
+
         // Show the Dialog on the screen
         datePickerDialog.show()
+
     }
 
     //Setup a TimePickerDialog that will select a time for the deadline, show it and update the details
