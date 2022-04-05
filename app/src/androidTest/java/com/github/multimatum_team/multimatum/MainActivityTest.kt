@@ -101,7 +101,7 @@ class MainActivityTest {
                 hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.date",
-                    LocalDateTime.of(2022, 3, 1,0 , 0)
+                    LocalDateTime.of(2022, 3, 1, 0, 0)
                 ),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.state",
