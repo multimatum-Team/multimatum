@@ -11,7 +11,6 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
 import java.time.ZoneId
-import java.time.temporal.ChronoField
 import javax.inject.Inject
 
 /**
@@ -31,7 +30,8 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
             "state" to deadline.state.ordinal,
             "date" to Timestamp(
                 deadline.dateTime
-                    .getLong(ChronoField.INSTANT_SECONDS),
+                    .atZone(ZoneId.systemDefault())
+                    .toEpochSecond(),
                 0
             )
         )

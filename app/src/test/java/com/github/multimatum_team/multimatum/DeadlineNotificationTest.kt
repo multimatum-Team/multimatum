@@ -23,14 +23,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.mockito.kotlin.*
 import org.robolectric.Shadows
 import org.robolectric.shadows.ShadowAlarmManager
 import org.robolectric.shadows.ShadowNotificationManager
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
@@ -57,7 +55,7 @@ class DeadlineNotificationTest {
         context = ApplicationProvider.getApplicationContext<Context>()
         deadlineNotification = DeadlineNotification()
         hiltRule.inject()
-        var notificationManager =
+        val notificationManager =
             ApplicationProvider.getApplicationContext<Context>()
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         shadowNotificationManager = Shadows.shadowOf(notificationManager)
@@ -102,7 +100,7 @@ class DeadlineNotificationTest {
 
         deadlineNotification.setNotification(idDeadline, context, timeBeforeDue)
 
-        val triggerAtTime = idDeadline.second.dateTime.toInstant(idDeadline.second.zoneOffset)
+        val triggerAtTime = idDeadline.second.dateTime.atZone(ZoneId.systemDefault()).toInstant()
             .toEpochMilli() - timeBeforeDue
         Assert.assertEquals(
             triggerAtTime,
@@ -124,7 +122,7 @@ class DeadlineNotificationTest {
 
         deadlineNotification.setNotification(idDeadline, context, timeBeforeDue)
 
-        val triggerAtTime = idDeadline.second.dateTime.toInstant(idDeadline.second.zoneOffset)
+        val triggerAtTime = idDeadline.second.dateTime.atZone(ZoneId.systemDefault()).toInstant()
             .toEpochMilli() - timeBeforeDue
         Assert.assertEquals(
             triggerAtTime,
