@@ -6,21 +6,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
-import com.github.multimatum_team.multimatum.model.ClockServiceEntryPoint
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Period
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
@@ -34,6 +25,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     @Inject
     lateinit var clockService: ClockService
 
+    lateinit var id: DeadlineID
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
@@ -42,6 +35,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         val title = intent.getStringExtra(EXTRA_TITLE)
         val date = intent.getSerializableExtra(EXTRA_DATE) as LocalDateTime
         val state = intent.getSerializableExtra(EXTRA_STATE) as DeadlineState
+        id = intent.getStringExtra(EXTRA_ID) as DeadlineID
 
         // Set the texts for the title and the date of the deadline
         findViewById<TextView>(R.id.deadline_details_activity_title).text = title
@@ -67,7 +61,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     }
 
     fun goQRGenerator(view: View) {
-        val intent = Intent(this, QRGenerator::class.java)
+        val intent = Intent(this, QRGeneratorActivity::class.java)
+        intent.putExtra(EXTRA_ID, id)
         startActivity(intent)
     }
 

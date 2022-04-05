@@ -41,7 +41,7 @@
             android:exported="false"
             android:parentActivityName=".MainSettingsActivity" />
         <activity
-            android:name=".QRGenerator"
+            android:name=".QRGeneratorActivity"
             android:exported="false"
             android:parentActivityName=".MainSettingsActivity" />
         <activity

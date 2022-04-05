@@ -24,7 +24,6 @@ import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 

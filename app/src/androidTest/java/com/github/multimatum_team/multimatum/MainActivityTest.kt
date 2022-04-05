@@ -37,7 +37,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Singleton
 
@@ -66,17 +65,6 @@ class MainActivityTest {
     @After
     fun release() {
         Intents.release()
-    }
-
-    @Test
-    fun goToQRTest() {
-        onView(withId(R.id.goToQR)).perform(ViewActions.click())
-        Intents.intended(
-            allOf(
-                hasComponent(QRGenerator::class.java.name),
-                toPackage("com.github.multimatum_team.multimatum")
-            )
-        )
     }
 
     @Test

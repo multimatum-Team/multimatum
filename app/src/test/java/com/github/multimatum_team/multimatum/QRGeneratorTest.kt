@@ -34,7 +34,7 @@ import org.robolectric.shadows.ShadowToast
 @RunWith(AndroidJUnit4::class)
 class QRGeneratorTest {
     @get:Rule
-    val activityRule = ActivityScenarioRule(QRGenerator::class.java)
+    val activityRule = ActivityScenarioRule(QRGeneratorActivity::class.java)
 
     @Test
     fun goToQRTest() {
