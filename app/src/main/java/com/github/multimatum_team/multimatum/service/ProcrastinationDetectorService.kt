@@ -17,6 +17,7 @@ import com.github.multimatum_team.multimatum.MainSettingsActivity
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService.Companion.NOTIFICATION_CHANNEL_ID
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.IllegalArgumentException
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -50,7 +51,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
             when (val action = intent.action) {
                 START_ACTION -> if (!isServiceStarted) startProcrastinationDetectorService()
                 STOP_ACTION -> stopProcrastinationDetectorService()
-                else -> throw IllegalStateException("unexpected action: $action")
+                else -> throw IllegalArgumentException("unexpected action: $action")
             }
         }
         return START_STICKY  // service must restart as soon as possible if preempted

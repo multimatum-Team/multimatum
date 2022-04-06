@@ -160,7 +160,7 @@ class ProcrastinationDetectorServiceTest {
     @Test
     fun onStartCommand_throws_when_sensor_not_found() {
         `when`(mockSensorManager.getDefaultSensor(any())).thenReturn(null)
-        assertThrows(IllegalStateException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             controller.create().startCommand(0, 0)
         }
         controller.destroy()
