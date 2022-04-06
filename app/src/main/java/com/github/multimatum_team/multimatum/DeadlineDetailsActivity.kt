@@ -154,12 +154,19 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             else -> {
                 val remainingTime = actualDate.until(date, ChronoUnit.DAYS)
                 detailView.text = if (remainingTime <= 0) {
-                    getString(R.string.DueInXHours, actualDate.until(date, ChronoUnit.HOURS).toString())
+                    getString(
+                        R.string.DueInXHours,
+                        actualDate.until(date, ChronoUnit.HOURS).toString()
+                    )
                 } else {
-                    getString(R.string.DueInXDays,actualDate.until(date, ChronoUnit.DAYS).toString())
+                    getString(
+                        R.string.DueInXDays,
+                        actualDate.until(date, ChronoUnit.DAYS).toString()
+                    )
                 }
             }
         }
+    }
 
     // Setup a TimePickerDialog that will select a time for the deadline, show it and update the details
     private fun selectTime() {
@@ -168,8 +175,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             TimePickerDialog.OnTimeSetListener { _, hoursOfDay, minutes ->
                 date = LocalDateTime.of(
                     date.year, date.monthValue, date.dayOfMonth,
-                    hoursOfDay, minutes
-                )
+                    hoursOfDay, minutes)
 
                 dateView.text =
                     getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
@@ -180,11 +186,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Prepare the datePickerDialog
         val timePickerDialog = TimePickerDialog(
             this, timeSetListener,
-            date.hour, date.minute, true
-        )
+            date.hour, date.minute, true)
 
-        // Show the Dialog on the screen
-        timePickerDialog.show()
+            // Show the Dialog on the screen
+            timePickerDialog.show()
+        
     }
 
     companion object {
