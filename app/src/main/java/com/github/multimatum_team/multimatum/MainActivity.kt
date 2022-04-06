@@ -23,7 +23,9 @@ import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.Duration
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -102,18 +104,15 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    /*
-    This button trigger a basics notification in 1 sec
-    here we use an id based on current time. We may use some parsed part of the corresponding deadline later.
-    */
-
+    /**
+     * This button trigger a basics notification in 2 sec
+     */
     fun triggerNotification(view: View) {
         DeadlineNotification().setNotification(
-            Deadline(
-                "notifDeadline",
-                DeadlineState.TODO,
-                LocalDateTime.now()
-            ), this, System.currentTimeMillis() + 1000
+            "someID",
+            Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(5)),
+            this,
+            Duration.of(3, ChronoUnit.SECONDS).toMillis()
         )
     }
 

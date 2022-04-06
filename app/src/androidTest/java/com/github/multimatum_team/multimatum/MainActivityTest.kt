@@ -170,7 +170,7 @@ class MainActivityTest {
     }
 
     /*
-    ListView matcher found in:
+    ListView matcher for size found in:
    https://stackoverflow.com/questions/30361068/assert-proper-number-of-items-in-list-with-espresso
      */
     private fun withListSize(size: Int): Matcher<in View>? {
