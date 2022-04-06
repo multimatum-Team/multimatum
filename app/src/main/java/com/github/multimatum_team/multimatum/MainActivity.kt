@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(android.Manifest.permission.CAMERA),
-                cameraPermissionRequestCode
+                CAMERA_PERMISSION_REQUEST_CODE
             )
         } else {
             val intent = Intent(this, QRCodeReaderActivity::class.java)
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == cameraPermissionRequestCode) {
+        if(requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 val intent = Intent(this, QRCodeReaderActivity::class.java)
                 startActivity(intent)
@@ -170,6 +170,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object{
-        const val cameraPermissionRequestCode = 123
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 123
     }
 }
