@@ -57,13 +57,15 @@
         android:id="@+id/QRCodeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="108dp"
         android:onClick="goQRGenerator"
         android:text="@string/generate_qrcode"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due" />
+
     <ImageButton
         android:id="@+id/deadline_details_activity_modify"
         android:layout_width="50dp"
