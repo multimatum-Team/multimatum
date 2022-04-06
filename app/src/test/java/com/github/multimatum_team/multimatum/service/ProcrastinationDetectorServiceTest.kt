@@ -96,7 +96,6 @@ class ProcrastinationDetectorServiceTest {
         }
         // create the controller; this calls onStartCommand on the service, which should call registerListener
         val controller = createTestServiceController()
-        val service = controller.get()
         assertThat(
             "ProcrastinationDetectorService should be registered as a listener",
             wasRegistered, `is`(true)
@@ -172,6 +171,22 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
+    fun onStartCommand_throws_when_invalid_action() {
+        `when`(mockSensorManager.getDefaultSensor(any())).thenReturn(mock())
+        val intent = Intent(applicationContext, ProcrastinationDetectorService::class.java)
+        intent.action = "not_a_valid_action"
+        var controller: ServiceController<ProcrastinationDetectorService>? = null
+        assertThrows(IllegalArgumentException::class.java) {
+            controller =
+                Robolectric.buildService(ProcrastinationDetectorService::class.java, intent)
+                    .create()
+                    .startCommand(0, 0)
+        }
+        // if test failed and the service was indeed created, stop it
+        controller?.let { destroyTestServiceController(it) }
+    }
+
+    @Test
     fun toast_should_not_be_displayed_when_another_toast_has_been_displayed_too_recently() {
         val mockSensor: Sensor = mock()
         val mockSensorEvent: SensorEvent = mock()
@@ -221,9 +236,9 @@ class ProcrastinationDetectorServiceTest {
     private fun createTestServiceController(): ServiceController<ProcrastinationDetectorService> {
         val intent = Intent(applicationContext, ProcrastinationDetectorService::class.java)
         intent.action = ProcrastinationDetectorService.START_ACTION
-        val controller =
-            Robolectric.buildService(ProcrastinationDetectorService::class.java, intent)
-        return controller.create().startCommand(0, 0)
+        return Robolectric.buildService(ProcrastinationDetectorService::class.java, intent)
+            .create()
+            .startCommand(0, 0)
     }
 
     private fun destroyTestServiceController(controller: ServiceController<ProcrastinationDetectorService>) {
