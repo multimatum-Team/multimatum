@@ -206,9 +206,9 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         private const val NOTIFICATION_CHANNEL_ID =
             "com.github.multimatum_team-mutlimatum.ProcrastinationDetectorServiceChannel"
 
-        private const val START_ACTION =
+        const val START_ACTION =
             "com.github.multimatum_team.multimatum.StartProcrastinationDetectorServiceAction"
-        private const val STOP_ACTION =
+        const val STOP_ACTION =
             "com.github.multimatum_team.multimatum.StopProcrastinationDetectorServiceAction"
 
         private const val FOREGROUND_SERVICE_NOTIF_ID = 1
