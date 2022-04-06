@@ -16,7 +16,6 @@ import android.widget.Toast
 import com.github.multimatum_team.multimatum.MainSettingsActivity
 import com.github.multimatum_team.multimatum.R
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -226,7 +225,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          */
         fun stop(caller: Context) = performStartStopAction(caller, STOP_ACTION)
 
-        private fun performStartStopAction(caller: Context, action: String){
+        private fun performStartStopAction(caller: Context, action: String) {
             val intent = Intent(caller, ProcrastinationDetectorService::class.java)
             intent.action = action
             caller.startForegroundService(intent)

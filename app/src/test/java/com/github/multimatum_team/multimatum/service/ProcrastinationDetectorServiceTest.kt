@@ -19,7 +19,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.equalTo
 import org.junit.After
 import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
@@ -35,7 +36,6 @@ import org.mockito.kotlin.mock
 import org.robolectric.Robolectric
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.shadows.ShadowToast
-import java.lang.IllegalArgumentException
 import javax.inject.Singleton
 
 @UninstallModules(DependenciesProvider::class)
