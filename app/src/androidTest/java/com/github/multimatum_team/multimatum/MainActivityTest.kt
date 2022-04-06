@@ -37,7 +37,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Singleton
 
@@ -165,7 +164,7 @@ class MainActivityTest {
     }
 
     /*
-    ListView matcher found in:
+    ListView matcher for size found in:
    https://stackoverflow.com/questions/30361068/assert-proper-number-of-items-in-list-with-espresso
      */
     private fun withListSize(size: Int): Matcher<in View>? {
