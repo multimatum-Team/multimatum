@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.CalendarView
 import android.widget.EditText
+import android.widget.TextView.OnEditorActionListener
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
@@ -17,14 +19,14 @@ import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 @AndroidEntryPoint
 class CalendarActivity : AppCompatActivity() {
     private val viewModel: DeadlineListViewModel by viewModels()
-    private var selectedDate: LocalDateTime = Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime()
+    private var selectedDate: LocalDateTime =
+        Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +51,23 @@ class CalendarActivity : AppCompatActivity() {
     }
 
     /*
+    This function extract the text from the input, clear the field, add
+    a new deadline and close the keyboard.
+     */
+    private fun clearTextInputAndAddDeadline(edit: TextInputEditText, v: View) {
+        // Add a new deadline using the entered text
+        addNewDeadlineCalendar(v)
+
+        // Hide the keyboard and clear the focus on the text input
+        edit.clearFocus()
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+
+    /*
     This function allows the user to add a new deadline directly, using the "ENTER" key (more intuitive).
      */
     private fun initTextInput() {
@@ -57,21 +76,22 @@ class CalendarActivity : AppCompatActivity() {
         // Adding a listener to handle the "ENTER" key pressed.
         edit.setOnKeyListener { v, keycode, event ->
             if ((keycode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
-                // Enter is a new shortcut to add a deadline (intuitive)
-                addNewDeadlineCalendar(v)
-
-                // Hide the keyboard and clear the focus on the text input
-                edit.clearFocus()
-                val view = this.currentFocus
-                if (view != null) {
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(view.windowToken, 0)
-                }
+                clearTextInputAndAddDeadline(edit, v)
                 // The listener has consumed the event
                 return@setOnKeyListener true
             }
             false
         }
+
+        // Adding a listener to handle the "DONE" key pressed.
+        edit.setOnEditorActionListener(OnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                clearTextInputAndAddDeadline(edit, v)
+                // The listener has consumed the event
+                return@OnEditorActionListener true
+            }
+            false
+        })
     }
 
     /*

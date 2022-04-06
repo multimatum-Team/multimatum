@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum
 
-
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -34,7 +33,6 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
-
 
     private val viewModel: DeadlineListViewModel by viewModels()
 
@@ -135,11 +133,29 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(android.Manifest.permission.CAMERA),
-                123
+                CAMERA_PERMISSION_REQUEST_CODE
             )
         } else {
             val intent = Intent(this, QRCodeReaderActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    /*
+    Overriding this function allows the app to start the QR-Code scanner immediately
+    if the camera permission is granted.
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                val intent = Intent(this, QRCodeReaderActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 
@@ -153,4 +169,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    companion object{
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 123
+    }
 }
