@@ -15,7 +15,6 @@ import android.util.Log
 import android.widget.Toast
 import com.github.multimatum_team.multimatum.MainSettingsActivity
 import com.github.multimatum_team.multimatum.R
-import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService.Companion.NOTIFICATION_CHANNEL_ID
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
@@ -219,19 +218,17 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          * Launches ProcrastinationDetectorService
          * @param caller should be 'this' in the calling activity
          */
-        fun launch(caller: Context) {
-            val intent = Intent(caller, ProcrastinationDetectorService::class.java)
-            intent.action = START_ACTION
-            caller.startForegroundService(intent)
-        }
+        fun launch(caller: Context) = performStartStopAction(caller, START_ACTION)
 
         /**
          * Stops ProcrastinationDetectorService
          * @param caller should be 'this' in the calling activity
          */
-        fun stop(caller: Context) {
+        fun stop(caller: Context) = performStartStopAction(caller, STOP_ACTION)
+
+        private fun performStartStopAction(caller: Context, action: String){
             val intent = Intent(caller, ProcrastinationDetectorService::class.java)
-            intent.action = STOP_ACTION
+            intent.action = action
             caller.startForegroundService(intent)
         }
 
