@@ -92,7 +92,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         }
     }
 
-    private fun stopProcrastinationDetectorService() {
+    fun stopProcrastinationDetectorService() {
         unregisterServiceFromSensorListeners()
         toast(getString(R.string.procrastination_fighter_disabled_msg))
         releaseWakeLock()

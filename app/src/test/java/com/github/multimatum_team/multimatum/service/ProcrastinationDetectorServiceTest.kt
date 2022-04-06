@@ -42,7 +42,6 @@ import javax.inject.Singleton
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class ProcrastinationDetectorServiceTest {
-    private val controller = Robolectric.buildService(ProcrastinationDetectorService::class.java)
 
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
@@ -95,13 +94,13 @@ class ProcrastinationDetectorServiceTest {
             true
         }
         // create the controller; this calls onStartCommand on the service, which should call registerListener
-        createServiceForTest()
+        val service = createTestService()
         assertThat(
             "ProcrastinationDetectorService should be registered as a listener",
             wasRegistered, `is`(true)
         )
         // the call to destroy calls onDestroy on the service, which should call unregisterListener
-        destroyTestService()
+        service.stopProcrastinationDetectorService()
         assertThat(
             "ProcrastinationDetectorService should be unregistered",
             wasUnregistered, `is`(true)
@@ -115,14 +114,14 @@ class ProcrastinationDetectorServiceTest {
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
             mockSensor
         )
-        val service = createServiceForTest()
+        val service = createTestService()
         simulate2successiveToastEvents(
             0f, 0f, 0f, 2_000_000_000,     // 1st event
             10f, 10f, 10f, 5_000_000_000,  // 2nd event
             mockSensorEvent, service
         )
         assertThatLastToastTextWas(applicationContext.getString(R.string.stop_procrastinating_msg))
-        destroyTestService()
+        service.stopProcrastinationDetectorService()
     }
 
     @Test
@@ -132,19 +131,19 @@ class ProcrastinationDetectorServiceTest {
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
             mockSensor
         )
-        val service = createServiceForTest()
+        val service = createTestService()
         simulate2successiveToastEvents(
             0f, 0f, 0f, 2_000_000_000,                  // 1st event
             TINY_CHANGE, TINY_CHANGE, TINY_CHANGE, 5_000_000_000,  // 2nd event
             mockSensorEvent, service
         )
         assertThatLastToastTextWas(FAKE_TOAST_TEXT)
-        destroyTestService()
+        service.stopProcrastinationDetectorService()
     }
 
     @Test
     fun on_bind_should_return_a_binder_that_is_able_to_provide_the_bound_service() {
-        val service = createServiceForTest()
+        val service = createTestService()
         val dummyIntent = Intent(applicationContext, javaClass)
         when (val binder = service.onBind(dummyIntent)) {
             is ProcrastinationDetectorService.PdsBinder -> assertThat(
@@ -153,16 +152,18 @@ class ProcrastinationDetectorServiceTest {
             )
             else -> fail("onBind should return a PdsBinder")
         }
-        destroyTestService()
+        service.stopProcrastinationDetectorService()
     }
 
     @Test
     fun onStartCommand_throws_when_sensor_not_found() {
         `when`(mockSensorManager.getDefaultSensor(any())).thenReturn(null)
+        var service: ProcrastinationDetectorService? = null
         assertThrows(IllegalStateException::class.java) {
-            createServiceForTest()
+            service = createTestService()
         }
-        destroyTestService()
+        // if test failed and the service was indeed created, stop it
+        service?.stopProcrastinationDetectorService()
     }
 
     @Test
@@ -172,7 +173,7 @@ class ProcrastinationDetectorServiceTest {
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
             mockSensor
         )
-        val service = createServiceForTest()
+        val service = createTestService()
         simulate2successiveToastEvents(
             0f, 0f, 0f, 2_000_000_000,     // 1st event
             10f, 10f, 10f, 5_000_000_000,  // 2nd event
@@ -186,7 +187,7 @@ class ProcrastinationDetectorServiceTest {
         service.onSensorChanged(mockSensorEvent)
 
         assertThatLastToastTextWas(FAKE_TOAST_TEXT)
-        destroyTestService()
+        service.stopProcrastinationDetectorService()
     }
 
     @Test
@@ -195,7 +196,7 @@ class ProcrastinationDetectorServiceTest {
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
             mockSensor
         )
-        val service = createServiceForTest()
+        val service = createTestService()
         val mockSensorEvent: SensorEvent = mock()
         // configure and trigger 1st event
         configureMockSensorEventFor(mockSensorEvent, 0f, 0f, 0f, 5_000_000_000)
@@ -207,19 +208,15 @@ class ProcrastinationDetectorServiceTest {
             // trigger 2nd event
             service.onSensorChanged(mockSensorEvent)
         }
-        destroyTestService()
+        service.stopProcrastinationDetectorService()
     }
 
-    private fun createServiceForTest(): ProcrastinationDetectorService {
+    private fun createTestService(): ProcrastinationDetectorService {
         val intent = Intent(applicationContext, ProcrastinationDetectorService::class.java)
         intent.action = ProcrastinationDetectorService.START_ACTION
-        return controller.create().withIntent(intent).startCommand(0, 0).get()
-    }
-
-    private fun destroyTestService() {
-        val intent = Intent(applicationContext, ProcrastinationDetectorService::class.java)
-        intent.action = ProcrastinationDetectorService.STOP_ACTION
-        controller.withIntent(intent).startCommand(0, 0)
+        val controller =
+            Robolectric.buildService(ProcrastinationDetectorService::class.java, intent)
+        return controller.create().startCommand(0, 0).get()
     }
 
     /**
