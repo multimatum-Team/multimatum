@@ -6,11 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".DeadlineDetailsActivity">
 
-    <TextView
+    <EditText
         android:id="@+id/deadline_details_activity_title"
-        android:layout_width="350dp"
-        android:layout_height="57dp"
+        android:layout_width="354dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:autofillHints=""
+        android:gravity="center"
+        android:inputType="text"
         android:textAllCaps="false"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="48sp"
@@ -18,17 +21,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="LabelFor"
         tools:text="title" />
 
     <TextView
         android:id="@+id/deadline_details_activity_date"
         android:layout_width="350dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:minHeight="48dp"
+        android:onClick="changeDateAndTime"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_title"
         tools:text="date" />
@@ -36,11 +43,12 @@
     <TextView
         android:id="@+id/deadline_details_activity_done_or_due"
         android:layout_width="350dp"
-        android:layout_height="78dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_date"
         tools:text="details" />
@@ -56,6 +64,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
+    <ImageButton
+        android:id="@+id/deadline_details_activity_modify"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="28dp"
+        android:onClick="goToModifyOrBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due"
+        app:srcCompat="@android:drawable/ic_menu_manage"
+        tools:ignore="ContentDescription,SpeakableTextPresentCheck,ImageContrastCheck" />
+
+    <CheckBox
+        android:id="@+id/deadline_details_activity_set_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:text="@string/done"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/deadline_details_activity_modify"
         app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
