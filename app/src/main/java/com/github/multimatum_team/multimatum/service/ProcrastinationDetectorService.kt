@@ -15,6 +15,7 @@ import android.util.Log
 import android.widget.Toast
 import com.github.multimatum_team.multimatum.MainSettingsActivity
 import com.github.multimatum_team.multimatum.R
+import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService.Companion.NOTIFICATION_CHANNEL_ID
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.abs
@@ -30,8 +31,6 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     @Inject
     lateinit var sensorManager: SensorManager
 
-    // TODO make it remain enabled when app is stopped
-
     private var isServiceStarted = false
     private var wakeLock: PowerManager.WakeLock? = null
 
@@ -45,10 +44,11 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         return binder
     }
 
+    // also used to stop the service, when action is STOP_ACTION
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent != null) {
             when (val action = intent.action) {
-                START_ACTION -> startProcrastinationDetectorService()
+                START_ACTION -> if (!isServiceStarted) startProcrastinationDetectorService()
                 STOP_ACTION -> stopProcrastinationDetectorService()
                 else -> throw IllegalStateException("unexpected action: $action")
             }
@@ -59,7 +59,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     override fun onCreate() {
         super.onCreate()
         Log.d(LOG_TAG, "Service created")
-        startForeground(1, createNotification())
+        startForeground(FOREGROUND_SERVICE_NOTIF_ID, createForegroundServiceNotification())
     }
 
     override fun onDestroy() {
@@ -68,44 +68,74 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     }
 
     private fun startProcrastinationDetectorService() {
-        if (isServiceStarted) {
-            return
-        }
-        toast("Procrastination detector enabled")
+        toast(getString(R.string.procrastination_fighter_enable_msg))
         isServiceStarted = true
-        // FIXME possibly need to store in sharedPref that service is active
-        wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
-            newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK,
-                "ProcrastinationDetectorService::lock"
-            ).apply {
-                acquire(10 * 60 * 1000L /*10 minutes*/) // FIXME style
-            }
-        }
-        // FIXME possibly need for a loop here
+        acquireWakeLock()
+        registerServiceAsSensorListener()
+    }
+
+    private fun registerServiceAsSensorListener() {
         val refSensor = sensorManager.getDefaultSensor(REF_SENSOR)
             ?: throw IllegalStateException("missing sensor")
         sensorManager.registerListener(this, refSensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
+    private fun acquireWakeLock() {
+        wakeLock = (getSystemService(POWER_SERVICE) as PowerManager).run {
+            newWakeLock(
+                PowerManager.PARTIAL_WAKE_LOCK,
+                WAKE_LOCK_TAG
+            ).apply {
+                acquire(WAKE_LOCK_ACQUIRE_TIMEOUT_MILLIS)
+            }
+        }
+    }
+
     private fun stopProcrastinationDetectorService() {
+        unregisterServiceFromSensorListeners()
+        toast(getString(R.string.procrastination_fighter_disabled_msg))
+        releaseWakeLock()
+        stopForeground(true)
+        stopSelf()
+        isServiceStarted = false
+    }
+
+    private fun unregisterServiceFromSensorListeners() {
         val refSensor = sensorManager.getDefaultSensor(REF_SENSOR)
         sensorManager.unregisterListener(this, refSensor)
-        toast(getString(R.string.procrastination_fighter_disabled_msg))
+    }
+
+    private fun releaseWakeLock() {
         wakeLock?.let {
             if (it.isHeld) {
                 it.release()
             }
         }
-        stopForeground(true)
-        stopSelf()
-        isServiceStarted = false
-        // FIXME possibly need to store state in SharedPreferences
     }
 
-    private fun createNotification(): Notification {
+    // creates the notification that is displayed when the foreground service is executing
+    private fun createForegroundServiceNotification(): Notification {
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(createNotificationChannel())
+        return Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setContentTitle(getString(R.string.procrastination_fighter_permanent_notif_title))
+            .setContentText(getString(R.string.procrastination_fighter_permanent_notif_content_text))
+            .setContentIntent(createNotificationPendingIntent())
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .build()
+    }
+
+    // creates a pending intent that should be added to the foreground service
+    // notification to start MainSettingsActivity on pressing the notification
+    private fun createNotificationPendingIntent() = PendingIntent.getActivity(
+        this,
+        0,
+        Intent(this, MainSettingsActivity::class.java),
+        PendingIntent.FLAG_IMMUTABLE
+    )
+
+    private fun createNotificationChannel(): NotificationChannel {
         val channel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             "Procrastination detector notifications channel",
@@ -114,21 +144,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         channel.description = "Procrastination detector channel"
         channel.enableLights(true)
         channel.lightColor = Color.RED
-        notificationManager.createNotificationChannel(channel)
-        val pendingIntent =
-            PendingIntent.getActivity(
-                this,
-                0,
-                Intent(this, MainSettingsActivity::class.java),
-                PendingIntent.FLAG_IMMUTABLE
-            )
-        val builder = Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
-        return builder.setContentTitle("Procrastination detector")
-            .setContentText("Procrastination is bad...")
-            .setContentIntent(pendingIntent)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setTicker("Ticker text")
-            .build()
+        return channel
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -175,7 +191,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          */
         const val REF_SENSOR = Sensor.TYPE_GRAVITY
 
-        private const val MIN_PERIOD_BETWEEN_NOTIF_NANOSEC = 2_000_000_000L
+        private const val MIN_PERIOD_BETWEEN_NOTIF_NANOSEC = 2_000_000_000L  // 2 seconds
 
         /**
          * Experimentally obtained threshold. It has not unit because it refers to the output of
@@ -183,6 +199,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          */
         private const val MOVE_DETECTION_THRESHOLD = 0.1
 
+        // for logging
         private const val LOG_TAG = "ProcrastinationDetectorService"
 
         private const val NOTIFICATION_CHANNEL_ID =
@@ -193,12 +210,24 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         private const val STOP_ACTION =
             "com.github.multimatum_team.multimatum.StopProcrastinationDetectorServiceAction"
 
+        private const val FOREGROUND_SERVICE_NOTIF_ID = 1
+        private const val WAKE_LOCK_TAG = "ProcrastinationDetectorService::lock"
+        private const val WAKE_LOCK_ACQUIRE_TIMEOUT_MILLIS = 10 * 60 * 1000L  // 10 minutes
+
+        /**
+         * Launches ProcrastinationDetectorService
+         * @param caller should be 'this' in the calling activity
+         */
         fun launch(caller: Context) {
             val intent = Intent(caller, ProcrastinationDetectorService::class.java)
             intent.action = START_ACTION
             caller.startForegroundService(intent)
         }
 
+        /**
+         * Stops ProcrastinationDetectorService
+         * @param caller should be 'this' in the calling activity
+         */
         fun stop(caller: Context) {
             val intent = Intent(caller, ProcrastinationDetectorService::class.java)
             intent.action = STOP_ACTION

@@ -29,6 +29,8 @@
     <string name="logout">LOGOUT</string>
     <string name="procrastination_fighter_enable_msg">Procrastination fighter is enabled</string>
     <string name="procrastination_fighter_disabled_msg">Procrastination fighter is disabled</string>
+    <string name="procrastination_fighter_permanent_notif_title">Procrastination detector</string>
+    <string name="procrastination_fighter_permanent_notif_content_text">Procrastination is bad...</string>
     <string name="deleted">Deleted</string>
     <string name="undo">Undo</string>
     <string name="write_title_here">Write Title here</string>
