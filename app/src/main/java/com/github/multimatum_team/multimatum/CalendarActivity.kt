@@ -54,7 +54,7 @@ class CalendarActivity : AppCompatActivity() {
     This function extract the text from the input, clear the field, add
     a new deadline and close the keyboard.
      */
-    private fun clearTextInput(edit: TextInputEditText, v: View) {
+    private fun clearTextInputAndAddDeadline(edit: TextInputEditText, v: View) {
         // Add a new deadline using the entered text
         addNewDeadlineCalendar(v)
 
@@ -76,7 +76,7 @@ class CalendarActivity : AppCompatActivity() {
         // Adding a listener to handle the "ENTER" key pressed.
         edit.setOnKeyListener { v, keycode, event ->
             if ((keycode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
-                clearTextInput(edit, v)
+                clearTextInputAndAddDeadline(edit, v)
                 // The listener has consumed the event
                 return@setOnKeyListener true
             }
@@ -86,7 +86,7 @@ class CalendarActivity : AppCompatActivity() {
         // Adding a listener to handle the "DONE" key pressed.
         edit.setOnEditorActionListener(OnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                clearTextInput(edit, v)
+                clearTextInputAndAddDeadline(edit, v)
                 // The listener has consumed the event
                 return@OnEditorActionListener true
             }

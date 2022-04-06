@@ -192,37 +192,33 @@ class MainActivityTest {
      */
     private fun grantPermission() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        if (Build.VERSION.SDK_INT >= 23) {
-            val allowPermission = UiDevice.getInstance(instrumentation).findObject(
-                UiSelector().text(
-                    when {
-                        Build.VERSION.SDK_INT == 23 -> "Allow"
-                        Build.VERSION.SDK_INT <= 28 -> "ALLOW"
-                        Build.VERSION.SDK_INT == 29 -> "Allow only while using the app"
-                        else -> "While using the app"
-                    }
-                )
+        val allowPermission = UiDevice.getInstance(instrumentation).findObject(
+            UiSelector().text(
+                when {
+                    Build.VERSION.SDK_INT == 23 -> "Allow"
+                    Build.VERSION.SDK_INT <= 28 -> "ALLOW"
+                    Build.VERSION.SDK_INT == 29 -> "Allow only while using the app"
+                    else -> "While using the app"
+                }
             )
-            if (allowPermission.exists()) {
-                allowPermission.click()
-            }
+        )
+        if (allowPermission.exists()) {
+            allowPermission.click()
         }
     }
 
     private fun denyPermission() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        if (Build.VERSION.SDK_INT >= 23) {
-            val denyPermission = UiDevice.getInstance(instrumentation).findObject(
-                UiSelector().text(
-                    when (Build.VERSION.SDK_INT) {
-                        in 24..28 -> "DENY"
-                        else -> "Deny"
-                    }
-                )
+        val denyPermission = UiDevice.getInstance(instrumentation).findObject(
+            UiSelector().text(
+                when (Build.VERSION.SDK_INT) {
+                    in 24..28 -> "DENY"
+                    else -> "Deny"
+                }
             )
-            if (denyPermission.exists()) {
-                denyPermission.click()
-            }
+        )
+        if (denyPermission.exists()) {
+            denyPermission.click()
         }
     }
 

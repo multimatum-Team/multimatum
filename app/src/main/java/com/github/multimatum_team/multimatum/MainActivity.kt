@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private val viewModel: DeadlineListViewModel by viewModels()
+    private val cameraPermissionRequestCode = 123
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,7 +136,7 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(android.Manifest.permission.CAMERA),
-                123
+                cameraPermissionRequestCode
             )
         } else {
             val intent = Intent(this, QRCodeReaderActivity::class.java)
@@ -153,7 +154,7 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == 123) {
+        if(requestCode == cameraPermissionRequestCode) {
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 val intent = Intent(this, QRCodeReaderActivity::class.java)
                 startActivity(intent)
