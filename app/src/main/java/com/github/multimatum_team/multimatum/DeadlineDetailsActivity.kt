@@ -190,7 +190,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
             // Show the Dialog on the screen
             timePickerDialog.show()
-        
+
     }
 
     companion object {
