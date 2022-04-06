@@ -39,15 +39,9 @@ class QRGeneratorActivity : AppCompatActivity() {
 
     fun displayQRCode() {
         val data = id
-
-        //Make a notification if there is no text
-        if (data.isEmpty()) {
-            Toast.makeText(this, "Enter some data", Toast.LENGTH_SHORT).show()
-        } else {
-            //create a QRCodeGenerator
-            val qrCodeGenerator = QRCodeGenerator(data)
-            //set the image
-            findViewById<ImageView>(R.id.QRGenerated).setImageBitmap(qrCodeGenerator.generateQRCode())
-        }
+        //create a QRCodeGenerator
+        val qrCodeGenerator = QRCodeGenerator(data)
+        //set the image
+        findViewById<ImageView>(R.id.QRGenerated).setImageBitmap(qrCodeGenerator.generateQRCode())
     }
 }

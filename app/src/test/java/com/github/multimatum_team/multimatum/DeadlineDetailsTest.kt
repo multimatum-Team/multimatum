@@ -3,9 +3,13 @@ package com.github.multimatum_team.multimatum
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -18,6 +22,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import org.hamcrest.Matchers.allOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -87,6 +92,22 @@ class DeadlineDetailsTest {
         onView(withId(R.id.deadline_details_activity_date))
             .check(matches(withText("Due the ${clockService.now().minusDays(2)}")))
         onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Is already Due")))
+    }
+
+    @Test
+    fun `Test launching intent to go to generator`(){
+        val intent = DeadlineDetailsActivity.newIntent(
+            ApplicationProvider.getApplicationContext(),
+            "4",
+            Deadline("Test 4", DeadlineState.TODO, clockService.now().minusDays(1))
+        )
+        ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        Intents.init()
+        onView(withId(R.id.QRCodeButton)).perform(click())
+        Intents.intending(allOf(hasComponent(QRGeneratorActivity::class.java.name),
+            hasExtra("com.github.multimatum_team.multimatum.deadline.details.id", "4"),
+            toPackage("com.github.multimatum_team.multimatum")))
+        Intents.release()
     }
 
     @Module
