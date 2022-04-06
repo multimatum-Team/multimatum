@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum.model
 
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -29,7 +28,8 @@ enum class DeadlineState {
  *
  * @property title the title of the deadline (must be non empty)
  * @property state the advancement state of the deadline
- * @property date the time at which the work is due
+ * @property dateTime the time at which the work is due
+ * @property description some description of the deadline, by default empty
  * @constructor Creates a deadline from specified parameters
  * @throws IllegalArgumentException when title is empty or startDate > end
  */
@@ -37,8 +37,7 @@ data class Deadline(
     val title: String,
     val state: DeadlineState,
     val dateTime: LocalDateTime,
-    val description: String = "",
-    val id: String = ""
+    val description: String = ""
 ) {
     init {
         if (title.isEmpty()) {
