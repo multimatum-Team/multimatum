@@ -97,45 +97,34 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     // Function that put the activity to the Edit Mode or to the Uneditable Mode
     fun goToModifyOrBack(view: View) {
-        if (editMode) {
-            editTitle(true)
-            findViewById<ImageButton>(R.id.deadline_details_activity_modify)
-                .setImageResource(android.R.drawable.checkbox_on_background)
+        editTitle(editMode)
+        findViewById<ImageButton>(R.id.deadline_details_activity_modify)
+            .setImageResource(
+                if (editMode) android.R.drawable.checkbox_on_background
+                else android.R.drawable.ic_menu_manage)
 
-            dateView.setBackgroundResource(android.R.drawable.btn_default)
-            dateView.isClickable = true
+        dateView.setBackgroundResource(
+            if (editMode) android.R.drawable.btn_default
+            else android.R.color.transparent)
 
-            doneButton.isClickable = true
-            doneButton.visibility = View.VISIBLE
+        dateView.isClickable = editMode
 
-        } else {
-            editTitle(false)
-            findViewById<ImageButton>(R.id.deadline_details_activity_modify)
-                .setImageResource(android.R.drawable.ic_menu_manage)
+        doneButton.isClickable = editMode
+        doneButton.visibility = if (editMode) View.VISIBLE else View.GONE
 
-            dateView.isClickable = false
-            dateView.setBackgroundResource(android.R.color.transparent)
-
-            doneButton.isClickable = false
-            doneButton.visibility = View.GONE
-            //TODO: modify the deadline in the repository
-
-        }
+        //TODO: modify the deadline in the repository
         editMode = editMode.not()
-
     }
 
     // Shift the TitleView to a modify state or to a uneditable state
     private fun editTitle(edit: Boolean) {
-        if (edit) {
-            titleView.isEnabled = true
-            titleView.setBackgroundResource(android.R.drawable.edit_text)
-            titleView.setTextColor(Color.BLACK)
-        } else {
-            titleView.isEnabled = false
-            titleView.setBackgroundResource(android.R.color.transparent)
-            titleView.setTextColor(Color.BLACK)
-        }
+        titleView.isEnabled = edit
+        titleView.setBackgroundResource(
+            if (edit) android.R.drawable.edit_text
+            else android.R.color.transparent
+        )
+        titleView.setTextColor(Color.BLACK)
+
 
     }
 
@@ -164,8 +153,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             }
             else -> {
                 detailView.text = getString(
-                        R.string.DueInXDays,
-                        actualDate.until(date, ChronoUnit.DAYS).toString())
+                    R.string.DueInXDays,
+                    actualDate.until(date, ChronoUnit.DAYS).toString()
+                )
             }
         }
     }
@@ -178,7 +168,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             TimePickerDialog.OnTimeSetListener { _, hoursOfDay, minutes ->
                 date = LocalDateTime.of(
                     date.year, date.monthValue, date.dayOfMonth,
-                    hoursOfDay, minutes)
+                    hoursOfDay, minutes
+                )
 
                 dateView.text =
                     getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
@@ -187,8 +178,10 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             }
 
         // Prepare the datePickerDialog
-        val timePickerDialog = TimePickerDialog(this, timeSetListener,
-            date.hour, date.minute, true)
+        val timePickerDialog = TimePickerDialog(
+            this, timeSetListener,
+            date.hour, date.minute, true
+        )
 
         // Show the Dialog on the screen
         timePickerDialog.show()
