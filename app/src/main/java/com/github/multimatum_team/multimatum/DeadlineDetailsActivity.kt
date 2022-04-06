@@ -44,7 +44,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
-    /*
+    /**
      Set the detail text to inform the user if it is due, done or the remaining time
      */
     private fun setDetailText(detailView: TextView, state: DeadlineState, date: LocalDateTime) {
