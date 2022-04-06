@@ -32,9 +32,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
 
-
     private val viewModel: DeadlineListViewModel by viewModels()
-    private val cameraPermissionRequestCode = 123
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -172,4 +170,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    companion object{
+        const val cameraPermissionRequestCode = 123
+    }
 }
