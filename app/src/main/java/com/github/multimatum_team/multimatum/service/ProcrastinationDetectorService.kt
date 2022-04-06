@@ -63,6 +63,9 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
+        val stopIntent = Intent(applicationContext, ProcrastinationDetectorService::class.java)
+        stopIntent.action = STOP_ACTION
+        onStartCommand(stopIntent, 0, 0)
         Log.d(LOG_TAG, "Service destroyed")
     }
 
@@ -90,7 +93,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         }
     }
 
-    fun stopProcrastinationDetectorService() {
+    private fun stopProcrastinationDetectorService() {
         unregisterServiceFromSensorListeners()
         toast(getString(R.string.procrastination_fighter_disabled_msg))
         releaseWakeLock()
