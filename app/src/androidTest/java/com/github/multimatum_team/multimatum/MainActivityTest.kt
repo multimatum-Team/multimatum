@@ -89,7 +89,7 @@ class MainActivityTest {
                 hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.date",
-                    LocalDateTime.of(2022, 3, 1,0 , 0)
+                    LocalDateTime.of(2022, 3, 1, 0, 0)
                 ),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.state",
@@ -153,7 +153,7 @@ class MainActivityTest {
     }
 
     /*
-    ListView matcher found in:
+    ListView matcher for size found in:
    https://stackoverflow.com/questions/30361068/assert-proper-number-of-items-in-list-with-espresso
      */
     private fun withListSize(size: Int): Matcher<in View>? {
