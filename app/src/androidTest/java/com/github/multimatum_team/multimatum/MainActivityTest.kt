@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum
 import android.content.Context
 import android.content.SharedPreferences
 import android.hardware.SensorManager
+import android.os.Build
 import android.view.View
 import android.widget.ListView
 import androidx.test.espresso.Espresso.onData
@@ -13,9 +14,12 @@ import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.rule.GrantPermissionRule
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiSelector
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
@@ -39,10 +43,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Singleton
-
 
 @UninstallModules(DependenciesProvider::class, RepositoryModule::class)
 @HiltAndroidTest
@@ -53,11 +55,6 @@ class MainActivityTest {
 
     @get:Rule(order = 1)
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
-
-    @get:Rule(order = 2)
-    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-        android.Manifest.permission.CAMERA
-    )
 
     @Before
     fun init() {
@@ -103,7 +100,7 @@ class MainActivityTest {
                 hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.date",
-                    LocalDateTime.of(2022, 3, 1,0 , 0)
+                    LocalDateTime.of(2022, 3, 1, 0, 0)
                 ),
                 hasExtra(
                     "com.github.multimatum_team.multimatum.deadline.details.state",
@@ -140,12 +137,20 @@ class MainActivityTest {
     @Test
     fun buttonOpensQrCodeReader() {
         onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+        grantPermission()
         Intents.intended(
             allOf(
                 hasComponent(QRCodeReaderActivity::class.java.name),
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
+    }
+
+    @Test
+    fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
+        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+        denyPermission()
+        onView(withId(R.id.goToQrCodeReader)).check(matches(ViewMatchers.isDisplayed()))
     }
 
     @Test
@@ -167,7 +172,7 @@ class MainActivityTest {
     }
 
     /*
-    ListView matcher found in:
+    ListView matcher for size found in:
    https://stackoverflow.com/questions/30361068/assert-proper-number-of-items-in-list-with-espresso
      */
     private fun withListSize(size: Int): Matcher<in View>? {
@@ -180,6 +185,41 @@ class MainActivityTest {
                 description.appendText("ListView should have $size items")
             }
 
+        }
+    }
+
+    /*
+    The two following helper functions have been found online at:
+    https://alexzh.com/ui-testing-of-android-runtime-permissions/
+     */
+    private fun grantPermission() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val allowPermission = UiDevice.getInstance(instrumentation).findObject(
+            UiSelector().text(
+                when {
+                    Build.VERSION.SDK_INT <= 28 -> "ALLOW"
+                    Build.VERSION.SDK_INT == 29 -> "Allow only while using the app"
+                    else -> "While using the app"
+                }
+            )
+        )
+        if (allowPermission.exists()) {
+            allowPermission.click()
+        }
+    }
+
+    private fun denyPermission() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val denyPermission = UiDevice.getInstance(instrumentation).findObject(
+            UiSelector().text(
+                when (Build.VERSION.SDK_INT) {
+                    in 26..28 -> "DENY"
+                    else -> "Deny"
+                }
+            )
+        )
+        if (denyPermission.exists()) {
+            denyPermission.click()
         }
     }
 

@@ -23,13 +23,14 @@ class ReminderBroadcastReceiverTest {
         context = ApplicationProvider.getApplicationContext<Context>()
     }
 
-    /*
-    * Test if the broadCast receiver launch a notification when "onReceive" is called
-    * */
+    /**
+     * Test if the broadCast receiver launch a notification when "onReceive" is called
+     */
     @Test
-    fun testNotificationLaunchOnReceive(){
+    fun testNotificationLaunchOnReceive() {
         val notificationManager =
-            ApplicationProvider.getApplicationContext<Context>().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            ApplicationProvider.getApplicationContext<Context>()
+                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val shadowNotificationManager: ShadowNotificationManager = shadowOf(notificationManager)
         val reminderBroadcastReceiver: ReminderBroadcastReceiver = ReminderBroadcastReceiver()
         reminderBroadcastReceiver.onReceive(context, Intent())

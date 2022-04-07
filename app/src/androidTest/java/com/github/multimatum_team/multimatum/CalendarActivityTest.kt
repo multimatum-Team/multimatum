@@ -64,6 +64,16 @@ class CalendarActivityTest {
             .check(ViewAssertions.matches(ViewMatchers.isClickable()))
     }
 
+    @Test
+    fun textInputScreenReleasedAfterAddingDeadlineWithDoneOnSoftKeyboard() {
+        Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
+            .perform(click())
+            .perform(typeText("deadlineTestCase3"))
+            .perform(pressImeActionButton())
+        Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
+            .check(ViewAssertions.matches(ViewMatchers.isClickable()))
+    }
+
     @Module
     @InstallIn(SingletonComponent::class)
     object TestDeadlineRepositoryModule {
