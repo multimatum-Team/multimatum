@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "774591614502",
+    "firebase_url": "https://multimatum-675e4-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "multimatum-675e4",
     "storage_bucket": "multimatum-675e4.appspot.com"
   },
@@ -13,6 +14,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "774591614502-2jnvt1a7jd2kaign18t1vhsllr73n36j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.multimatum_team.multimatum",
+            "certificate_hash": "66d90aaf3c2a731370d09fd640d6e8fdc44aa308"
+          }
+        },
+        {
+          "client_id": "774591614502-pa14hlpfd9qi6f760utfpds9dgi5atsn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.multimatum_team.multimatum",
+            "certificate_hash": "fd3bdda4e3dc060d2ea5c560aedace7e30e371a3"
+          }
+        },
         {
           "client_id": "774591614502-e0kij87sh7f9aup6t2vtitg3dsadduvf.apps.googleusercontent.com",
           "client_type": 3
