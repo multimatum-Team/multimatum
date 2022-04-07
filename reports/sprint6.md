@@ -12,6 +12,12 @@ made more hours than expected but otherwise it was fine.
 have
 ### Joseph
 
+This week I started working on the user feature. I spent most of my time figuring out the right way
+to architecture the code. I wish I had split the task in several PRs but it was bit hard to
+separate. Unfortunately, the feature required significant changes to the codebase, most of the files
+required at least one or two changes. Also, since the feature focuses on Firebase, I couldn't
+properly test the new code. However, my time estimates weren't too far off.
+
 ### Lenny
 
 ### Léo
