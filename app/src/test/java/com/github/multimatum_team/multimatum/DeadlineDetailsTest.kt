@@ -6,10 +6,14 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -22,6 +26,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import org.hamcrest.Matchers.allOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -96,6 +101,22 @@ class DeadlineDetailsTest {
     }
 
     @Test
+    fun `Test launching intent to go to generator`(){
+        val intent = DeadlineDetailsActivity.newIntent(
+            ApplicationProvider.getApplicationContext(),
+            "4",
+            Deadline("Test 4", DeadlineState.TODO, clockService.now().minusDays(1))
+        )
+        ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        Intents.init()
+        onView(withId(R.id.QRCodeButton)).perform(click())
+        Intents.intending(allOf(hasComponent(QRGeneratorActivity::class.java.name),
+            hasExtra("com.github.multimatum_team.multimatum.deadline.details.id", "4"),
+            toPackage("com.github.multimatum_team.multimatum")))
+        Intents.release()
+    }
+    
+    @Test
     fun `Given a deadline with only a few hours left, the activity should display it`() {
         val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(),
             "4", Deadline("Test 4", DeadlineState.TODO, clockService.now().plusHours(6))
@@ -151,7 +172,6 @@ class DeadlineDetailsTest {
 
         //Go back to Normal Mode
         onView(withId(R.id.deadline_details_activity_modify)).perform(ViewActions.click())
-
     }
 
     @Module
