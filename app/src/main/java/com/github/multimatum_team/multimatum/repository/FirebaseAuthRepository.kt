@@ -8,13 +8,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Concrete implementation for the AuthRepository.
+ * Acts as a wrapper around the Firebase authentication library.
+ */
 class FirebaseAuthRepository : AuthRepository {
-    companion object {
-        private const val TAG = "FirebaseAuthRepository"
-    }
-
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
+    /**
+     * Convert a Firebase user into our User model.
+     */
     private fun convertFirebaseUser(firebaseUser: FirebaseUser): User =
         if (firebaseUser.email == null) {
             AnonymousUser(firebaseUser.uid)
@@ -22,6 +25,10 @@ class FirebaseAuthRepository : AuthRepository {
             SignedInUser(firebaseUser.uid, firebaseUser.email!!)
         }
 
+    /**
+     * Create an anonymous user so that the user can try the application before having to link it
+     * to their Google account.
+     */
     private suspend fun anonymousSignIn(): AnonymousUser {
         val authResult = auth.signInAnonymously().await()
         if (authResult.user == null) {
@@ -31,6 +38,13 @@ class FirebaseAuthRepository : AuthRepository {
         }
     }
 
+    /**
+     * Get the currently logged-in user.
+     * We guarantee that an user is always logged in at any point of the application.
+     * At the first execution of the application, an anonymous user is created, and logged into on
+     * subsequent executions, until the user chooses to link the anonymous account to an actual
+     * Google account (see SignInActivity).
+     */
     override suspend fun getCurrentUser(): User {
         lateinit var user: User
         val firebaseUser = auth.currentUser
@@ -49,16 +63,30 @@ class FirebaseAuthRepository : AuthRepository {
         return user
     }
 
+    /**
+     * Sign-out from the current account.
+     * To ensure that there is still an user to which we can associate the deadlines, an anonymous
+     * user is created.
+     */
     override suspend fun signOut(): AnonymousUser {
         auth.signOut()
         return anonymousSignIn()
     }
 
+    /**
+     * Notify all observers that the user changed.
+     */
     override fun onUpdate(callback: (User) -> Unit) {
+        // FIXME: this listener is executed more than necessary, other updates can trigger the
+        //  callback even if the user hasn't changed (I think?).
         auth.addAuthStateListener { auth ->
             auth.currentUser?.let { newUser ->
                 callback(convertFirebaseUser(newUser))
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "FirebaseAuthRepository"
     }
 }

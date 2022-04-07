@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -21,10 +22,11 @@ import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -34,12 +36,16 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
 
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
-    private val viewModel: DeadlineListViewModel by viewModels()
+    private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Firebase.initialize(this)
         setContentView(R.layout.activity_main)
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
@@ -47,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = DeadlineAdapter(this)
 
         listView.adapter = adapter
-        viewModel.getDeadlines().observe(this) { deadlines ->
+        deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
             Log.d("deadlines", deadlines.toString())
             adapter.setDeadlines(deadlines)
         }
@@ -64,7 +70,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        setDeleteOnSweep(listView, viewModel)
+        setDeleteOnSweep(listView, deadlineListViewModel)
     }
 
     // Set the ListView to delete an item by sweeping it
@@ -154,5 +160,4 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, CalendarActivity::class.java)
         startActivity(intent)
     }
-
 }

@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum.repository
 import android.util.Log
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.UserID
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -10,18 +11,17 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.temporal.ChronoField
 import javax.inject.Inject
 
 /**
  * Remote Firebase repository for storing deadlines.
  */
-class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
+class FirebaseDeadlineRepository : DeadlineRepository() {
     private var database: FirebaseFirestore = Firebase.firestore
 
-    private val deadlinesRef = database.collection("deadlines")
+    private val deadlinesRef = database
+        .collection("deadlines")
 
     /**
      * Convert a deadline into a hashmap, so that we can send the deadline data to Firebase.
@@ -35,7 +35,8 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
                     .atZone(ZoneId.systemDefault())
                     .toEpochSecond(),
                 0
-            )
+            ),
+            "owner" to _user.id
         )
 
     /**
@@ -64,6 +65,7 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
      */
     override suspend fun fetchAll(): Map<DeadlineID, Deadline> =
         deadlinesRef
+            .whereEqualTo("owner", _user.id)
             .get()
             .await()
             .documents
@@ -102,12 +104,12 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
      */
     override fun onUpdate(callback: (Map<DeadlineID, Deadline>) -> Unit) {
         deadlinesRef
+            .whereEqualTo("owner", _user.id)
             .addSnapshotListener { deadlineSnapshots, error ->
                 if (error != null) {
                     Log.w("FirebaseDeadlineRepository", "Failed to retrieve data from database")
                     return@addSnapshotListener
                 }
-
                 val deadlineMap: MutableMap<DeadlineID, Deadline> = mutableMapOf()
                 deadlineSnapshots!!.forEach { deadlineSnapshot ->
                     deadlineMap[deadlineSnapshot.id] = deserializeDeadline(deadlineSnapshot)
