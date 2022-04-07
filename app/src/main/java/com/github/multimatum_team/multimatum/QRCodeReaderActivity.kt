@@ -56,4 +56,14 @@ class QRCodeReaderActivity : AppCompatActivity() {
             Toast.makeText(this, text, Toast.LENGTH_LONG).show()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        codeScanner.startPreview()
+    }
+
+    override fun onPause() {
+        codeScanner.releaseResources()
+        super.onPause()
+    }
 }
