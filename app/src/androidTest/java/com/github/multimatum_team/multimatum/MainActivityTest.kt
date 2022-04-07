@@ -66,17 +66,6 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToQRTest() {
-        onView(withId(R.id.goToQR)).perform(ViewActions.click())
-        Intents.intended(
-            allOf(
-                hasComponent(QRGenerator::class.java.name),
-                toPackage("com.github.multimatum_team.multimatum")
-            )
-        )
-    }
-
-    @Test
     fun goToSetting() {
         onView(withId(R.id.main_open_settings_but)).perform(ViewActions.click())
         Intents.intended(

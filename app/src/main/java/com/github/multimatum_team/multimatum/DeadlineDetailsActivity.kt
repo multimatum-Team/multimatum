@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.TextView
 import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.*
@@ -29,6 +30,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     @Inject
     lateinit var clockService: ClockService
 
+    lateinit var id: DeadlineID
     private var editMode: Boolean = true
 
     private lateinit var titleView: EditText
@@ -45,6 +47,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Recuperate the Deadline from the intent
         val title = intent.getStringExtra(EXTRA_TITLE)
+        id = intent.getStringExtra(EXTRA_ID) as DeadlineID
         date = intent.getSerializableExtra(EXTRA_DATE) as LocalDateTime
         state = intent.getSerializableExtra(EXTRA_STATE) as DeadlineState
 
@@ -193,6 +196,16 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * @param View: the current view
+     * when clicking ont the button create an intent to launch the QR activity
+     */
+    fun goQRGenerator(view: View) {
+        val intent = Intent(this, QRGeneratorActivity::class.java)
+        intent.putExtra(EXTRA_ID, id)
+        startActivity(intent)
+    }
+
     companion object {
         private const val EXTRA_ID =
             "com.github.multimatum_team.deadline.details.id"
@@ -213,5 +226,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
             return detailIntent
         }
+
     }
 }

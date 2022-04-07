@@ -114,11 +114,6 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    fun goQRGenerator(view: View) {
-        val intent = Intent(this, QRGenerator::class.java)
-        startActivity(intent)
-    }
-
     fun goToAddDeadline(view: View) {
         val intent = Intent(this, AddDeadlineActivity::class.java)
         startActivity(intent)

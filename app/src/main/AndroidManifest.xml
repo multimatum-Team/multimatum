@@ -43,9 +43,9 @@
             android:exported="false"
             android:parentActivityName=".MainSettingsActivity" />
         <activity
-            android:name=".QRGenerator"
+            android:name=".QRGeneratorActivity"
             android:exported="false"
-            android:parentActivityName=".MainSettingsActivity" />
+            android:parentActivityName=".DeadlineDetailsActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
