@@ -139,34 +139,31 @@
             android:id="@+id/radio_notification_1d"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/notify_1_hour_before"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.211"
+            app:layout_constraintHorizontal_bias="0.203"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.592" />
+            app:layout_constraintVertical_bias="0.58" />
 
         <CheckBox
             android:id="@+id/radio_notification_5h"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/notify_5_hours_before"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.739"
+            app:layout_constraintHorizontal_bias="0.724"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.592" />
+            app:layout_constraintVertical_bias="0.58" />
 
         <CheckBox
             android:id="@+id/radio_notification_1h"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/notify_1_day_before"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.202"
+            app:layout_constraintHorizontal_bias="0.203"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.72" />
@@ -175,10 +172,9 @@
             android:id="@+id/radio_notification_3d"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/notify_3_days_before"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.726"
+            app:layout_constraintHorizontal_bias="0.724"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.72" />

@@ -43,6 +43,14 @@ class AddDeadlineActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_deadline)
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
+        findViewById<CheckBox>(R.id.radio_notification_1h).text =
+            getString(R.string.notify_before, "1 hour")
+        findViewById<CheckBox>(R.id.radio_notification_5h).text =
+            getString(R.string.notify_before, "5 hours")
+        findViewById<CheckBox>(R.id.radio_notification_1d).text =
+            getString(R.string.notify_before, "1 day")
+        findViewById<CheckBox>(R.id.radio_notification_3d).text =
+            getString(R.string.notify_before, "3 days")
         selectedDate = clockService.now().truncatedTo(ChronoUnit.HOURS)
         textDate.text = selectedDate.toLocalDate().toString()
         textTime.text = selectedDate.toLocalTime().toString()
