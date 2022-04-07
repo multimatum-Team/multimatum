@@ -110,7 +110,7 @@ class DeadlineNotificationTest {
      * Test if all notifications are set for a deadline
      */
     @Test
-    fun testSetDeadlineNotification(){
+    fun testSetDeadlineNotification() {
         val alarmManager = ApplicationProvider.getApplicationContext<Context>()
             .getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
@@ -119,7 +119,12 @@ class DeadlineNotificationTest {
         val notif1: Long = 1000
         val notif2: Long = Duration.ofDays(1).toMillis()
         var notificationTimes = arrayListOf<Long>(notif1, notif2)
-        val deadline = Deadline("Some title", DeadlineState.TODO, deadlineTime, notificationsTimes = notificationTimes)
+        val deadline = Deadline(
+            "Some title",
+            DeadlineState.TODO,
+            deadlineTime,
+            notificationsTimes = notificationTimes
+        )
         deadlineNotification.setDeadlineNotifications(id, deadline, context)
 
         Assert.assertEquals(2, shadowAlarmManager.scheduledAlarms.size)
@@ -175,7 +180,12 @@ class DeadlineNotificationTest {
         val notif1: Long = 1000
         val notif2: Long = Duration.ofDays(1).toMillis()
         var notificationTimes = arrayListOf<Long>(notif1, notif2)
-        val deadline = Deadline("Some title", DeadlineState.TODO, deadlineTime, notificationsTimes = notificationTimes)
+        val deadline = Deadline(
+            "Some title",
+            DeadlineState.TODO,
+            deadlineTime,
+            notificationsTimes = notificationTimes
+        )
 
         //add notification for the deadline and verify that alarm have been set
         deadlineNotification.setDeadlineNotifications(id, deadline, context)

@@ -51,15 +51,21 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
         var description = ""
-        if(deadlineSnapshot["description"] != null) {
+        if (deadlineSnapshot["description"] != null) {
             description = deadlineSnapshot["description"] as String
         }
         var notificationsTimes = ArrayList<Long>()
-        if(deadlineSnapshot["notificationsTimes"] != null) {
+        if (deadlineSnapshot["notificationsTimes"] != null) {
             notificationsTimes = deadlineSnapshot["notificationsTimes"] as ArrayList<Long>
         }
 
-        return Deadline(title, state, date, description=description, notificationsTimes = notificationsTimes)
+        return Deadline(
+            title,
+            state,
+            date,
+            description = description,
+            notificationsTimes = notificationsTimes
+        )
     }
 
     /**

@@ -74,8 +74,10 @@ class AddDeadlineTest {
             .perform(ViewActions.replaceText(""))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.add_deadline_button)).perform(ViewActions.click())
-        MatcherAssert.assertThat(ShadowToast.getTextOfLatestToast(),
-            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.enter_a_title)))
+        MatcherAssert.assertThat(
+            ShadowToast.getTextOfLatestToast(),
+            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.enter_a_title))
+        )
     }
 
     @Test
@@ -100,7 +102,7 @@ class AddDeadlineTest {
         onView(withId(R.id.add_deadline_select_time))
             .perform(ViewActions.click())
         val timeDialog = ShadowTimePickerDialog.getLatestDialog() as TimePickerDialog
-        timeDialog.updateTime(10,10)
+        timeDialog.updateTime(10, 10)
         timeDialog.getButton(TimePickerDialog.BUTTON_POSITIVE).performClick()
 
         // Check if time is correctly selected
@@ -110,12 +112,15 @@ class AddDeadlineTest {
 
         // Check if Toast correctly appear
         onView(withId(R.id.add_deadline_button)).perform(ViewActions.click())
-        MatcherAssert.assertThat(ShadowToast.getTextOfLatestToast(),
-            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created)))
+        MatcherAssert.assertThat(
+            ShadowToast.getTextOfLatestToast(),
+            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created))
+        )
+
     }
 
     @Test
-    fun `add deadline should redirect to main after having add a deadline`(){
+    fun `add deadline should redirect to main after having add a deadline`() {
         // Select Title
         Intents.init()
         onView(withId(R.id.add_deadline_select_title))

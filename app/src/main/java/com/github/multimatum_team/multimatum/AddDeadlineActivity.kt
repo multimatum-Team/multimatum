@@ -59,14 +59,17 @@ class AddDeadlineActivity : AppCompatActivity() {
                     // monthOfYear is based on an enum that begin with 0
                     // thus we need to increase it by one to have the true date
                     year, monthOfYear + 1, dayOfMonth,
-                    selectedDate.hour, selectedDate.minute)
+                    selectedDate.hour, selectedDate.minute
+                )
 
                 textDate.text = selectedDate.toLocalDate().toString()
             }
 
         // Prepare the datePickerDialog
-        val datePickerDialog = DatePickerDialog(this, dateSetListener,
-            selectedDate.year, selectedDate.month.ordinal, selectedDate.dayOfMonth)
+        val datePickerDialog = DatePickerDialog(
+            this, dateSetListener,
+            selectedDate.year, selectedDate.month.ordinal, selectedDate.dayOfMonth
+        )
 
         // Show the Dialog on the screen
         datePickerDialog.show()
@@ -81,29 +84,34 @@ class AddDeadlineActivity : AppCompatActivity() {
             TimePickerDialog.OnTimeSetListener { _, hoursOfDay, minutes ->
                 selectedDate = LocalDateTime.of(
                     selectedDate.year, selectedDate.monthValue, selectedDate.dayOfMonth,
-                    hoursOfDay, minutes)
+                    hoursOfDay, minutes
+                )
 
                 textTime.text = selectedDate.toLocalTime().toString()
             }
 
         // Prepare the datePickerDialog
-        val timePickerDialog = TimePickerDialog(this, timeSetListener,
-            selectedDate.hour, selectedDate.minute, true)
+        val timePickerDialog = TimePickerDialog(
+            this, timeSetListener,
+            selectedDate.hour, selectedDate.minute, true
+        )
 
         // Show the Dialog on the screen
         timePickerDialog.show()
 
     }
+
     val checkBoxIdTime = mapOf<Int, Long>(
         R.id.radio_notification_1h to Duration.ofHours(1).toMillis(),
         R.id.radio_notification_5h to Duration.ofHours(5).toMillis(),
         R.id.radio_notification_1d to Duration.ofDays(1).toMillis(),
         R.id.radio_notification_3d to Duration.ofDays(3).toMillis()
     )
+
     private fun retrieveNotificationsTimes(): ArrayList<Long> {
         var res = ArrayList<Long>()
-        for (x in checkBoxIdTime){
-            if(findViewById<CheckBox>(x.key).isChecked) res.add(x.value)
+        for (x in checkBoxIdTime) {
+            if (findViewById<CheckBox>(x.key).isChecked) res.add(x.value)
         }
         return res
     }
@@ -125,7 +133,12 @@ class AddDeadlineActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
             // Add the deadline
-            val deadline = Deadline(titleDeadline, DeadlineState.TODO, selectedDate, notificationsTimes = notificationsTimes)
+            val deadline = Deadline(
+                titleDeadline,
+                DeadlineState.TODO,
+                selectedDate,
+                notificationsTimes = notificationsTimes
+            )
             viewModel.addDeadline(deadline)
             Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
 
