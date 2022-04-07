@@ -1,7 +1,6 @@
 package com.github.multimatum_team.multimatum
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.nfc.NfcAdapter.EXTRA_ID
@@ -18,33 +17,21 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.multimatum_team.multimatum.service.ClockService
-import com.github.multimatum_team.multimatum.util.QRGeneratorUtilityTest
-import com.google.android.apps.common.testing.accessibility.framework.utils.contrast.Image
-import com.google.zxing.*
-import com.google.zxing.common.HybridBinarizer
-import com.google.zxing.qrcode.QRCodeReader
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.UninstallModules
-import org.hamcrest.CoreMatchers.equalTo
+import com.github.multimatum_team.multimatum.util.GenerateQRCodeUtility
 import org.hamcrest.Description
 import org.hamcrest.Matcher
-import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import org.robolectric.shadows.ShadowToast
-import javax.inject.Inject
+
 
 /**
  * Tests for the QRGenerator class.
  */
 @RunWith(AndroidJUnit4::class)
-class QRGeneratorActivityTest: QRGeneratorUtilityTest {
+class QRGeneratorActivityTest{
     @get:Rule
     val activityRule = ActivityScenarioRule(QRGeneratorActivity::class.java)
 
@@ -79,7 +66,7 @@ class QRGeneratorActivityTest: QRGeneratorUtilityTest {
             override fun matchesSafely(item: ImageView): Boolean {
                 val drawable: Drawable = item.drawable
                 require(drawable is BitmapDrawable){"The provided ImageView does not contain a bitmap"}
-                val actualContent = extractContent(drawable.bitmap)
+                val actualContent = GenerateQRCodeUtility.extractContent(drawable.bitmap)
                 return expectedContent == actualContent
             }
 
@@ -93,7 +80,7 @@ class QRGeneratorActivityTest: QRGeneratorUtilityTest {
                     val image = item as ImageView
                     val drawable = image.drawable
                     require(drawable is BitmapDrawable) { "The provided ImageView does not contain a bitmap" }
-                    val content = extractContent(drawable.bitmap)
+                    val content = GenerateQRCodeUtility.extractContent(drawable.bitmap)
                     description.appendText("QRCode('$content')")
                 } else {
                     // The mismatch is on the type, let BoundedMatcher handle it
