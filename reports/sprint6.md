@@ -23,6 +23,7 @@ This week, I added an UI interface to set notification when creating a new deadl
 Next week I'll make notification handle modification when a deadline is modified.
 
 ### Léo
+This week, I worked essentially on the UI and the usability of the app. First, I reviewed the permission system to be able to access the QR-Code reader direclty after accepting the camera permission request. I have improved the layout of the main screen and created a new design for the buttons, including new icons. The QR-Code reader is lauched directely at the start of the activity, no screen touch required. I also improved the usability of the calendar, by improving the design and adding the possibility for the user to add a deadline using just the keyboard. Various new tests were also added to improve the coverage. Next week, I will continue to work on the UI (dark mode) and remake the settings design, and ev. deadline display screen.
 
 ### Louis
 During this week I finalized the QRCode generator by cleaning the actual layout, make consistent the access to the activity and refractoring a significant part of the code. I create a new class QRGenerator used in the activity and make all associated test. It wasn't so simple to refractor this but finally it went fine.
