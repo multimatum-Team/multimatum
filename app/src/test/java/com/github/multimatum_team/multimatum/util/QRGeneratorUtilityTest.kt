@@ -5,6 +5,9 @@ import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
 
+/**
+ * Interface that contain utility methods use in QRGeneratorTest and QRGeneratorActivityTest
+ */
 interface QRGeneratorUtilityTest {
     fun extractContent(bitmap: Bitmap): String? {
         val binary = convertToBinary(bitmap)

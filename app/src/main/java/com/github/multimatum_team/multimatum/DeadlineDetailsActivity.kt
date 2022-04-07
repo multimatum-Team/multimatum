@@ -190,6 +190,10 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         timePickerDialog.show()
     }
 
+    /**
+     * @param View: the current view
+     * when clicking ont the button create an intent to launch the QR activity
+     */
     fun goQRGenerator(view: View) {
         val intent = Intent(this, QRGeneratorActivity::class.java)
         intent.putExtra(EXTRA_ID, id)
