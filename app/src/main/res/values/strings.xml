@@ -2,7 +2,7 @@
     <string name="app_name">multimatum</string>
     <string name="log_in_text">Log in</string>
     <string name="qr_code_scanner_button_text">Scanner</string>
-    <string name="calendar_deadline_input_text">Enter new deadline...</string>
+    <string name="calendar_deadline_input_text">Enter new deadline…</string>
     <string name="calender_add_new_deadline_button_text">Add</string>
     <string name="calendar_button_text">Calendar</string>
     <string name="main_settings_activity_title">Settings</string>
@@ -30,7 +30,7 @@
     <string name="procrastination_fighter_enable_msg">Procrastination fighter is enabled</string>
     <string name="procrastination_fighter_disabled_msg">Procrastination fighter is disabled</string>
     <string name="procrastination_fighter_permanent_notif_title">Procrastination detector</string>
-    <string name="procrastination_fighter_permanent_notif_content_text">Procrastination is bad...</string>
+    <string name="procrastination_fighter_permanent_notif_content_text">Procrastination is bad…</string>
     <string name="deleted">Deleted</string>
     <string name="undo">Undo</string>
     <string name="write_title_here">Write Title here</string>
