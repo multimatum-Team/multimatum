@@ -41,6 +41,10 @@
             android:exported="false"
             android:parentActivityName=".MainSettingsActivity" />
         <activity
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".MainSettingsActivity" />
+        <activity
             android:name=".QRGenerator"
             android:exported="false"
             android:parentActivityName=".MainSettingsActivity" />
