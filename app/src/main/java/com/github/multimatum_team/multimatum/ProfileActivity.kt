@@ -12,9 +12,9 @@ import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * A simple [Fragment] subclass.
- * Use the [ProfileActivity.newInstance] factory method to
- * create an instance of this fragment.
+ * An activity to display the account that the user is currently logged in.
+ * The view shows the e-mail of the current account, and provides a button to log out from the
+ * current account.
  */
 @AndroidEntryPoint
 class ProfileActivity : AppCompatActivity() {
@@ -31,16 +31,20 @@ class ProfileActivity : AppCompatActivity() {
         logOutButton = findViewById(R.id.log_out_button)
 
         logOutButton.setOnClickListener {
-            Log.d(TAG, "logging out...")
+            Log.d(TAG, "Logging out...")
             userViewModel.signOut()
             finish()
         }
 
+        // Update the e-mail when the account changes.
         userViewModel.getUser().observe(this) { user ->
             updateUI(user)
         }
     }
 
+    /**
+     * Update the e-mail with the new user.
+     */
     private fun updateUI(user: User) {
         loginMessage.text =
             getString(R.string.you_re_logged_in_as, (user as SignedInUser).email)

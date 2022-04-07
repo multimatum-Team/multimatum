@@ -12,6 +12,10 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * This activity allows an anonymous user to sign-in using a Google account and link the current
+ * anonymous user to the new account.
+ */
 @AndroidEntryPoint
 class SignInActivity : AppCompatActivity() {
     private val signInLauncher = registerForActivityResult(
@@ -44,6 +48,7 @@ class SignInActivity : AppCompatActivity() {
             ).show()
             finish()
         } else {
+            // Sign-in failed
             Log.w(TAG, "onSignInResult:failure: ${response?.error?.errorCode}")
             Toast.makeText(
                 baseContext, "Authentication failed.",
@@ -54,6 +59,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun launchSignInIntent(view: View) {
+        // For now we only support Google accounts
         val providers = arrayListOf(
             AuthUI.IdpConfig.GoogleBuilder().build()
         )
