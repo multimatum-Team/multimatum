@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.service
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.hardware.Sensor
@@ -22,8 +23,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.equalTo
 import org.junit.After
-import org.junit.Assert.assertThrows
-import org.junit.Assert.fail
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -231,6 +231,33 @@ class ProcrastinationDetectorServiceTest {
             service.onSensorChanged(mockSensorEvent)
         }
         destroyTestServiceController(controller)
+    }
+
+    @Test
+    fun launch_should_call_startForegroundService_with_start_action(){
+        launchStopTest(ProcrastinationDetectorService.START_ACTION){
+            ProcrastinationDetectorService.launch(it)
+        }
+    }
+
+    @Test
+    fun stop_should_call_startForegroundService_with_stop_action(){
+        launchStopTest(ProcrastinationDetectorService.STOP_ACTION){
+            ProcrastinationDetectorService.stop(it)
+        }
+    }
+
+    // common function for the tests of launch and stop
+    private fun launchStopTest(expectedIntentAction: String, functionToTest: (Context) -> Unit){
+        val mockCaller: Context = mock()
+        var actualIntent: Intent? = null
+        `when`(mockCaller.startForegroundService(any())).then {
+            actualIntent = it.getArgument(0)
+            null
+        }
+        functionToTest(mockCaller)
+        assertNotNull(actualIntent)
+        assertThat(actualIntent!!.action, `is`(expectedIntentAction))
     }
 
     private fun createTestServiceController(): ServiceController<ProcrastinationDetectorService> {
