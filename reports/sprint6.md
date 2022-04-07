@@ -25,7 +25,7 @@ Next week I'll make notification handle modification when a deadline is modified
 ### Léo
 
 ### Louis
-During this week I finalize the QRCode generator by cleaning the actual layout, make consistent the access to the activity and refractoring a significant part of the code. I create a new class QRGenerator used in the activity and make all associated test. It wasn't so simple to refractor this but finnaly it went fine.
+During this week I finalized the QRCode generator by cleaning the actual layout, make consistent the access to the activity and refractoring a significant part of the code. I create a new class QRGenerator used in the activity and make all associated test. It wasn't so simple to refractor this but finally it went fine.
 I start working on the deadline sort and I finished it next week.
 
 ### Valentin
@@ -38,3 +38,5 @@ and the experimentation part my time estimates were pretty accurate, but I under
 implementation. Next sprint I will continue working on the procrastination detector, and I will try to make it less sensitive.
 
 ### Overall team
+During this sprint, multiple things were done in the UI and "in the shadow". The UI has a better design, we are finally starting to put the activities where they should really be, we have made major modifications in the viewModels to add user, we have added multiple fonctions when the app is not on view and all of this without reducing the coverage. It was in overall a good sprint and we will continue in this way next week.
+However, we had some troubles with CodeClimate who was seeing issues everywhere and was very "harsh", we have thus decided to increase the threshold of similar character to reduce the issues who where just two similar line
