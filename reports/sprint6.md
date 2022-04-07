@@ -17,7 +17,8 @@ have
 ### Léo
 
 ### Louis
-
+During this week I finalize the QRCode generator by cleaning the actual layout, make consistent the access to the activity and refractoring a significant part of the code. I create a new class QRGenerator used in the activity and make all associated test. It wasn't so simple to refractor this but finnaly it went fine.
+I start working on the deadline sort and I finished it next week.
 ### Valentin
 
 ### Overall team
