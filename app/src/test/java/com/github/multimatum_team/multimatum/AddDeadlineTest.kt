@@ -1,13 +1,14 @@
 package com.github.multimatum_team.multimatum
 
-import android.content.Context
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import dagger.Module
 import dagger.Provides
@@ -54,8 +55,10 @@ class AddDeadlineTest {
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_date_picker))
             .perform(PickerActions.setDate(2022, 5, 8))
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_button)).perform(ViewActions.click())
-        MatcherAssert.assertThat(ShadowToast.getTextOfLatestToast(),
-            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.enter_a_title)))
+        MatcherAssert.assertThat(
+            ShadowToast.getTextOfLatestToast(),
+            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.enter_a_title))
+        )
     }
 
     @Test
@@ -66,8 +69,10 @@ class AddDeadlineTest {
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_date_picker))
             .perform(PickerActions.setDate(2022, 5, 8))
         Espresso.onView(ViewMatchers.withId(R.id.add_deadline_button)).perform(ViewActions.click())
-        MatcherAssert.assertThat(ShadowToast.getTextOfLatestToast(),
-            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created)))
+        MatcherAssert.assertThat(
+            ShadowToast.getTextOfLatestToast(),
+            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created))
+        )
     }
 
     @Module
@@ -77,7 +82,10 @@ class AddDeadlineTest {
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
             MockDeadlineRepository(listOf())
+
+        @Singleton
+        @Provides
+        fun provideAuthRepository(): AuthRepository =
+            MockAuthRepository()
     }
-
-
 }

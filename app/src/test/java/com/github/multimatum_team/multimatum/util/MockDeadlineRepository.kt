@@ -8,7 +8,7 @@ import com.github.multimatum_team.multimatum.repository.DeadlineRepository
  * Defines a dummy deadline repository that works locally on a plain list.
  * This way the tests are completely independent from Firebase or network availability.
  */
-class MockDeadlineRepository(deadlines: List<Deadline>) : DeadlineRepository {
+class MockDeadlineRepository(deadlines: List<Deadline>) : DeadlineRepository() {
     private val deadlines: MutableMap<DeadlineID, Deadline> =
         deadlines
             .mapIndexed { i, deadline -> i.toString() to deadline }

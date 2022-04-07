@@ -18,7 +18,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.rule.GrantPermissionRule
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import dagger.Module
 import dagger.Provides
@@ -208,5 +210,10 @@ class MainActivityTest {
                     Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 7, 0, 0))
                 )
             )
+
+        @Singleton
+        @Provides
+        fun provideAuthRepository(): AuthRepository =
+            MockAuthRepository()
     }
 }

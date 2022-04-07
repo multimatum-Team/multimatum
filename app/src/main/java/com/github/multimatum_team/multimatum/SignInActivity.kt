@@ -22,7 +22,7 @@ class SignInActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_account)
+        setContentView(R.layout.activity_signin)
         supportActionBar?.hide()
 
         val signInButton = findViewById<Button>(R.id.sign_in_button)
