@@ -36,7 +36,7 @@
             android:name=".QRCodeReaderActivity"
             android:exported="false" />
         <activity android:name=".MainSettingsActivity"
-            android:exported="true">
+            android:exported="false">
         </activity>
         <activity
             android:name=".AccountActivity"
