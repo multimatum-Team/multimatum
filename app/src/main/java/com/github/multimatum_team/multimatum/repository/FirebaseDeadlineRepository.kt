@@ -3,7 +3,6 @@ package com.github.multimatum_team.multimatum.repository
 import android.util.Log
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.github.multimatum_team.multimatum.model.UserID
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -12,7 +11,6 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
 import java.time.ZoneId
-import javax.inject.Inject
 
 /**
  * Remote Firebase repository for storing deadlines.
@@ -36,7 +34,9 @@ class FirebaseDeadlineRepository : DeadlineRepository() {
                     .toEpochSecond(),
                 0
             ),
-            "owner" to _user.id
+            "owner" to _user.id,
+            "description" to deadline.description,
+            "notificationsTimes" to deadline.notificationsTimes.toList()
         )
 
     /**
@@ -51,7 +51,22 @@ class FirebaseDeadlineRepository : DeadlineRepository() {
             .ofEpochMilli(milliseconds)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
-        return Deadline(title, state, date)
+        var description = ""
+        if (deadlineSnapshot["description"] != null) {
+            description = deadlineSnapshot["description"] as String
+        }
+        var notificationsTimes = ArrayList<Long>()
+        if (deadlineSnapshot["notificationsTimes"] != null) {
+            notificationsTimes = deadlineSnapshot["notificationsTimes"] as ArrayList<Long>
+        }
+
+        return Deadline(
+            title,
+            state,
+            date,
+            description = description,
+            notificationsTimes = notificationsTimes
+        )
     }
 
     /**

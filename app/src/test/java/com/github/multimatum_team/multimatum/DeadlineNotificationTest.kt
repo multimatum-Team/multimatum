@@ -107,6 +107,38 @@ class DeadlineNotificationTest {
     }
 
     /**
+     * Test if all notifications are set for a deadline
+     */
+    @Test
+    fun testSetDeadlineNotification() {
+        val alarmManager = ApplicationProvider.getApplicationContext<Context>()
+            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
+        val id = "ASLKJ"
+        val deadlineTime = clockService.now().plusDays(3)
+        val notif1: Long = 1000
+        val notif2: Long = Duration.ofDays(1).toMillis()
+        var notificationTimes = arrayListOf<Long>(notif1, notif2)
+        val deadline = Deadline(
+            "Some title",
+            DeadlineState.TODO,
+            deadlineTime,
+            notificationsTimes = notificationTimes
+        )
+        deadlineNotification.setDeadlineNotifications(id, deadline, context)
+
+        Assert.assertEquals(2, shadowAlarmManager.scheduledAlarms.size)
+        Assert.assertEquals(
+            deadlineTime.atZone(ZoneId.systemDefault()).toInstant()
+                .toEpochMilli() - notif2, shadowAlarmManager.scheduledAlarms[0].triggerAtTime
+        )
+        Assert.assertEquals(
+            (deadlineTime.atZone(ZoneId.systemDefault()).toInstant()
+                .toEpochMilli() - notif1), shadowAlarmManager.scheduledAlarms[1].triggerAtTime
+        )
+    }
+
+    /**
      * Test if a notification get properly cancel after a call to the method
      */
     @Test
@@ -130,6 +162,37 @@ class DeadlineNotificationTest {
 
         deadlineNotification.cancelNotification(id, deadline, context)
 
+        Assert.assertEquals(0, shadowAlarmManager.scheduledAlarms.size)
+    }
+
+    /**
+     * Test if all notifications are properly cancel for a deadline
+     */
+    @Test
+    fun testCancelDeadlineNotification() {
+        val alarmManager = ApplicationProvider.getApplicationContext<Context>()
+            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
+
+        //create a deadline with some notification schedule
+        val id = "ASLKJ"
+        val deadlineTime = clockService.now().plusDays(3)
+        val notif1: Long = 1000
+        val notif2: Long = Duration.ofDays(1).toMillis()
+        var notificationTimes = arrayListOf<Long>(notif1, notif2)
+        val deadline = Deadline(
+            "Some title",
+            DeadlineState.TODO,
+            deadlineTime,
+            notificationsTimes = notificationTimes
+        )
+
+        //add notification for the deadline and verify that alarm have been set
+        deadlineNotification.setDeadlineNotifications(id, deadline, context)
+        Assert.assertEquals(2, shadowAlarmManager.scheduledAlarms.size)
+
+        //delete notifications and verify that alarmManager are indeed empty
+        deadlineNotification.cancelDeadlineNotifications(id, deadline, context)
         Assert.assertEquals(0, shadowAlarmManager.scheduledAlarms.size)
     }
 
