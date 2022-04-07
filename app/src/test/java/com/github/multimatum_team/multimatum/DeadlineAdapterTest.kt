@@ -26,9 +26,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
@@ -53,7 +51,7 @@ class DeadlineAdapterTest {
         adapter = DeadlineAdapter(context!!)
         deadlines = mapOf(
             "1" to Deadline("Number 1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 1, 10, 0)),
-            "2" to Deadline("Number 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 13, 11, 0)),
+            "2" to Deadline("Number 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 11, 0)),
             "3" to Deadline("Number 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 12, 0)),
             "4" to Deadline("Number 4", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 13, 0))
         )
@@ -82,7 +80,7 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun `GetView should show properly the first deadline who is due in 1 day in red`() {
+    fun `GetView should show properly the first deadline who is due in 10 hours in red`() {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(1, null, parent)
         //check title
@@ -96,7 +94,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the ${deadlines["2"]!!.dateTime}",
+            "Due the ${deadlines["2"]!!.dateTime.toLocalDate()} at ${deadlines["2"]!!.dateTime.toLocalTime()}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -105,7 +103,7 @@ class DeadlineAdapterTest {
         )
         //check details
         Assert.assertEquals(
-            "Due in 1 Days",
+            "Due in 11 Hours",
             (listItemView.findViewById<TextView>(R.id.deadline_list_detail)).text
         )
         Assert.assertEquals(
@@ -133,7 +131,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the ${deadlines["3"]!!.dateTime}",
+            "Due the ${deadlines["3"]!!.dateTime.toLocalDate()} at ${deadlines["3"]!!.dateTime.toLocalTime()}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -170,7 +168,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the 2022-03-30T13:00",
+            "Due the ${deadlines["4"]!!.dateTime.toLocalDate()} at ${deadlines["4"]!!.dateTime.toLocalTime()}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -207,7 +205,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the 2022-03-01T10:00",
+            "Due the ${deadlines["1"]!!.dateTime.toLocalDate()} at ${deadlines["1"]!!.dateTime.toLocalTime()}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
