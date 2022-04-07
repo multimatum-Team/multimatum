@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.model.User
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class DeadlineListViewModel @Inject constructor(
     private val deadlineRepository: DeadlineRepository
 ) : ViewModel() {
+    private lateinit var _user: User
     private val _deadlines: MutableLiveData<Map<DeadlineID, Deadline>> = MutableLiveData()
 
     init {
@@ -28,6 +30,10 @@ class DeadlineListViewModel @Inject constructor(
         }
 
         deadlineRepository.onUpdate { _deadlines.value = it }
+    }
+
+    fun setUser(newUser: User) {
+        _user = newUser
     }
 
     /**
