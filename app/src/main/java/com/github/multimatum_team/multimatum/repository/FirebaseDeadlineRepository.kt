@@ -33,7 +33,9 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
                     .atZone(ZoneId.systemDefault())
                     .toEpochSecond(),
                 0
-            )
+            ),
+            "description" to deadline.description,
+            "notificationsTimes" to deadline.notificationsTimes.toList()
         )
 
     /**
@@ -48,7 +50,16 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository {
             .ofEpochMilli(milliseconds)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
-        return Deadline(title, state, date)
+        var description = ""
+        if(deadlineSnapshot["description"] != null) {
+            description = deadlineSnapshot["description"] as String
+        }
+        var notificationsTimes = ArrayList<Long>()
+        if(deadlineSnapshot["notificationsTimes"] != null) {
+            notificationsTimes = deadlineSnapshot["notificationsTimes"] as ArrayList<Long>
+        }
+
+        return Deadline(title, state, date, description=description, notificationsTimes = notificationsTimes)
     }
 
     /**

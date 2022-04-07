@@ -30,6 +30,7 @@ enum class DeadlineState {
  * @property state the advancement state of the deadline
  * @property dateTime the time at which the work is due
  * @property description some description of the deadline, by default empty
+ * @property notificationsTimes ArrayList of the notification's trigger time before deadline
  * @constructor Creates a deadline from specified parameters
  * @throws IllegalArgumentException when title is empty or startDate > end
  */
@@ -37,7 +38,8 @@ data class Deadline(
     val title: String,
     val state: DeadlineState,
     val dateTime: LocalDateTime,
-    val description: String = ""
+    val description: String = "",
+    val notificationsTimes: ArrayList<Long> = ArrayList()
 ) {
     init {
         if (title.isEmpty()) {

@@ -23,6 +23,11 @@
     <string name="missing_sensor_msg">"%1s (disabled: missing sensor on device)"</string>
     <string name="stop_procrastinating_msg">"Hey! Why is this phone moving? You should be working!"</string>
     <string name="TriggerNotif">Trigger Notif</string>
+    <string name="add_notification_title">Notify me :</string>
+    <string name="notify_1_hour_before">1 hours before</string>
+    <string name="notify_5_hours_before">5 hours before</string>
+    <string name="notify_1_day_before">1 day before</string>
+    <string name="notify_3_days_before">5 days before</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="you_re_loggedin_as">You\'re LoggedIn as</string>

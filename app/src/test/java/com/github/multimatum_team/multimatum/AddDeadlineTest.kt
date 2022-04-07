@@ -2,6 +2,7 @@ package com.github.multimatum_team.multimatum
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.test.espresso.Espresso
@@ -9,6 +10,8 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -24,9 +27,11 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import io.mockk.InternalPlatformDsl.toArray
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert
+import org.hamcrest.Matchers
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -37,6 +42,7 @@ import org.robolectric.shadows.ShadowDatePickerDialog
 import org.robolectric.shadows.ShadowTimePickerDialog
 import org.robolectric.shadows.ShadowToast
 import java.time.LocalDateTime
+import javax.inject.Inject
 import javax.inject.Singleton
 
 
@@ -53,6 +59,9 @@ class AddDeadlineTest {
 
     @get:Rule(order = 1)
     val activityRule = ActivityScenarioRule(AddDeadlineActivity::class.java)
+
+    @Inject
+    lateinit var deadlineRepository: DeadlineRepository
 
     @Before
     fun setUp() {
@@ -97,10 +106,28 @@ class AddDeadlineTest {
         // Check if time is correctly selected
         assertEquals("10:10", getText(withId(R.id.add_deadline_text_time)))
 
+        onView(withId(R.id.radio_notification_1h)).perform()
+
         // Check if Toast correctly appear
         onView(withId(R.id.add_deadline_button)).perform(ViewActions.click())
         MatcherAssert.assertThat(ShadowToast.getTextOfLatestToast(),
             CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created)))
+    }
+
+    @Test
+    fun `add deadline should redirect to main after having add a deadline`(){
+        // Select Title
+        Intents.init()
+        onView(withId(R.id.add_deadline_select_title))
+            .perform(ViewActions.replaceText("Test redirect"))
+        Espresso.closeSoftKeyboard()
+        onView(withId(R.id.add_deadline_button)).perform(ViewActions.click())
+        Intents.intended(
+            Matchers.allOf(
+                IntentMatchers.hasComponent(MainActivity::class.java.name),
+                IntentMatchers.toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
     }
 
     /*

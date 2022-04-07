@@ -3,8 +3,10 @@ package com.github.multimatum_team.multimatum
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -14,6 +16,7 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -92,6 +95,15 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     }
 
+    private fun retrieveNotificationsTimes(): ArrayList<Long> {
+        var res = ArrayList<Long>()
+        if(findViewById<CheckBox>(R.id.radio_notification_1h).isChecked) res.add(Duration.ofHours(1).toMillis())
+        if(findViewById<CheckBox>(R.id.radio_notification_5h).isChecked) res.add(Duration.ofHours(5).toMillis())
+        if(findViewById<CheckBox>(R.id.radio_notification_1d).isChecked) res.add(Duration.ofDays(1).toMillis())
+        if(findViewById<CheckBox>(R.id.radio_notification_3d).isChecked) res.add(Duration.ofDays(3).toMillis())
+        return res
+    }
+
     /**
      *  Add a deadline based on the data recuperated on the other TextViews
      */
@@ -102,19 +114,24 @@ class AddDeadlineActivity : AppCompatActivity() {
         // Getting the entered text
         val titleDeadline = editText.text.toString()
 
+        val notificationsTimes = retrieveNotificationsTimes()
+
         // Check if the title is not empty
         if (titleDeadline == "") {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
             // Add the deadline
-            val deadline = Deadline(titleDeadline, DeadlineState.TODO, selectedDate)
+            val deadline = Deadline(titleDeadline, DeadlineState.TODO, selectedDate, notificationsTimes = notificationsTimes)
             viewModel.addDeadline(deadline)
-
             Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
 
             // Reset the text input for future use
             editText.text = ""
         }
+
+        //send use back to main activity after adding a deadline
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
 
 
     }

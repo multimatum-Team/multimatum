@@ -50,7 +50,7 @@ class DeadlineNotification {
      * @return void
      */
     fun setNotification(
-        id: DeadlineID,
+        id: String,
         deadline: Deadline,
         context: Context,
         timeBeforeDeadline: Long
@@ -81,22 +81,31 @@ class DeadlineNotification {
     }
 
     /**
+     * Set all the notification of a deadline's notificationsTimes list.
+     */
+    fun setDeadlineNotifications(deadlineId: DeadlineID, deadline: Deadline, context: Context) {
+        for (x in deadline.notificationsTimes) {
+            setNotification(deadlineId+x.toString(), deadline, context, x)
+        }
+    }
+
+    /**
      * Delete notification for a given deadline
      */
-    fun cancelNotification(deadlineId: DeadlineID, deadline: Deadline, context: Context) {
+    fun cancelNotification(id: String, deadline: Deadline, context: Context) {
         val intent = Intent(
             context,
             ReminderBroadcastReceiver::class.java
         ) //this create an intent of broadcast receiver
-        //Adding extra parameter that will be used in the broadcase receiver to create the notification
+        //Adding extra parameter that will be used in the broadcast receiver to create the notification
         intent.putExtra("title", deadline.title)
         intent.putExtra("description", deadline.description)
-        intent.putExtra("id", deadlineId)
+        intent.putExtra("id", id)
 
         pendingIntent =
             PendingIntent.getBroadcast(
                 context,
-                deadlineId.hashCode(),
+                id.hashCode(),
                 intent,
                 PendingIntent.FLAG_IMMUTABLE
             )
@@ -104,5 +113,14 @@ class DeadlineNotification {
         alarmManager =
             context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
         alarmManager.cancel(pendingIntent)
+    }
+
+    /**
+     * delete all notification of a deadline's notificationsTimes list.
+     */
+    fun cancelDeadlineNotifications(deadlineId: DeadlineID, deadline: Deadline, context: Context){
+        for(x in deadline.notificationsTimes){
+            cancelNotification(deadlineId+x.toString(), deadline, context)
+        }
     }
 }
