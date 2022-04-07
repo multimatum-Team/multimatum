@@ -19,6 +19,8 @@ required at least one or two changes. Also, since the feature focuses on Firebas
 properly test the new code. However, my time estimates weren't too far off.
 
 ### Lenny
+This week, I added an UI interface to set notification when creating a new deadline, I also make multiple notification for a single deadline possible. Those change doesn't set the notification yet but it's just a matter of 2 lines of code, I just need to figure out where to put them. I achieved a accurate time estimation for my Issue and keep coverage high.
+Next week I'll make notification handle modification when a deadline is modified.
 
 ### Léo
 
