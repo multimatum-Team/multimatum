@@ -94,13 +94,17 @@ class AddDeadlineActivity : AppCompatActivity() {
         timePickerDialog.show()
 
     }
-
+    val checkBoxIdTime = mapOf<Int, Long>(
+        R.id.radio_notification_1h to Duration.ofHours(1).toMillis(),
+        R.id.radio_notification_5h to Duration.ofHours(5).toMillis(),
+        R.id.radio_notification_1d to Duration.ofDays(1).toMillis(),
+        R.id.radio_notification_3d to Duration.ofDays(3).toMillis()
+    )
     private fun retrieveNotificationsTimes(): ArrayList<Long> {
         var res = ArrayList<Long>()
-        if(findViewById<CheckBox>(R.id.radio_notification_1h).isChecked) res.add(Duration.ofHours(1).toMillis())
-        if(findViewById<CheckBox>(R.id.radio_notification_5h).isChecked) res.add(Duration.ofHours(5).toMillis())
-        if(findViewById<CheckBox>(R.id.radio_notification_1d).isChecked) res.add(Duration.ofDays(1).toMillis())
-        if(findViewById<CheckBox>(R.id.radio_notification_3d).isChecked) res.add(Duration.ofDays(3).toMillis())
+        for (x in checkBoxIdTime){
+            if(findViewById<CheckBox>(x.key).isChecked) res.add(x.value)
+        }
         return res
     }
 
