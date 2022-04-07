@@ -37,7 +37,7 @@
             android:name=".MainSettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".AccountActivity"
+            android:name=".SignInActivity"
             android:exported="false"
             android:parentActivityName=".MainSettingsActivity" />
         <activity

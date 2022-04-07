@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AccountActivity : AppCompatActivity() {
+class SignInActivity : AppCompatActivity() {
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract()
     ) { res ->

@@ -143,7 +143,7 @@ class MainSettingsActivity : AppCompatActivity() {
         Log.d(TAG, "goToAccountSettings: ${userViewModel.getUser().value}")
         when (userViewModel.getUser().value!!) {
             is AnonymousUser -> {
-                val intent = Intent(this, AccountActivity::class.java)
+                val intent = Intent(this, SignInActivity::class.java)
                 startActivity(intent)
             }
             is SignedInUser -> {
