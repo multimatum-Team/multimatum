@@ -128,6 +128,7 @@ class AddDeadlineTest {
                 IntentMatchers.toPackage("com.github.multimatum_team.multimatum")
             )
         )
+        Intents.release()
     }
 
     /*
