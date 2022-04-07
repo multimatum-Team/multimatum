@@ -117,9 +117,9 @@ class AddDeadlineActivity : AppCompatActivity() {
     )
 
     private fun retrieveNotificationsTimes(): ArrayList<Long> {
-        var res = ArrayList<Long>()
-        for (x in checkBoxIdTime) {
-            if (findViewById<CheckBox>(x.key).isChecked) res.add(x.value)
+        val res = ArrayList<Long>()
+        for (checkBox in checkBoxIdTime) {
+            if (findViewById<CheckBox>(checkBox.key).isChecked) res.add(checkBox.value)
         }
         return res
     }

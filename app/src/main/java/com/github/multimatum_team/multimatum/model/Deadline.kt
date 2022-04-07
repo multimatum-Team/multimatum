@@ -39,7 +39,7 @@ data class Deadline(
     val state: DeadlineState,
     val dateTime: LocalDateTime,
     val description: String = "",
-    val notificationsTimes: ArrayList<Long> = ArrayList()
+    val notificationsTimes: List<Long> = ArrayList()
 ) {
     init {
         if (title.isEmpty()) {

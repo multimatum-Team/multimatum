@@ -84,8 +84,8 @@ class DeadlineNotification {
      * Set all the notification of a deadline's notificationsTimes list.
      */
     fun setDeadlineNotifications(deadlineId: DeadlineID, deadline: Deadline, context: Context) {
-        for (x in deadline.notificationsTimes) {
-            setNotification(deadlineId + x.toString(), deadline, context, x)
+        for (notifTime in deadline.notificationsTimes) {
+            setNotification(deadlineId + notifTime.toString(), deadline, context, notifTime)
         }
     }
 
@@ -119,8 +119,8 @@ class DeadlineNotification {
      * delete all notification of a deadline's notificationsTimes list.
      */
     fun cancelDeadlineNotifications(deadlineId: DeadlineID, deadline: Deadline, context: Context) {
-        for (x in deadline.notificationsTimes) {
-            cancelNotification(deadlineId + x.toString(), deadline, context)
+        for (notifTime in deadline.notificationsTimes) {
+            cancelNotification(deadlineId + notifTime.toString(), deadline, context)
         }
     }
 }
