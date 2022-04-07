@@ -43,7 +43,8 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         return binder
     }
 
-    // also used to stop the service, when action is STOP_ACTION
+    // when intent.action is START_ACTION, starts the service
+    // when intent.action is STOP_ACTION, stops the service
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent != null) {
             when (val action = intent.action) {
