@@ -43,6 +43,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.mock
 import java.time.LocalDateTime
 import javax.inject.Singleton
 
@@ -229,7 +230,7 @@ class MainActivityTest {
 
         @Provides
         fun provideSharedPreferences(): SharedPreferences =
-            MainSettingsActivityTest.mockSharedPreferences
+            mockSharedPreferences
 
         @Provides
         fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
@@ -255,5 +256,9 @@ class MainActivityTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+    }
+
+    companion object {
+        val mockSharedPreferences: SharedPreferences = mock()
     }
 }

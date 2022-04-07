@@ -12,9 +12,9 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
@@ -26,12 +26,15 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -42,6 +45,8 @@ import javax.inject.Singleton
 
 @UninstallModules(DependenciesProvider::class, RepositoryModule::class)
 @HiltAndroidTest
+@ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 class MainSettingsActivityTest {
     @Inject
     lateinit var authRepository: AuthRepository
@@ -79,12 +84,12 @@ class MainSettingsActivityTest {
     }
 
     @Test
-    fun launchProfileActivityIntent() {
+    fun launchProfileActivityIntent() = runTest {
         (authRepository as MockAuthRepository).signIn("john.doe@example.com")
         ActivityScenario.launch(MainSettingsActivity::class.java)
         onView(withId(R.id.main_settings_account_button)).perform(click())
         Intents.intended(IntentMatchers.toPackage("com.github.multimatum_team.multimatum"))
-        runBlocking { authRepository.signOut() }
+        authRepository.signOut()
     }
 
     @Test
@@ -195,5 +200,4 @@ class MainSettingsActivityTest {
     companion object {
         val mockSharedPreferences: SharedPreferences = mock()
     }
-
 }
