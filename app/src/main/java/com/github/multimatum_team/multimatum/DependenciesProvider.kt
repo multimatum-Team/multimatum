@@ -10,6 +10,8 @@ import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
 import android.hardware.SensorManager
 import android.os.SystemClock
+import com.github.multimatum_team.multimatum.repository.AuthRepository
+import com.github.multimatum_team.multimatum.repository.FirebaseAuthRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.service.SystemClockService
 import dagger.Module
@@ -51,4 +53,9 @@ object RepositoryModule {
     @Provides
     fun provideDeadlineRepository(): DeadlineRepository =
         FirebaseDeadlineRepository()
+
+    @Singleton
+    @Provides
+    fun provideAuthRepository(): AuthRepository =
+        FirebaseAuthRepository()
 }
