@@ -37,21 +37,6 @@
         tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
 
     <Button
-        android:id="@+id/goToQR"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/circle_button"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-        app:icon="@drawable/ic_qr_generator"
-        android:onClick="goQRGenerator"
-        android:text="QR Generator"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="HardcodedText" />
-
-    <Button
         android:id="@+id/triggerNotif"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
