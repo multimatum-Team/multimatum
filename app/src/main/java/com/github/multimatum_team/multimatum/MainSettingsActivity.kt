@@ -4,10 +4,15 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import com.github.multimatum_team.multimatum.model.AnonymousUser
+import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
+import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -17,10 +22,14 @@ class MainSettingsActivity : AppCompatActivity() {
     private lateinit var notifEnabledButton: SwitchCompat
     private lateinit var procrastinationDetectEnabledButton: SwitchCompat
 
-    @Inject lateinit var preferences: SharedPreferences
+    private val userViewModel: UserViewModel by viewModels()
+
+    @Inject
+    lateinit var preferences: SharedPreferences
 
     // to be able to check if a sensor is available
-    @Inject lateinit var sensorManager: SensorManager
+    @Inject
+    lateinit var sensorManager: SensorManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,6 +105,7 @@ class MainSettingsActivity : AppCompatActivity() {
         sensorManager.getDefaultSensor(ProcrastinationDetectorService.REF_SENSOR) != null
 
     companion object {
+        private const val TAG = "MainSettingsActivity"
 
         /**
          * Key for the storage of whether dark mode is enabled in SharedPreferences
@@ -119,8 +129,14 @@ class MainSettingsActivity : AppCompatActivity() {
         private const val BUTTON_ALPHA_DISABLED = 0.5F
     }
 
-    fun goToLoginScreen(view: View){
-        val intent = Intent(this, AccountActivity::class.java)
+    fun goToAccountSettings(view: View) {
+        Log.d(TAG, "goToAccountSettings: ${userViewModel.getUser().value}")
+        val intent = when (userViewModel.getUser().value!!) {
+            is AnonymousUser ->
+                Intent(this, SignInActivity::class.java)
+            is SignedInUser ->
+                Intent(this, ProfileActivity::class.java)
+        }
         startActivity(intent)
     }
 }

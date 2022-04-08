@@ -6,7 +6,9 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import dagger.Module
 import dagger.Provides
@@ -79,5 +81,10 @@ class CalendarActivityTest {
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
             MockDeadlineRepository(listOf())
+
+        @Singleton
+        @Provides
+        fun provideAuthRepository(): AuthRepository =
+            MockAuthRepository()
     }
 }

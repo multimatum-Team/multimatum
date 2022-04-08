@@ -22,7 +22,9 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import dagger.Module
 import dagger.Provides
@@ -41,6 +43,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.mock
 import java.time.LocalDateTime
 import javax.inject.Singleton
 
@@ -216,7 +219,7 @@ class MainActivityTest {
 
         @Provides
         fun provideSharedPreferences(): SharedPreferences =
-            MainSettingsActivityTest.mockSharedPreferences
+            mockSharedPreferences
 
         @Provides
         fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
@@ -237,5 +240,14 @@ class MainActivityTest {
                     Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 7, 0, 0))
                 )
             )
+
+        @Singleton
+        @Provides
+        fun provideAuthRepository(): AuthRepository =
+            MockAuthRepository()
+    }
+
+    companion object {
+        val mockSharedPreferences: SharedPreferences = mock()
     }
 }

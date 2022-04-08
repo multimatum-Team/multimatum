@@ -4,13 +4,14 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.time.LocalDate
 import java.time.LocalDateTime
 
+@ExperimentalCoroutinesApi
 class DeadlineRepositoryTest {
     private val repository: DeadlineRepository = MockDeadlineRepository(
         listOf(

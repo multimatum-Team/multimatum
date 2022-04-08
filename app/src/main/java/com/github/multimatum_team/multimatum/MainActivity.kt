@@ -2,6 +2,7 @@ package com.github.multimatum_team.multimatum
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +21,8 @@ import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,11 +37,16 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
 
-    private val viewModel: DeadlineListViewModel by viewModels()
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
+    private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Firebase.initialize(this)
         setContentView(R.layout.activity_main)
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
@@ -46,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = DeadlineAdapter(this)
 
         listView.adapter = adapter
-        viewModel.getDeadlines().observe(this) { deadlines ->
+        deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
             Log.d("deadlines", deadlines.toString())
             adapter.setDeadlines(deadlines)
         }
@@ -63,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        setDeleteOnSweep(listView, viewModel)
+        setDeleteOnSweep(listView, deadlineListViewModel)
     }
 
     // Set the ListView to delete an item by sweeping it
@@ -146,8 +154,8 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 val intent = Intent(this, QRCodeReaderActivity::class.java)
                 startActivity(intent)
             }
@@ -164,7 +172,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    companion object{
+    companion object {
         private const val CAMERA_PERMISSION_REQUEST_CODE = 123
     }
 }

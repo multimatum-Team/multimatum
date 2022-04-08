@@ -21,20 +21,18 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
-
 /**
  *  Activity who create a deadline using a DatePickerDialog and a TimePickerDialog
  */
 @AndroidEntryPoint
 class AddDeadlineActivity : AppCompatActivity() {
-
     @Inject
     lateinit var clockService: ClockService
 
     private lateinit var selectedDate: LocalDateTime
 
 
-    private val viewModel: DeadlineListViewModel by viewModels()
+    private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
 
@@ -147,7 +145,8 @@ class AddDeadlineActivity : AppCompatActivity() {
                 selectedDate,
                 notificationsTimes = notificationsTimes
             )
-            viewModel.addDeadline(deadline)
+            deadlineListViewModel.addDeadline(deadline)
+
             Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
 
             // Reset the text input for future use
@@ -155,11 +154,6 @@ class AddDeadlineActivity : AppCompatActivity() {
         }
 
         //send use back to main activity after adding a deadline
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-
-
+        finish()
     }
-
-
 }
