@@ -59,8 +59,8 @@ class MainActivityTest {
 
     @Before
     fun init() {
-        hiltRule.inject()
         Intents.init()
+        hiltRule.inject()
     }
 
     @After
