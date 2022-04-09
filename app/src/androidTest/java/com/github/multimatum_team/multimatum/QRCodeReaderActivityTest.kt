@@ -7,22 +7,32 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.rule.GrantPermissionRule
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 
 class QRCodeReaderActivityTest {
 
+    @Before
+    fun init(){
+        Intents.init()
+    }
+
+    @After
+    fun release(){
+        Intents.release()
+    }
+
     @Test
     fun shouldNotDisplayScannerWhenPermissionNotGranted() {
-        Intents.init()
         ActivityScenario.launch(QRCodeReaderActivity::class.java)
         onView(withId(R.id.scanner_view)).perform(ViewActions.click()).check(
             ViewAssertions.matches(
                 isNotSelected()
             )
         )
-        Intents.release()
     }
 
     @get:Rule

@@ -27,6 +27,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.hamcrest.Matchers.allOf
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -52,7 +53,13 @@ class DeadlineDetailsTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
+        Intents.init()
         hiltRule.inject()
+    }
+
+    @After
+    fun teardown(){
+        Intents.release()
     }
 
     @Test
@@ -108,12 +115,10 @@ class DeadlineDetailsTest {
             Deadline("Test 4", DeadlineState.TODO, clockService.now().minusDays(1))
         )
         ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        Intents.init()
         onView(withId(R.id.QRCodeButton)).perform(click())
         Intents.intending(allOf(hasComponent(QRGeneratorActivity::class.java.name),
             hasExtra("com.github.multimatum_team.multimatum.deadline.details.id", "4"),
             toPackage("com.github.multimatum_team.multimatum")))
-        Intents.release()
     }
     
     @Test

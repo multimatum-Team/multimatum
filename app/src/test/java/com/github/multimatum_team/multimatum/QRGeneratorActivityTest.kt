@@ -21,6 +21,8 @@ import com.github.multimatum_team.multimatum.util.GenerateQRCodeUtility
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,9 +37,18 @@ class QRGeneratorActivityTest{
     @get:Rule
     val activityRule = ActivityScenarioRule(QRGeneratorActivity::class.java)
 
+    @Before
+    fun init(){
+        Intents.init()
+    }
+
+    @After
+    fun release(){
+        Intents.release()
+    }
+
     @Test
     fun goToQRTest() {
-        Intents.init()
         Espresso.onView(ViewMatchers.withId(R.id.returnToMainFromQR)).perform(ViewActions.click())
         Intents.intended(
             Matchers.allOf(
@@ -45,7 +56,6 @@ class QRGeneratorActivityTest{
                 IntentMatchers.toPackage("com.github.multimatum_team.multimatum")
             )
         )
-        Intents.release()
     }
 
     @Test
