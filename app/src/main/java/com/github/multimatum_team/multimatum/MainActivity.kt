@@ -64,8 +64,8 @@ class MainActivity : AppCompatActivity() {
 
         // Set when you maintain your finger on an item of the list, launch the detail activity
         listView.setOnItemLongClickListener { _, _, position, _ ->
-            val (id, selectedDeadline) = adapter.getItem(position)
-            val detailIntent = DeadlineDetailsActivity.newIntent(this, id, selectedDeadline)
+            val (id, _) = adapter.getItem(position)
+            val detailIntent = DeadlineDetailsActivity.newIntent(this, id)
             startActivity(detailIntent)
             // Last line necessary to use this function
             true

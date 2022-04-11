@@ -72,4 +72,11 @@ class DeadlineListViewModel @Inject constructor(
     fun deleteDeadline(id: DeadlineID) = viewModelScope.launch {
         deadlineRepository.delete(id)
     }
+
+    /**
+     * Modify a deadline from the repository.
+     */
+    fun modifyDeadline(id: DeadlineID, newDeadline: Deadline) = viewModelScope.launch {
+        deadlineRepository.modify(id,newDeadline)
+    }
 }

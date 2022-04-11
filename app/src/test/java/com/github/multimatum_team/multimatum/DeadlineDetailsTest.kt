@@ -17,8 +17,12 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.AuthRepository
+import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockClockService
+import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,14 +38,15 @@ import org.junit.runner.RunWith
 import org.robolectric.shadows.ShadowAlertDialog
 import java.time.LocalDateTime
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 /**
  * Tests for the DeadlineDetailsActivity class
  */
-@RunWith(AndroidJUnit4::class)
+@UninstallModules(RepositoryModule::class,ClockModule::class)
 @HiltAndroidTest
-@UninstallModules(ClockModule::class)
+@RunWith(AndroidJUnit4::class)
 class DeadlineDetailsTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
@@ -172,6 +177,20 @@ class DeadlineDetailsTest {
 
         //Go back to Normal Mode
         onView(withId(R.id.deadline_details_activity_modify)).perform(ViewActions.click())
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestDeadlineRepositoryModule {
+        @Singleton
+        @Provides
+        fun provideDeadlineRepository(): DeadlineRepository =
+            MockDeadlineRepository(listOf())
+
+        @Singleton
+        @Provides
+        fun provideAuthRepository(): AuthRepository =
+            MockAuthRepository()
     }
 
     @Module

@@ -10,11 +10,13 @@ import android.widget.TextView
 import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -32,6 +34,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     lateinit var id: DeadlineID
     private var editMode: Boolean = true
+    private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
     private lateinit var titleView: EditText
     private lateinit var dateView: TextView
@@ -46,10 +49,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_deadline_details)
 
         // Recuperate the Deadline from the intent
-        val title = intent.getStringExtra(EXTRA_TITLE)
         id = intent.getStringExtra(EXTRA_ID) as DeadlineID
-        date = intent.getSerializableExtra(EXTRA_DATE) as LocalDateTime
-        state = intent.getSerializableExtra(EXTRA_STATE) as DeadlineState
+        val deadline = deadlineListViewModel.getDeadlines().value!![id]!!
+        date = deadline.dateTime
+        state = deadline.state
+        val title = deadline.title
 
         // Recuperate the necessary TextView
         titleView = findViewById(R.id.deadline_details_activity_title)
@@ -115,7 +119,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         doneButton.isClickable = editMode
         doneButton.visibility = if (editMode) View.VISIBLE else View.GONE
 
-        //TODO: modify the deadline in the repository
+        // Modify the deadline in the database when you quit the edition mode
+        if (editMode){
+            deadlineListViewModel.modifyDeadline(id, Deadline(titleView.text.toString(), state, date))
+        }
+
         editMode = editMode.not()
     }
 
@@ -209,21 +217,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_ID =
             "com.github.multimatum_team.deadline.details.id"
-        private const val EXTRA_TITLE =
-            "com.github.multimatum_team.multimatum.deadline.details.title"
-        private const val EXTRA_DATE = "com.github.multimatum_team.multimatum.deadline.details.date"
-        private const val EXTRA_STATE =
-            "com.github.multimatum_team.multimatum.deadline.details.state"
 
         // Launch an Intent to access this activity with a Deadline data
-        fun newIntent(context: Context, id: DeadlineID, deadline: Deadline): Intent {
+        fun newIntent(context: Context, id: DeadlineID): Intent {
             val detailIntent = Intent(context, DeadlineDetailsActivity::class.java)
-
             detailIntent.putExtra(EXTRA_ID, id)
-            detailIntent.putExtra(EXTRA_TITLE, deadline.title)
-            detailIntent.putExtra(EXTRA_DATE, deadline.dateTime)
-            detailIntent.putExtra(EXTRA_STATE, deadline.state)
-
             return detailIntent
         }
 
