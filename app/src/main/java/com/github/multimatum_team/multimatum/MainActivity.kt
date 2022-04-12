@@ -14,6 +14,7 @@ import android.widget.ListView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.Deadline
@@ -30,6 +31,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -72,6 +74,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setDeleteOnSweep(listView, deadlineListViewModel)
+        setCurrentTheme()
     }
 
     // Set the ListView to delete an item by sweeping it
@@ -108,6 +111,18 @@ class MainActivity : AppCompatActivity() {
                     touchListener.undoPendingDismiss()
                 }
             }
+    }
+
+    /*
+    Helper function to restore the last theme preference at startup
+     */
+    private fun setCurrentTheme(){
+        val isNightMode = sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, true)
+        if (isNightMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
     }
 
     /**

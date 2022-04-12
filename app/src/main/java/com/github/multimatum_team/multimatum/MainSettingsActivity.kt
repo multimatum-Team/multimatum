@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
@@ -62,6 +63,10 @@ class MainSettingsActivity : AppCompatActivity() {
     // sets all the necessary listeners on the UI widgets
     private fun setWidgetListeners() {
         darkModeEnabledButton.setOnCheckedChangeListener { _, newState ->
+            when (newState) {
+                true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                false -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
             writeNewState(DARK_MODE_PREF_KEY, newState)
         }
         notifEnabledButton.setOnCheckedChangeListener { _, newState ->

@@ -62,14 +62,16 @@
             android:textColor="@color/black"
             android:textSize="@dimen/main_settings_button_font_size"
             app:icon="@android:drawable/ic_menu_myplaces"
-            app:iconTint="@color/black" />
+            app:iconTint="?colorTertiary" />
 
         <TextView
             android:id="@+id/main_settings_ui_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:drawablePadding="2dp"
             android:text="@string/main_settings_ui_section_title"
-            android:textSize="@dimen/main_settings_section_title_font_size" />
+            android:textSize="@dimen/main_settings_section_title_font_size"
+            app:drawableLeftCompat="@drawable/ic_dark_mode" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/main_settings_dark_mode_button"
@@ -88,8 +90,10 @@
             android:id="@+id/main_settings_notification_section_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:drawablePadding="2dp"
             android:text="@string/main_settings_notifications_section_title"
-            android:textSize="@dimen/main_settings_section_title_font_size" />
+            android:textSize="@dimen/main_settings_section_title_font_size"
+            app:drawableLeftCompat="@drawable/ic_notification_on" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/main_settings_enable_notif_button"
@@ -102,8 +106,10 @@
             android:id="@+id/main_settings_procrastination_fighter_section_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:drawablePadding="2dp"
             android:text="@string/main_settings_procrastination_fighter_section_title"
-            android:textSize="@dimen/main_settings_section_title_font_size" />
+            android:textSize="@dimen/main_settings_section_title_font_size"
+            app:drawableLeftCompat="@drawable/ic_procrastination_fighter" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/main_settings_enable_procrastination_fighter_button"
