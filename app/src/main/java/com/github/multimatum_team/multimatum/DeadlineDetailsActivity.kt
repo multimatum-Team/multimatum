@@ -108,11 +108,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.deadline_details_activity_modify)
             .setImageResource(
                 if (editMode) android.R.drawable.checkbox_on_background
-                else android.R.drawable.ic_menu_manage)
+                else android.R.drawable.ic_menu_manage
+            )
 
         dateView.setBackgroundResource(
             if (editMode) android.R.drawable.btn_default
-            else android.R.color.transparent)
+            else android.R.color.transparent
+        )
 
         dateView.isClickable = editMode
 
@@ -120,8 +122,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         doneButton.visibility = if (editMode) View.VISIBLE else View.GONE
 
         // Modify the deadline in the database when you quit the edition mode
-        if (editMode){
-            deadlineListViewModel.modifyDeadline(id, Deadline(titleView.text.toString(), state, date))
+        if (editMode) {
+            deadlineListViewModel.modifyDeadline(
+                id,
+                Deadline(titleView.text.toString(), state, date)
+            )
         }
 
         editMode = editMode.not()
@@ -186,7 +191,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             TimePickerDialog.OnTimeSetListener { _, hoursOfDay, minutes ->
                 date = LocalDateTime.of(
                     date.year, date.monthValue, date.dayOfMonth,
-                    hoursOfDay, minutes)
+                    hoursOfDay, minutes
+                )
 
                 dateView.text =
                     getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
@@ -197,10 +203,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Prepare the datePickerDialog
         val timePickerDialog = TimePickerDialog(
             this, timeSetListener,
-            date.hour, date.minute, true)
+            date.hour, date.minute, true
+        )
 
-            // Show the Dialog on the screen
-            timePickerDialog.show()
+        // Show the Dialog on the screen
+        timePickerDialog.show()
 
     }
 

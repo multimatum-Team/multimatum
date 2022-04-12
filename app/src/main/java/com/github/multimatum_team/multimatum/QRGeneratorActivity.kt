@@ -8,9 +8,10 @@ import android.view.View
 import android.widget.ImageView
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.QRCodeGenerator
+
 /**
-    Activity that generate a QR Code from the id of the parent deadline.
-    It receive the id of the deadline with the intent to generate the QRCode.
+Activity that generate a QR Code from the id of the parent deadline.
+It receive the id of the deadline with the intent to generate the QRCode.
  */
 class QRGeneratorActivity : AppCompatActivity() {
 
