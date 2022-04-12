@@ -22,7 +22,6 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
         logFunctionCall()
         super.onCreate()
         registerActivityLifecycleCallbacks(this)
-        stopProcrastinationDetectorIfActive()
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
@@ -35,6 +34,11 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
 
     override fun onActivityResumed(activity: Activity) {
         logFunctionCall("resumed ${activity.localClassName}")
+        val onForeground = isAppOnForeground()
+        debugLog(if (onForeground) "app is on foreground" else "app is on background")
+        if (onForeground){
+            stopProcrastinationDetectorIfActive()
+        }
     }
 
     override fun onActivityPaused(activity: Activity) {
@@ -68,7 +72,7 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
                 false
             )
         ) {
-            debugLog("launching ${ProcrastinationDetectorService::class}")
+            debugLog("launching ${ProcrastinationDetectorService::class.simpleName}")
             ProcrastinationDetectorService.launch(this)
         }
     }

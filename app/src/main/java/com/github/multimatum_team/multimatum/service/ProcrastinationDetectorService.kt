@@ -11,8 +11,9 @@ import android.hardware.SensorManager
 import android.os.Binder
 import android.os.IBinder
 import android.os.PowerManager
-import android.util.Log
 import android.widget.Toast
+import com.github.multimatum_team.multimatum.LogUtil.debugLog
+import com.github.multimatum_team.multimatum.LogUtil.logFunctionCall
 import com.github.multimatum_team.multimatum.MainSettingsActivity
 import com.github.multimatum_team.multimatum.R
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +35,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     private var wakeLock: PowerManager.WakeLock? = null
 
     // data relative to the last time a movement was detected
-    private var lastDetectionTimestamp: Long = 0L
+    private var lastDetectionTimestampNanos: Long = LAST_DETECTION_TIMESTAMP_NONINIT_CODE
     private var lastPosition: Array<Float>? = null  // null only at initialization
 
     private val binder = PdsBinder()
@@ -46,10 +47,19 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     // when intent.action is START_ACTION, starts the service
     // when intent.action is STOP_ACTION, stops the service
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        logFunctionCall("intent = $intent")
         if (intent != null) {
             when (val action = intent.action) {
-                START_ACTION -> if (!isServiceStarted) startProcrastinationDetectorService()
-                STOP_ACTION -> stopProcrastinationDetectorService()
+                START_ACTION -> {
+                    if (!isServiceStarted) {
+                        startProcrastinationDetectorService()
+                        isInstanceRunning = true
+                    }
+                }
+                STOP_ACTION -> {
+                    stopProcrastinationDetectorService()
+                    isInstanceRunning = false
+                }
                 else -> throw IllegalArgumentException("unexpected action: $action")
             }
         }
@@ -58,7 +68,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(LOG_TAG, "Service created")
+        debugLog("service created")
         startForeground(FOREGROUND_SERVICE_NOTIF_ID, createForegroundServiceNotification())
     }
 
@@ -67,11 +77,11 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         val stopIntent = Intent(applicationContext, ProcrastinationDetectorService::class.java)
         stopIntent.action = STOP_ACTION
         onStartCommand(stopIntent, 0, 0)
-        Log.d(LOG_TAG, "Service destroyed")
+        debugLog("Service destroyed")
     }
 
     private fun startProcrastinationDetectorService() {
-        toast(getString(R.string.procrastination_fighter_enable_msg))
+        logFunctionCall()
         isServiceStarted = true
         acquireWakeLock()
         registerServiceAsSensorListener()
@@ -95,8 +105,8 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     }
 
     private fun stopProcrastinationDetectorService() {
+        logFunctionCall()
         unregisterServiceFromSensorListeners()
-        toast(getString(R.string.procrastination_fighter_disabled_msg))
         releaseWakeLock()
         stopForeground(true)
         stopSelf()
@@ -156,10 +166,15 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         requireNotNull(event)
-        Log.d(LOG_TAG, "sensor change detected")
-        val currentTime = event.timestamp
+        val currentTimeNanos = event.timestamp
+        if (lastDetectionTimestampNanos == LAST_DETECTION_TIMESTAMP_NONINIT_CODE){
+            /* trick: set lastDetectionTimestampNanos DELAY_BEFORE_CHECK_START_NANOS in the future
+             * so that the service only starts checking DELAY_BEFORE_CHECK_START_NANOS after it
+             * was started   */
+            lastDetectionTimestampNanos = currentTimeNanos + DELAY_BEFORE_CHECK_START_NANOS
+        }
         // check whether enough time has passed since the last detection (o.w. do nothing)
-        if (currentTime >= lastDetectionTimestamp + MIN_PERIOD_BETWEEN_NOTIF_NANOSEC) {
+        if (currentTimeNanos >= lastDetectionTimestampNanos + MIN_PERIOD_BETWEEN_NOTIF_NANOSEC) {
             val currentPosition = event.values.toTypedArray()  // values measured by the sensor
             // check whether there was a sufficient move to trigger the toast
             if (lastPosition != null && l1Distance(
@@ -170,7 +185,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
                 toast(applicationContext.getString(R.string.stop_procrastinating_msg))
             }
             lastPosition = currentPosition
-            lastDetectionTimestamp = currentTime
+            lastDetectionTimestampNanos = currentTimeNanos
         }
     }
 
@@ -216,24 +231,36 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         private const val FOREGROUND_SERVICE_NOTIF_ID = 1
         private const val WAKE_LOCK_TAG = "ProcrastinationDetectorService::lock"
         private const val WAKE_LOCK_ACQUIRE_TIMEOUT_MILLIS = 10 * 60 * 1000L  // 10 minutes
+        private const val DELAY_BEFORE_CHECK_START_NANOS = 15 * 1_000_000_000L // 15 seconds
+        private const val LAST_DETECTION_TIMESTAMP_NONINIT_CODE = -1L
 
         /**
          * Launches ProcrastinationDetectorService
          * @param caller should be 'this' in the calling activity
          */
-        fun launch(caller: Context) = performStartStopAction(caller, START_ACTION)
+        fun launch(caller: Context) {
+            if (!isInstanceRunning){
+                performStartStopAction(caller, START_ACTION)
+            }
+        }
 
         /**
          * Stops ProcrastinationDetectorService
          * @param caller should be 'this' in the calling activity
          */
-        fun stop(caller: Context) = performStartStopAction(caller, STOP_ACTION)
+        fun stop(caller: Context) {
+            if (isInstanceRunning){
+                performStartStopAction(caller, STOP_ACTION)
+            }
+        }
 
         private fun performStartStopAction(caller: Context, action: String) {
             val intent = Intent(caller, ProcrastinationDetectorService::class.java)
             intent.action = action
             caller.startForegroundService(intent)
         }
+
+        private var isInstanceRunning = false
 
     }
 
