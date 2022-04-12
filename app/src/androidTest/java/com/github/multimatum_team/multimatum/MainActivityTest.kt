@@ -87,16 +87,10 @@ class MainActivityTest {
         Intents.intended(
             allOf(
                 hasComponent(DeadlineDetailsActivity::class.java.name),
-                hasExtra("com.github.multimatum_team.multimatum.deadline.details.title", "Test 1"),
                 hasExtra(
-                    "com.github.multimatum_team.multimatum.deadline.details.date",
-                    LocalDateTime.of(2022, 3, 1, 0, 0)
-                ),
-                hasExtra(
-                    "com.github.multimatum_team.multimatum.deadline.details.state",
-                    DeadlineState.TODO
-                ),
-                toPackage("com.github.multimatum_team.multimatum")
+                    "com.github.multimatum_team.deadline.details.id",
+                    "0"
+                )
             )
         )
 

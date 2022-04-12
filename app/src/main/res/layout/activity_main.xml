@@ -38,16 +38,16 @@
 
     <Button
         android:id="@+id/triggerNotif"
+        style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="28dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="1dp"
         android:background="@drawable/circle_button"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-        app:icon="@drawable/ic_notification"
         android:onClick="triggerNotification"
         android:text="@string/TriggerNotif"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:icon="@drawable/ic_notification"
+        app:layout_constraintBottom_toTopOf="@+id/goToQrCodeReader"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
@@ -63,7 +63,6 @@
         app:icon="@drawable/ic_qr_scanner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.744"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.947"
         tools:ignore="HardcodedText" />
