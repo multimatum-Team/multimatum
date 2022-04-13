@@ -41,19 +41,14 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private lateinit var detailView: TextView
     private lateinit var doneButton: CheckBox
 
-    private lateinit var date: LocalDateTime
-    private lateinit var state: DeadlineState
+    // Set them on default value, waiting the fetch of the deadlines
+    private var date: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
+    private var state: DeadlineState = DeadlineState.TODO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
-
-        // Recuperate the Deadline from the intent
-        id = intent.getStringExtra(EXTRA_ID) as DeadlineID
-        val deadline = deadlineListViewModel.getDeadlines().value!![id]!!
-        date = deadline.dateTime
-        state = deadline.state
-        val title = deadline.title
+        var title: String
 
         // Recuperate the necessary TextView
         titleView = findViewById(R.id.deadline_details_activity_title)
@@ -61,15 +56,30 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         detailView = findViewById(R.id.deadline_details_activity_done_or_due)
         doneButton = findViewById(R.id.deadline_details_activity_set_done)
 
-        // Set the texts for the title and the date of the deadline
-        titleView.text = SpannableStringBuilder(title)
-        dateView.text = getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
+        // Recuperate the id of the deadline
+        id = intent.getStringExtra(EXTRA_ID) as DeadlineID
+
+        // As the viewModel doesn't recuperate immediately the deadlines,
+        // we need an update the moment they are fetched
+        deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
+            // Recuperate the data from the deadline
+            val deadline = deadlines[id]!!
+            date = deadline.dateTime
+            state = deadline.state
+            title = deadline.title
+
+            // Update the data shown
+            dateView.text =
+                getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
+            titleView.text = SpannableStringBuilder(title)
+            doneButton.isChecked = (state == DeadlineState.DONE)
+            updateDetail()
+        }
 
         // Set the View to be unmodifiable at the start and remove displacement of the texts
         fixArrangement()
 
         // Setup the CheckBox to be checked if done
-        doneButton.isChecked = (state == DeadlineState.DONE)
         doneButton.setOnCheckedChangeListener { _, isChecked ->
             state = if (isChecked) DeadlineState.DONE else DeadlineState.TODO
             updateDetail()
@@ -122,7 +132,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         doneButton.visibility = if (editMode) View.VISIBLE else View.GONE
 
         // Modify the deadline in the database when you quit the edition mode
-        if (editMode) {
+        if (!editMode) {
             deadlineListViewModel.modifyDeadline(
                 id,
                 Deadline(titleView.text.toString(), state, date)

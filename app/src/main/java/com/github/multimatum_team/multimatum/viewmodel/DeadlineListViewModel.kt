@@ -9,6 +9,7 @@ import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -58,6 +59,14 @@ class DeadlineListViewModel @Inject constructor(
      */
     fun getDeadlines(): LiveData<Map<DeadlineID, Deadline>> =
         _deadlines
+
+    /**
+     * get a deadline from the repository.
+     */
+    fun getDeadline(id: DeadlineID): Deadline =
+        _deadlines.value!![id]!!
+
+
 
     /**
      * Add a new deadline to the repository.
