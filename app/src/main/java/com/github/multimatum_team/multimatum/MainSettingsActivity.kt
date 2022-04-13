@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import com.github.multimatum_team.multimatum.SharedPreferenceKeys.DARK_MODE_PREF_KEY
 import com.github.multimatum_team.multimatum.SharedPreferenceKeys.NOTIF_ENABLED_PREF_KEY
+import com.github.multimatum_team.multimatum.SharedPreferenceKeys.PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
@@ -104,13 +105,6 @@ class MainSettingsActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainSettingsActivity"
-
-        /**
-         * Key for the storage of whether procrastination fighter is enabled
-         */
-        const val PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY =
-            "com.github.multimatum_team.multimatum.MainSettingsActivity.ProcrastinationFighterEnabled"
-
         private const val BUTTON_ALPHA_NORMAL = 1F
         private const val BUTTON_ALPHA_DISABLED = 0.5F
     }
