@@ -6,7 +6,6 @@ import android.hardware.SensorManager
 import android.os.Build
 import android.view.View
 import android.widget.ListView
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
@@ -62,22 +61,12 @@ class MainActivityTest {
     fun init() {
         Intents.init()
         hiltRule.inject()
+        grantPermission()
     }
 
     @After
     fun release() {
         Intents.release()
-        revokeGrantedCameraPermission()
-    }
-
-    private fun revokeGrantedCameraPermission() {
-        val context: Context = ApplicationProvider.getApplicationContext()
-        InstrumentationRegistry
-            .getInstrumentation()
-            .uiAutomation
-            .executeShellCommand(
-                "pm revoke ${context.packageName} android.permission.WRITE_EXTERNAL_STORAGE"
-            )
     }
 
     @Test
