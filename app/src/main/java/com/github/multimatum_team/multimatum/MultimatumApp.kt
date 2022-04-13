@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import com.github.multimatum_team.multimatum.LogUtil.debugLog
 import com.github.multimatum_team.multimatum.LogUtil.logFunctionCall
+import com.github.multimatum_team.multimatum.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -68,7 +69,7 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
     private fun startProcrastinationDetectorIfNeeded() {
         logFunctionCall()
         if (sharedPreferences.getBoolean(
-                SharedPreferenceKeys.PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY,
+                PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY,
                 false
             )
         ) {
@@ -80,7 +81,7 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
     private fun stopProcrastinationDetectorIfActive() {
         logFunctionCall()
         if (sharedPreferences.getBoolean(
-                SharedPreferenceKeys.PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY,
+                PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY,
                 false
             )
         ) {

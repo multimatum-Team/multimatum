@@ -13,8 +13,8 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.multimatum_team.multimatum.SharedPreferenceKeys.DARK_MODE_PREF_KEY
-import com.github.multimatum_team.multimatum.SharedPreferenceKeys.NOTIF_ENABLED_PREF_KEY
+import com.github.multimatum_team.multimatum.MainSettingsActivity.Companion.DARK_MODE_PREF_KEY
+import com.github.multimatum_team.multimatum.MainSettingsActivity.Companion.NOTIF_ENABLED_PREF_KEY
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
