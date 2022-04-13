@@ -38,6 +38,9 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     private var lastDetectionTimestampNanos: Long = LAST_DETECTION_TIMESTAMP_NONINIT_CODE
     private var lastPosition: Array<Float>? = null  // null only at initialization
 
+    // the service will wait for this number of detections before starting to display toasts
+    private var nonReportedDetectionsCnt = NON_REPORTED_DETECTIONS_CNT_INIT
+
     private val binder = PdsBinder()
 
     override fun onBind(intent: Intent): IBinder {
@@ -167,26 +170,50 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent?) {
         requireNotNull(event)
         val currentTimeNanos = event.timestamp
-        if (lastDetectionTimestampNanos == LAST_DETECTION_TIMESTAMP_NONINIT_CODE){
-            /* trick: set lastDetectionTimestampNanos DELAY_BEFORE_CHECK_START_NANOS in the future
-             * so that the service only starts checking DELAY_BEFORE_CHECK_START_NANOS after it
-             * was started   */
-            lastDetectionTimestampNanos = currentTimeNanos + DELAY_BEFORE_CHECK_START_NANOS
-        }
+        initLastDetectionIfNotYetInitialized(currentTimeNanos)
+        initLastPositionWithCurrentIfNull(event)
         // check whether enough time has passed since the last detection (o.w. do nothing)
         if (currentTimeNanos >= lastDetectionTimestampNanos + MIN_PERIOD_BETWEEN_NOTIF_NANOSEC) {
             val currentPosition = event.values.toTypedArray()  // values measured by the sensor
             // check whether there was a sufficient move to trigger the toast
-            if (lastPosition != null && l1Distance(
-                    currentPosition,
-                    lastPosition!!
-                ) > MOVE_DETECTION_THRESHOLD
-            ) {
-                toast(applicationContext.getString(R.string.stop_procrastinating_msg))
+            if (l1Distance(currentPosition, lastPosition!!) > MOVE_DETECTION_THRESHOLD) {
+                reactToSignificantMove()
+            }
+            else {
+                reactToAbsenceOfMove()
             }
             lastPosition = currentPosition
             lastDetectionTimestampNanos = currentTimeNanos
         }
+    }
+
+    private fun initLastDetectionIfNotYetInitialized(currentTimeNanos: Long) {
+        if (lastDetectionTimestampNanos == LAST_DETECTION_TIMESTAMP_NONINIT_CODE) {
+            /* trick: lastDetectionTimestampNanos is set DELAY_BEFORE_CHECK_START_NANOS in the future
+             * so that the service only starts checking DELAY_BEFORE_CHECK_START_NANOS after it
+             * was started   */
+            lastDetectionTimestampNanos =
+                currentTimeNanos + DELAY_BEFORE_CHECK_START_NANOS - MIN_PERIOD_BETWEEN_NOTIF_NANOSEC
+        }
+    }
+
+    private fun initLastPositionWithCurrentIfNull(event: SensorEvent) {
+        if (lastPosition == null) {
+            val currentPosition = event.values.toTypedArray()  // values measured by the sensor
+            lastPosition = currentPosition
+        }
+    }
+
+    private fun reactToSignificantMove() {
+        if (nonReportedDetectionsCnt > 0) {
+            nonReportedDetectionsCnt -= 1
+        } else {
+            toast(applicationContext.getString(R.string.stop_procrastinating_msg))
+        }
+    }
+
+    private fun reactToAbsenceOfMove(){
+        nonReportedDetectionsCnt = NON_REPORTED_DETECTIONS_CNT_INIT
     }
 
     private fun l1Distance(p1: Array<Float>, p2: Array<Float>): Float {
@@ -230,16 +257,22 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
 
         private const val FOREGROUND_SERVICE_NOTIF_ID = 1
         private const val WAKE_LOCK_TAG = "ProcrastinationDetectorService::lock"
+
         private const val WAKE_LOCK_ACQUIRE_TIMEOUT_MILLIS = 10 * 60 * 1000L  // 10 minutes
         private const val DELAY_BEFORE_CHECK_START_NANOS = 15 * 1_000_000_000L // 15 seconds
+
+        // value that lastDetectionTimestampNanos takes when it is not initialized
         private const val LAST_DETECTION_TIMESTAMP_NONINIT_CODE = -1L
+
+        // the first NON_REPORTED_DETECTIONS_CNT_INIT detected moves will be ignored
+        private const val NON_REPORTED_DETECTIONS_CNT_INIT = 2
 
         /**
          * Launches ProcrastinationDetectorService
          * @param caller should be 'this' in the calling activity
          */
         fun launch(caller: Context) {
-            if (!isInstanceRunning){
+            if (!isInstanceRunning) {
                 performStartStopAction(caller, START_ACTION)
             }
         }
@@ -249,7 +282,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          * @param caller should be 'this' in the calling activity
          */
         fun stop(caller: Context) {
-            if (isInstanceRunning){
+            if (isInstanceRunning) {
                 performStartStopAction(caller, STOP_ACTION)
             }
         }
