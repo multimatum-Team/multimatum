@@ -48,9 +48,11 @@ class SignInActivityTest {
 
     @Test
     fun launchSignInIntentWhenClickingButton() {
-        ActivityScenario.launch(SignInActivity::class.java)
-        onView(withId(R.id.sign_in_button)).perform(click())
-        Intents.intended(IntentMatchers.toPackage("com.github.multimatum_team.multimatum"))
+        val activityScenario = ActivityScenario.launch(SignInActivity::class.java)
+        activityScenario.use {
+            onView(withId(R.id.sign_in_button)).perform(click())
+            Intents.intended(IntentMatchers.toPackage("com.github.multimatum_team.multimatum"))
+        }
     }
 
     @Module

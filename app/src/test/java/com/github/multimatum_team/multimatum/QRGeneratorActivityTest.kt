@@ -62,8 +62,10 @@ class QRGeneratorActivityTest{
     fun qRDisplayTest() {
         val intent = Intent(ApplicationProvider.getApplicationContext(),
             QRGeneratorActivity::class.java).putExtra(EXTRA_ID, "1")
-        ActivityScenario.launch<QRGeneratorActivity>(intent)
-        Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode("1")))
+        val scenario = ActivityScenario.launch<QRGeneratorActivity>(intent)
+        scenario.use {
+            Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode("1")))
+        }
     }
 
     /*

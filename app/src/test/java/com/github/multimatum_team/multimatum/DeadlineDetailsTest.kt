@@ -67,14 +67,16 @@ class DeadlineDetailsTest {
         val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(),
             "1", Deadline("Test 1", DeadlineState.TODO, clockService.now().plusDays(7))
         )
-        ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
-        onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText(
-                "Due the ${clockService.now().plusDays(7).toLocalDate()} " +
-                        "at ${clockService.now().plusDays(7).toLocalTime()}")))
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
+            onView(withId(R.id.deadline_details_activity_date))
+                .check(matches(withText(
+                    "Due the ${clockService.now().plusDays(7).toLocalDate()} " +
+                            "at ${clockService.now().plusDays(7).toLocalTime()}")))
 
-        onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 7 Days")))
+            onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 7 Days")))
+        }
     }
 
     @Test
@@ -82,14 +84,16 @@ class DeadlineDetailsTest {
         val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(),
             "2", Deadline("Test 2", DeadlineState.DONE, clockService.now().plusDays(7))
         )
-        ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
-        onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText(
-                "Due the ${clockService.now().plusDays(7).toLocalDate()} " +
-                        "at ${clockService.now().plusDays(7).toLocalTime()}")))
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
+            onView(withId(R.id.deadline_details_activity_date))
+                .check(matches(withText(
+                    "Due the ${clockService.now().plusDays(7).toLocalDate()} " +
+                            "at ${clockService.now().plusDays(7).toLocalTime()}")))
 
-        onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
+            onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
+        }
     }
 
     @Test
@@ -97,14 +101,16 @@ class DeadlineDetailsTest {
         val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(),
             "3", Deadline("Test 3", DeadlineState.TODO, clockService.now().minusDays(2))
         )
-        ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
-        onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText(
-                "Due the ${clockService.now().minusDays(2).toLocalDate()} " +
-                        "at ${clockService.now().plusDays(7).toLocalTime()}")))
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
+            onView(withId(R.id.deadline_details_activity_date))
+                .check(matches(withText(
+                    "Due the ${clockService.now().minusDays(2).toLocalDate()} " +
+                            "at ${clockService.now().plusDays(7).toLocalTime()}")))
 
-        onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Is already Due")))
+            onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Is already Due")))
+        }
     }
 
     @Test
@@ -114,11 +120,13 @@ class DeadlineDetailsTest {
             "4",
             Deadline("Test 4", DeadlineState.TODO, clockService.now().minusDays(1))
         )
-        ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        onView(withId(R.id.QRCodeButton)).perform(click())
-        Intents.intending(allOf(hasComponent(QRGeneratorActivity::class.java.name),
-            hasExtra("com.github.multimatum_team.multimatum.deadline.details.id", "4"),
-            toPackage("com.github.multimatum_team.multimatum")))
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.QRCodeButton)).perform(click())
+            Intents.intending(allOf(hasComponent(QRGeneratorActivity::class.java.name),
+                hasExtra("com.github.multimatum_team.multimatum.deadline.details.id", "4"),
+                toPackage("com.github.multimatum_team.multimatum")))
+        }
     }
     
     @Test
@@ -126,13 +134,15 @@ class DeadlineDetailsTest {
         val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(),
             "4", Deadline("Test 4", DeadlineState.TODO, clockService.now().plusHours(6))
         )
-        ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 4")))
-        onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText(
-                "Due the ${clockService.now().plusHours(6).toLocalDate()} " +
-                        "at ${clockService.now().plusHours(6).toLocalTime()}")))
-        onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 6 Hours")))
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 4")))
+            onView(withId(R.id.deadline_details_activity_date))
+                .check(matches(withText(
+                    "Due the ${clockService.now().plusHours(6).toLocalDate()} " +
+                            "at ${clockService.now().plusHours(6).toLocalTime()}")))
+            onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 6 Hours")))
+        }
     }
 
     @Test
@@ -142,41 +152,44 @@ class DeadlineDetailsTest {
             "4",
             Deadline("Test 4", DeadlineState.TODO, clockService.now())
         )
-        ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        // Go in Modify Mode
-        onView(withId(R.id.deadline_details_activity_modify)).perform(ViewActions.click())
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            // Go in Modify Mode
+            onView(withId(R.id.deadline_details_activity_modify)).perform(ViewActions.click())
 
-        // Modify the text
-        onView(withId(R.id.deadline_details_activity_title)).perform(ViewActions.replaceText("Test 66"))
-        Espresso.closeSoftKeyboard()
-        onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 66")))
+            // Modify the text
+            onView(withId(R.id.deadline_details_activity_title)).perform(ViewActions.replaceText("Test 66"))
+            Espresso.closeSoftKeyboard()
+            onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 66")))
 
-        // Modify the date
-        onView(withId(R.id.deadline_details_activity_date))
-            .perform(ViewActions.click())
-        val dateDialog = ShadowAlertDialog.getLatestDialog() as DatePickerDialog
-        dateDialog.updateDate(2022, 10, 23)
-        dateDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).performClick()
-        println(ShadowAlertDialog.getShownDialogs())
+            // Modify the date
+            onView(withId(R.id.deadline_details_activity_date))
+                .perform(ViewActions.click())
+            val dateDialog = ShadowAlertDialog.getLatestDialog() as DatePickerDialog
+            dateDialog.updateDate(2022, 10, 23)
+            dateDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).performClick()
+            println(ShadowAlertDialog.getShownDialogs())
 
-        // An action is necessary to let the time to ShadowAlertDialog to find the TimeDialog
-        onView(withId(R.id.deadline_details_activity_set_done)).perform(ViewActions.click())
+            // An action is necessary to let the time to ShadowAlertDialog to find the TimeDialog
+            onView(withId(R.id.deadline_details_activity_set_done)).perform(ViewActions.click())
 
-        // Modify the time
-        val timeDialog = ShadowAlertDialog.getLatestDialog() as TimePickerDialog
-        timeDialog.updateTime(10, 10)
-        timeDialog.getButton(TimePickerDialog.BUTTON_POSITIVE).performClick()
+            // Modify the time
+            val timeDialog = ShadowAlertDialog.getLatestDialog() as TimePickerDialog
+            timeDialog.updateTime(10, 10)
+            timeDialog.getButton(TimePickerDialog.BUTTON_POSITIVE).performClick()
 
-        // Check the date and the time
-        onView(withId(R.id.deadline_details_activity_date))
-            .check(matches(withText("Due the 2022-11-23 at 10:10")))
+            // Check the date and the time
+            onView(withId(R.id.deadline_details_activity_date))
+                .check(matches(withText("Due the 2022-11-23 at 10:10")))
 
-        //Modify the done
-        onView(withId(R.id.deadline_details_activity_set_done)).perform(ViewActions.click())
-        onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
+            //Modify the done
+            onView(withId(R.id.deadline_details_activity_set_done)).perform(ViewActions.click())
+            onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
 
-        //Go back to Normal Mode
-        onView(withId(R.id.deadline_details_activity_modify)).perform(ViewActions.click())
+            //Go back to Normal Mode
+            onView(withId(R.id.deadline_details_activity_modify)).perform(ViewActions.click())
+        }
+
     }
 
     @Module

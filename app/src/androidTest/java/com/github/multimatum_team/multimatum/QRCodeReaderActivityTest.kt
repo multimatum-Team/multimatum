@@ -27,12 +27,14 @@ class QRCodeReaderActivityTest {
 
     @Test
     fun shouldNotDisplayScannerWhenPermissionNotGranted() {
-        ActivityScenario.launch(QRCodeReaderActivity::class.java)
-        onView(withId(R.id.scanner_view)).perform(ViewActions.click()).check(
-            ViewAssertions.matches(
-                isNotSelected()
+        val scenario = ActivityScenario.launch(QRCodeReaderActivity::class.java)
+        scenario.use {
+            onView(withId(R.id.scanner_view)).perform(ViewActions.click()).check(
+                ViewAssertions.matches(
+                    isNotSelected()
+                )
             )
-        )
+        }
     }
 
     @get:Rule
@@ -42,8 +44,10 @@ class QRCodeReaderActivityTest {
 
     @Test
     fun shouldDisplayScannerWhenPermissionsAreGranted() {
-        ActivityScenario.launch(QRCodeReaderActivity::class.java)
-        onView(withId(R.id.scanner_view))
-            .check(ViewAssertions.matches(isDisplayed()))
+        val scenario = ActivityScenario.launch(QRCodeReaderActivity::class.java)
+        scenario.use {
+            onView(withId(R.id.scanner_view))
+                .check(ViewAssertions.matches(isDisplayed()))
+        }
     }
 }
