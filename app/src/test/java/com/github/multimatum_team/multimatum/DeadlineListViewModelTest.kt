@@ -84,4 +84,32 @@ class DeadlineListViewModelTest {
             assertEquals(viewModel.getDeadlines().getOrAwaitValue()[this]!!, newDeadline)
         }
     }
+
+    @Test
+    fun `Adding deadlines from the viewmodel updates the repository`() = runTest {
+        val newDeadlineMap = deadlines
+            .withIndex()
+            .associate { Pair(it.index.toString(), it.value) }
+            .toMutableMap()
+        newDeadlineMap["3"] =
+            Deadline("Deadline 4", DeadlineState.TODO, LocalDateTime.of(2022, 6, 13, 0, 0))
+        assertEquals(
+            viewModel.getDeadlines().getOrAwaitValue(),
+            deadlineRepository.fetchAll()
+        )
+    }
+
+    @Test
+    fun `Deleting deadlines from the viewmodel updates the repository`() = runTest {
+        val newDeadlineMap = deadlines
+            .withIndex()
+            .associate { Pair(it.index.toString(), it.value) }
+            .toMutableMap()
+        newDeadlineMap.remove("1")
+        deadlineRepository.delete("1")
+        assertEquals(
+            viewModel.getDeadlines().getOrAwaitValue(),
+            newDeadlineMap
+        )
+    }
 }
