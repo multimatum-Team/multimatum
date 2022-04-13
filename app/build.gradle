@@ -20,6 +20,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "com.github.multimatum_team.multimatum.MultimatumTestRunner"
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {

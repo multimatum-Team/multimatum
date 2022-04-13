@@ -117,12 +117,10 @@ class MainActivity : AppCompatActivity() {
     Helper function to restore the last theme preference at startup
      */
     private fun setCurrentTheme(){
-        val isNightMode = sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, true)
-        if (isNightMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
+        val isNightMode = sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (isNightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 
     /**
