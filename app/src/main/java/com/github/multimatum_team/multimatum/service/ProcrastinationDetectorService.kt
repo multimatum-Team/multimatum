@@ -208,7 +208,11 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         if (nonReportedDetectionsCnt > 0) {
             nonReportedDetectionsCnt -= 1
         } else {
-            toast(applicationContext.getString(R.string.stop_procrastinating_msg))
+            Toast.makeText(
+                applicationContext,
+                applicationContext.getString(R.string.stop_procrastinating_msg),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -222,11 +226,6 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         val dy = abs(p1[1] - p2[1])
         val dz = abs(p1[2] - p2[2])
         return dx + dy + dz
-    }
-
-    // Displays a toast with the given text
-    private fun toast(text: String) {
-        Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT).show()
     }
 
     companion object {
