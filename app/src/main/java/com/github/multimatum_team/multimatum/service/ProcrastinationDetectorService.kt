@@ -244,9 +244,6 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          */
         private const val MOVE_DETECTION_THRESHOLD = 0.1
 
-        // for logging
-        private const val LOG_TAG = "ProcrastinationDetectorService"
-
         private const val NOTIFICATION_CHANNEL_ID =
             "com.github.multimatum_team-mutlimatum.ProcrastinationDetectorServiceChannel"
 
