@@ -61,6 +61,7 @@ class MainActivityTest {
     fun init() {
         Intents.init()
         hiltRule.inject()
+        grantPermission()
     }
 
     @After
