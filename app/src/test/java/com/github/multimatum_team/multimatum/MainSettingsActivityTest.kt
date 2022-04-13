@@ -13,6 +13,8 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.multimatum_team.multimatum.SharedPreferenceKeys.DARK_MODE_PREF_KEY
+import com.github.multimatum_team.multimatum.SharedPreferenceKeys.NOTIF_ENABLED_PREF_KEY
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
@@ -121,19 +123,19 @@ class MainSettingsActivityTest {
     ) {
         `when`(
             mockSharedPreferences.getBoolean(
-                eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY),
+                eq(NOTIF_ENABLED_PREF_KEY),
                 any()
             )
         )
             .thenReturn(initNotifEnabled)
-        `when`(mockSharedPreferences.getBoolean(eq(MainSettingsActivity.DARK_MODE_PREF_KEY), any()))
+        `when`(mockSharedPreferences.getBoolean(eq(DARK_MODE_PREF_KEY), any()))
             .thenReturn(initDarkModeEnabled)
         val mockEditor: SharedPreferences.Editor = mock()
-        `when`(mockEditor.putBoolean(eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY), any())).then {
+        `when`(mockEditor.putBoolean(eq(NOTIF_ENABLED_PREF_KEY), any())).then {
             assertEquals(expectedFinalNotifEnabled, it.getArgument(1))
             mockEditor
         }
-        `when`(mockEditor.putBoolean(eq(MainSettingsActivity.DARK_MODE_PREF_KEY), any())).then {
+        `when`(mockEditor.putBoolean(eq(DARK_MODE_PREF_KEY), any())).then {
             assertEquals(expectedFinalDarkModeEnabled, it.getArgument(1))
             mockEditor
         }
