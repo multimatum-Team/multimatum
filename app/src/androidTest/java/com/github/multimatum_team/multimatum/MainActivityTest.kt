@@ -61,6 +61,7 @@ class MainActivityTest {
     fun init() {
         Intents.init()
         hiltRule.inject()
+        grantPermission()
     }
 
     @After
@@ -184,10 +185,14 @@ class MainActivityTest {
      */
     private fun grantPermission() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val allowPermission = UiDevice.getInstance(instrumentation).findObject(UiSelector()
-            .clickable(true)
-            .checkable(false)
-            .instance(3)
+        val allowPermission = UiDevice.getInstance(instrumentation).findObject(
+            UiSelector().text(
+                when {
+                    Build.VERSION.SDK_INT <= 28 -> "ALLOW"
+                    Build.VERSION.SDK_INT == 29 -> "Allow only while using the app"
+                    else -> "While using the app"
+                }
+            )
         )
         assert(allowPermission.exists())
         allowPermission.click()
@@ -195,10 +200,14 @@ class MainActivityTest {
 
     private fun denyPermission() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val denyPermission = UiDevice.getInstance(instrumentation).findObject(UiSelector()
-            .clickable(true)
-            .checkable(false)
-            .instance(4)
+        val denyPermission = UiDevice.getInstance(instrumentation).findObject(
+            UiSelector().textMatches(
+                when (Build.VERSION.SDK_INT) {
+                    in 26..28 -> "DENY"
+                    in 29..Int.MAX_VALUE -> "Don.t allow"
+                    else -> "Deny"
+                }
+            )
         )
         assert(denyPermission.exists())
         denyPermission.click()
