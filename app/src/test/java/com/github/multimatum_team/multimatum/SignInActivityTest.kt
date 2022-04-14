@@ -22,6 +22,7 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -44,8 +45,8 @@ class SignInActivityTest {
 
     @Before
     fun init() {
-        hiltRule.inject()
         Intents.init()
+        hiltRule.inject()
     }
 
     @After
@@ -55,10 +56,16 @@ class SignInActivityTest {
 
     @Test
     fun launchSignInIntentWhenClickingButton() = runTest {
-        authRepository.signOut()
-        ActivityScenario.launch(SignInActivity::class.java)
-        onView(withId(R.id.sign_in_button)).perform(click())
-        Intents.intended(IntentMatchers.toPackage("com.github.multimatum_team.multimatum"))
+        val activityScenario = ActivityScenario.launch(SignInActivity::class.java)
+        activityScenario.use {
+            onView(withId(R.id.sign_in_button)).perform(click())
+            Intents.intended(
+                allOf(
+                    IntentMatchers.toPackage("com.github.multimatum_team.multimatum"),
+                    IntentMatchers.hasComponent(com.firebase.ui.auth.KickoffActivity::class.qualifiedName)
+                )
+            )
+        }
     }
 
     @Module
