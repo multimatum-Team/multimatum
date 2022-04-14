@@ -189,9 +189,8 @@ class MainActivityTest {
             .checkable(false)
             .instance(3)
         )
-        if (allowPermission.exists()) {
-            allowPermission.click()
-        }
+        assert(allowPermission.exists())
+        allowPermission.click()
     }
 
     private fun denyPermission() {
@@ -201,9 +200,8 @@ class MainActivityTest {
             .checkable(false)
             .instance(4)
         )
-        if (denyPermission.exists()) {
-            denyPermission.click()
-        }
+        assert(denyPermission.exists())
+        denyPermission.click()
     }
 
     @Module
