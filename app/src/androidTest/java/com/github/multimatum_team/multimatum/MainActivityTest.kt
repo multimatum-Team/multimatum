@@ -202,9 +202,10 @@ class MainActivityTest {
     private fun denyPermission() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val denyPermission = UiDevice.getInstance(instrumentation).findObject(
-            UiSelector().text(
+            UiSelector().textMatches(
                 when (Build.VERSION.SDK_INT) {
                     in 26..28 -> "DENY"
+                    in 29..Int.MAX_VALUE -> "Don.t allow"
                     else -> "Deny"
                 }
             )
