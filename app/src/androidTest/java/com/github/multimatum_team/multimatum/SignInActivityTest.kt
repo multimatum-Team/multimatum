@@ -4,12 +4,9 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.BundleMatchers
-import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.firebase.ui.auth.KickoffActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
@@ -57,7 +54,7 @@ class SignInActivityTest {
             onView(withId(R.id.sign_in_button)).perform(click())
             Intents.intended(allOf(
                 IntentMatchers.toPackage("com.github.multimatum_team.multimatum"),
-                IntentMatchers.hasComponent("com.firebase.ui.auth.KickoffActivity")
+                IntentMatchers.hasComponent(com.firebase.ui.auth.KickoffActivity::class.qualifiedName)
             ))
         }
     }
