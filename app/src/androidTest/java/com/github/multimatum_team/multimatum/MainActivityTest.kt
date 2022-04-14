@@ -187,7 +187,7 @@ class MainActivityTest {
         val allowPermission = UiDevice.getInstance(instrumentation).findObject(UiSelector()
             .clickable(true)
             .checkable(false)
-            .instance(2)
+            .instance(3)
         )
         if (allowPermission.exists()) {
             allowPermission.click()
