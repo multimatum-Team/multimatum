@@ -10,7 +10,7 @@
       android:layout_height="match_parent"
       android:layout_alignParentStart="true"
       android:layout_alignParentTop="true"
-      android:background="?attr/colorOnSecondary"
+      android:background="?attr/backgroundColor"
       android:orientation="horizontal"
       android:gravity="center_vertical">
 
