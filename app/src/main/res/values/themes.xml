@@ -16,7 +16,7 @@
         <item name="android:timePickerStyle">@style/myTimePickerStyle</item>
         <!-- Tertiary brand color. -->
         <item name="colorTertiary">@color/settings_icons_gray</item>
-        <item name="backgroundColor">@color/white</item>
+        <item name="background">@color/white</item>
     </style>
     <style name="myDatePickerStyle" parent="android:Widget.Material.DatePicker">
         <item name="android:datePickerMode">spinner</item>
