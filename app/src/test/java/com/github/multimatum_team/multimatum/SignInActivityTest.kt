@@ -20,18 +20,25 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @RunWith(AndroidJUnit4::class)
 @UninstallModules(RepositoryModule::class)
 @HiltAndroidTest
+@ExperimentalCoroutinesApi
 class SignInActivityTest {
+    @Inject
+    lateinit var authRepository: AuthRepository
+
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
@@ -47,7 +54,8 @@ class SignInActivityTest {
     }
 
     @Test
-    fun launchSignInIntentWhenClickingButton() {
+    fun launchSignInIntentWhenClickingButton() = runTest {
+        authRepository.signOut()
         ActivityScenario.launch(SignInActivity::class.java)
         onView(withId(R.id.sign_in_button)).perform(click())
         Intents.intended(IntentMatchers.toPackage("com.github.multimatum_team.multimatum"))
