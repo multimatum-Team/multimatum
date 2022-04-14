@@ -61,7 +61,6 @@ class MainActivityTest {
     fun init() {
         Intents.init()
         hiltRule.inject()
-        grantPermission()
     }
 
     @After
@@ -125,24 +124,24 @@ class MainActivityTest {
         )
     }
 
-    @Test
-    fun buttonOpensQrCodeReader() {
-        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
-        grantPermission()
-        Intents.intended(
-            allOf(
-                hasComponent(QRCodeReaderActivity::class.java.name),
-                toPackage("com.github.multimatum_team.multimatum")
-            )
-        )
-    }
+//    @Test
+//    fun buttonOpensQrCodeReader() {
+//        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+//        grantPermission()
+//        Intents.intended(
+//            allOf(
+//                hasComponent(QRCodeReaderActivity::class.java.name),
+//                toPackage("com.github.multimatum_team.multimatum")
+//            )
+//        )
+//    }
 
-    @Test
-    fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
-        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
-        denyPermission()
-        onView(withId(R.id.goToQrCodeReader)).check(matches(ViewMatchers.isDisplayed()))
-    }
+//    @Test
+//    fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
+//        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+//        denyPermission()
+//        onView(withId(R.id.goToQrCodeReader)).check(matches(ViewMatchers.isDisplayed()))
+//    }
 
     @Test
     fun swipeDeadlineTwiceShouldDelete() {
