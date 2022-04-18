@@ -61,14 +61,6 @@ class DeadlineListViewModel @Inject constructor(
         _deadlines
 
     /**
-     * get a deadline from the repository.
-     */
-    fun getDeadline(id: DeadlineID): Deadline =
-        _deadlines.value!![id]!!
-
-
-
-    /**
      * Add a new deadline to the repository.
      */
     fun addDeadline(deadline: Deadline) = viewModelScope.launch {

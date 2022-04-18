@@ -42,13 +42,12 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private lateinit var doneButton: CheckBox
 
     // Set them on default value, waiting the fetch of the deadlines
-    private var date: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
+    private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
     private var state: DeadlineState = DeadlineState.TODO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
-        var title: String
 
         // Recuperate the necessary TextView
         titleView = findViewById(R.id.deadline_details_activity_title)
@@ -61,20 +60,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // As the viewModel doesn't recuperate immediately the deadlines,
         // we need an update the moment they are fetched
-        deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
-            // Recuperate the data from the deadline
-            val deadline = deadlines[id]!!
-            date = deadline.dateTime
-            state = deadline.state
-            title = deadline.title
-
-            // Update the data shown
-            dateView.text =
-                getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
-            titleView.text = SpannableStringBuilder(title)
-            doneButton.isChecked = (state == DeadlineState.DONE)
-            updateDetail()
-        }
+        setDeadlineObserver()
 
         // Set the View to be unmodifiable at the start and remove displacement of the texts
         fixArrangement()
@@ -94,11 +80,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     fun changeDateAndTime(view: View) {
         val dateSetListener =
             DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                date = LocalDateTime.of(
+                dateTime = LocalDateTime.of(
                     // monthOfYear is based on an enum that begin with 0
                     // thus we need to increase it by one to have the true date
                     year, monthOfYear + 1, dayOfMonth,
-                    date.hour, date.minute
+                    dateTime.hour, dateTime.minute
                 )
                 selectTime()
             }
@@ -106,7 +92,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Prepare the datePickerDialog
         val datePickerDialog = DatePickerDialog(
             this, dateSetListener,
-            date.year, date.month.ordinal, date.dayOfMonth
+            dateTime.year, dateTime.month.ordinal, dateTime.dayOfMonth
         )
         // Show the Dialog on the screen
         datePickerDialog.show()
@@ -135,7 +121,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         if (!editMode) {
             deadlineListViewModel.modifyDeadline(
                 id,
-                Deadline(titleView.text.toString(), state, date)
+                Deadline(titleView.text.toString(), state, dateTime)
             )
         }
 
@@ -167,6 +153,26 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         dateView.setBackgroundResource(android.R.color.transparent)
     }
 
+    // This function setup the observer to update the information shown when the
+    // deadline are updated
+    private fun setDeadlineObserver(){
+        deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
+            // Recuperate the data from the deadline
+            val deadline = deadlines[id]!!
+            dateTime = deadline.dateTime
+            state = deadline.state
+            val title = deadline.title
+
+            // Update the data shown
+            dateView.text =
+                getString(R.string.DueTheXatX, dateTime.toLocalDate(), dateTime.toLocalTime())
+            titleView.text = SpannableStringBuilder(title)
+            doneButton.isChecked = (state == DeadlineState.DONE)
+            updateDetail()
+        }
+
+    }
+
     // Update the information shown in the TextView detailView
     private fun updateDetail() {
         val actualDate = clockService.now()
@@ -174,20 +180,20 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             state == DeadlineState.DONE -> {
                 detailView.text = getString(R.string.done)
             }
-            date.isBefore(actualDate) -> {
+            dateTime.isBefore(actualDate) -> {
                 detailView.text = getString(R.string.isAlreadyDue)
             }
             else -> {
-                val remainingTime = actualDate.until(date, ChronoUnit.DAYS)
+                val remainingTime = actualDate.until(dateTime, ChronoUnit.DAYS)
                 detailView.text = if (remainingTime <= 0) {
                     getString(
                         R.string.DueInXHours,
-                        actualDate.until(date, ChronoUnit.HOURS).toString()
+                        actualDate.until(dateTime, ChronoUnit.HOURS).toString()
                     )
                 } else {
                     getString(
                         R.string.DueInXDays,
-                        actualDate.until(date, ChronoUnit.DAYS).toString()
+                        actualDate.until(dateTime, ChronoUnit.DAYS).toString()
                     )
                 }
             }
@@ -199,13 +205,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Set what will happen when a time is selected
         val timeSetListener =
             TimePickerDialog.OnTimeSetListener { _, hoursOfDay, minutes ->
-                date = LocalDateTime.of(
-                    date.year, date.monthValue, date.dayOfMonth,
+                dateTime = LocalDateTime.of(
+                    dateTime.year, dateTime.monthValue, dateTime.dayOfMonth,
                     hoursOfDay, minutes
                 )
 
                 dateView.text =
-                    getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
+                    getString(R.string.DueTheXatX, dateTime.toLocalDate(), dateTime.toLocalTime())
 
                 updateDetail()
             }
@@ -213,7 +219,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Prepare the datePickerDialog
         val timePickerDialog = TimePickerDialog(
             this, timeSetListener,
-            date.hour, date.minute, true
+            dateTime.hour, dateTime.minute, true
         )
 
         // Show the Dialog on the screen
