@@ -27,7 +27,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -56,8 +55,8 @@ class MainSettingsActivityTest {
 
     @Before
     fun init() {
-        hiltRule.inject()
         Intents.init()
+        hiltRule.inject()
     }
 
     @After
@@ -86,10 +85,12 @@ class MainSettingsActivityTest {
     @Test
     fun launchProfileActivityIntent() = runTest {
         (authRepository as MockAuthRepository).signIn("john.doe@example.com")
-        ActivityScenario.launch(MainSettingsActivity::class.java)
-        onView(withId(R.id.main_settings_account_button)).perform(click())
-        Intents.intended(IntentMatchers.toPackage("com.github.multimatum_team.multimatum"))
-        authRepository.signOut()
+        val scenario = ActivityScenario.launch(MainSettingsActivity::class.java)
+        scenario.use {
+            onView(withId(R.id.main_settings_account_button)).perform(click())
+            Intents.intended(IntentMatchers.toPackage("com.github.multimatum_team.multimatum"))
+            authRepository.signOut()
+        }
     }
 
     @Test

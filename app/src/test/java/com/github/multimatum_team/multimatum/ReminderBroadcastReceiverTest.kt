@@ -4,7 +4,9 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -20,7 +22,13 @@ class ReminderBroadcastReceiverTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
+        Intents.init()
         context = ApplicationProvider.getApplicationContext<Context>()
+    }
+
+    @After
+    fun teardown() {
+        Intents.release()
     }
 
     /**
@@ -32,7 +40,7 @@ class ReminderBroadcastReceiverTest {
             ApplicationProvider.getApplicationContext<Context>()
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val shadowNotificationManager: ShadowNotificationManager = shadowOf(notificationManager)
-        val reminderBroadcastReceiver: ReminderBroadcastReceiver = ReminderBroadcastReceiver()
+        val reminderBroadcastReceiver = ReminderBroadcastReceiver()
         reminderBroadcastReceiver.onReceive(context, Intent())
 
         assertEquals(1, shadowNotificationManager.size())
