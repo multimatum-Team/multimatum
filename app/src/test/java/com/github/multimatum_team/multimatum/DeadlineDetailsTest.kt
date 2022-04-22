@@ -16,8 +16,12 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.AuthRepository
+import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockClockService
+import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,14 +38,15 @@ import org.junit.runner.RunWith
 import org.robolectric.shadows.ShadowAlertDialog
 import java.time.LocalDateTime
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 /**
  * Tests for the DeadlineDetailsActivity class
  */
-@RunWith(AndroidJUnit4::class)
+@UninstallModules(RepositoryModule::class,ClockModule::class)
 @HiltAndroidTest
-@UninstallModules(ClockModule::class)
+@RunWith(AndroidJUnit4::class)
 class DeadlineDetailsTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
@@ -63,10 +68,7 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline not yet due or done, the activity should display it`() {
-        val intent = DeadlineDetailsActivity.newIntent(
-            ApplicationProvider.getApplicationContext(),
-            "1", Deadline("Test 1", DeadlineState.TODO, clockService.now().plusDays(7))
-        )
+        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
@@ -86,10 +88,7 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline already done, the activity should display it`() {
-        val intent = DeadlineDetailsActivity.newIntent(
-            ApplicationProvider.getApplicationContext(),
-            "2", Deadline("Test 2", DeadlineState.DONE, clockService.now().plusDays(7))
-        )
+        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
@@ -109,10 +108,7 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline already due, the activity should display it`() {
-        val intent = DeadlineDetailsActivity.newIntent(
-            ApplicationProvider.getApplicationContext(),
-            "3", Deadline("Test 3", DeadlineState.TODO, clockService.now().minusDays(2))
-        )
+        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "2")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
@@ -121,7 +117,7 @@ class DeadlineDetailsTest {
                     matches(
                         withText(
                             "Due the ${clockService.now().minusDays(2).toLocalDate()} " +
-                                    "at ${clockService.now().plusDays(7).toLocalTime()}"
+                                    "at ${clockService.now().minusDays(2).toLocalTime()}"
                         )
                     )
                 )
@@ -132,18 +128,14 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Test launching intent to go to generator`() {
-        val intent = DeadlineDetailsActivity.newIntent(
-            ApplicationProvider.getApplicationContext(),
-            "4",
-            Deadline("Test 4", DeadlineState.TODO, clockService.now().minusDays(1))
-        )
+        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.QRCodeButton)).perform(click())
             Intents.intending(
                 allOf(
                     hasComponent(QRGeneratorActivity::class.java.name),
-                    hasExtra("com.github.multimatum_team.multimatum.deadline.details.id", "4"),
+                    hasExtra("com.github.multimatum_team.multimatum.deadline.details.id", "3"),
                     toPackage("com.github.multimatum_team.multimatum")
                 )
             )
@@ -152,10 +144,7 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline with only a few hours left, the activity should display it`() {
-        val intent = DeadlineDetailsActivity.newIntent(
-            ApplicationProvider.getApplicationContext(),
-            "4", Deadline("Test 4", DeadlineState.TODO, clockService.now().plusHours(6))
-        )
+        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 4")))
@@ -174,11 +163,7 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline, we can modify it`() {
-        val intent = DeadlineDetailsActivity.newIntent(
-            ApplicationProvider.getApplicationContext(),
-            "4",
-            Deadline("Test 4", DeadlineState.TODO, clockService.now())
-        )
+        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             // Go in Modify Mode
@@ -216,7 +201,25 @@ class DeadlineDetailsTest {
             //Go back to Normal Mode
             onView(withId(R.id.deadline_details_activity_modify)).perform(click())
         }
+    }
 
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestDeadlineRepositoryModule {
+        @Singleton
+        @Provides
+        fun provideDeadlineRepository(): DeadlineRepository =
+            MockDeadlineRepository(listOf(
+                Deadline("Test 1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 0, 0)),
+                Deadline("Test 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 19, 0, 0)),
+                Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 10, 0, 0)),
+                Deadline("Test 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 6, 0))
+            ))
+
+        @Singleton
+        @Provides
+        fun provideAuthRepository(): AuthRepository =
+            MockAuthRepository()
     }
 
     @Module

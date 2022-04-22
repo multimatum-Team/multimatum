@@ -3,7 +3,6 @@ package com.github.multimatum_team.multimatum
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.CheckBox
@@ -49,7 +48,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             getString(R.string.notify_before, "1 day")
         findViewById<CheckBox>(R.id.radio_notification_3d).text =
             getString(R.string.notify_before, "3 days")
-        selectedDate = clockService.now().truncatedTo(ChronoUnit.HOURS)
+        selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         textDate.text = selectedDate.toLocalDate().toString()
         textTime.text = selectedDate.toLocalTime().toString()
     }
@@ -107,7 +106,7 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     }
 
-    val checkBoxIdTime = mapOf<Int, Long>(
+    private val checkBoxIdTime = mapOf(
         R.id.radio_notification_1h to Duration.ofHours(1).toMillis(),
         R.id.radio_notification_5h to Duration.ofHours(5).toMillis(),
         R.id.radio_notification_1d to Duration.ofDays(1).toMillis(),

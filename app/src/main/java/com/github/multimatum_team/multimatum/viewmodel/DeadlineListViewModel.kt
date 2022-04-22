@@ -9,6 +9,7 @@ import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -71,5 +72,12 @@ class DeadlineListViewModel @Inject constructor(
      */
     fun deleteDeadline(id: DeadlineID) = viewModelScope.launch {
         deadlineRepository.delete(id)
+    }
+
+    /**
+     * Modify a deadline from the repository.
+     */
+    fun modifyDeadline(id: DeadlineID, newDeadline: Deadline) = viewModelScope.launch {
+        deadlineRepository.modify(id, newDeadline)
     }
 }

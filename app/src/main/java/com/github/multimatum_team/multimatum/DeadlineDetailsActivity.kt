@@ -9,11 +9,13 @@ import android.widget.TextView
 import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -31,24 +33,20 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     lateinit var id: DeadlineID
     private var editMode: Boolean = true
+    private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
     private lateinit var titleView: EditText
     private lateinit var dateView: TextView
     private lateinit var detailView: TextView
     private lateinit var doneButton: CheckBox
 
-    private lateinit var date: LocalDateTime
-    private lateinit var state: DeadlineState
+    // Set them on default value, waiting the fetch of the deadlines
+    private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
+    private var state: DeadlineState = DeadlineState.TODO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
-
-        // Recuperate the Deadline from the intent
-        val title = intent.getStringExtra(EXTRA_TITLE)
-        id = intent.getStringExtra(EXTRA_ID) as DeadlineID
-        date = intent.getSerializableExtra(EXTRA_DATE) as LocalDateTime
-        state = intent.getSerializableExtra(EXTRA_STATE) as DeadlineState
 
         // Recuperate the necessary TextView
         titleView = findViewById(R.id.deadline_details_activity_title)
@@ -56,15 +54,17 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         detailView = findViewById(R.id.deadline_details_activity_done_or_due)
         doneButton = findViewById(R.id.deadline_details_activity_set_done)
 
-        // Set the texts for the title and the date of the deadline
-        titleView.text = SpannableStringBuilder(title)
-        dateView.text = getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
+        // Recuperate the id of the deadline
+        id = intent.getStringExtra(EXTRA_ID) as DeadlineID
+
+        // As the viewModel doesn't recuperate immediately the deadlines,
+        // we need an update the moment they are fetched
+        setDeadlineObserver()
 
         // Set the View to be unmodifiable at the start and remove displacement of the texts
         fixArrangement()
 
         // Setup the CheckBox to be checked if done
-        doneButton.isChecked = (state == DeadlineState.DONE)
         doneButton.setOnCheckedChangeListener { _, isChecked ->
             state = if (isChecked) DeadlineState.DONE else DeadlineState.TODO
             updateDetail()
@@ -79,11 +79,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     fun changeDateAndTime(view: View) {
         val dateSetListener =
             DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                date = LocalDateTime.of(
+                dateTime = LocalDateTime.of(
                     // monthOfYear is based on an enum that begin with 0
                     // thus we need to increase it by one to have the true date
                     year, monthOfYear + 1, dayOfMonth,
-                    date.hour, date.minute
+                    dateTime.hour, dateTime.minute
                 )
                 selectTime()
             }
@@ -91,7 +91,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Prepare the datePickerDialog
         val datePickerDialog = DatePickerDialog(
             this, dateSetListener,
-            date.year, date.month.ordinal, date.dayOfMonth
+            dateTime.year, dateTime.month.ordinal, dateTime.dayOfMonth
         )
         // Show the Dialog on the screen
         datePickerDialog.show()
@@ -103,18 +103,27 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.deadline_details_activity_modify)
             .setImageResource(
                 if (editMode) android.R.drawable.checkbox_on_background
-                else android.R.drawable.ic_menu_manage)
+                else android.R.drawable.ic_menu_manage
+            )
 
         dateView.setBackgroundResource(
             if (editMode) android.R.drawable.btn_default
-            else android.R.color.transparent)
+            else android.R.color.transparent
+        )
 
         dateView.isClickable = editMode
 
         doneButton.isClickable = editMode
         doneButton.visibility = if (editMode) View.VISIBLE else View.GONE
 
-        //TODO: modify the deadline in the repository
+        // Modify the deadline in the database when you quit the edition mode
+        if (!editMode) {
+            deadlineListViewModel.modifyDeadline(
+                id,
+                Deadline(titleView.text.toString(), state, dateTime)
+            )
+        }
+
         editMode = editMode.not()
     }
 
@@ -140,6 +149,26 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         dateView.setBackgroundResource(android.R.color.transparent)
     }
 
+    // This function setup the observer to update the information shown when the
+    // deadline are updated
+    private fun setDeadlineObserver(){
+        deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
+            // Recuperate the data from the deadline
+            val deadline = deadlines[id]!!
+            dateTime = deadline.dateTime
+            state = deadline.state
+            val title = deadline.title
+
+            // Update the data shown
+            dateView.text =
+                getString(R.string.DueTheXatX, dateTime.toLocalDate(), dateTime.toLocalTime())
+            titleView.text = SpannableStringBuilder(title)
+            doneButton.isChecked = (state == DeadlineState.DONE)
+            updateDetail()
+        }
+
+    }
+
     // Update the information shown in the TextView detailView
     private fun updateDetail() {
         val actualDate = clockService.now()
@@ -147,20 +176,20 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             state == DeadlineState.DONE -> {
                 detailView.text = getString(R.string.done)
             }
-            date.isBefore(actualDate) -> {
+            dateTime.isBefore(actualDate) -> {
                 detailView.text = getString(R.string.isAlreadyDue)
             }
             else -> {
-                val remainingTime = actualDate.until(date, ChronoUnit.DAYS)
+                val remainingTime = actualDate.until(dateTime, ChronoUnit.DAYS)
                 detailView.text = if (remainingTime <= 0) {
                     getString(
                         R.string.DueInXHours,
-                        actualDate.until(date, ChronoUnit.HOURS).toString()
+                        actualDate.until(dateTime, ChronoUnit.HOURS).toString()
                     )
                 } else {
                     getString(
                         R.string.DueInXDays,
-                        actualDate.until(date, ChronoUnit.DAYS).toString()
+                        actualDate.until(dateTime, ChronoUnit.DAYS).toString()
                     )
                 }
             }
@@ -172,12 +201,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Set what will happen when a time is selected
         val timeSetListener =
             TimePickerDialog.OnTimeSetListener { _, hoursOfDay, minutes ->
-                date = LocalDateTime.of(
-                    date.year, date.monthValue, date.dayOfMonth,
-                    hoursOfDay, minutes)
+                dateTime = LocalDateTime.of(
+                    dateTime.year, dateTime.monthValue, dateTime.dayOfMonth,
+                    hoursOfDay, minutes
+                )
 
                 dateView.text =
-                    getString(R.string.DueTheXatX, date.toLocalDate(), date.toLocalTime())
+                    getString(R.string.DueTheXatX, dateTime.toLocalDate(), dateTime.toLocalTime())
 
                 updateDetail()
             }
@@ -185,10 +215,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Prepare the datePickerDialog
         val timePickerDialog = TimePickerDialog(
             this, timeSetListener,
-            date.hour, date.minute, true)
+            dateTime.hour, dateTime.minute, true
+        )
 
-            // Show the Dialog on the screen
-            timePickerDialog.show()
+        // Show the Dialog on the screen
+        timePickerDialog.show()
 
     }
 
@@ -205,21 +236,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_ID =
             "com.github.multimatum_team.deadline.details.id"
-        private const val EXTRA_TITLE =
-            "com.github.multimatum_team.multimatum.deadline.details.title"
-        private const val EXTRA_DATE = "com.github.multimatum_team.multimatum.deadline.details.date"
-        private const val EXTRA_STATE =
-            "com.github.multimatum_team.multimatum.deadline.details.state"
 
         // Launch an Intent to access this activity with a Deadline data
-        fun newIntent(context: Context, id: DeadlineID, deadline: Deadline): Intent {
+        fun newIntent(context: Context, id: DeadlineID): Intent {
             val detailIntent = Intent(context, DeadlineDetailsActivity::class.java)
-
             detailIntent.putExtra(EXTRA_ID, id)
-            detailIntent.putExtra(EXTRA_TITLE, deadline.title)
-            detailIntent.putExtra(EXTRA_DATE, deadline.dateTime)
-            detailIntent.putExtra(EXTRA_STATE, deadline.state)
-
             return detailIntent
         }
 
