@@ -16,6 +16,9 @@ import javax.inject.Inject
 @HiltAndroidApp
 class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
 
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
     // This class is required by Hilt
     // It is also useful to perform actions when the app is started
 
@@ -62,9 +65,6 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
     override fun onActivityDestroyed(activity: Activity) {
         logFunctionCall("destroyed ${activity.localClassName}")
     }
-
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
 
     private fun startProcrastinationDetectorIfNeeded() {
         logFunctionCall()
