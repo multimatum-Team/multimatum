@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.TextView
 import android.text.SpannableStringBuilder
@@ -135,9 +134,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             if (edit) android.R.drawable.edit_text
             else android.R.color.transparent
         )
-        titleView.setTextColor(Color.BLACK)
-
-
     }
 
     // When we go the first time to the Modify Mode, it happened that the TextView

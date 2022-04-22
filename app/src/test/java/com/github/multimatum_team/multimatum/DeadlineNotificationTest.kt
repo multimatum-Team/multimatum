@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -18,10 +19,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import org.robolectric.Shadows
 import org.robolectric.shadows.ShadowAlarmManager
@@ -52,6 +50,7 @@ class DeadlineNotificationTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
+        Intents.init()
         context = ApplicationProvider.getApplicationContext<Context>()
         deadlineNotification = DeadlineNotification()
         hiltRule.inject()
@@ -60,6 +59,11 @@ class DeadlineNotificationTest {
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         shadowNotificationManager = Shadows.shadowOf(notificationManager)
 
+    }
+
+    @After
+    fun release() {
+        Intents.release()
     }
 
     /**
@@ -85,7 +89,7 @@ class DeadlineNotificationTest {
      */
     @Test
     fun testSetNotification() {
-        val reminderBroadcastReceiver: ReminderBroadcastReceiver = ReminderBroadcastReceiver()
+        val reminderBroadcastReceiver = ReminderBroadcastReceiver()
         reminderBroadcastReceiver.onReceive(context, Intent())
 
         Assert.assertEquals(1, shadowNotificationManager.size())
@@ -118,7 +122,7 @@ class DeadlineNotificationTest {
         val deadlineTime = clockService.now().plusDays(3)
         val notif1: Long = 1000
         val notif2: Long = Duration.ofDays(1).toMillis()
-        var notificationTimes = arrayListOf<Long>(notif1, notif2)
+        val notificationTimes = arrayListOf<Long>(notif1, notif2)
         val deadline = Deadline(
             "Some title",
             DeadlineState.TODO,
@@ -179,7 +183,7 @@ class DeadlineNotificationTest {
         val deadlineTime = clockService.now().plusDays(3)
         val notif1: Long = 1000
         val notif2: Long = Duration.ofDays(1).toMillis()
-        var notificationTimes = arrayListOf<Long>(notif1, notif2)
+        val notificationTimes = arrayListOf<Long>(notif1, notif2)
         val deadline = Deadline(
             "Some title",
             DeadlineState.TODO,

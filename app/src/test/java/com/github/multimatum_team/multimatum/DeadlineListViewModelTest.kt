@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -17,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -42,11 +44,17 @@ class DeadlineListViewModelTest {
 
     @Before
     fun setUp() {
+        Intents.init()
         Dispatchers.setMain(UnconfinedTestDispatcher())
         hiltRule.inject()
         authRepository = MockAuthRepository()
         deadlineRepository = MockDeadlineRepository(deadlines)
         viewModel = DeadlineListViewModel(authRepository, deadlineRepository)
+    }
+
+    @After
+    fun teardown() {
+        Intents.release()
     }
 
     // Set executor to be synchronous so that LiveData's notify their observers immediately and

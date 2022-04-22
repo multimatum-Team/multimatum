@@ -21,23 +21,33 @@ import com.github.multimatum_team.multimatum.util.GenerateQRCodeUtility
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 
 /**
  * Tests for the QRGenerator class.
  */
 @RunWith(AndroidJUnit4::class)
-class QRGeneratorActivityTest{
+class QRGeneratorActivityTest {
     @get:Rule
     val activityRule = ActivityScenarioRule(QRGeneratorActivity::class.java)
 
+    @Before
+    fun init() {
+        Intents.init()
+    }
+
+    @After
+    fun release() {
+        Intents.release()
+    }
+
     @Test
     fun goToQRTest() {
-        Intents.init()
         Espresso.onView(ViewMatchers.withId(R.id.returnToMainFromQR)).perform(ViewActions.click())
         Intents.intended(
             Matchers.allOf(
@@ -45,15 +55,18 @@ class QRGeneratorActivityTest{
                 IntentMatchers.toPackage("com.github.multimatum_team.multimatum")
             )
         )
-        Intents.release()
     }
 
     @Test
     fun qRDisplayTest() {
-        val intent = Intent(ApplicationProvider.getApplicationContext(),
-            QRGeneratorActivity::class.java).putExtra(EXTRA_ID, "1")
-        ActivityScenario.launch<QRGeneratorActivity>(intent)
-        Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode("1")))
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            QRGeneratorActivity::class.java
+        ).putExtra(EXTRA_ID, "1")
+        val scenario = ActivityScenario.launch<QRGeneratorActivity>(intent)
+        scenario.use {
+            Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode("1")))
+        }
     }
 
     /*
@@ -65,7 +78,7 @@ class QRGeneratorActivityTest{
         return object : BoundedMatcher<View?, ImageView>(ImageView::class.java) {
             override fun matchesSafely(item: ImageView): Boolean {
                 val drawable: Drawable = item.drawable
-                require(drawable is BitmapDrawable){"The provided ImageView does not contain a bitmap"}
+                require(drawable is BitmapDrawable) { "The provided ImageView does not contain a bitmap" }
                 val actualContent = GenerateQRCodeUtility.extractContent(drawable.bitmap)
                 return expectedContent == actualContent
             }

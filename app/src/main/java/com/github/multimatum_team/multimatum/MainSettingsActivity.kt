@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
@@ -62,16 +63,16 @@ class MainSettingsActivity : AppCompatActivity() {
     // sets all the necessary listeners on the UI widgets
     private fun setWidgetListeners() {
         darkModeEnabledButton.setOnCheckedChangeListener { _, newState ->
+            when (newState) {
+                true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                false -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
             writeNewState(DARK_MODE_PREF_KEY, newState)
         }
         notifEnabledButton.setOnCheckedChangeListener { _, newState ->
             writeNewState(NOTIF_ENABLED_PREF_KEY, newState)
         }
         procrastinationDetectEnabledButton.setOnCheckedChangeListener { _, newState ->
-            when (newState) {
-                true -> ProcrastinationDetectorService.launch(this)
-                false -> ProcrastinationDetectorService.stop(this)
-            }
             writeNewState(PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY, newState)
         }
     }
@@ -106,6 +107,8 @@ class MainSettingsActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainSettingsActivity"
+        private const val BUTTON_ALPHA_NORMAL = 1F
+        private const val BUTTON_ALPHA_DISABLED = 0.5F
 
         /**
          * Key for the storage of whether dark mode is enabled in SharedPreferences
@@ -125,8 +128,6 @@ class MainSettingsActivity : AppCompatActivity() {
         const val PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY =
             "com.github.multimatum_team.multimatum.MainSettingsActivity.ProcrastinationFighterEnabled"
 
-        private const val BUTTON_ALPHA_NORMAL = 1F
-        private const val BUTTON_ALPHA_DISABLED = 0.5F
     }
 
     fun goToAccountSettings(view: View) {

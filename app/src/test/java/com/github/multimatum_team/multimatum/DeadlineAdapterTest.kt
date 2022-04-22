@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ListView
 import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
@@ -21,10 +22,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -46,6 +44,7 @@ class DeadlineAdapterTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
+        Intents.init()
         hiltRule.inject()
         context = ApplicationProvider.getApplicationContext()
         adapter = DeadlineAdapter(context!!)
@@ -56,6 +55,11 @@ class DeadlineAdapterTest {
             "4" to Deadline("Number 4", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 13, 0))
         )
         adapter.setDeadlines(deadlines)
+    }
+
+    @After
+    fun teardown() {
+        Intents.release()
     }
 
     @Test
