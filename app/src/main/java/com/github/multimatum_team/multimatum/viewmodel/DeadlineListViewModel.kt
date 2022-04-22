@@ -10,6 +10,7 @@ import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 /**
@@ -29,9 +30,8 @@ class DeadlineListViewModel @Inject constructor(
     init {
         // Initialize the deadline repository with the currently logged in user, then fetch the data
         // to initialize the deadline list
+        deadlineRepository.setUser(runBlocking { authRepository.getCurrentUser() })
         viewModelScope.launch {
-            val user = authRepository.getCurrentUser()
-            deadlineRepository.setUser(user)
             _deadlines.value = deadlineRepository.fetchAll()
         }
 

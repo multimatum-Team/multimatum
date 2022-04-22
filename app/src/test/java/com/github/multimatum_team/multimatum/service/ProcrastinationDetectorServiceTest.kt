@@ -117,10 +117,14 @@ class ProcrastinationDetectorServiceTest {
         )
         val controller = createTestServiceController()
         val service = controller.get()
-        simulate2successiveToastEvents(
-            0f, 0f, 0f, 2_000_000_000,     // 1st event
-            10f, 10f, 10f, 5_000_000_000,  // 2nd event
-            mockSensorEvent, service
+        simulateEvents(
+            listOf(
+                EventToSimulate(0f, 0f, 0f, 8_000_000_000),
+                EventToSimulate(0f, 0f, 0f, 41_000_000_000),
+                EventToSimulate(10f, 10f, 10f, 44_000_000_000),
+                EventToSimulate(0f, 0f, 0f, 47_000_000_000),
+                EventToSimulate(10f, 10f, 0f, 50_000_000_000),
+            ), mockSensorEvent, service
         )
         assertThatLastToastTextWas(applicationContext.getString(R.string.stop_procrastinating_msg))
         destroyTestServiceController(controller)
@@ -135,10 +139,14 @@ class ProcrastinationDetectorServiceTest {
         )
         val controller = createTestServiceController()
         val service = controller.get()
-        simulate2successiveToastEvents(
-            0f, 0f, 0f, 2_000_000_000,                  // 1st event
-            TINY_CHANGE, TINY_CHANGE, TINY_CHANGE, 5_000_000_000,  // 2nd event
-            mockSensorEvent, service
+        simulateEvents(
+            listOf(
+                EventToSimulate(0f, 0f, 0f, 8_000_000_000),
+                EventToSimulate(0f, 0f, 0f, 41_000_000_000),
+                EventToSimulate(10f, 10f, 10f, 44_000_000_000),
+                EventToSimulate(0f, 0f, 0f, 47_000_000_000),
+                EventToSimulate(TINY_CHANGE, TINY_CHANGE, TINY_CHANGE, 50_000_000_000),
+            ), mockSensorEvent, service
         )
         assertThatLastToastTextWas(FAKE_TOAST_TEXT)
         destroyTestServiceController(controller)
@@ -195,15 +203,19 @@ class ProcrastinationDetectorServiceTest {
         )
         val controller = createTestServiceController()
         val service = controller.get()
-        simulate2successiveToastEvents(
-            0f, 0f, 0f, 2_000_000_000,     // 1st event
-            10f, 10f, 10f, 5_000_000_000,  // 2nd event
-            mockSensorEvent, service
+        simulateEvents(
+            listOf(
+                EventToSimulate(0f, 0f, 0f, 8_000_000_000),
+                EventToSimulate(0f, 0f, 0f, 41_000_000_000),
+                EventToSimulate(10f, 10f, 10f, 44_000_000_000),
+                EventToSimulate(0f, 0f, 0f, 47_000_000_000),
+                EventToSimulate(10f, 10f, 0f, 50_000_000_000),
+            ), mockSensorEvent, service
         )
         assertThatLastToastTextWas(applicationContext.getString(R.string.stop_procrastinating_msg))
 
-        // configure and trigger a 3rd event, with a fake toast to be able to check the last toast
-        configureMockSensorEventFor(mockSensorEvent, 20f, 20f, 20f, 5_000_000_500)
+        // configure and trigger an additional event event, with a fake toast to be able to check the last toast
+        configureMockSensorEventFor(mockSensorEvent, 20f, 20f, 20f, 12_000_000_500)
         makeFakeToast()
         service.onSensorChanged(mockSensorEvent)
 
@@ -221,11 +233,11 @@ class ProcrastinationDetectorServiceTest {
         val service = controller.get()
         val mockSensorEvent: SensorEvent = mock()
         // configure and trigger 1st event
-        configureMockSensorEventFor(mockSensorEvent, 0f, 0f, 0f, 5_000_000_000)
+        configureMockSensorEventFor(mockSensorEvent, 0f, 0f, 0f, 15_000_000_000)
         service.onSensorChanged(mockSensorEvent)
         // configure 2nd event (with invalid data)
         forceSet(mockSensorEvent, "values", floatArrayOf(1f, 2f, 3f, 4f, 5f))
-        forceSet(mockSensorEvent, "timestamp", 10_000_000_000)
+        forceSet(mockSensorEvent, "timestamp", 30_000_000_000)
         assertThrows(IllegalArgumentException::class.java) {
             // trigger 2nd event
             service.onSensorChanged(mockSensorEvent)
@@ -234,30 +246,16 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun launch_should_call_startForegroundService_with_start_action(){
-        launchStopTest(ProcrastinationDetectorService.START_ACTION){
-            ProcrastinationDetectorService.launch(it)
-        }
-    }
-
-    @Test
-    fun stop_should_call_startForegroundService_with_stop_action(){
-        launchStopTest(ProcrastinationDetectorService.STOP_ACTION){
-            ProcrastinationDetectorService.stop(it)
-        }
-    }
-
-    // common function for the tests of launch and stop
-    private fun launchStopTest(expectedIntentAction: String, functionToTest: (Context) -> Unit){
+    fun launch_should_call_startForegroundService_with_start_action() {
         val mockCaller: Context = mock()
         var actualIntent: Intent? = null
         `when`(mockCaller.startForegroundService(any())).then {
             actualIntent = it.getArgument(0)
             null
         }
-        functionToTest(mockCaller)
+        ProcrastinationDetectorService.launch(mockCaller)
         assertNotNull(actualIntent)
-        assertThat(actualIntent!!.action, `is`(expectedIntentAction))
+        assertThat(actualIntent!!.action, `is`(ProcrastinationDetectorService.START_ACTION))
     }
 
     private fun createTestServiceController(): ServiceController<ProcrastinationDetectorService> {
@@ -272,26 +270,29 @@ class ProcrastinationDetectorServiceTest {
         controller.destroy()
     }
 
+    data class EventToSimulate(val x: Float, val y: Float, val z: Float, val timestamp: Long)
+
     /**
      * WARNING this method does not perform any assertion
      *
-     * for a precise description of what it does see the body
+     * simulates the events described in the list and makes a fake toast before the last event
+     * if `makeFakeToastAtLast` is set
      */
-    private fun simulate2successiveToastEvents(
-        x1: Float, y1: Float, z1: Float, timestamp1: Long,  // data for 1st event
-        x2: Float, y2: Float, z2: Float, timestamp2: Long,  // data for 2nd event
-        mockSensorEvent: SensorEvent, service: ProcrastinationDetectorService
+    private fun simulateEvents(
+        events: List<EventToSimulate>,
+        mockSensorEvent: SensorEvent,
+        service: ProcrastinationDetectorService
     ) {
-        // configure and trigger 1st event
-        configureMockSensorEventFor(mockSensorEvent, x1, y1, z1, timestamp1)
-        service.onSensorChanged(mockSensorEvent)
-        // configure 2nd event
-        configureMockSensorEventFor(mockSensorEvent, x2, y2, z2, timestamp2)
-        // make a fake toast: after this method returns last toast can be checked:
-        // if the last toast is the fake one, then no toast was generated by the service
-        makeFakeToast()
-        // trigger 2nd event
-        service.onSensorChanged(mockSensorEvent)
+        var remaining = events.size
+        for (event in events) {
+            remaining -= 1
+            val (x, y, z, timestamp) = event
+            configureMockSensorEventFor(mockSensorEvent, x, y, z, timestamp)
+            if (remaining == 0) {
+                makeFakeToast()
+            }
+            service.onSensorChanged(mockSensorEvent)
+        }
     }
 
     private fun assertThatLastToastTextWas(expectedText: String) {
@@ -313,7 +314,7 @@ class ProcrastinationDetectorServiceTest {
 
     // Set a field in an object, bypassing immutability if needed
     private fun forceSet(obj: Any, fieldName: String, value: Any) {
-        val valuesField = SensorEvent::class.java.getField(fieldName)
+        val valuesField = obj.javaClass.getField(fieldName)
         valuesField.isAccessible = true
         valuesField.set(obj, value)
     }
