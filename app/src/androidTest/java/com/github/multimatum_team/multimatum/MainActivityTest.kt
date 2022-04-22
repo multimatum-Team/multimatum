@@ -14,7 +14,6 @@ import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -165,7 +164,7 @@ class MainActivityTest {
     ListView matcher for size found in:
    https://stackoverflow.com/questions/30361068/assert-proper-number-of-items-in-list-with-espresso
      */
-    private fun withListSize(size: Int): Matcher<in View>? {
+    private fun withListSize(size: Int): Matcher<in View> {
         return object : TypeSafeMatcher<View?>() {
             override fun matchesSafely(view: View?): Boolean {
                 return (view as ListView).count == size

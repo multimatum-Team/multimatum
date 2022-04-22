@@ -40,7 +40,7 @@ class CalendarActivityTest {
     }
 
     @After
-    fun teardown(){
+    fun teardown() {
         Intents.release()
     }
 

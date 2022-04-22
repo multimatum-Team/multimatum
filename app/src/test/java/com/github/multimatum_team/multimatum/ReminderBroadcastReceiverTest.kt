@@ -27,7 +27,7 @@ class ReminderBroadcastReceiverTest {
     }
 
     @After
-    fun teardown(){
+    fun teardown() {
         Intents.release()
     }
 
@@ -40,7 +40,7 @@ class ReminderBroadcastReceiverTest {
             ApplicationProvider.getApplicationContext<Context>()
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val shadowNotificationManager: ShadowNotificationManager = shadowOf(notificationManager)
-        val reminderBroadcastReceiver: ReminderBroadcastReceiver = ReminderBroadcastReceiver()
+        val reminderBroadcastReceiver = ReminderBroadcastReceiver()
         reminderBroadcastReceiver.onReceive(context, Intent())
 
         assertEquals(1, shadowNotificationManager.size())

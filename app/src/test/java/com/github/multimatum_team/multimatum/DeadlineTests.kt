@@ -5,9 +5,7 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
-import org.mockito.kotlin.description
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
 

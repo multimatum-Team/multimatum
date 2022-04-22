@@ -53,7 +53,7 @@ class DeadlineListViewModelTest {
     }
 
     @After
-    fun teardown(){
+    fun teardown() {
         Intents.release()
     }
 

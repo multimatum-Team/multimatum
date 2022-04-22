@@ -52,10 +52,12 @@ class SignInActivityTest {
         val activityScenario = ActivityScenario.launch(SignInActivity::class.java)
         activityScenario.use {
             onView(withId(R.id.sign_in_button)).perform(click())
-            Intents.intended(allOf(
-                IntentMatchers.toPackage("com.github.multimatum_team.multimatum"),
-                IntentMatchers.hasComponent(com.firebase.ui.auth.KickoffActivity::class.qualifiedName)
-            ))
+            Intents.intended(
+                allOf(
+                    IntentMatchers.toPackage("com.github.multimatum_team.multimatum"),
+                    IntentMatchers.hasComponent(com.firebase.ui.auth.KickoffActivity::class.qualifiedName)
+                )
+            )
         }
     }
 

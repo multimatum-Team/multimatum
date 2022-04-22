@@ -62,7 +62,7 @@ class DeadlineNotificationTest {
     }
 
     @After
-    fun release(){
+    fun release() {
         Intents.release()
     }
 
@@ -89,7 +89,7 @@ class DeadlineNotificationTest {
      */
     @Test
     fun testSetNotification() {
-        val reminderBroadcastReceiver: ReminderBroadcastReceiver = ReminderBroadcastReceiver()
+        val reminderBroadcastReceiver = ReminderBroadcastReceiver()
         reminderBroadcastReceiver.onReceive(context, Intent())
 
         Assert.assertEquals(1, shadowNotificationManager.size())
@@ -122,7 +122,7 @@ class DeadlineNotificationTest {
         val deadlineTime = clockService.now().plusDays(3)
         val notif1: Long = 1000
         val notif2: Long = Duration.ofDays(1).toMillis()
-        var notificationTimes = arrayListOf<Long>(notif1, notif2)
+        val notificationTimes = arrayListOf<Long>(notif1, notif2)
         val deadline = Deadline(
             "Some title",
             DeadlineState.TODO,
@@ -183,7 +183,7 @@ class DeadlineNotificationTest {
         val deadlineTime = clockService.now().plusDays(3)
         val notif1: Long = 1000
         val notif2: Long = Duration.ofDays(1).toMillis()
-        var notificationTimes = arrayListOf<Long>(notif1, notif2)
+        val notificationTimes = arrayListOf<Long>(notif1, notif2)
         val deadline = Deadline(
             "Some title",
             DeadlineState.TODO,
