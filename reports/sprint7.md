@@ -42,6 +42,7 @@ I will work on a new feature that provide the user the ability to customize the 
 
 
 ### Louis
+during this week I decided to reorganize file structure with new package to make the project more clea. It was pretty simple but i did bad checkout with git so it takes more times than expected. Then I finnaly make the task to ordrered deadline. I had to refractor large part in the deadline adpater and add a new functino to sort ine the right order. I started to work on the system of recognizing QRCode deadline but it's not ready yet. I will continue this task in the next sprint.
 
 ### Valentin
 My first task for this week was to make the procrastination detector service less sensitive. I introduced some latency between the time
