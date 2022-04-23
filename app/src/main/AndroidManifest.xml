@@ -18,7 +18,7 @@
         android:theme="@style/Theme.Multimatum"
         tools:ignore="ExtraText">
         <activity
-            android:name=".AddDeadlineActivity"
+            android:name=".activity.AddDeadlineActivity"
             android:exported="false" />
 
         <service
@@ -27,31 +27,31 @@
             android:exported="false" />
 
         <activity
-            android:name=".DeadlineDetailsActivity"
+            android:name=".activity.DeadlineDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".CalendarActivity"
+            android:name=".activity.CalendarActivity"
             android:exported="false" />
         <activity
-            android:name=".QRCodeReaderActivity"
+            android:name=".activity.QRCodeReaderActivity"
             android:exported="false" />
-        <activity android:name=".MainSettingsActivity"
+        <activity android:name=".activity.MainSettingsActivity"
             android:exported="false">
         </activity>
         <activity
-            android:name=".SignInActivity"
+            android:name=".activity.SignInActivity"
             android:exported="false"
-            android:parentActivityName=".MainSettingsActivity" />
+            android:parentActivityName=".activity.MainSettingsActivity" />
         <activity
             android:name=".ProfileActivity"
             android:exported="false"
-            android:parentActivityName=".MainSettingsActivity" />
+            android:parentActivityName=".activity.MainSettingsActivity" />
         <activity
-            android:name=".QRGeneratorActivity"
+            android:name=".activity.QRGeneratorActivity"
             android:exported="false"
-            android:parentActivityName=".DeadlineDetailsActivity" />
+            android:parentActivityName=".activity.DeadlineDetailsActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

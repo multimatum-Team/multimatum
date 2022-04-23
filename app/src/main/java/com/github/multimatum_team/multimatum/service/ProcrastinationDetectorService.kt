@@ -14,7 +14,7 @@ import android.os.PowerManager
 import android.widget.Toast
 import com.github.multimatum_team.multimatum.LogUtil.debugLog
 import com.github.multimatum_team.multimatum.LogUtil.logFunctionCall
-import com.github.multimatum_team.multimatum.MainSettingsActivity
+import com.github.multimatum_team.multimatum.activity.MainSettingsActivity
 import com.github.multimatum_team.multimatum.R
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
