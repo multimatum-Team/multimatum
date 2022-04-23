@@ -16,6 +16,8 @@ the stability of the CI.
 ### Joseph
 
 ### Lenny
+During this week, I work on notifications (again...). With the addition of shared deadline and users, we figured out that it was too dangerous to have notifications shared with other deadline's users. So I rework notifications to make them local through a storage in shared preferences. Then I set up functions to ensure that notifications are listenning to modification/addition/deletion of the deadline and are updated accordingly. Time estimation were ok and we have now a functionnal, safe and reliable (regarding the non-exhaustive test I've done) notification system.
+Yet notifications are set when creating a new deadline, next week I'll work on having a menu that allow user to modify those notifications.
 
 ### Léo
 
