@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
@@ -131,8 +133,6 @@ class AddDeadlineActivity : AppCompatActivity() {
         // Getting the entered text
         val titleDeadline = editText.text.toString()
 
-        val notificationsTimes = retrieveNotificationsTimes()
-
         // Check if the title is not empty
         if (titleDeadline == "") {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
@@ -141,18 +141,22 @@ class AddDeadlineActivity : AppCompatActivity() {
             val deadline = Deadline(
                 titleDeadline,
                 DeadlineState.TODO,
-                selectedDate,
-                notificationsTimes = notificationsTimes
+                selectedDate
             )
-            deadlineListViewModel.addDeadline(deadline)
+
+            val notificationsTimes = retrieveNotificationsTimes()
+
+
 
             Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
 
             // Reset the text input for future use
             editText.text = ""
-        }
 
-        //send use back to main activity after adding a deadline
-        finish()
+            deadlineListViewModel.addDeadline(deadline) {
+                DeadlineNotification(this).editNotification(it, deadline, notificationsTimes)
+                finish()
+            }
+        }
     }
 }

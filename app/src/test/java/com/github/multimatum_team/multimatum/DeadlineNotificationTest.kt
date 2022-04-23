@@ -10,7 +10,9 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.MockClockService
 import dagger.Module
 import dagger.Provides
@@ -52,7 +54,7 @@ class DeadlineNotificationTest {
     fun setUp() {
         Intents.init()
         context = ApplicationProvider.getApplicationContext<Context>()
-        deadlineNotification = DeadlineNotification()
+        deadlineNotification = DeadlineNotification(context)
         hiltRule.inject()
         val notificationManager =
             ApplicationProvider.getApplicationContext<Context>()
@@ -78,126 +80,70 @@ class DeadlineNotificationTest {
         )
         channel.description = "channel for reminders notifications"
 
-        deadlineNotification.createNotificationChannel(context)
+        deadlineNotification.createNotificationChannel()
 
         Assert.assertEquals(channel, shadowNotificationManager.notificationChannels[0])
 
     }
 
-    /**
-     * Test if testSetNotification actually set an alarm.
-     */
     @Test
-    fun testSetNotification() {
-        val reminderBroadcastReceiver = ReminderBroadcastReceiver()
-        reminderBroadcastReceiver.onReceive(context, Intent())
-
-        Assert.assertEquals(1, shadowNotificationManager.size())
-        val alarmManager = ApplicationProvider.getApplicationContext<Context>()
-            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    fun testAddAndDeleteNotification(){
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
-        val id = "someFirebaseID"
-        val deadline = Deadline("notifDeadline", DeadlineState.TODO, clockService.now())
-        val timeBeforeDue = Duration.of(5, ChronoUnit.HOURS).toMillis()
 
-        deadlineNotification.setNotification(id, deadline, context, timeBeforeDue)
-
-        val triggerAtTime = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
-            .toEpochMilli() - timeBeforeDue
-        Assert.assertEquals(
-            triggerAtTime,
-            shadowAlarmManager.peekNextScheduledAlarm().triggerAtTime
-        )
-    }
-
-    /**
-     * Test if all notifications are set for a deadline
-     */
-    @Test
-    fun testSetDeadlineNotification() {
-        val alarmManager = ApplicationProvider.getApplicationContext<Context>()
-            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
-        val id = "ASLKJ"
-        val deadlineTime = clockService.now().plusDays(3)
-        val notif1: Long = 1000
-        val notif2: Long = Duration.ofDays(1).toMillis()
-        val notificationTimes = arrayListOf<Long>(notif1, notif2)
-        val deadline = Deadline(
-            "Some title",
-            DeadlineState.TODO,
-            deadlineTime,
-            notificationsTimes = notificationTimes
-        )
-        deadlineNotification.setDeadlineNotifications(id, deadline, context)
+        val id = "ADDED_DEADLINE_1"
+        val deadline1 = getDeadlineSample(1)
+        val notificationDeadline1 = getNotificationsSample(1)
+        //add some notification for deadline1
+        deadlineNotification.editNotification(id, deadline1, notificationDeadline1)
 
         Assert.assertEquals(2, shadowAlarmManager.scheduledAlarms.size)
-        Assert.assertEquals(
-            deadlineTime.atZone(ZoneId.systemDefault()).toInstant()
-                .toEpochMilli() - notif2, shadowAlarmManager.scheduledAlarms[0].triggerAtTime
-        )
-        Assert.assertEquals(
-            (deadlineTime.atZone(ZoneId.systemDefault()).toInstant()
-                .toEpochMilli() - notif1), shadowAlarmManager.scheduledAlarms[1].triggerAtTime
-        )
-    }
 
-    /**
-     * Test if a notification get properly cancel after a call to the method
-     */
-    @Test
-    fun testCancelNotification() {
-        val alarmManager = ApplicationProvider.getApplicationContext<Context>()
-            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
 
-        val id = "someFirebaseID"
-        val deadline = Deadline("notifDeadline", DeadlineState.TODO, clockService.now())
-        val timeBeforeDue = Duration.of(5, ChronoUnit.HOURS).toMillis()
-
-        deadlineNotification.setNotification(id, deadline, context, timeBeforeDue)
-
-        val triggerAtTime = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
-            .toEpochMilli() - timeBeforeDue
-        Assert.assertEquals(
-            triggerAtTime,
-            shadowAlarmManager.peekNextScheduledAlarm().triggerAtTime
-        )
-
-        deadlineNotification.cancelNotification(id, deadline, context)
+        deadlineNotification.deleteNotification(id)
 
         Assert.assertEquals(0, shadowAlarmManager.scheduledAlarms.size)
+
     }
 
-    /**
-     * Test if all notifications are properly cancel for a deadline
-     */
     @Test
-    fun testCancelDeadlineNotification() {
-        val alarmManager = ApplicationProvider.getApplicationContext<Context>()
-            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    fun testUpdateAndListNotification(){
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
+        val id1 = "ADDED_DEADLINE_1"
+        val deadline1 = getDeadlineSample(1)
+        val notificationDeadline1 = getNotificationsSample(1)
+        val id2 = "ADDED_DEADLINE_2"
+        val deadline2 = getDeadlineSample(2)
+        val notificationDeadline2 = getNotificationsSample(2)
 
-        //create a deadline with some notification schedule
-        val id = "ASLKJ"
-        val deadlineTime = clockService.now().plusDays(3)
-        val notif1: Long = 1000
-        val notif2: Long = Duration.ofDays(1).toMillis()
-        val notificationTimes = arrayListOf<Long>(notif1, notif2)
-        val deadline = Deadline(
-            "Some title",
-            DeadlineState.TODO,
-            deadlineTime,
-            notificationsTimes = notificationTimes
-        )
+        val deadlineList = mapOf<DeadlineID, Deadline>(id1 to deadline1)
 
-        //add notification for the deadline and verify that alarm have been set
-        deadlineNotification.setDeadlineNotifications(id, deadline, context)
+        deadlineNotification.editNotification(id1, deadline1, notificationDeadline1)
+        deadlineNotification.editNotification(id2, deadline2, notificationDeadline2)
+        Assert.assertEquals(4, shadowAlarmManager.scheduledAlarms.size)
+        val list = deadlineNotification.listDeadlineNotification("ADDED_DEADLINE_1")
+        Assert.assertEquals(notificationDeadline1, list)
+
+        deadlineNotification.updateNotifications(deadlineList)
+        //since deadline2 isn't in the list, its notification should've been deleted
         Assert.assertEquals(2, shadowAlarmManager.scheduledAlarms.size)
 
-        //delete notifications and verify that alarmManager are indeed empty
-        deadlineNotification.cancelDeadlineNotifications(id, deadline, context)
-        Assert.assertEquals(0, shadowAlarmManager.scheduledAlarms.size)
+    }
+
+    private fun getDeadlineSample(tag: Int): Deadline {
+        val deadlineTime = clockService.now().plusDays(3)
+        return Deadline(
+            "Test deadline$tag",
+            DeadlineState.TODO,
+            deadlineTime
+        )
+    }
+
+    private fun getNotificationsSample(tag: Long): List<Long>{
+        val notif1: Long = 1000 + tag
+        val notif2: Long = Duration.ofDays(1).toMillis()
+        return listOf<Long>(notif1, notif2)
     }
 
     /**
@@ -208,6 +154,6 @@ class DeadlineNotificationTest {
     object TestClockModule {
         @Provides
         fun provideClockService(): ClockService =
-            MockClockService(LocalDateTime.of(2022, 3, 12, 0, 0))
+            MockClockService(LocalDateTime.of(2023, 3, 12, 0, 0))
     }
 }
