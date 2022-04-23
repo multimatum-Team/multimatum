@@ -184,8 +184,7 @@ class DeadlineNotification(context: Context) {
         //compute the time where the alarm will be triggered in millis.
         val alarmTriggerTime:Long = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
             .toEpochMilli() - timeBeforeDeadline
-        val currentTime: Long = SystemClockService().now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        if(alarmTriggerTime>=currentTime) { //set notification only if it is trigger in the future
+        if(alarmTriggerTime>=SystemClockService().now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()) { //set notification only if it is trigger in the future
             //set the receiver as pending intent
             pendingIntent =
                 PendingIntent.getBroadcast(
