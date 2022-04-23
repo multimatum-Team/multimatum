@@ -18,6 +18,16 @@ the stability of the CI.
 ### Lenny
 
 ### Léo
+During this week, I implemented a feature that we have spoken about for few weeks: the dark mode. We can now choose
+in the settings to enable the darkmode or not. The darkmode is basically a new theme that "inverts" almost all colors
+into darker ones that are far more convenient to watch in a dark environnement. I also chaged the design of the settings
+activity, using new colors and icons for the different options. It seemed not so complicated to implement but it was far
+more complicated than I thought. To implement the darkmode, it was necessary to understand where the color attribute are defined for each view, 
+and make sure that it does not create a conflict with what we have in the code/xml. Some views require a theme color, like the text
+for example (defined in the theme files) and some others (like the custom ones such as deadline views) require specific colors that must be defined
+in another file (colors.xml). So now, every theme/color are centralized in two files and it will be easy to add/modifiy new views. For the next sprint,
+I will work on a new feature that provide the user the ability to customize the app in the settings activity.
+
 
 ### Louis
 
