@@ -15,6 +15,7 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
@@ -118,10 +119,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Modify the deadline in the database when you quit the edition mode
         if (!editMode) {
+            var newDeadline = Deadline(titleView.text.toString(), state, dateTime)
             deadlineListViewModel.modifyDeadline(
                 id,
-                Deadline(titleView.text.toString(), state, dateTime)
+                newDeadline
             )
+            val deadlineNotification = DeadlineNotification(this)
+            deadlineNotification.editNotification(id, newDeadline, deadlineNotification.listDeadlineNotification(id))
         }
 
         editMode = editMode.not()

@@ -36,19 +36,6 @@
         app:srcCompat="@android:drawable/ic_menu_manage"
         tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
 
-    <Button
-        android:id="@+id/triggerNotif"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
-        android:layout_marginBottom="100dp"
-        android:background="@drawable/circle_button"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-        app:icon="@drawable/ic_notification"
-        android:onClick="triggerNotification"
-        android:text="@string/TriggerNotif"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/goToQrCodeReader"

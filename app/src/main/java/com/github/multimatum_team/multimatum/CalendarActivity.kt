@@ -15,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
@@ -130,7 +131,7 @@ class CalendarActivity : AppCompatActivity() {
         // Add the new event to the deadline list
         val deadline = Deadline(deadlineTitle, DeadlineState.TODO, selectedDate)
 
-        viewModel.addDeadline(deadline)
+        viewModel.addDeadline(deadline){}
 
         // Reset the text input for future use
         editText.setText("")

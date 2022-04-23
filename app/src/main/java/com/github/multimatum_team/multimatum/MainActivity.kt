@@ -21,6 +21,7 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
@@ -42,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
+    lateinit var deadlineNotification:DeadlineNotification
+
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -61,8 +64,9 @@ class MainActivity : AppCompatActivity() {
             adapter.setDeadlines(deadlines)
         }
 
+        deadlineNotification = DeadlineNotification(this)
         //create notification channel
-        DeadlineNotification().createNotificationChannel(this)
+        deadlineNotification.createNotificationChannel()
 
         // Set when you maintain your finger on an item of the list, launch the detail activity
         listView.setOnItemLongClickListener { _, _, position, _ ->
@@ -94,7 +98,9 @@ class MainActivity : AppCompatActivity() {
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
                     val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
                     val (idToDelete, _) = adapter.getItem(position)
-                    viewModel.deleteDeadline(idToDelete)
+                    viewModel.deleteDeadline(idToDelete) {
+                        deadlineNotification.deleteNotification(it)
+                    }
                     adapter.setDeadlines(viewModel.getDeadlines().value!!)
 
                 }
@@ -123,17 +129,6 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    /**
-     * This button trigger a basics notification in 2 sec
-     */
-    fun triggerNotification(view: View) {
-        DeadlineNotification().setNotification(
-            "someID",
-            Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(5)),
-            this,
-            Duration.of(3, ChronoUnit.SECONDS).toMillis()
-        )
-    }
 
     fun goToAddDeadline(view: View) {
         val intent = Intent(this, AddDeadlineActivity::class.java)
