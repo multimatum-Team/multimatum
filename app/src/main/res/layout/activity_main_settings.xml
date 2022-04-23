@@ -5,7 +5,7 @@
     android:id="@+id/main_settings_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainSettingsActivity">
+    tools:context=".activity.MainSettingsActivity">
 
     <TextView
         android:id="@+id/main_settings_activity_title"

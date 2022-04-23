@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum
+package com.github.multimatum_team.multimatum.activity
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -17,8 +17,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.github.multimatum_team.multimatum.DeadlineNotification
+import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
-import com.github.multimatum_team.multimatum.model.DeadlineAdapter
+import com.github.multimatum_team.multimatum.adapter.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel

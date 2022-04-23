@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum.model
+package com.github.multimatum_team.multimatum.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.github.multimatum_team.multimatum.R
+import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
 import dagger.hilt.EntryPoint

@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum
+package com.github.multimatum_team.multimatum.activity
 
 import android.content.Context
 import android.graphics.Rect
@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.TextView.OnEditorActionListener
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel

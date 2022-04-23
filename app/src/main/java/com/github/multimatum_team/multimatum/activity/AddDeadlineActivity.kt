@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum
+package com.github.multimatum_team.multimatum.activity
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.service.ClockService

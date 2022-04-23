@@ -17,6 +17,8 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.multimatum_team.multimatum.activity.MainActivity
+import com.github.multimatum_team.multimatum.activity.QRGeneratorActivity
 import com.github.multimatum_team.multimatum.util.GenerateQRCodeUtility
 import org.hamcrest.Description
 import org.hamcrest.Matcher

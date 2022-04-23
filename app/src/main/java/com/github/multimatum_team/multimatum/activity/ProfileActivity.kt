@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum
+package com.github.multimatum_team.multimatum.activity
 
 import android.os.Bundle
 import android.util.Log
@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
 import com.github.multimatum_team.multimatum.viewmodel.UserViewModel

@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum
+package com.github.multimatum_team.multimatum.activity
 
 import android.content.Intent
 import android.nfc.NfcAdapter.EXTRA_ID
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.QRCodeGenerator
 
