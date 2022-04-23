@@ -32,8 +32,6 @@ class DeadlineListViewModel @Inject constructor(
     private var deadlineNotification: DeadlineNotification
 
     init {
-        deadlineRepository.setUser(runBlocking { authRepository.getCurrentUser() })
-
         // Initialize the deadline repository with the currently logged in user, then fetch the data
         // to initialize the deadline list
         deadlineRepository.setUser(runBlocking { authRepository.getCurrentUser() })
