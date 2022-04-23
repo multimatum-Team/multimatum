@@ -143,7 +143,7 @@ class DeadlineNotificationTest {
     private fun getNotificationsSample(tag: Long): List<Long>{
         val notif1: Long = 1000 + tag
         val notif2: Long = Duration.ofDays(1).toMillis()
-        return arrayListOf<Long>(notif1, notif2)
+        return listOf<Long>(notif1, notif2)
     }
 
     /**

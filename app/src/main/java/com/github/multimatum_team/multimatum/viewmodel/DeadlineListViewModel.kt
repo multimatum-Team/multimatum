@@ -45,8 +45,8 @@ class DeadlineListViewModel @Inject constructor(
         // Listen for authentication updates, upon which the deadline list is re-fetched
         authRepository.onUpdate {
             deadlineRepository.setUser(it)
-            refreshDeadlines() { it2 ->
-                deadlineNotification.updateNotifications(it2)
+            refreshDeadlines() { deadlinesMap ->
+                deadlineNotification.updateNotifications(deadlinesMap)
             }
         }
 

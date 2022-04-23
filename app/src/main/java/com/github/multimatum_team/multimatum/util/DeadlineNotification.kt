@@ -32,8 +32,6 @@ class DeadlineNotification(context: Context) {
     private lateinit var pendingIntent: PendingIntent
     private val context= context
 
-    @Inject
-    lateinit var clockService: ClockService
 
     /**
      * return a list of all notifications set for this deadline
@@ -41,11 +39,7 @@ class DeadlineNotification(context: Context) {
     fun listDeadlineNotification(deadlineId: DeadlineID): List<Long> {
         val res = readFromSharedPreference(deadlineId)
         //this is just to remove decimal to the number
-        var resParsed = ArrayList<Long>()
-        for (x in res) {
-             resParsed.add(x.toLong())
-        }
-        return resParsed
+        return res.map { it.toLong() }
     }
 
     /**
@@ -85,7 +79,7 @@ class DeadlineNotification(context: Context) {
                 cancelDeadlineNotifications(k)
             }
         }
-        editor.commit()
+        editor.apply()
         //logNotificationSP()
     }
 
@@ -98,9 +92,9 @@ class DeadlineNotification(context: Context) {
             context.getString(R.string.notification_shared_preference),
             Context.MODE_PRIVATE
         )
-        var editor = sharedPref.edit()
+        val editor = sharedPref.edit()
         editor.putString(id, jsonString)
-        editor.commit()
+        editor.apply()
     }
 
     /**
@@ -182,9 +176,9 @@ class DeadlineNotification(context: Context) {
         intent.putExtra("id", id)
 
         //compute the time where the alarm will be triggered in millis.
-        val alarmTriggerTime:Long = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
+        val alarmTriggerTimeMS:Long = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
             .toEpochMilli() - timeBeforeDeadline
-        if(alarmTriggerTime>=SystemClockService().now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()) { //set notification only if it is trigger in the future
+        if(alarmTriggerTimeMS>=SystemClockService().now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()) { //set notification only if it is trigger in the future
             //set the receiver as pending intent
             pendingIntent =
                 PendingIntent.getBroadcast(
@@ -195,9 +189,9 @@ class DeadlineNotification(context: Context) {
                 )
 
             //set an alarm that will wake up the pending intent (receiver)
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTriggerTime, pendingIntent)
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTriggerTimeMS, pendingIntent)
         } else {
-            Log.i("not sheduled", "alarm Already Passed")
+            Log.i("Not Scheduled", "Alarm time is in the pasts")
         }
     }
 

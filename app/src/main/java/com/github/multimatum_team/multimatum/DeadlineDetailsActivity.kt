@@ -119,7 +119,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Modify the deadline in the database when you quit the edition mode
         if (!editMode) {
-            var newDeadline = Deadline(titleView.text.toString(), state, dateTime)
+            val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
             deadlineListViewModel.modifyDeadline(
                 id,
                 newDeadline

@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
-    lateinit var deadlineNotification:DeadlineNotification
+    private val deadlineNotification:DeadlineNotification = DeadlineNotification(this)
 
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
@@ -64,7 +64,6 @@ class MainActivity : AppCompatActivity() {
             adapter.setDeadlines(deadlines)
         }
 
-        deadlineNotification = DeadlineNotification(this)
         //create notification channel
         deadlineNotification.createNotificationChannel()
 
