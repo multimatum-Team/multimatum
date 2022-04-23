@@ -15,6 +15,16 @@ the stability of the CI.
 
 ### Joseph
 
+After the users PR last week, I decided to do a lighter sprint and simply test
+the only few functions introduced in my last PR that were testable (i.e. the
+ones that don't depend on Firebase). I spent most of my time reading the
+Firebase documentation to find out how to test Firebase-dependent code without
+much success. Fortunately, all the reading was not in vain since I was
+able to familiarize myself with the Firebase emulator suite, which let me
+test Firestore rules to protect user data, which was my second assigned
+task this sprint. Next week I will start working on user groups to enable
+sharing synchronized deadlines.
+
 ### Lenny
 During this week, I work on notifications (again...). With the addition of shared deadline and users, we figured out that it was too dangerous to have notifications shared with other deadline's users. So I rework notifications to make them local through a storage in shared preferences. Then I set up functions to ensure that notifications are listenning to modification/addition/deletion of the deadline and are updated accordingly. Time estimation were ok and we have now a functionnal, safe and reliable (regarding the non-exhaustive test I've done) notification system.
 Yet notifications are set when creating a new deadline, next week I'll work on having a menu that allow user to modify those notifications.
