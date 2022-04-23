@@ -28,22 +28,21 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 
-
 /**
  * Tests for the QRGenerator class.
  */
 @RunWith(AndroidJUnit4::class)
-class QRGeneratorActivityTest{
+class QRGeneratorActivityTest {
     @get:Rule
     val activityRule = ActivityScenarioRule(QRGeneratorActivity::class.java)
 
     @Before
-    fun init(){
+    fun init() {
         Intents.init()
     }
 
     @After
-    fun release(){
+    fun release() {
         Intents.release()
     }
 
@@ -60,8 +59,10 @@ class QRGeneratorActivityTest{
 
     @Test
     fun qRDisplayTest() {
-        val intent = Intent(ApplicationProvider.getApplicationContext(),
-            QRGeneratorActivity::class.java).putExtra(EXTRA_ID, "1")
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            QRGeneratorActivity::class.java
+        ).putExtra(EXTRA_ID, "1")
         val scenario = ActivityScenario.launch<QRGeneratorActivity>(intent)
         scenario.use {
             Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode("1")))
@@ -77,7 +78,7 @@ class QRGeneratorActivityTest{
         return object : BoundedMatcher<View?, ImageView>(ImageView::class.java) {
             override fun matchesSafely(item: ImageView): Boolean {
                 val drawable: Drawable = item.drawable
-                require(drawable is BitmapDrawable){"The provided ImageView does not contain a bitmap"}
+                require(drawable is BitmapDrawable) { "The provided ImageView does not contain a bitmap" }
                 val actualContent = GenerateQRCodeUtility.extractContent(drawable.bitmap)
                 return expectedContent == actualContent
             }

@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
@@ -49,11 +50,15 @@ class DeadlineListViewModelTest {
         hiltRule.inject()
         authRepository = MockAuthRepository()
         deadlineRepository = MockDeadlineRepository(deadlines)
-        viewModel = DeadlineListViewModel(authRepository, deadlineRepository)
+        viewModel = DeadlineListViewModel(
+            authRepository,
+            ApplicationProvider.getApplicationContext(),
+            deadlineRepository
+        )
     }
 
     @After
-    fun teardown(){
+    fun teardown() {
         Intents.release()
     }
 

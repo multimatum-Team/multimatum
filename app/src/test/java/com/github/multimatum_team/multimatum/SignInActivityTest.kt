@@ -20,8 +20,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
@@ -35,7 +33,6 @@ import javax.inject.Singleton
 @RunWith(AndroidJUnit4::class)
 @UninstallModules(RepositoryModule::class)
 @HiltAndroidTest
-@ExperimentalCoroutinesApi
 class SignInActivityTest {
     @Inject
     lateinit var authRepository: AuthRepository
@@ -55,7 +52,7 @@ class SignInActivityTest {
     }
 
     @Test
-    fun launchSignInIntentWhenClickingButton() = runTest {
+    fun launchSignInIntentWhenClickingButton() {
         val activityScenario = ActivityScenario.launch(SignInActivity::class.java)
         activityScenario.use {
             onView(withId(R.id.sign_in_button)).perform(click())

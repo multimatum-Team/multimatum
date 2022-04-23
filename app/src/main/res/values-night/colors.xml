@@ -8,7 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="settings_icons_gray">#FF535353</color>
-    <color name="deadline_details_title">#FF000000</color>
-    <color name="deadline_item_background">#FFFFFFFF</color>
-    <color name="settings_icons_color">#FF535353</color>
+    <color name="deadline_details_title">#FFFFFFFF</color>
+    <color name="deadline_item_background">#FF000000</color>
+    <color name="settings_icons_color">#FF03DAC5</color>
 </resources>

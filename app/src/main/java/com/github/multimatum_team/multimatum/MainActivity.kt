@@ -14,12 +14,14 @@ import android.widget.ListView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
@@ -31,6 +33,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -39,6 +42,8 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
+
+    private val deadlineNotification:DeadlineNotification = DeadlineNotification(this)
 
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
@@ -60,18 +65,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         //create notification channel
-        DeadlineNotification().createNotificationChannel(this)
+        deadlineNotification.createNotificationChannel()
 
         // Set when you maintain your finger on an item of the list, launch the detail activity
         listView.setOnItemLongClickListener { _, _, position, _ ->
-            val (id, selectedDeadline) = adapter.getItem(position)
-            val detailIntent = DeadlineDetailsActivity.newIntent(this, id, selectedDeadline)
+            val (id, _) = adapter.getItem(position)
+            val detailIntent = DeadlineDetailsActivity.newIntent(this, id)
             startActivity(detailIntent)
             // Last line necessary to use this function
             true
         }
 
         setDeleteOnSweep(listView, deadlineListViewModel)
+        setCurrentTheme()
     }
 
     // Set the ListView to delete an item by sweeping it
@@ -91,7 +97,9 @@ class MainActivity : AppCompatActivity() {
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
                     val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
                     val (idToDelete, _) = adapter.getItem(position)
-                    viewModel.deleteDeadline(idToDelete)
+                    viewModel.deleteDeadline(idToDelete) {
+                        deadlineNotification.deleteNotification(it)
+                    }
                     adapter.setDeadlines(viewModel.getDeadlines().value!!)
 
                 }
@@ -110,17 +118,16 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    /**
-     * This button trigger a basics notification in 2 sec
+    /*
+    Helper function to restore the last theme preference at startup
      */
-    fun triggerNotification(view: View) {
-        DeadlineNotification().setNotification(
-            "someID",
-            Deadline("notif Title", DeadlineState.TODO, LocalDateTime.now().plusSeconds(5)),
-            this,
-            Duration.of(3, ChronoUnit.SECONDS).toMillis()
+    private fun setCurrentTheme(){
+        val isNightMode = sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (isNightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         )
     }
+
 
     fun goToAddDeadline(view: View) {
         val intent = Intent(this, AddDeadlineActivity::class.java)

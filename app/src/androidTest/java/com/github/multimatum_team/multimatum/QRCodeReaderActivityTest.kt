@@ -12,16 +12,15 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-
 class QRCodeReaderActivityTest {
 
     @Before
-    fun init(){
+    fun init() {
         Intents.init()
     }
 
     @After
-    fun release(){
+    fun release() {
         Intents.release()
     }
 

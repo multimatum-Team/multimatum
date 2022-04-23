@@ -58,7 +58,7 @@ class DeadlineAdapterTest {
     }
 
     @After
-    fun teardown(){
+    fun teardown() {
         Intents.release()
     }
 
