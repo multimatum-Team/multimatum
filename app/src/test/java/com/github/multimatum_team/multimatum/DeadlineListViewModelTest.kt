@@ -91,25 +91,36 @@ class DeadlineListViewModelTest {
     fun `LiveData is updated when new deadline is put into the repository`() = runTest {
         val newDeadline =
             Deadline("Deadline 4", DeadlineState.TODO, LocalDateTime.of(2022, 5, 2, 0, 0))
-        val newDeadlineList = deadlines.toMutableList()
-        newDeadlineList.add(newDeadline)
-        deadlineRepository.put(newDeadline).run {
-            assertEquals(viewModel.getDeadlines().getOrAwaitValue()[this]!!, newDeadline)
-        }
+        val id = deadlineRepository.put(newDeadline)
+        assertEquals(viewModel.getDeadlines().getOrAwaitValue()[id]!!, newDeadline)
     }
 
     @Test
-    fun `Adding deadlines from the viewmodel updates the repository`() = runTest {
+    fun `LiveData is updated when deadline is removed from the repository`() = runTest {
         val newDeadlineMap = deadlines
             .withIndex()
             .associate { Pair(it.index.toString(), it.value) }
             .toMutableMap()
-        newDeadlineMap["3"] =
+        newDeadlineMap.remove("1")
+        deadlineRepository.delete("1")
+        assertEquals(viewModel.getDeadlines().getOrAwaitValue(), newDeadlineMap)
+    }
+
+    @Test
+    fun `LiveData is updated when deadline is modified in the repository`() = runTest {
+        val modifiedDeadline =
+            Deadline("Deadline 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 20, 0, 0))
+        deadlineRepository.modify("1", modifiedDeadline)
+        assertEquals(viewModel.getDeadline("1"), modifiedDeadline)
+    }
+
+    @Test
+    fun `Adding deadlines in the viewmodel updates the repository`() = runTest {
+        val newDeadline =
             Deadline("Deadline 4", DeadlineState.TODO, LocalDateTime.of(2022, 6, 13, 0, 0))
-        assertEquals(
-            viewModel.getDeadlines().getOrAwaitValue(),
-            deadlineRepository.fetchAll()
-        )
+        viewModel.addDeadline(newDeadline) { id ->
+            assertEquals(runTest { deadlineRepository.fetch(id) }, newDeadline)
+        }
     }
 
     @Test
@@ -119,10 +130,15 @@ class DeadlineListViewModelTest {
             .associate { Pair(it.index.toString(), it.value) }
             .toMutableMap()
         newDeadlineMap.remove("1")
-        deadlineRepository.delete("1")
-        assertEquals(
-            viewModel.getDeadlines().getOrAwaitValue(),
-            newDeadlineMap
-        )
+        viewModel.deleteDeadline("1")
+        assertEquals(deadlineRepository.fetchAll(), newDeadlineMap)
+    }
+
+    @Test
+    fun `Modifying deadlines from the viewmodel updates the repository`() = runTest {
+        val modifiedDeadline =
+            Deadline("Deadline 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 20, 0, 0))
+        viewModel.modifyDeadline("1", modifiedDeadline)
+        assertEquals(deadlineRepository.fetch("1"), modifiedDeadline)
     }
 }

@@ -59,7 +59,7 @@ class DeadlineListViewModel @Inject constructor(
     /**
      * Re-fetch all deadlines from the repository and assign the value to the LiveData.
      */
-    private fun refreshDeadlines(callback: (Map<DeadlineID, Deadline>) -> Unit) =
+    private fun refreshDeadlines(callback: (Map<DeadlineID, Deadline>) -> Unit = {}) =
         viewModelScope.launch {
             _deadlines.value = deadlineRepository.fetchAll()
             callback(_deadlines.value!!)
@@ -77,18 +77,20 @@ class DeadlineListViewModel @Inject constructor(
     /**
      * Add a new deadline to the repository.
      */
-    fun addDeadline(deadline: Deadline, callback: (DeadlineID) -> Unit) = viewModelScope.launch {
-        val id = deadlineRepository.put(deadline)
-        callback(id)
-    }
+    fun addDeadline(deadline: Deadline, callback: (DeadlineID) -> Unit = {}) =
+        viewModelScope.launch {
+            val id = deadlineRepository.put(deadline)
+            callback(id)
+        }
 
     /**
      * Remove a deadline from the repository.
      */
-    fun deleteDeadline(id: DeadlineID, callback: (DeadlineID) -> Unit) = viewModelScope.launch {
-        deadlineRepository.delete(id)
-        callback(id)
-    }
+    fun deleteDeadline(id: DeadlineID, callback: (DeadlineID) -> Unit = {}) =
+        viewModelScope.launch {
+            deadlineRepository.delete(id)
+            callback(id)
+        }
 
     /**
      * Modify a deadline from the repository.
