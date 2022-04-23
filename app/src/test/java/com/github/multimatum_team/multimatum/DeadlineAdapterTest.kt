@@ -49,10 +49,10 @@ class DeadlineAdapterTest {
         context = ApplicationProvider.getApplicationContext()
         adapter = DeadlineAdapter(context!!)
         deadlines = mapOf(
-            "1" to Deadline("Number 1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 1, 10, 0)),
-            "2" to Deadline("Number 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 11, 0)),
-            "3" to Deadline("Number 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 12, 0)),
-            "4" to Deadline("Number 4", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 13, 0))
+            "1" to Deadline("Number 1", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 13, 0)),
+            "2" to Deadline("Number 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 12, 0)),
+            "3" to Deadline("Number 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 1, 10, 0)),
+            "4" to Deadline("Number 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 11, 0)),
         )
         adapter.setDeadlines(deadlines)
     }
@@ -68,11 +68,11 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun `GetItem should give the correct deadlines sorted by dates`() {
-        Assert.assertEquals(adapter.getItem(0), deadlines.entries.toList()[0].toPair())
-        Assert.assertEquals(adapter.getItem(1), deadlines.entries.toList()[1].toPair())
-        Assert.assertEquals(adapter.getItem(2), deadlines.entries.toList()[2].toPair())
-        Assert.assertEquals(adapter.getItem(3), deadlines.entries.toList()[3].toPair())
+    fun `GetItem should give the correct deadlines sorted by states and date`() {
+        Assert.assertEquals(adapter.getItem(0), deadlines.entries.toList()[2].toPair())
+        Assert.assertEquals(adapter.getItem(1), deadlines.entries.toList()[3].toPair())
+        Assert.assertEquals(adapter.getItem(2), deadlines.entries.toList()[1].toPair())
+        Assert.assertEquals(adapter.getItem(3), deadlines.entries.toList()[0].toPair())
     }
 
     @Test
@@ -89,7 +89,7 @@ class DeadlineAdapterTest {
         val listItemView: View = adapter.getView(1, null, parent)
         //check title
         Assert.assertEquals(
-            "Number 2",
+            "Number 4",
             (listItemView.findViewById<TextView>(R.id.deadline_list_title)).text
         )
         Assert.assertEquals(
@@ -98,7 +98,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the ${deadlines["2"]!!.dateTime.toLocalDate()} at ${deadlines["2"]!!.dateTime.toLocalTime()}",
+            "Due the ${deadlines["4"]!!.dateTime.toLocalDate()} at ${deadlines["4"]!!.dateTime.toLocalTime()}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -126,7 +126,7 @@ class DeadlineAdapterTest {
         val listItemView: View = adapter.getView(2, null, parent)
         //check title
         Assert.assertEquals(
-            "Number 3",
+            "Number 2",
             (listItemView.findViewById<TextView>(R.id.deadline_list_title)).text
         )
         Assert.assertEquals(
@@ -135,7 +135,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the ${deadlines["3"]!!.dateTime.toLocalDate()} at ${deadlines["3"]!!.dateTime.toLocalTime()}",
+            "Due the ${deadlines["2"]!!.dateTime.toLocalDate()} at ${deadlines["2"]!!.dateTime.toLocalTime()}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -158,12 +158,12 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun `GetView should show properly the third deadline who is already done`() {
+    fun `GetView should show properly the last deadline who is already done`() {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(3, null, parent)
         //check title
         Assert.assertEquals(
-            "Number 4",
+            "Number 1",
             (listItemView.findViewById<TextView>(R.id.deadline_list_title)).text
         )
         Assert.assertEquals(
@@ -172,7 +172,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the ${deadlines["4"]!!.dateTime.toLocalDate()} at ${deadlines["4"]!!.dateTime.toLocalTime()}",
+            "Due the ${deadlines["1"]!!.dateTime.toLocalDate()} at ${deadlines["1"]!!.dateTime.toLocalTime()}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
@@ -195,12 +195,12 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun `GetView should show properly the fourth deadline who is already due`() {
+    fun `GetView should show properly the 1st deadline who is already due`() {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(0, null, parent)
         //check title
         Assert.assertEquals(
-            "Number 1",
+            "Number 3",
             (listItemView.findViewById<TextView>(R.id.deadline_list_title)).text
         )
         Assert.assertEquals(
@@ -209,7 +209,7 @@ class DeadlineAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "Due the ${deadlines["1"]!!.dateTime.toLocalDate()} at ${deadlines["1"]!!.dateTime.toLocalTime()}",
+            "Due the ${deadlines["3"]!!.dateTime.toLocalDate()} at ${deadlines["3"]!!.dateTime.toLocalTime()}",
             (listItemView.findViewById<TextView>(R.id.deadline_list_subtitle)).text
         )
         Assert.assertEquals(
