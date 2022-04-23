@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.R
-import com.github.multimatum_team.multimatum.model.DeadlineAdapter
+import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
