@@ -84,7 +84,7 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun `GetView should show properly the first deadline who is due in 10 hours in red`() {
+    fun `GetView should show properly the deadline who is due in 10 hours in red`() {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(1, null, parent)
         //check title
@@ -121,7 +121,7 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun `GetView should show properly the second deadline who is due in 7 day in orange`() {
+    fun `GetView should show properly the deadline who is due in 7 day in orange`() {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(2, null, parent)
         //check title

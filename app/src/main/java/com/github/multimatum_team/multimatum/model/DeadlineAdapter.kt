@@ -35,6 +35,21 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         // value who define when there is not much time left for a deadline
         const val URGENT_THRESHOLD_DAYS = 5
         const val PRESSING_THRESHOLD_DAYS = 10
+
+        private fun sortDeadline(deadlines: Map<DeadlineID, Deadline>): List<Pair<DeadlineID, Deadline>> {
+            val partition = DeadlineState.values().associate {
+                state -> Pair<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>>(state, mutableListOf())
+            }.toMap()
+            for ((id, deadline) in deadlines.entries){
+                partition[deadline.state]!!.add(Pair(id, deadline))
+            }
+
+            val result: MutableList<Pair<DeadlineID, Deadline>> = mutableListOf()
+            for (state in DeadlineState.values()){
+                result.addAll(partition[state]!!.sortedBy { it.second.dateTime })
+            }
+            return result
+        }
     }
 
     var clockService: ClockService =
@@ -49,18 +64,7 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
 
     fun setDeadlines(deadlines: Map<DeadlineID, Deadline>) {
         dataSource = sortDeadline(deadlines)
-                // deadlines.toSortedMap { id1, id2 -> compareValues(deadlines[id1]!!.dateTime, deadlines[id2]!!.dateTime) }
         notifyDataSetChanged()
-    }
-
-    private fun sortDeadline(deadlines: Map<DeadlineID, Deadline>): List<Pair<DeadlineID, Deadline>> {
-        val doneDeadlines: List<Pair<DeadlineID, Deadline>> = deadlines
-            .filter{(_, deadline) -> deadline.state == DeadlineState.DONE}
-            .map{(id,deadline) -> Pair(id, deadline)}.sortedBy { (_, deadline) -> deadline.dateTime}
-        val undoneDeadlines =  deadlines
-            .filter{(_, deadline) -> deadline.state == DeadlineState.TODO}
-            .map {(id,deadline) -> Pair(id, deadline)}.sortedBy {(_, deadline) -> deadline.dateTime}
-        return undoneDeadlines + doneDeadlines
     }
 
     override fun getCount(): Int {
