@@ -28,12 +28,16 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @RunWith(AndroidJUnit4::class)
 @UninstallModules(RepositoryModule::class)
 @HiltAndroidTest
 class SignInActivityTest {
+    @Inject
+    lateinit var authRepository: AuthRepository
+
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 

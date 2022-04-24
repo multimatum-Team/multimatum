@@ -37,6 +37,21 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         // value who define when there is not much time left for a deadline
         const val URGENT_THRESHOLD_DAYS = 5
         const val PRESSING_THRESHOLD_DAYS = 10
+
+        private fun sortDeadline(deadlines: Map<DeadlineID, Deadline>): List<Pair<DeadlineID, Deadline>> {
+            val partition = DeadlineState.values().associate {
+                state -> Pair<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>>(state, mutableListOf())
+            }.toMap()
+            for ((id, deadline) in deadlines.entries){
+                partition[deadline.state]!!.add(Pair(id, deadline))
+            }
+
+            val result: MutableList<Pair<DeadlineID, Deadline>> = mutableListOf()
+            for (state in DeadlineState.values()){
+                result.addAll(partition[state]!!.sortedBy { it.second.dateTime })
+            }
+            return result
+        }
     }
 
     var clockService: ClockService =
@@ -44,15 +59,13 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
             .fromApplication(context, ClockServiceEntryPoint::class.java)
             .provideClockService()
 
-    private var dataSource: SortedMap<DeadlineID, Deadline> = sortedMapOf()
+    private var dataSource: List<Pair<DeadlineID, Deadline>> = listOf()
 
     private val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     fun setDeadlines(deadlines: Map<DeadlineID, Deadline>) {
-        dataSource = deadlines.toSortedMap { id1, id2 ->
-            compareValues(deadlines[id1]!!.dateTime, deadlines[id2]!!.dateTime)
-        }
+        dataSource = sortDeadline(deadlines)
         notifyDataSetChanged()
     }
 
@@ -61,7 +74,7 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
     }
 
     override fun getItem(position: Int): Pair<DeadlineID, Deadline> {
-        return dataSource.entries.toList()[position].toPair()
+        return dataSource[position]
     }
 
     override fun getItemId(position: Int): Long {
