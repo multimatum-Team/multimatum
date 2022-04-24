@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum
+package com.github.multimatum_team.multimatum.activity
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,6 +10,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
+import com.github.multimatum_team.multimatum.ProfileActivity
+import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
@@ -114,19 +116,19 @@ class MainSettingsActivity : AppCompatActivity() {
          * Key for the storage of whether dark mode is enabled in SharedPreferences
          */
         const val DARK_MODE_PREF_KEY =
-            "com.github.multimatum_team.multimatum.MainSettingsActivity.DarkMode"
+            "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.DarkMode"
 
         /**
          * Key for the storage of whether notifications are enabled in SharedPreferences
          */
         const val NOTIF_ENABLED_PREF_KEY =
-            "com.github.multimatum_team.multimatum.MainSettingsActivity.NotifEnabled"
+            "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.NotifEnabled"
 
         /**
          * Key for the storage of whether procrastination fighter is enabled
          */
         const val PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY =
-            "com.github.multimatum_team.multimatum.MainSettingsActivity.ProcrastinationFighterEnabled"
+            "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.ProcrastinationFighterEnabled"
 
     }
 

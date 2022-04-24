@@ -8,7 +8,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import com.github.multimatum_team.multimatum.LogUtil.debugLog
 import com.github.multimatum_team.multimatum.LogUtil.logFunctionCall
-import com.github.multimatum_team.multimatum.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY
+import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject

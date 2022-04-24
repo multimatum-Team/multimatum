@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import com.github.multimatum_team.multimatum.activity.MainActivity
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import javax.inject.Inject
 
