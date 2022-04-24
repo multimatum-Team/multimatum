@@ -34,7 +34,7 @@ During this week, I implemented a feature that we have spoken about for few week
 in the settings to enable the darkmode or not. The darkmode is basically a new theme that "inverts" almost all colors
 into darker ones that are far more convenient to watch in a dark environnement. I also chaged the design of the settings
 activity, using new colors and icons for the different options. It seemed not so complicated to implement but it was far
-more complicated than I thought. To implement the darkmode, it was necessary to understand where the color attribute are defined for each view, 
+more complicated than I thought. To implement the darkmode, it was necessary to understand where the color attribute are defined for each view,
 and make sure that it does not create a conflict with what we have in the code/xml. Some views require a theme color, like the text
 for example (defined in the theme files) and some others (like the custom ones such as deadline views) require specific colors that must be defined
 in another file (colors.xml). So now, every theme/color are centralized in two files and it will be easy to add/modifiy new views. For the next sprint,
@@ -57,3 +57,9 @@ for everyone in the group and should therefore be fixed as soon as possible. The
 but some tests still fail sometimes.
 
 ### Overall team
+
+During this sprint, we continued working on the completion of the most important features of our app, both for usability and to match
+the app requirements. We are also trying to make our app sounder (e.g. by working on the issues with the CI) and more reliable. While there is still some work to be done, the app
+is now starting to look like a true Android app, and is becoming less and less prototypical.<p>
+Concerning the performance of the team, at the beginning of the sprint we were a bit tired after our midterms and we were happy to have
+an extra week to complete our tasks, thanks to the holidays. But overall we did our job.
