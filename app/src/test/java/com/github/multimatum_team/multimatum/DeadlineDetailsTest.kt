@@ -40,11 +40,10 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 /**
  * Tests for the DeadlineDetailsActivity class
  */
-@UninstallModules(RepositoryModule::class,ClockModule::class)
+@UninstallModules(RepositoryModule::class, ClockModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class DeadlineDetailsTest {
@@ -68,7 +67,8 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline not yet due or done, the activity should display it`() {
-        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 1")))
@@ -88,7 +88,8 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline already done, the activity should display it`() {
-        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 2")))
@@ -108,7 +109,8 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline already due, the activity should display it`() {
-        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "2")
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "2")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 3")))
@@ -128,7 +130,8 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Test launching intent to go to generator`() {
-        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.QRCodeButton)).perform(click())
@@ -144,7 +147,8 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline with only a few hours left, the activity should display it`() {
-        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.deadline_details_activity_title)).check(matches(withText("Test 4")))
@@ -163,7 +167,8 @@ class DeadlineDetailsTest {
 
     @Test
     fun `Given a deadline, we can modify it`() {
-        val intent = DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             // Go in Modify Mode
@@ -209,12 +214,14 @@ class DeadlineDetailsTest {
         @Singleton
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
-            MockDeadlineRepository(listOf(
-                Deadline("Test 1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 0, 0)),
-                Deadline("Test 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 19, 0, 0)),
-                Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 10, 0, 0)),
-                Deadline("Test 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 6, 0))
-            ))
+            MockDeadlineRepository(
+                listOf(
+                    Deadline("Test 1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 0, 0)),
+                    Deadline("Test 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 19, 0, 0)),
+                    Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 10, 0, 0)),
+                    Deadline("Test 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 6, 0))
+                )
+            )
 
         @Singleton
         @Provides

@@ -4,7 +4,6 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -28,8 +27,6 @@ import org.robolectric.shadows.ShadowAlarmManager
 import org.robolectric.shadows.ShadowNotificationManager
 import java.time.Duration
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
@@ -87,7 +84,7 @@ class DeadlineNotificationTest {
     }
 
     @Test
-    fun testAddAndDeleteNotification(){
+    fun testAddAndDeleteNotification() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
 
@@ -107,7 +104,7 @@ class DeadlineNotificationTest {
     }
 
     @Test
-    fun testUpdateAndListNotification(){
+    fun testUpdateAndListNotification() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
         val id1 = "ADDED_DEADLINE_1"
@@ -140,7 +137,7 @@ class DeadlineNotificationTest {
         )
     }
 
-    private fun getNotificationsSample(tag: Long): List<Long>{
+    private fun getNotificationsSample(tag: Long): List<Long> {
         val notif1: Long = 1000 + tag
         val notif2: Long = Duration.ofDays(1).toMillis()
         return listOf<Long>(notif1, notif2)

@@ -29,7 +29,12 @@ class MockAuthRepository : AuthRepository {
         user
 
     fun signIn(email: String) {
-        user = SignedInUser((uniqueIDSupply++).toString(), email)
+        user = SignedInUser(user.id, email)
+        notifyUpdateListeners()
+    }
+
+    fun logIn(newUser: User) {
+        user = newUser
         notifyUpdateListeners()
     }
 
