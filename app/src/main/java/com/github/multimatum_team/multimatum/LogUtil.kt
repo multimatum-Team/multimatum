@@ -1,8 +1,5 @@
 package com.github.multimatum_team.multimatum
 
-import android.util.Log
-import java.util.concurrent.atomic.AtomicInteger
-
 /**
  * Enhanced logging methods
  *
@@ -12,57 +9,40 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 object LogUtil {
 
+    private val instance = LogUtilImpl
+
     /**
      * Displays the message in the logs with level 'debug', inferring the tag
      */
-    fun debugLog(str: String) = safeExec {
-        val currFunc = Thread.currentThread().stackTrace[STACK_IDX_FOR_ENV_FUNC]
-        Log.d(createTag(currFunc), str)
-    }
+    fun debugLog(str: String) = instance.debugLog(str)
 
     /**
      * Reports that the function in which it is called has been called
      */
-    fun logFunctionCall() = safeExec {
-        val currFunc = Thread.currentThread().stackTrace[STACK_IDX_FOR_ENV_FUNC]
-        val msg = "${currFunc.methodName} called"
-        Log.d(createTag(currFunc), msg)
-    }
+    fun logFunctionCall() = instance.logFunctionCall()
 
     /**
      * Reports that the function in which it is called has been called, and displays
      * the given message
      */
-    fun logFunctionCall(str: String) = safeExec {
-        val currFunc = Thread.currentThread().stackTrace[STACK_IDX_FOR_ENV_FUNC]
-        val msg = "${currFunc.methodName} called: $str"
-        Log.d(createTag(currFunc), msg)
-    }
+    fun logFunctionCall(str: String) = instance.logFunctionCall(str)
 
-    private fun safeExec(task: () -> Unit) {
-        try {
-            task()
-        } catch (throwable: Throwable) {
-            Log.d(TAG, "logging failed")
-        }
-    }
+    interface FunctionsProvider {
+        /**
+         * Displays the message in the logs with level 'debug', inferring the tag
+         */
+        fun debugLog(str: String)
 
-    // creates a tag with the class name of the given stack element
-    private fun createTag(currFunc: StackTraceElement): String =
-        "${Counter.next()} ${simpleNameOf(currFunc.className)}"
+        /**
+         * Reports that the function in which it is called has been called
+         */
+        fun logFunctionCall()
 
-    // extracts the simple name from a complete class name
-    private fun simpleNameOf(name: String): String = name.takeLastWhile { it != '.' }
-
-    private const val TAG = "DebugUtil"
-
-    // index in the stack to find the environment function
-    private const val STACK_IDX_FOR_ENV_FUNC = 6
-
-    // counter for the indexing of logging events
-    private object Counter {
-        private val atomicInteger = AtomicInteger(0)
-        fun next() = atomicInteger.incrementAndGet()
+        /**
+         * Reports that the function in which it is called has been called, and displays
+         * the given message
+         */
+        fun logFunctionCall(str: String)
     }
 
 }
