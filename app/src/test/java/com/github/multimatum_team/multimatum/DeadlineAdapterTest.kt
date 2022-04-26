@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.view.View
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -245,6 +246,44 @@ class DeadlineAdapterTest {
             Color.BLACK,
             (deadlineListDetails.currentTextColor)
         )
+    }
+
+    @Test
+    fun `The button in the item change the state of the deadline`() {
+        val parent = ListView(context)
+        val listItemView: View = adapter.getView(0, null, parent)
+        //check details before
+        val deadlineListDetails = listItemView.findViewById<TextView>(R.id.deadline_list_detail)
+        Assert.assertEquals(
+            "Is already Due",
+            (deadlineListDetails).text
+        )
+        Assert.assertEquals(
+            Typeface.NORMAL,
+            (deadlineListDetails)
+                .typeface.style
+        )
+        Assert.assertEquals(
+            Color.BLACK,
+            (deadlineListDetails.currentTextColor)
+        )
+        //Set in done
+        listItemView.findViewById<ToggleButton>(R.id.deadline_list_check_done).performClick()
+        //check details after
+        Assert.assertEquals(
+            "Done",
+            (deadlineListDetails).text
+        )
+        Assert.assertEquals(
+            Typeface.BOLD,
+            (deadlineListDetails)
+                .typeface.style
+        )
+        Assert.assertEquals(
+            Color.GREEN,
+            (deadlineListDetails.currentTextColor)
+        )
+
     }
 
     @Module
