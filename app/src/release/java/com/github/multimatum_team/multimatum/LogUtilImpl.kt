@@ -3,7 +3,7 @@ package com.github.multimatum_team.multimatum
 /**
  * Release implementation of LogUtil functions (do nothing in release mode)
  */
-class LogUtilImpl: LogUtil.FunctionsProvider {
+object LogUtilImpl: LogUtil.FunctionsProvider {
 
     override fun debugLog(str: String) = doNothing()
 
