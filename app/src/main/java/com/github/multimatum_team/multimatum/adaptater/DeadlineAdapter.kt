@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import android.widget.ToggleButton
-import androidx.activity.viewModels
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -19,7 +18,6 @@ import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import java.time.temporal.ChronoUnit
@@ -119,25 +117,25 @@ class DeadlineAdapter(private val context: Context, private val deadlineListView
         // Set the checkbox
         doneCheckbox.isChecked = (deadline.state == DeadlineState.DONE)
         doneCheckbox.setOnCheckedChangeListener{ _, isChecked ->
-            val state = if (isChecked) DeadlineState.DONE else DeadlineState.TODO
-            updateDetails(detailTextView, Deadline(deadline.title, state, deadline.dateTime))
-            deadlineListViewModel.modifyDeadline(id, Deadline(deadline.title, state, deadline.dateTime))
+            val newDeadline = Deadline(deadline.title,if (isChecked) DeadlineState.DONE else DeadlineState.TODO, deadline.dateTime)
+            updateDetails(detailTextView, newDeadline)
+            deadlineListViewModel.modifyDeadline(id,newDeadline)
         }
         return rowView
     }
 
     private fun updateDetails(detailTextView: TextView, deadline: Deadline){
         val detail: String
-        detailTextView.setTextColor(Color.BLACK)
-        detailTextView.setTypeface(null, Typeface.NORMAL)
         when {
             deadline.state == DeadlineState.DONE -> {
                 detail = context.getString(R.string.done)
                 detailTextView.setTextColor(Color.GREEN)
-                detailTextView.setTypeface(null, Typeface.BOLD)
+                detailTextView.setTypeface(detailTextView.typeface, Typeface.BOLD)
             }
             clockService.now() > deadline.dateTime -> {
                 detail = context.getString(R.string.isAlreadyDue)
+                detailTextView.setTextColor(Color.BLACK)
+                detailTextView.setTypeface(detailTextView.typeface, Typeface.NORMAL)
             }
             else -> {
                 val timeRemaining = clockService.now().until(deadline.dateTime, ChronoUnit.DAYS)
@@ -154,10 +152,10 @@ class DeadlineAdapter(private val context: Context, private val deadlineListView
                 // If the remaining days is too small, put the text in red or orange
                 if (timeRemaining < URGENT_THRESHOLD_DAYS) {
                     detailTextView.setTextColor(Color.RED)
-                    detailTextView.setTypeface(null, Typeface.BOLD)
+                    detailTextView.setTypeface(detailTextView.typeface, Typeface.BOLD)
                 } else if (timeRemaining < PRESSING_THRESHOLD_DAYS) {
                     detailTextView.setTextColor(Color.rgb(255, 165, 0))
-                    detailTextView.setTypeface(null, Typeface.BOLD)
+                    detailTextView.setTypeface(detailTextView.typeface, Typeface.BOLD)
                 }
             }
         }
