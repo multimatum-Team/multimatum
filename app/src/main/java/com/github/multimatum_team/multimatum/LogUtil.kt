@@ -11,6 +11,14 @@ object LogUtil {
 
     private val instance = LogUtilImpl
 
+    /*
+     * To add a new method to this class:
+     * 1. declare it in FunctionsProvider
+     * 2. declare it in LogUtil, with an implementation that simply calls the method on `instance`
+     * 3. implement it in app/src/debug/java/com/github/multimatum_team/multimatum/LogUtilImpl.kt
+     * 4. implement it as a call to doNothing in app/src/release/java/com/github/multimatum_team/multimatum/LogUtilImpl.kt
+     */
+
     /**
      * Displays the message in the logs with level 'debug', inferring the tag
      */
