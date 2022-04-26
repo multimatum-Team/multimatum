@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
 
-        val adapter = DeadlineAdapter(this)
+        val adapter = DeadlineAdapter(this, deadlineListViewModel)
 
         listView.adapter = adapter
         deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
