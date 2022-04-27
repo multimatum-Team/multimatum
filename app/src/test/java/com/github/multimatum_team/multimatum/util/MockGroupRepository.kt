@@ -28,7 +28,8 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
 
     init {
         for (group in initialContents) {
-            val newID = (counter++).toString()
+            val newID = counter.toString()
+            counter++
             for (memberID in group.members) {
                 groupsPerUser
                     .getOrPut(memberID) { mutableMapOf() }
