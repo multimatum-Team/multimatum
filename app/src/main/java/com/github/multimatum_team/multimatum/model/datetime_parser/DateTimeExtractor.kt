@@ -33,6 +33,13 @@ object DateTimeExtractor {
     private data class ExtractedTime(val time: LocalTime) : ExtractedInfo
     private object NoInfo : ExtractedInfo
 
+    /**
+     * @return a function that takes a token and returns it if it contains the provided string,
+     * null o.w.
+     */
+    private fun tokenMatching(cmpStr: String) =
+        { tok: Token -> if (tok.str == cmpStr) tok else null }
+
 
     // WARNING: you are about to read one of the most complicated pieces of code of this project
     // DISCLAIMER: this would not be necessary if Kotlin implemented pattern matching properly...
@@ -47,21 +54,21 @@ object DateTimeExtractor {
      * are used to build a list that is given as an argument to the second element of the pair, that
      * should use it to build an appropriate ExtractedInfo
      *
-     * e.g.: for the pair
+     * E.g.: for the pair
      *
      *    listOf(
-     *        Token::asHour,
-     *        { it.filterEqualTo(":") },
-     *        Token::asMinute
+     *       Token::asHour,
+     *       tokenMatching(":"),
+     *       Token::asMinute
      *    ) to { args: List<Any?> ->
-     *        ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
+     *       ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
      *    }
      *
      * the pattern
      *
      *    listOf(
      *       Token::asHour,
-     *       { it.filterEqualTo(":") },
+     *       tokenMatching(":"),
      *       Token::asMinute
      *    )
      *
@@ -71,8 +78,9 @@ object DateTimeExtractor {
      *
      * (obtained by tokenizing the string 15:00)
      *
-     * because asHour returns 15, filterEqualTo returns a non-null value (the SymbolToken itself) and
-     * asMinute returns 0.
+     * because asHour returns 15, the function created by tokenMatching(":") returns a non-null
+     * value (the SymbolToken itself) and asMinute returns 0.
+     *
      * Then the "extractor"
      *
      *     args: List<Any?> -> ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
@@ -83,29 +91,29 @@ object DateTimeExtractor {
     private val PATTERNS: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo>> = listOf(
         listOf(
             Token::asHour,
-            { it.filterEqualTo(":") },
+            tokenMatching(":"),
             Token::asMinute
         ) to { args: List<Any?> ->
             ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
         },
         listOf(
-            { it.filterEqualTo("at") },
+            tokenMatching("at"),
             Token::filterWhitespace,
             Token::asHour,
-            { it.filterEqualTo(":") },
+            tokenMatching(":"),
             Token::asMinute
         ) to { args: List<Any?> ->
             ExtractedTime(LocalTime.of(args.getInt(2), args.getInt(4)))
         },
         listOf(
             Token::asHour,
-            { it.filterEqualTo("am") }
+            tokenMatching("am")
         ) to { args: List<Any?> ->
             ExtractedTime(LocalTime.of(args.getInt(0), 0))
         },
         listOf(
             Token::asHour,
-            { it.filterEqualTo("pm") }
+            tokenMatching("pm")
         ) to { args: List<Any?> ->
             ExtractedTime(LocalTime.of(args.getInt(0) + 12, 0))
         }

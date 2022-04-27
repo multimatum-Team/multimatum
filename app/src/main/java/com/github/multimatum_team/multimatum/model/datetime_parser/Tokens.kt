@@ -7,11 +7,6 @@ sealed interface Token {
 
     val str: String
 
-    /**
-     * @return this if its str matches the provided one, null o.w.
-     */
-    fun filterEqualTo(cmpStr: String): Token? = if (cmpStr == str) this else null
-
     // The following methods are default implementations, they are meant to be overridden
     /**
      * @return this if it is a WhitespaceToken, null o.w.
