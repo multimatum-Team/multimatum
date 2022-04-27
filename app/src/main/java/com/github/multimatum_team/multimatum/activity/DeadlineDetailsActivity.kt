@@ -139,7 +139,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     }
 
     // Modify the deadline in the database when you quit the edition mode
-    private fun updateDeadlineAfterEditionModeExit(){
+    private fun updateDeadlineAfterEditionModeExit() {
         if (!editMode) {
             val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
             deadlineListViewModel.modifyDeadline(
@@ -147,7 +147,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                 newDeadline
             )
             val deadlineNotification = DeadlineNotification(this)
-            deadlineNotification.editNotification(id, newDeadline, deadlineNotification.listDeadlineNotification(id))
+            deadlineNotification.editNotification(
+                id,
+                newDeadline,
+                deadlineNotification.listDeadlineNotification(id)
+            )
         }
     }
 
@@ -166,7 +170,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     // This function setup the observer to update the information shown when the
     // deadline are updated
-    private fun setDeadlineObserver(){
+    private fun setDeadlineObserver() {
         deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
             // Recuperate the data from the deadline
             val deadline = deadlines[id]!!
@@ -240,10 +244,12 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     // Change the color of the date and title views according to the theme
     private fun adaptToCurrentTheme() {
-        val isNightMode = sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, false)
-        var textColor = Color.WHITE
+        val isNightMode = sharedPreferences.getBoolean(
+            MainSettingsActivity.DARK_MODE_PREF_KEY,
+            IS_DEFAULT_DARK_MODE_ENABLED
+        )
+        val textColor = if (editMode) Color.BLACK else Color.WHITE
 
-        if(editMode) textColor = Color.BLACK
         if (isNightMode) {
             dateView.setTextColor(textColor)
             titleView.setTextColor(textColor)
@@ -263,6 +269,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_ID =
             "com.github.multimatum_team.deadline.details.id"
+        private const val IS_DEFAULT_DARK_MODE_ENABLED = false
 
         // Launch an Intent to access this activity with a Deadline data
         fun newIntent(context: Context, id: DeadlineID): Intent {
