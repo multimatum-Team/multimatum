@@ -71,8 +71,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         setDeleteOnSweep(listView, deadlineListViewModel)
-
-
         setCurrentTheme()
     }
 
@@ -80,14 +78,12 @@ class MainActivity : AppCompatActivity() {
     // Based on the tutorial:
     // https://demonuts.com/android-listview-swipe-delete/
     private fun setDeleteOnSweep(lv: ListView, viewModel: DeadlineListViewModel) {
-
         // Create a Listener who will delete the given deadline if swept
         val touchListener = SwipeToDismissTouchListener(
             ListViewAdapter(lv),
             object : SwipeToDismissTouchListener.DismissCallbacks<ListViewAdapter?> {
                 override fun canDismiss(position: Int): Boolean {
-                    return true
-                }
+                    return true }
 
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
                     val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
@@ -96,14 +92,10 @@ class MainActivity : AppCompatActivity() {
                         deadlineNotification.deleteNotification(it)
                     }
                     adapter.setDeadlines(viewModel.getDeadlines().value!!)
-
                 }
             })
-
         // Set it on the ListView
-        with(lv) {
-            setOnTouchListener(touchListener)
-        }
+        with(lv) {setOnTouchListener(touchListener)}
 
         // If the Undo text is clicked, undo the deletion
         lv.onItemClickListener =
