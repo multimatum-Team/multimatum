@@ -33,7 +33,10 @@ Class which is used to show the deadline in a clear list.
 Based on the tutorial:
 https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
  */
-class DeadlineAdapter(private val context: Context, private val deadlineListViewModel: DeadlineListViewModel) : BaseAdapter() {
+class DeadlineAdapter(
+    private val context: Context,
+    private val deadlineListViewModel: DeadlineListViewModel
+) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline
         const val URGENT_THRESHOLD_DAYS = 5
@@ -41,15 +44,15 @@ class DeadlineAdapter(private val context: Context, private val deadlineListView
 
 
         private fun sortDeadline(deadlines: Map<DeadlineID, Deadline>): List<Pair<DeadlineID, Deadline>> {
-            val partition = DeadlineState.values().associate {
-                state -> Pair<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>>(state, mutableListOf())
+            val partition = DeadlineState.values().associate { state ->
+                Pair<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>>(state, mutableListOf())
             }.toMap()
-            for ((id, deadline) in deadlines.entries){
+            for ((id, deadline) in deadlines.entries) {
                 partition[deadline.state]!!.add(Pair(id, deadline))
             }
 
             val result: MutableList<Pair<DeadlineID, Deadline>> = mutableListOf()
-            for (state in DeadlineState.values()){
+            for (state in DeadlineState.values()) {
                 result.addAll(partition[state]!!.sortedBy { it.second.dateTime })
             }
             return result
@@ -112,19 +115,23 @@ class DeadlineAdapter(private val context: Context, private val deadlineListView
         subtitleTextView.setTypeface(null, Typeface.ITALIC)
 
         // Show how much time left or if it is due or done.
-        updateDetails(detailTextView,deadline)
+        updateDetails(detailTextView, deadline)
 
         // Set the checkbox
         doneCheckbox.isChecked = (deadline.state == DeadlineState.DONE)
-        doneCheckbox.setOnCheckedChangeListener{ _, isChecked ->
-            val newDeadline = Deadline(deadline.title,if (isChecked) DeadlineState.DONE else DeadlineState.TODO, deadline.dateTime)
+        doneCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            val newDeadline = Deadline(
+                deadline.title,
+                if (isChecked) DeadlineState.DONE else DeadlineState.TODO,
+                deadline.dateTime
+            )
             updateDetails(detailTextView, newDeadline)
-            deadlineListViewModel.modifyDeadline(id,newDeadline)
+            deadlineListViewModel.modifyDeadline(id, newDeadline)
         }
         return rowView
     }
 
-    private fun updateDetails(detailTextView: TextView, deadline: Deadline){
+    private fun updateDetails(detailTextView: TextView, deadline: Deadline) {
         val detail: String
         when {
             deadline.state == DeadlineState.DONE -> {

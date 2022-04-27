@@ -8,13 +8,11 @@ import android.view.View
 import android.widget.ListView
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -34,7 +32,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
@@ -71,7 +68,7 @@ class MainActivityTest {
 
     @Test
     fun goToSetting() {
-        onView(withId(R.id.main_open_settings_but)).perform(ViewActions.click())
+        onView(withId(R.id.main_open_settings_but)).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(MainSettingsActivity::class.java.name),
@@ -99,7 +96,7 @@ class MainActivityTest {
 
     @Test
     fun goToCalendar() {
-        onView(withId(R.id.goToCalendarButton)).perform(ViewActions.click())
+        onView(withId(R.id.goToCalendarButton)).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(CalendarActivity::class.java.name),
@@ -110,7 +107,7 @@ class MainActivityTest {
 
     @Test
     fun goToAddDeadlineActivity() {
-        onView(withId(R.id.main_go_to_add_deadline)).perform(ViewActions.click())
+        onView(withId(R.id.main_go_to_add_deadline)).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(AddDeadlineActivity::class.java.name),
@@ -152,7 +149,7 @@ class MainActivityTest {
         onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
             .perform(swipeLeft())
         onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
-            .perform(ViewActions.click())
+            .perform(click())
         onView(withId(R.id.deadlineListView)).check(matches(withListSize(3)))
     }
 
