@@ -73,13 +73,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         setDeleteOnSweep(listView, deadlineListViewModel)
+
+
         setCurrentTheme()
     }
 
     // Set the ListView to delete an item by sweeping it
     // Based on the tutorial:
     // https://demonuts.com/android-listview-swipe-delete/
-    @SuppressLint("ClickableViewAccessibility")
     private fun setDeleteOnSweep(lv: ListView, viewModel: DeadlineListViewModel) {
 
         // Create a Listener who will delete the given deadline if swept
@@ -102,8 +103,9 @@ class MainActivity : AppCompatActivity() {
             })
 
         // Set it on the ListView
-        lv.setOnTouchListener(touchListener)
-        lv.setOnScrollListener(touchListener.makeScrollListener() as AbsListView.OnScrollListener)
+        with(lv) {
+            setOnTouchListener(touchListener)
+            }
 
         // If the Undo text is clicked, undo the deletion
         lv.onItemClickListener =

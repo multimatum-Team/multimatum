@@ -54,11 +54,13 @@
         android:layout_height="35dp"
         android:layout_below="@+id/deadline_list_detail"
         android:layout_alignParentEnd="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:maxLines="1"
         android:textColor="#000000"
         android:textOff="@string/not_done"
         android:textOn="@string/done"
-        android:textSize="12sp" />
+        android:textSize="12sp"/>
 
   </RelativeLayout>
 
@@ -67,17 +69,17 @@
       android:layout_height="match_parent"
       android:layout_alignParentStart="true"
       android:layout_alignParentTop="true"
-      android:orientation="horizontal"
       android:gravity="center_vertical"
+      android:orientation="horizontal"
       android:visibility="gone">
 
     <TextView
         android:id="@+id/deadline_list_deleted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_marginStart="10dp"
         android:layout_centerVertical="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="25dp"
         android:text="@string/deleted"
         android:textColor="@android:color/white" />
 
@@ -85,10 +87,10 @@
         android:id="@+id/deadline_list_undo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="10dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="10dp"
         android:clickable="false"
         android:text="@string/undo" />
 

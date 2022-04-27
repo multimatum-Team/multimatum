@@ -9,12 +9,12 @@ import android.widget.ListView
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.longClick
-import androidx.test.espresso.action.ViewActions.swipeLeft
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -34,6 +34,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
@@ -139,10 +140,10 @@ class MainActivityTest {
 
     @Test
     fun swipeDeadlineTwiceShouldDelete() {
-        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
-            .perform(swipeLeft())
-        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
-            .perform(swipeLeft())
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView))
+            .atPosition(0).perform(swipeRight())
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView))
+            .atPosition(0).perform(swipeRight())
         onView(withId(R.id.deadlineListView)).check(matches(withListSize(2)))
     }
 
