@@ -2,17 +2,11 @@ package com.github.multimatum_team.multimatum
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.AnonymousUser
-import com.github.multimatum_team.multimatum.model.Deadline
-import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.UserGroup
-import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
+import com.github.multimatum_team.multimatum.model.UserID
 import com.github.multimatum_team.multimatum.repository.FirebaseGroupRepository
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,10 +21,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
-import java.time.LocalDateTime
-import java.time.ZoneId
+import org.mockito.Mockito.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -51,20 +42,80 @@ class FirebaseGroupRepositoryTest {
     fun setup() {
         hiltRule.inject()
         repository = FirebaseGroupRepository(database)
-        repository.setUser(AnonymousUser("alice"))
+        repository.setUser(AnonymousUser("1"))
     }
 
     @Test
     fun `Fetching a group ID returns the correct group instance`() = runTest {
         assertEquals(
-            UserGroup(
-                "testid",
-                "test group",
-                "alice",
-                setOf("alice", "bob")
-            ),
-            repository.fetch("testid")
+            UserGroup("1", "Group 2", "1", setOf("0", "1")),
+            repository.fetch("1")
         )
+    }
+
+    @Test
+    fun `Fetching all groups returns the correct group list`() = runTest {
+        assertEquals(
+            mapOf(
+                "0" to UserGroup("0", "Group 1", "0", setOf("0", "1", "2")),
+                "1" to UserGroup("1", "Group 2", "1", setOf("0", "1")),
+            ),
+            repository.fetchAll()
+        )
+    }
+
+    object MockFirestore {
+        private fun generateDocumentSnapshot(group: UserGroup): DocumentSnapshot {
+            val snapshot = mock(DocumentSnapshot::class.java)
+            `when`(snapshot.id).thenReturn(group.id)
+            `when`(snapshot.get("name")).thenReturn(group.name)
+            `when`(snapshot.get("owner")).thenReturn(group.owner)
+            `when`(snapshot.get("members")).thenReturn(group.members.toList())
+            return snapshot
+        }
+
+        private fun generateDocument(group: UserGroup): DocumentReference {
+            val snapshot = generateDocumentSnapshot(group)
+            val document = mock(DocumentReference::class.java)
+            `when`(document.get()).thenReturn(Tasks.forResult(snapshot))
+            return document
+        }
+
+        private fun generateQuerySnapshot(queryResult: List<UserGroup>): QuerySnapshot {
+            val querySnapshot = mock(QuerySnapshot::class.java)
+            val groupSnapshots = queryResult.map { generateDocumentSnapshot(it) }
+            `when`(querySnapshot.documents).thenReturn(groupSnapshots)
+            return querySnapshot
+        }
+
+        private fun generateMemberQuery(groups: List<UserGroup>, userID: UserID): Query {
+            val query = mock(Query::class.java)
+            val querySnapshot = generateQuerySnapshot(groups.filter { group ->
+                group.members.any { it == userID }
+            })
+            `when`(query.get()).thenReturn(Tasks.forResult(querySnapshot))
+            return query
+        }
+
+        private fun generateCollection(groups: List<UserGroup>): CollectionReference {
+            val collection = mock(CollectionReference::class.java)
+            for (group in groups) {
+                val document = generateDocument(group)
+                `when`(collection.document(group.id)).thenReturn(document)
+            }
+            `when`(collection.whereArrayContains(eq("members"), any())).then {
+                val userID = it.getArgument<String>(1)
+                generateMemberQuery(groups, userID)
+            }
+            return collection
+        }
+
+        fun generate(groups: List<UserGroup>): FirebaseFirestore {
+            val collection = generateCollection(groups)
+            val database = mock(FirebaseFirestore::class.java)
+            `when`(database.collection("groups")).thenReturn(collection)
+            return database
+        }
     }
 
     @Module
@@ -72,19 +123,13 @@ class FirebaseGroupRepositoryTest {
     object TestFirebaseModule {
         @Singleton
         @Provides
-        fun provideFirebaseFirestore(): FirebaseFirestore {
-            val mockSnapshot = mock(DocumentSnapshot::class.java)
-            `when`(mockSnapshot.id).thenReturn("testid")
-            `when`(mockSnapshot.get("name")).thenReturn("test group")
-            `when`(mockSnapshot.get("owner")).thenReturn("alice")
-            `when`(mockSnapshot.get("members")).thenReturn(listOf("alice", "bob"))
-            val mockDocument = mock(DocumentReference::class.java)
-            `when`(mockDocument.get()).thenReturn(Tasks.forResult(mockSnapshot))
-            val mockCollection = mock(CollectionReference::class.java)
-            `when`(mockCollection.document("testid")).thenReturn(mockDocument)
-            val mockDatabase = mock(FirebaseFirestore::class.java)
-            `when`(mockDatabase.collection("groups")).thenReturn(mockCollection)
-            return mockDatabase
-        }
+        fun provideFirebaseFirestore(): FirebaseFirestore =
+            MockFirestore.generate(
+                listOf(
+                    UserGroup("0", "Group 1", "0", setOf("0", "1", "2")),
+                    UserGroup("1", "Group 2", "1", setOf("0", "1")),
+                    UserGroup("2", "Group 3", "0", setOf("0", "2")),
+                )
+            )
     }
 }
