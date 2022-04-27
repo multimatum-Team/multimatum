@@ -83,7 +83,8 @@ class MainActivity : AppCompatActivity() {
             ListViewAdapter(lv),
             object : SwipeToDismissTouchListener.DismissCallbacks<ListViewAdapter?> {
                 override fun canDismiss(position: Int): Boolean {
-                    return true }
+                    return true
+                }
 
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
                     val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
@@ -95,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         // Set it on the ListView
-        with(lv) {setOnTouchListener(touchListener)}
+        with(lv) { setOnTouchListener(touchListener) }
 
         // If the Undo text is clicked, undo the deletion
         lv.onItemClickListener =

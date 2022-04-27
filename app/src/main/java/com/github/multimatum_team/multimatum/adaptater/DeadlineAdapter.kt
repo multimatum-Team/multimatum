@@ -120,11 +120,8 @@ class DeadlineAdapter(
         // Set the checkbox
         doneCheckbox.isChecked = (deadline.state == DeadlineState.DONE)
         doneCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            val newDeadline = Deadline(
-                deadline.title,
-                if (isChecked) DeadlineState.DONE else DeadlineState.TODO,
-                deadline.dateTime
-            )
+            val newDeadline =
+                deadline.copy(state = if (isChecked) DeadlineState.DONE else DeadlineState.TODO)
             updateDetails(detailTextView, newDeadline)
             deadlineListViewModel.modifyDeadline(id, newDeadline)
         }
