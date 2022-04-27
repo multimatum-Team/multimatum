@@ -45,7 +45,8 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
     override suspend fun fetchAll(): Map<GroupID, UserGroup> = groups
 
     override suspend fun create(name: String): GroupID {
-        val id = (counter++).toString()
+        val id = counter.toString()
+        counter++
         groups[id] = UserGroup(id, name, _user.id, setOf())
         notifyUpdateListeners()
         return id
