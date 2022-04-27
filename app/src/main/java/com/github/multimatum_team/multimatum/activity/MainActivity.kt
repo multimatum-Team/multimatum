@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum.activity
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -8,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.ListView
 import androidx.activity.viewModels
@@ -39,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
-    private val deadlineNotification:DeadlineNotification = DeadlineNotification(this)
+    private val deadlineNotification: DeadlineNotification = DeadlineNotification(this)
 
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
@@ -52,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
 
-        val adapter = DeadlineAdapter(this)
+        val adapter = DeadlineAdapter(this, deadlineListViewModel)
 
         listView.adapter = adapter
         deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
@@ -79,9 +77,7 @@ class MainActivity : AppCompatActivity() {
     // Set the ListView to delete an item by sweeping it
     // Based on the tutorial:
     // https://demonuts.com/android-listview-swipe-delete/
-    @SuppressLint("ClickableViewAccessibility")
     private fun setDeleteOnSweep(lv: ListView, viewModel: DeadlineListViewModel) {
-
         // Create a Listener who will delete the given deadline if swept
         val touchListener = SwipeToDismissTouchListener(
             ListViewAdapter(lv),
@@ -97,13 +93,10 @@ class MainActivity : AppCompatActivity() {
                         deadlineNotification.deleteNotification(it)
                     }
                     adapter.setDeadlines(viewModel.getDeadlines().value!!)
-
                 }
             })
-
         // Set it on the ListView
-        lv.setOnTouchListener(touchListener)
-        lv.setOnScrollListener(touchListener.makeScrollListener() as AbsListView.OnScrollListener)
+        with(lv) { setOnTouchListener(touchListener) }
 
         // If the Undo text is clicked, undo the deletion
         lv.onItemClickListener =
@@ -117,8 +110,9 @@ class MainActivity : AppCompatActivity() {
     /*
     Helper function to restore the last theme preference at startup
      */
-    private fun setCurrentTheme(){
-        val isNightMode = sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, false)
+    private fun setCurrentTheme() {
+        val isNightMode =
+            sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, false)
         AppCompatDelegate.setDefaultNightMode(
             if (isNightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         )
