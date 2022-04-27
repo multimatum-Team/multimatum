@@ -64,6 +64,16 @@ class FirebaseGroupRepositoryTest {
         )
     }
 
+    @Test
+    fun `Fetching all owned groups returns the correct group list`() = runTest {
+        assertEquals(
+            mapOf(
+                "1" to UserGroup("1", "Group 2", "1", setOf("0", "1")),
+            ),
+            repository.fetchOwned()
+        )
+    }
+
     object MockFirestore {
         private fun generateDocumentSnapshot(group: UserGroup): DocumentSnapshot {
             val snapshot = mock(DocumentSnapshot::class.java)
@@ -97,15 +107,28 @@ class FirebaseGroupRepositoryTest {
             return query
         }
 
+        private fun generateOwnerQuery(groups: List<UserGroup>, userID: UserID): Query {
+            val query = mock(Query::class.java)
+            val querySnapshot = generateQuerySnapshot(groups.filter { group ->
+                group.owner == userID
+            })
+            `when`(query.get()).thenReturn(Tasks.forResult(querySnapshot))
+            return query
+        }
+
         private fun generateCollection(groups: List<UserGroup>): CollectionReference {
             val collection = mock(CollectionReference::class.java)
             for (group in groups) {
                 val document = generateDocument(group)
                 `when`(collection.document(group.id)).thenReturn(document)
             }
-            `when`(collection.whereArrayContains(eq("members"), any())).then {
+            `when`(collection.whereArrayContains(eq("members"), anyString())).then {
                 val userID = it.getArgument<String>(1)
                 generateMemberQuery(groups, userID)
+            }
+            `when`(collection.whereEqualTo(eq("owner"), anyString())).then {
+                val userID = it.getArgument<String>(1)
+                generateOwnerQuery(groups, userID)
             }
             return collection
         }

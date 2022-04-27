@@ -33,6 +33,12 @@ abstract class GroupRepository {
     abstract suspend fun fetchAll(): Map<GroupID, UserGroup>
 
     /**
+     * Fetch all groups of which the user is the owner.
+     */
+    open suspend fun fetchOwned(): Map<GroupID, UserGroup> =
+        fetchAll().filterValues { it.owner == _user.id }
+
+    /**
      * Create a new empty group with a given name.
      * @param name the name of the new group
      */

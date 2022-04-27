@@ -55,6 +55,17 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
             .associate { it.id to deserializeGroup(it) }
 
     /**
+     * Fetch all groups from the database that are owned by the current user.
+     */
+    override suspend fun fetchOwned(): Map<GroupID, UserGroup> =
+        groupsRef
+            .whereEqualTo("owner", _user.id)
+            .get()
+            .await()
+            .documents
+            .associate { it.id to deserializeGroup(it) }
+
+    /**
      * Create a new group in the database.
      * @param name the name of the new group to be created
      */
