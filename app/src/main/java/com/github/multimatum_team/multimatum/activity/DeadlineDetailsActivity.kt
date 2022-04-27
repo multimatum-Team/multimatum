@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.TextView
 import android.text.SpannableStringBuilder
@@ -32,6 +34,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     @Inject
     lateinit var clockService: ClockService
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     lateinit var id: DeadlineID
     private var editMode: Boolean = true
@@ -112,6 +117,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             if (editMode) android.R.drawable.btn_default
             else android.R.color.transparent
         )
+
+        adaptToCurrentTheme()
 
         dateView.isClickable = editMode
 
@@ -226,6 +233,22 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Show the Dialog on the screen
         timePickerDialog.show()
 
+    }
+
+    // Change the color of the date and title views according to the theme
+    private fun adaptToCurrentTheme() {
+        val isNightMode =
+            sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, false)
+        if (isNightMode) {
+            dateView.setTextColor(
+                if (editMode) Color.BLACK
+                else Color.WHITE
+            )
+            titleView.setTextColor(
+                if (editMode) Color.BLACK
+                else Color.WHITE
+            )
+        }
     }
 
     /**
