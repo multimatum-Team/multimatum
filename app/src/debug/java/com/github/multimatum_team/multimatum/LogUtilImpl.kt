@@ -4,7 +4,10 @@ import android.util.Log
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * Debug implementation of LogUtil functions
+ * Debug implementation of LogUtil functions <p>
+ * This file is used in debug builds to perform logging,
+ * but it should not be used in release builds because calls
+ * to reflection methods are uselessly costly
  */
 object LogUtilImpl: LogUtil.FunctionsProvider {
 

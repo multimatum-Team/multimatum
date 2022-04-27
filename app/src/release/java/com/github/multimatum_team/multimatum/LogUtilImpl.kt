@@ -1,7 +1,9 @@
 package com.github.multimatum_team.multimatum
 
 /**
- * Release implementation of LogUtil functions (do nothing in release mode)
+ * Release implementation of LogUtil functions (do nothing in release mode) <p>
+ * This file is used in the release builds. The methods simply do nothing
+ * because logging is not needed in a release version of the app.
  */
 object LogUtilImpl: LogUtil.FunctionsProvider {
 
