@@ -125,17 +125,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         doneButton.isClickable = editMode
         doneButton.visibility = if (editMode) View.VISIBLE else View.GONE
 
-        // Modify the deadline in the database when you quit the edition mode
-        if (!editMode) {
-            val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
-            deadlineListViewModel.modifyDeadline(
-                id,
-                newDeadline
-            )
-            val deadlineNotification = DeadlineNotification(this)
-            deadlineNotification.editNotification(id, newDeadline, deadlineNotification.listDeadlineNotification(id))
-        }
-
+        updateDeadlineAfterEditionModeExit()
         editMode = editMode.not()
     }
 
@@ -146,6 +136,19 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             if (edit) android.R.drawable.edit_text
             else android.R.color.transparent
         )
+    }
+
+    // Modify the deadline in the database when you quit the edition mode
+    private fun updateDeadlineAfterEditionModeExit(){
+        if (!editMode) {
+            val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
+            deadlineListViewModel.modifyDeadline(
+                id,
+                newDeadline
+            )
+            val deadlineNotification = DeadlineNotification(this)
+            deadlineNotification.editNotification(id, newDeadline, deadlineNotification.listDeadlineNotification(id))
+        }
     }
 
     // When we go the first time to the Modify Mode, it happened that the TextView
@@ -237,8 +240,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     // Change the color of the date and title views according to the theme
     private fun adaptToCurrentTheme() {
-        val isNightMode =
-            sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, false)
+        val isNightMode = sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, false)
         if (isNightMode) {
             dateView.setTextColor(
                 if (editMode) Color.BLACK
