@@ -241,15 +241,12 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     // Change the color of the date and title views according to the theme
     private fun adaptToCurrentTheme() {
         val isNightMode = sharedPreferences.getBoolean(MainSettingsActivity.DARK_MODE_PREF_KEY, false)
+        var textColor = Color.WHITE
+
+        if(editMode) textColor = Color.BLACK
         if (isNightMode) {
-            dateView.setTextColor(
-                if (editMode) Color.BLACK
-                else Color.WHITE
-            )
-            titleView.setTextColor(
-                if (editMode) Color.BLACK
-                else Color.WHITE
-            )
+            dateView.setTextColor(textColor)
+            titleView.setTextColor(textColor)
         }
     }
 
