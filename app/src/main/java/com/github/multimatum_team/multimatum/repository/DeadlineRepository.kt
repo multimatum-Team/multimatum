@@ -2,6 +2,7 @@ package com.github.multimatum_team.multimatum.repository
 
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.User
+import java.io.Serializable
 import java.time.LocalDateTime
 
 typealias DeadlineID = String

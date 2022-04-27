@@ -1,7 +1,6 @@
 package com.github.multimatum_team.multimatum.model
 
 import java.time.LocalDateTime
-
 /**
  * The state of a deadline.
  *
@@ -34,6 +33,7 @@ enum class DeadlineState {
  * @constructor Creates a deadline from specified parameters
  * @throws IllegalArgumentException when title is empty or startDate > end
  */
+
 data class Deadline(
     val title: String,
     val state: DeadlineState,

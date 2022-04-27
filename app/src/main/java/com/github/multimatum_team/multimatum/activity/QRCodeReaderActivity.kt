@@ -10,6 +10,7 @@ import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
 import com.github.multimatum_team.multimatum.R
+import com.github.multimatum_team.multimatum.repository.DeadlineID
 
 /**
  * The purpose of this activity is to provide the user an interface to scan QR-Codes.
@@ -52,9 +53,9 @@ class QRCodeReaderActivity : AppCompatActivity() {
     }
 
     // Useful function to display a given string using the Toast interface
-    private fun displayOnToast(text: String) {
+    private fun displayOnToast(deadlineID: DeadlineID) {
         runOnUiThread {
-            Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, deadlineID, Toast.LENGTH_LONG).show()
         }
     }
 

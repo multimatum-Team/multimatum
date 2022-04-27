@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum
 
 import android.content.Intent
+import android.content.Intent.EXTRA_TEXT
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.nfc.NfcAdapter.EXTRA_ID
@@ -19,7 +20,10 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.MainActivity
 import com.github.multimatum_team.multimatum.activity.QRGeneratorActivity
+import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.util.GenerateQRCodeUtility
+import com.google.gson.Gson
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
@@ -28,6 +32,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.LocalDateTime
 
 
 /**
@@ -41,6 +46,7 @@ class QRGeneratorActivityTest {
     @Before
     fun init() {
         Intents.init()
+        val data = Deadline("appeler robert", DeadlineState.TODO, LocalDateTime.now().plusDays(1))
     }
 
     @After
@@ -61,13 +67,15 @@ class QRGeneratorActivityTest {
 
     @Test
     fun qRDisplayTest() {
+        val data = Deadline("Appeller Robert", DeadlineState.TODO, LocalDateTime.now()
+            .plusDays(1))
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             QRGeneratorActivity::class.java
-        ).putExtra(EXTRA_ID, "1")
+        ).putExtra(EXTRA_TEXT, Gson().toJson(data))
         val scenario = ActivityScenario.launch<QRGeneratorActivity>(intent)
         scenario.use {
-            Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode("1")))
+            Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode(Gson().toJson(data))))
         }
     }
 

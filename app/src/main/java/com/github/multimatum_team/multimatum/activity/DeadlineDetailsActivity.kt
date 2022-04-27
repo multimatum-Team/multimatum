@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.EXTRA_TEXT
 import android.os.Bundle
 import android.widget.TextView
 import android.text.SpannableStringBuilder
@@ -18,6 +19,7 @@ import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -234,7 +236,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
      */
     fun goQRGenerator(view: View) {
         val intent = Intent(this, QRGeneratorActivity::class.java)
-        intent.putExtra(EXTRA_ID, id)
+        val json = Gson().toJson(deadlineListViewModel.getDeadline(id))
+        intent.putExtra(EXTRA_TEXT, json)
         startActivity(intent)
     }
 
