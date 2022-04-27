@@ -19,9 +19,7 @@ data class UserGroup(
     val members: Set<UserID>
 ) {
     init {
-        if (!members.contains(owner)) {
-            throw IllegalArgumentException()
-        }
+        require(members.contains(owner))
     }
 
     constructor(id: GroupID, name: String, owner: UserID) :
