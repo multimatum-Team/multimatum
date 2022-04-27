@@ -4,10 +4,10 @@ sealed interface Token {
 
     val str: String
 
-    fun isEqualTo(text: String) = (str == text)
+    fun filterEqualTo(cmpStr: String): Token? = if (cmpStr == str) this else null
 
-    fun isHour(): Boolean = false
-    fun isMinute(): Boolean = false
+    fun asHour(): Int? = null
+    fun asMinute(): Int? = null
 
 }
 
@@ -20,8 +20,8 @@ data class NumericToken(override val str: String) : Token {
         require(str.all(Char::isDigit))
     }
     val numericValue: Int get() = str.toInt()
-    override fun isHour(): Boolean = (numericValue in 0..23)
-    override fun isMinute(): Boolean = (numericValue in 0..59)
+    override fun asHour(): Int? = if (numericValue in 0..23) numericValue else null
+    override fun asMinute(): Int? = if (numericValue in 0..59) numericValue else null
 }
 
 data class SymbolToken(override val str: String) : Token {
