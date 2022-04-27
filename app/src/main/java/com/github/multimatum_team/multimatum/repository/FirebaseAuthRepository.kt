@@ -7,12 +7,13 @@ import com.github.multimatum_team.multimatum.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 /**
  * Concrete implementation for the AuthRepository.
  * Acts as a wrapper around the Firebase authentication library.
  */
-class FirebaseAuthRepository : AuthRepository {
+class FirebaseAuthRepository @Inject constructor() : AuthRepository {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     /**

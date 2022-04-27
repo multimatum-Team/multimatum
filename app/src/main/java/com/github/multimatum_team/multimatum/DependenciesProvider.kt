@@ -4,14 +4,8 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Context.SENSOR_SERVICE
 import android.content.SharedPreferences
-import com.github.multimatum_team.multimatum.model.Deadline
-import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
 import android.hardware.SensorManager
-import android.os.SystemClock
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.FirebaseAuthRepository
+import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.service.SystemClockService
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,7 +14,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.time.LocalDate
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -33,7 +26,7 @@ object DependenciesProvider {
     @Provides
     fun provideSharedPreferences(@ApplicationContext applicationContext: Context): SharedPreferences =
         applicationContext.getSharedPreferences(SHARED_PREF_ID, MODE_PRIVATE)
-    
+
     @Provides
     fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
         applicationContext.getSystemService(SENSOR_SERVICE) as SensorManager
@@ -54,6 +47,10 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun provideDeadlineRepository(impl: FirebaseDeadlineRepository): DeadlineRepository
+
+    @Singleton
+    @Binds
+    abstract fun provideGroupRepository(impl: FirebaseGroupRepository): GroupRepository
 
     @Singleton
     @Binds
