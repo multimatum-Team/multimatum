@@ -5,15 +5,14 @@ sealed interface Token {
     val str: String
 
     fun filterEqualTo(cmpStr: String): Token? = if (cmpStr == str) this else null
+    fun filterWhitespace(): Token? = null
 
     fun asHour(): Int? = null
     fun asMinute(): Int? = null
 
 }
 
-data class AlphabeticToken(override val str: String) : Token {
-
-}
+data class AlphabeticToken(override val str: String) : Token
 
 data class NumericToken(override val str: String) : Token {
     init {
@@ -34,6 +33,7 @@ data class SymbolToken(override val str: String) : Token {
 object WhitespaceToken : Token {
     override val str = " "
     override fun toString(): String = "WhitespaceToken"
+    override fun filterWhitespace(): Token = this
 }
 
 object Tokenizer {

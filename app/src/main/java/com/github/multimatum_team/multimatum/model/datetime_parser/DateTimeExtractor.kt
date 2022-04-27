@@ -6,14 +6,16 @@ import java.util.*
 object DateTimeExtractor {
 
     /*
-    18h00
-    18h
-    6am
-    6pm
+        When finished, should be able to parse:
 
-    Monday
-    next Monday
-    on Monday
+        18h00
+        18h
+        6am
+        6pm
+
+        Monday
+        next Monday
+        on Monday
      */
 
     private fun List<Any?>.getInt(idx: Int): Int = get(idx) as Int
@@ -25,7 +27,13 @@ object DateTimeExtractor {
 
     private val PATTERNS: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo>> = listOf(
         listOf(Token::asHour, { it.filterEqualTo(":") }, Token::asMinute) to
-                { args: List<Any?> -> ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2))) }
+                { args: List<Any?> -> ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2))) },
+        listOf({ it.filterEqualTo("at") }, Token::filterWhitespace, Token::asHour, { it.filterEqualTo(":") }, Token::asMinute) to
+                { args: List<Any?> -> ExtractedTime(LocalTime.of(args.getInt(2), args.getInt(4))) },
+        listOf(Token::asHour, { it.filterEqualTo("am") }) to
+                { args: List<Any?> -> ExtractedTime(LocalTime.of(args.getInt(0), 0)) },
+        listOf(Token::asHour, { it.filterEqualTo("pm") }) to
+                { args: List<Any?> -> ExtractedTime(LocalTime.of(args.getInt(0) + 12, 0)) }
     )
 
     fun parse(str: String): DateTimeExtractionResult {
@@ -88,24 +96,22 @@ object DateTimeExtractor {
                 }
             }
 
+        fun removeMultipleWhitespaces(str: String): String =
+            if (str.contains("  ", ignoreCase = true)){
+                removeMultipleWhitespaces(str.replace("  ", " ", ignoreCase = true))
+            }
+            else str
+
         val initTokens = Tokenizer.tokenize(str)
         val (date, time) = recurse(initTokens, null, null)
         val text = alreadyProcessedTokensWithoutTimeInfo
             .dropWhile { it is WhitespaceToken }
             .dropLastWhile { it is WhitespaceToken }
             .joinToString(separator = "", transform = Token::str)
+            .let(::removeMultipleWhitespaces)
         return DateTimeExtractionResult(text, date, time)
     }
 
-}
-
-enum class DayOfWeek {
-    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
-
-    companion object {
-        fun parse(str: String): DayOfWeek? =
-            values().find { it.name.lowercase() == str.lowercase() }
-    }
 }
 
 data class DateTimeExtractionResult(
