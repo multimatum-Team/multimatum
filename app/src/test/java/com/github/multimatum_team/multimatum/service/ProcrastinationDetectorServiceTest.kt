@@ -131,6 +131,29 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
+    fun toast_should_be_displayed_when_sensor_detected_major_change_even_after_a_call_to_onAccuracyChanged() {
+        val mockSensor: Sensor = mock()
+        val mockSensorEvent: SensorEvent = mock()
+        `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
+            mockSensor
+        )
+        val controller = createTestServiceController()
+        val service = controller.get()
+        service.onAccuracyChanged(mockSensor, 225)
+        simulateEvents(
+            listOf(
+                EventToSimulate(0f, 0f, 0f, 8_000_000_000),
+                EventToSimulate(0f, 0f, 0f, 41_000_000_000),
+                EventToSimulate(10f, 10f, 10f, 44_000_000_000),
+                EventToSimulate(0f, 0f, 0f, 47_000_000_000),
+                EventToSimulate(10f, 10f, 0f, 50_000_000_000),
+            ), mockSensorEvent, service
+        )
+        assertThatLastToastTextWas(applicationContext.getString(R.string.stop_procrastinating_msg))
+        destroyTestServiceController(controller)
+    }
+
+    @Test
     fun toast_should_not_be_displayed_when_sensor_detected_tiny_change() {
         val mockSensor: Sensor = mock()
         val mockSensorEvent: SensorEvent = mock()
