@@ -14,6 +14,8 @@ import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.FirebaseAuthRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.service.SystemClockService
+import com.google.firebase.firestore.FirebaseFirestore
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,14 +50,21 @@ object ClockModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+abstract class RepositoryModule {
     @Singleton
-    @Provides
-    fun provideDeadlineRepository(): DeadlineRepository =
-        FirebaseDeadlineRepository()
+    @Binds
+    abstract fun provideDeadlineRepository(impl: FirebaseDeadlineRepository): DeadlineRepository
 
     @Singleton
+    @Binds
+    abstract fun provideAuthRepository(impl: FirebaseAuthRepository): AuthRepository
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object FirebaseModule {
+    @Singleton
     @Provides
-    fun provideAuthRepository(): AuthRepository =
-        FirebaseAuthRepository()
+    fun provideFirebaseFirestore(): FirebaseFirestore =
+        FirebaseFirestore.getInstance()
 }

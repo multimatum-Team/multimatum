@@ -5,16 +5,13 @@ import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 /**
  * Remote Firebase repository for storing user groups.
  */
-class FirebaseGroupRepository : GroupRepository() {
-    private var database: FirebaseFirestore = Firebase.firestore
-
+class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) : GroupRepository() {
     private val groupsRef = database
         .collection("groups")
 
