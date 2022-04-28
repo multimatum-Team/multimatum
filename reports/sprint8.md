@@ -5,6 +5,20 @@ Sprint 8 summary
 
 ### Joseph
 
+This week I started to work on user groups which will probably take a few
+sprints to reach a minimal viable feature. This sprint I decided to start
+the implementation by defining the groups on the Firebase side. Since I
+have been working a lot on Firebase this semester my time estimates are
+both getting lower and more accurate. Valentin suggested that I could test
+Firebase-dependent code using mocking, which turned out to be indeed
+possible, at the cost of basically reimplementing the entire Firebase logic
+(or rather all the Firebase logic that we use). This let us finally reach the
+80% coverage threshold, and we can increase it even more by applying the same
+technique to currently untested Firebase code from previous weeks. Next
+sprint, Louis will help me by tackling the UI side of the groups features,
+while I will try to implement the viewmodel, and figure out how to use
+Firebase email actions to send invites for people to join our group.
+
 ### Lenny
 
 ### Léo
