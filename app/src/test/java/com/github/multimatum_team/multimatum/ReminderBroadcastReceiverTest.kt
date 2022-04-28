@@ -6,14 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.multimatum_team.multimatum.MainSettingsActivityTest.Companion.mockSharedPreferences
-import com.github.multimatum_team.multimatum.activity.AddDeadlineActivity
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,8 +23,6 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowNotificationManager
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @UninstallModules(DependenciesProvider::class)
 @RunWith(AndroidJUnit4::class)

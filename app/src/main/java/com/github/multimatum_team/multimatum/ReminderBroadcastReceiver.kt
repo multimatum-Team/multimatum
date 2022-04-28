@@ -6,10 +6,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
 import com.github.multimatum_team.multimatum.activity.MainActivity
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

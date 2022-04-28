@@ -13,12 +13,9 @@ import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.ReminderBroadcastReceiver
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.repository.DeadlineID
-import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.service.SystemClockService
 import com.google.gson.Gson
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.ZoneId
-import javax.inject.Inject
 
 
 /**
