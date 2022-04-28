@@ -24,7 +24,7 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
     lateinit var preferences: SharedPreferences
 
     companion object {
-        private val NOTIF_ENABLED_PREF_KEY =
+        private const val NOTIF_ENABLED_PREF_KEY =
             "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.NotifEnabled"
     }
 

@@ -92,13 +92,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
-    private fun retrieveNotificationsTimes(): ArrayList<Long> {
-        val res = ArrayList<Long>()
-        for (checkBox in checkBoxIdTime) {
-            if (findViewById<CheckBox>(checkBox.key).isChecked) res.add(checkBox.value)
-        }
-        return res
-    }
+    private fun retrieveNotificationsTimes(): List<Long> = (checkBoxIdTime.filter { checkBox -> findViewById<CheckBox>(checkBox.key).isChecked }).values.toList()
 
     // This display a DatePickerDialog and afterward a TimePickerDialog to modify the date
     fun changeDateAndTime(view: View) {
@@ -150,6 +144,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     fun saveNotificationSetting(view: View) {
         val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
         DeadlineNotification.editNotification(id, newDeadline, retrieveNotificationsTimes(), this)
+        Toast.makeText(this, getString(R.string.notification_saved), Toast.LENGTH_SHORT).show()
     }
 
     private fun setCheckBoxTexts() {

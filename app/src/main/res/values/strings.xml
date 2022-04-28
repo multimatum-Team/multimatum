@@ -26,6 +26,7 @@
     <string name="TriggerNotif">Trigger Notif</string>
     <string name="add_notification_title">Notify me :</string>
     <string name="saveNotifSetting">Save Notification Setting</string>
+    <string name="notification_saved">Notifications Saved</string>
     <string name="notification">Notifications :</string>
     <string name="notify_before">%1s before</string>
     <!-- TODO: Remove or change this placeholder text -->
