@@ -5,81 +5,98 @@
     android:layout_height="wrap_content"
     android:background="#757575">
 
-  <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_alignParentStart="true"
-      android:layout_alignParentTop="true"
-      android:background="@color/deadline_item_background"
-      android:orientation="horizontal"
-      android:gravity="center_vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/deadline_item_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/deadline_list_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:textSize="18sp"
-        tools:text="Title" />
+        <TextView
+            android:id="@+id/deadline_list_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:textSize="18sp"
+            tools:text="Title" />
 
-    <TextView
-        android:id="@+id/deadline_list_subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/deadline_list_title"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginRight="8dp"
-        android:ellipsize="end"
-        android:maxLines="3"
-        android:textSize="16sp"
-        tools:text="Subtitle" />
+        <TextView
+            android:id="@+id/deadline_list_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/deadline_list_title"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="8dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textSize="16sp"
+            tools:text="Subtitle" />
 
-    <TextView
-        android:id="@+id/deadline_list_detail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:maxLines="1"
-        android:textColor="@color/black"
-        android:textSize="12sp"
-        tools:text="Detail" />
+        <TextView
+            android:id="@+id/deadline_list_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            tools:ignore="RelativeOverlap"
+            tools:text="Detail" />
 
-  </RelativeLayout>
+        <ToggleButton
+            android:id="@+id/deadline_list_check_done"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_below="@+id/deadline_list_detail"
+            android:layout_alignParentEnd="true"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:maxLines="1"
+            android:textColor="#000000"
+            android:textOff="@string/not_done"
+            android:textOn="@string/done"
+            android:textSize="12sp" />
 
-  <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_alignParentStart="true"
-      android:layout_alignParentTop="true"
-      android:orientation="horizontal"
-      android:gravity="center_vertical"
-      android:visibility="gone">
+    </RelativeLayout>
 
-    <TextView
-        android:id="@+id/deadline_list_deleted"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_marginStart="10dp"
-        android:layout_centerVertical="true"
-        android:text="@string/deleted"
-        android:textColor="@color/white" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
 
-    <TextView
-        android:id="@+id/deadline_list_undo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="10dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:clickable="false"
-        android:text="@string/undo" />
+        <TextView
+            android:id="@+id/deadline_list_deleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="25dp"
+            android:text="@string/deleted"
+            android:textColor="@android:color/white" />
 
-  </RelativeLayout>
+        <TextView
+            android:id="@+id/deadline_list_undo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="10dp"
+            android:clickable="false"
+            android:text="@string/undo"
+            tools:ignore="RelativeOverlap" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
 
