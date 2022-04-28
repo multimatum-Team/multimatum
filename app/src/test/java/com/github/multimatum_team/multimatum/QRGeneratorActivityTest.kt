@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.Intent.EXTRA_TEXT
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.nfc.NfcAdapter.EXTRA_ID
 import android.view.View
 import android.widget.ImageView
 import androidx.test.core.app.ActivityScenario
@@ -46,7 +45,6 @@ class QRGeneratorActivityTest {
     @Before
     fun init() {
         Intents.init()
-        val data = Deadline("appeler robert", DeadlineState.TODO, LocalDateTime.now().plusDays(1))
     }
 
     @After
