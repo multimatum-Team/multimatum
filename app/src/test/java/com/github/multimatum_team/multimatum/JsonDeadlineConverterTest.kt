@@ -2,12 +2,13 @@ package com.github.multimatum_team.multimatum
 
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDateTime
 import java.time.Month
 
-class JsonDeadlineConvertertest {
+class JsonDeadlineConverterTest {
     val jsonDeadlineConverter = JsonDeadlineConverter()
 
     @Test

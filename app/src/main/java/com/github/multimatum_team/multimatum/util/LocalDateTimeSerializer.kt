@@ -1,4 +1,4 @@
-package com.github.multimatum_team.multimatum
+package com.github.multimatum_team.multimatum.util
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive

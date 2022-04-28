@@ -2,13 +2,11 @@ package com.github.multimatum_team.multimatum.activity
 
 import android.content.Intent
 import android.content.Intent.EXTRA_TEXT
-import android.nfc.NfcAdapter.EXTRA_ID
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import com.github.multimatum_team.multimatum.R
-import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.QRCodeGenerator
 
 /**
@@ -17,7 +15,7 @@ It receive the id of the deadline with the intent to generate the QRCode.
  */
 class QRGeneratorActivity : AppCompatActivity() {
 
-    lateinit var jsonData: String
+    private lateinit var jsonData: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrgenerator)

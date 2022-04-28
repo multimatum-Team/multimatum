@@ -10,17 +10,11 @@ import com.budiyev.android.codescanner.CodeScannerView
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
-import com.github.multimatum_team.multimatum.JsonDeadlineConverter
-import com.github.multimatum_team.multimatum.LocalDateTimeDeserializer
+import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.github.multimatum_team.multimatum.R
-import com.github.multimatum_team.multimatum.model.Deadline
-import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDateTime
 
 /**
  * The purpose of this activity is to provide the user an interface to scan QR-Codes.
