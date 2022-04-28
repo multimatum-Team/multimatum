@@ -8,9 +8,7 @@ import android.view.View
 import android.widget.ListView
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.longClick
-import androidx.test.espresso.action.ViewActions.swipeLeft
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
@@ -70,7 +68,7 @@ class MainActivityTest {
 
     @Test
     fun goToSetting() {
-        onView(withId(R.id.main_open_settings_but)).perform(ViewActions.click())
+        onView(withId(R.id.main_open_settings_but)).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(MainSettingsActivity::class.java.name),
@@ -98,7 +96,7 @@ class MainActivityTest {
 
     @Test
     fun goToCalendar() {
-        onView(withId(R.id.goToCalendarButton)).perform(ViewActions.click())
+        onView(withId(R.id.goToCalendarButton)).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(CalendarActivity::class.java.name),
@@ -109,7 +107,7 @@ class MainActivityTest {
 
     @Test
     fun goToAddDeadlineActivity() {
-        onView(withId(R.id.main_go_to_add_deadline)).perform(ViewActions.click())
+        onView(withId(R.id.main_go_to_add_deadline)).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(AddDeadlineActivity::class.java.name),
@@ -139,10 +137,10 @@ class MainActivityTest {
 
     @Test
     fun swipeDeadlineTwiceShouldDelete() {
-        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
-            .perform(swipeLeft())
-        onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
-            .perform(swipeLeft())
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView))
+            .atPosition(0).perform(swipeRight())
+        onData(anything()).inAdapterView(withId(R.id.deadlineListView))
+            .atPosition(0).perform(swipeRight())
         onView(withId(R.id.deadlineListView)).check(matches(withListSize(2)))
     }
 
@@ -151,7 +149,7 @@ class MainActivityTest {
         onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
             .perform(swipeLeft())
         onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
-            .perform(ViewActions.click())
+            .perform(click())
         onView(withId(R.id.deadlineListView)).check(matches(withListSize(3)))
     }
 
