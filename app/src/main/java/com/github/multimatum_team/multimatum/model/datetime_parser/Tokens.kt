@@ -75,30 +75,30 @@ object Tokenizer {
     )
 
     /**
+     * @return a pair (leading token, rest of the string)
+     */
+    private fun extractLeadingToken(rem: String): Pair<Token?, String> =
+        if (rem.isEmpty()) {
+            Pair(null, "")
+        } else {
+            val headChar = rem[0]
+            val (matchChar, createToken) = TOKEN_CREATION_FUNCS.find { (matchChar, _) ->
+                matchChar(headChar)
+            } ?: Pair({ _: Char -> false }, ::SymbolToken)
+            val tailChars = rem.substring(1)
+            val tokenTextTail = tailChars.takeWhile(matchChar)
+            val newRem = tailChars.dropWhile(matchChar)
+            val s = headChar + tokenTextTail
+            Pair(createToken(s), newRem)
+        }
+
+    /**
      * Transforms the given string into a list of tokens that correspond to the type of characters
      * that they contain
      */
     fun tokenize(str: String): List<Token> {
 
         val tokens = mutableListOf<Token>()
-
-        /**
-         * @return a pair (leading token, rest of the string)
-         */
-        fun extractLeadingToken(rem: String): Pair<Token?, String> =
-            if (rem.isEmpty()) {
-                Pair(null, "")
-            } else {
-                val headChar = rem[0]
-                val (matchChar, createToken) = TOKEN_CREATION_FUNCS.find { (matchChar, _) ->
-                    matchChar(headChar)
-                } ?: Pair({ _: Char -> false }, ::SymbolToken)
-                val tailChars = rem.substring(1)
-                val tokenTextTail = tailChars.takeWhile(matchChar)
-                val newRem = tailChars.dropWhile(matchChar)
-                val s = headChar + tokenTextTail
-                Pair(createToken(s), newRem)
-            }
 
         /**
          * Iterates on the string and adds the tokens to the list

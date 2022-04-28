@@ -40,9 +40,6 @@ object DateTimeExtractor {
     private fun tokenMatching(cmpStr: String) =
         { tok: Token -> if (tok.str == cmpStr) tok else null }
 
-
-    // WARNING: you are about to read one of the most complicated pieces of code of this project
-    // DISCLAIMER: this would not be necessary if Kotlin implemented pattern matching properly...
     /**
      * All the patterns that the parser should recognize
      *
@@ -88,6 +85,8 @@ object DateTimeExtractor {
      * is applied to the list [15, SymbolToken(":"), 0] and builds an ExtractedTime that contains
      * the time 15:00
      */
+    // Warning: you are about to read one of the most complicated pieces of code of this project
+    // Disclaimer: this would not be necessary if Kotlin implemented pattern matching properly...
     private val PATTERNS: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo>> = listOf(
         listOf(
             Token::asHour,
@@ -120,6 +119,47 @@ object DateTimeExtractor {
     )
 
     /**
+     * Return value of extractDateTimeInfo
+     * @param extractedInfo Time information extracted from the string
+     * @param remaining tokens that remain to be processed (tail of the initial tokens list)
+     * @param consumed the tokens corresponding to the extracted info (first elements of the
+     * initial tokens list)
+     */
+    private data class ExtractionResult(
+        val extractedInfo: ExtractedInfo,
+        val remaining: List<Token>,
+        val consumed: List<Token>
+    )
+
+    /**
+     * Attempts to match each of the patterns with the beginning of the list
+     */
+    private fun extractDateTimeInfo(tokens: List<Token>): ExtractionResult {
+        require(tokens.isNotEmpty())
+        return PATTERNS.asSequence()
+            .filter { (extractors, _) -> extractors.size <= tokens.size }
+            .map { (extractors, createExtractedInfo) ->
+                val curr = tokens.take(extractors.size)
+                val next = tokens.drop(extractors.size)
+                Triple(
+                    extractors.zip(curr).map { (extr, tok) -> extr(tok) },
+                    createExtractedInfo,
+                    Pair(next, curr)
+                )
+            }
+            .find { (args, _, _) -> args.all { it != null } }
+            ?.let { (args, createExtracted, nextAndCurr) ->
+                ExtractionResult(createExtracted(args), nextAndCurr.first, nextAndCurr.second)
+            } ?: ExtractionResult(NoInfo, tokens.drop(1), tokens.subList(0, 1))
+    }
+
+    // replaces the multiple whitespaces (e.g. "     ") by a single whitespace
+    private fun removeMultipleWhitespaces(str: String): String =
+        if (str.contains("  ", ignoreCase = true)) {
+            removeMultipleWhitespaces(str.replace("  ", " ", ignoreCase = true))
+        } else str
+
+    /**
      * Analyzes the given string and uses the patterns above to extract date or time info
      * @return a DateTimeExtractionResult, containing:
      * - the title after removing the date and time info
@@ -130,40 +170,6 @@ object DateTimeExtractor {
 
         // this list will be filled with the tokens that do not provide info on date/time
         val alreadyProcessedTokensWithoutTimeInfo = mutableListOf<Token>()
-
-        /**
-         * Return value of extractDateTimeInfo
-         * @param extractedInfo Time information extracted from the string
-         * @param remaining tokens that remain to be processed (tail of the initial tokens list)
-         * @param consumed the tokens corresponding to the extracted info (first elements of the tokens list)
-         */
-        data class ExtractionResult(
-            val extractedInfo: ExtractedInfo,
-            val remaining: List<Token>,
-            val consumed: List<Token>
-        )
-
-        /**
-         * Attempts to match each of the patterns with the beginning of the list
-         */
-        fun extractDateTimeInfo(tokens: List<Token>): ExtractionResult {
-            require(tokens.isNotEmpty())
-            return PATTERNS.asSequence()
-                .filter { (extractors, _) -> extractors.size <= tokens.size }
-                .map { (extractors, createExtractedInfo) ->
-                    val curr = tokens.take(extractors.size)
-                    val next = tokens.drop(extractors.size)
-                    Triple(
-                        extractors.zip(curr).map { (extr, tok) -> extr(tok) },
-                        createExtractedInfo,
-                        Pair(next, curr)
-                    )
-                }
-                .find { (args, _, _) -> args.all { it != null } }
-                ?.let { (args, createExtracted, nextAndCurr) ->
-                    ExtractionResult(createExtracted(args), nextAndCurr.first, nextAndCurr.second)
-                } ?: ExtractionResult(NoInfo, tokens.drop(1), tokens.subList(0, 1))
-        }
 
         /**
          * Iterates on the list of tokens
@@ -200,12 +206,6 @@ object DateTimeExtractor {
                     }
                 }
             }
-
-        // replaces the multiple whitespaces (e.g. "     ") by a single whitespace
-        fun removeMultipleWhitespaces(str: String): String =
-            if (str.contains("  ", ignoreCase = true)) {
-                removeMultipleWhitespaces(str.replace("  ", " ", ignoreCase = true))
-            } else str
 
         val initTokens = Tokenizer.tokenize(str)
         val (date, time) = recurse(initTokens, null, null)
