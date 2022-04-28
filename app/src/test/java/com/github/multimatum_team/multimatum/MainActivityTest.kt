@@ -192,7 +192,7 @@ class MainActivityTest {
     private fun denyPermission() {
         val application = InstrumentationRegistry.getInstrumentation().targetContext as Application
         val shadowApplication = extract<ShadowApplication>(application)
-        shadowApplication.grantPermissions(
+        shadowApplication.denyPermissions(
             Manifest.permission.CAMERA
         )
     }
