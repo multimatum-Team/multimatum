@@ -125,7 +125,7 @@ class MainActivityTest {
     @Test
     fun buttonOpensQrCodeReader() {
         grantPermission()
-        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+        onView(withId(R.id.goToQrCodeReader)).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(QRCodeReaderActivity::class.java.name),
@@ -136,7 +136,7 @@ class MainActivityTest {
 
     @Test
     fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
-        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
+        onView(withId(R.id.goToQrCodeReader)).perform(click())
         denyPermission()
         onView(withId(R.id.goToQrCodeReader)).check(matches(isDisplayed()))
     }
