@@ -57,29 +57,25 @@
         style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="420dp"
-        android:layout_marginBottom="61dp"
+        android:layout_marginTop="120dp"
         android:background="@drawable/circle_button"
         android:onClick="goQRGenerator"
         android:text="@string/generate_qrcode"
         android:visibility="visible"
         app:icon="@drawable/ic_qr_generator"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due" />
+        app:layout_constraintTop_toBottomOf="@+id/saveNotifSetting" />
 
     <ImageButton
         android:id="@+id/deadline_details_activity_modify"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="333dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="28dp"
         android:onClick="goToModifyOrBack"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due"
         app:srcCompat="@android:drawable/ic_menu_manage"
         tools:ignore="ContentDescription,SpeakableTextPresentCheck,ImageContrastCheck" />
@@ -100,7 +96,7 @@
         android:layout_width="157dp"
         android:layout_height="32dp"
         android:layout_marginStart="29dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="225dp"
         android:text="@string/notification"
         android:textColor="@color/black"
@@ -108,15 +104,13 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due" />
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_modify" />
 
     <CheckBox
         android:id="@+id/radio_notification_1d"
         android:layout_width="160dp"
         android:layout_height="52dp"
         android:layout_marginStart="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/radio_notification_1h"
-        app:layout_constraintEnd_toStartOf="@+id/radio_notification_5h"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -124,11 +118,8 @@
         android:id="@+id/radio_notification_5h"
         android:layout_width="160dp"
         android:layout_height="52dp"
-        android:layout_marginStart="31dp"
         android:layout_marginEnd="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/radio_notification_3d"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/radio_notification_1d"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <CheckBox
@@ -136,9 +127,6 @@
         android:layout_width="160dp"
         android:layout_height="52dp"
         android:layout_marginStart="30dp"
-        android:layout_marginBottom="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/saveNotifSetting"
-        app:layout_constraintEnd_toStartOf="@+id/radio_notification_3d"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radio_notification_1d" />
 
@@ -146,12 +134,8 @@
         android:id="@+id/radio_notification_3d"
         android:layout_width="160dp"
         android:layout_height="52dp"
-        android:layout_marginStart="31dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/saveNotifSetting"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/radio_notification_1h"
         app:layout_constraintTop_toBottomOf="@+id/radio_notification_5h" />
 
     <Button
@@ -161,10 +145,8 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="145dp"
         android:onClick="saveNotificationSetting"
         android:text="@string/saveNotifSetting"
-        app:layout_constraintBottom_toTopOf="@+id/QRCodeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radio_notification_3d" />
