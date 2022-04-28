@@ -8,6 +8,7 @@ import android.hardware.SensorManager
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.multimatum_team.multimatum.activity.MainSettingsActivity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +23,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowNotificationManager
@@ -54,6 +58,13 @@ class ReminderBroadcastReceiverTest {
      */
     @Test
     fun testNotificationLaunchOnReceive() {
+        Mockito.`when`(
+            mockSharedPreferences.getBoolean(
+                eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY),
+                any()
+            )
+        ).thenReturn(true)
+
         val notificationManager =
             ApplicationProvider.getApplicationContext<Context>()
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
