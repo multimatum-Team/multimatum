@@ -24,7 +24,7 @@ class QRCodeReaderActivityTest {
     fun release() {
         Intents.release()
     }
-/*
+
     @Test
     fun shouldNotDisplayScannerWhenPermissionNotGranted() {
         val scenario = ActivityScenario.launch(QRCodeReaderActivity::class.java)
@@ -35,13 +35,13 @@ class QRCodeReaderActivityTest {
                 )
             )
         }
-    }*/
+    }
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
         android.Manifest.permission.CAMERA
     )
-
+/*
     @Test
     fun shouldDisplayScannerWhenPermissionsAreGranted() {
         val scenario = ActivityScenario.launch(QRCodeReaderActivity::class.java)
@@ -49,5 +49,5 @@ class QRCodeReaderActivityTest {
             onView(withId(R.id.scanner_view))
                 .check(ViewAssertions.matches(isDisplayed()))
         }
-    }
+    }*/
 }
