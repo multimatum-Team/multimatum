@@ -74,24 +74,14 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         detailView = findViewById(R.id.deadline_details_activity_done_or_due)
         doneButton = findViewById(R.id.deadline_details_activity_set_done)
 
-        findViewById<CheckBox>(R.id.radio_notification_1h).text =
-            getString(R.string.notify_before, "1 hour")
-        findViewById<CheckBox>(R.id.radio_notification_5h).text =
-            getString(R.string.notify_before, "5 hours")
-        findViewById<CheckBox>(R.id.radio_notification_1d).text =
-            getString(R.string.notify_before, "1 day")
-        findViewById<CheckBox>(R.id.radio_notification_3d).text =
-            getString(R.string.notify_before, "3 days")
-
         // Recuperate the id of the deadline
         id = intent.getStringExtra(EXTRA_ID) as DeadlineID
-        val notifications = DeadlineNotification.listDeadlineNotification(id, this)
-        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1h])) findViewById<CheckBox>(R.id.radio_notification_1h).isChecked = true
-        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_5h])) findViewById<CheckBox>(R.id.radio_notification_5h).isChecked = true
-        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1d])) findViewById<CheckBox>(R.id.radio_notification_1d).isChecked = true
-        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_3d])) findViewById<CheckBox>(R.id.radio_notification_3d).isChecked = true
 
+        //set checkbox caption with the right time string
+        setCheckBoxTexts()
 
+        //retrieve current notification and set checkboxes accordingly
+        setNotificationCheckBox()
 
         // As the viewModel doesn't recuperate immediately the deadlines,
         // we need an update the moment they are fetched
@@ -169,6 +159,24 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     fun saveNotificationSetting(view: View) {
         val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
         DeadlineNotification.editNotification(id, newDeadline, retrieveNotificationsTimes(), this)
+    }
+
+    private fun setCheckBoxTexts(){
+        findViewById<CheckBox>(R.id.radio_notification_1h).text =
+            getString(R.string.notify_before, "1 hour")
+        findViewById<CheckBox>(R.id.radio_notification_5h).text =
+            getString(R.string.notify_before, "5 hours")
+        findViewById<CheckBox>(R.id.radio_notification_1d).text =
+            getString(R.string.notify_before, "1 day")
+        findViewById<CheckBox>(R.id.radio_notification_3d).text =
+            getString(R.string.notify_before, "3 days")
+    }
+    private fun setNotificationCheckBox(){
+        val notifications = DeadlineNotification.listDeadlineNotification(id, this)
+        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1h])) findViewById<CheckBox>(R.id.radio_notification_1h).isChecked = true
+        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_5h])) findViewById<CheckBox>(R.id.radio_notification_5h).isChecked = true
+        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1d])) findViewById<CheckBox>(R.id.radio_notification_1d).isChecked = true
+        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_3d])) findViewById<CheckBox>(R.id.radio_notification_3d).isChecked = true
     }
 
     // Shift the TitleView to a modify state or to a uneditable state

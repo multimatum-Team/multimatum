@@ -162,7 +162,8 @@ object DeadlineNotification {
     private fun setNotification(
         id: String,
         deadline: Deadline,
-        timeBeforeDeadline: Long, context: Context
+        timeBeforeDeadline: Long,
+        context: Context
     ) {
         val alarmManager =
             context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
@@ -192,8 +193,6 @@ object DeadlineNotification {
 
             //set an alarm that will wake up the pending intent (receiver)
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTriggerTimeMS, pendingIntent)
-        } else {
-            Log.i("Not Scheduled", "Alarm time is in the pasts")
         }
     }
 
