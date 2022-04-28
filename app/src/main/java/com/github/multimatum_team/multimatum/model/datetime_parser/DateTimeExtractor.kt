@@ -135,24 +135,31 @@ object DateTimeExtractor {
     private fun extractDateTimeInfo(tokens: List<Token>): ExtractionResult {
         require(tokens.isNotEmpty())
         return PATTERNS.asSequence()
-            .filter { (extractors, _) -> extractors.size <= tokens.size }
-            .map { (extractors, createExtractedInfo) ->
-                val curr = tokens.take(extractors.size)
-                val next = tokens.drop(extractors.size)
+            .filter { (pattern, _) -> pattern.size <= tokens.size }
+            .map { (pattern, createExtractedInfoFunc) ->
+                val currentTokens = tokens.take(pattern.size)
+                val nextTokens = tokens.drop(pattern.size)
                 Triple(
-                    extractors.zip(curr).map { (extr, tok) -> extr(tok) },
-                    createExtractedInfo,
-                    Pair(next, curr)
+                    pattern.zip(currentTokens)
+                        .map { (extractValueFunc, tok) -> extractValueFunc(tok) },
+                    createExtractedInfoFunc,
+                    Pair(nextTokens, currentTokens)
                 )
             }
             .find { (args, _, _) -> args.all { it != null } }
-            ?.let { (args, createExtracted, nextAndCurr) ->
-                ExtractionResult(createExtracted(args), nextAndCurr.first, nextAndCurr.second)
+            ?.let { (args, createExtractedInfoFunc, nextAndCurrTokens) ->
+                ExtractionResult(
+                    createExtractedInfoFunc(args),
+                    nextAndCurrTokens.first,
+                    nextAndCurrTokens.second
+                )
             } ?: ExtractionResult(NoInfo, tokens.drop(1), tokens.subList(0, 1))
     }
 
-    // replaces the multiple whitespaces (e.g. "     ") by a single whitespace
-    private fun removeMultipleWhitespaces(str: String): String =
+    /**
+     * Replaces multiple whitespaces sequences by a single whitespace
+     */
+    private tailrec fun removeMultipleWhitespaces(str: String): String =
         if (str.contains("  ", ignoreCase = true)) {
             removeMultipleWhitespaces(str.replace("  ", " ", ignoreCase = true))
         } else str
