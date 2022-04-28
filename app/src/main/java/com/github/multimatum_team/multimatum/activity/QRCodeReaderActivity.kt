@@ -10,12 +10,16 @@ import com.budiyev.android.codescanner.CodeScannerView
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
+import com.github.multimatum_team.multimatum.JsonDeadlineConverter
+import com.github.multimatum_team.multimatum.LocalDateTimeDeserializer
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
+import java.time.LocalDateTime
 
 /**
  * The purpose of this activity is to provide the user an interface to scan QR-Codes.
@@ -63,9 +67,10 @@ class QRCodeReaderActivity : AppCompatActivity() {
     private fun scanDeadline(scan: String) {
         runOnUiThread {
             try {
-                val deadline = Gson().fromJson(scan, Deadline::class.java)
-                Toast.makeText(this, "Deadline successfully added", Toast.LENGTH_LONG).show()
+                val jsonconverter = JsonDeadlineConverter()
+                val deadline = jsonconverter.fromJson(scan)
                 deadlineListViewModel.addDeadline(deadline)
+                Toast.makeText(this, "Deadline successfully added", Toast.LENGTH_LONG).show()
             }catch (e: JsonSyntaxException){
                 Toast.makeText(this, "provide a valid QRCode please", Toast.LENGTH_LONG).show()
             }
