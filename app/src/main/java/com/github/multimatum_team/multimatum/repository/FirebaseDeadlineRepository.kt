@@ -11,11 +11,12 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
 import java.time.ZoneId
+import javax.inject.Inject
 
 /**
  * Remote Firebase repository for storing deadlines.
  */
-class FirebaseDeadlineRepository : DeadlineRepository() {
+class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
     private var database: FirebaseFirestore = Firebase.firestore
 
     private val deadlinesRef = database
