@@ -29,6 +29,7 @@ Firebase email actions to send invites for people to join our group.
 ### Léo
 
 ### Louis
+I had one task this week that was finnally split into 2 task. To make the QRReader functionning I had to refractor the QRGenerator I made to make it contain all necessary data to create a deadline. I used the Gson lib for this but the LocaldateTime type wasn't taked in charge by Gson so i had to write a serializer and a deserializer to make it work. And after that I got thread problem with the view model before everything work. Next sprint I'll do the UI for the group feature
 
 ### Valentin
 I had 3 tasks to do this week. The first one was to disable the logging methods of LogUtil.kt when the
