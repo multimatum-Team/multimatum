@@ -73,8 +73,6 @@ class MainActivity : AppCompatActivity() {
         setCurrentTheme()
     }
 
-    val context = this
-
     // Set the ListView to delete an item by sweeping it
     // Based on the tutorial:
     // https://demonuts.com/android-listview-swipe-delete/
@@ -91,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                     val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
                     val (idToDelete, _) = adapter.getItem(position)
                     viewModel.deleteDeadline(idToDelete) {
-                        DeadlineNotification.deleteNotification(it, context)
+                        DeadlineNotification.deleteNotification(it, this@MainActivity)
                     }
                     adapter.setDeadlines(viewModel.getDeadlines().value!!)
                 }

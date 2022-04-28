@@ -74,10 +74,10 @@ object DeadlineNotification {
         val notifications = sp.all.keys //key of deadline that have notification
         val existingDeadline = deadlineList.keys //keys of existing deadline
         val editor: SharedPreferences.Editor = sp.edit()
-        for (k in notifications) {
-            if (!existingDeadline.contains(k)) { //if deadlineId isn't in the list of deadline, then remove the notifications
-                editor.remove(k)
-                cancelDeadlineNotifications(k, context)
+        for (notification in notifications) {
+            if (!existingDeadline.contains(notification)) { //if deadlineId isn't in the list of deadline, then remove the notifications
+                editor.remove(notification)
+                cancelDeadlineNotifications(notification, context)
             }
         }
         editor.apply()

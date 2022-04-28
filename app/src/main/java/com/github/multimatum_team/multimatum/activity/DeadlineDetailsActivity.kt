@@ -9,7 +9,6 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
@@ -18,7 +17,6 @@ import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
-import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
@@ -54,13 +52,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     // Set them on default value, waiting the fetch of the deadlines
     private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
     private var state: DeadlineState = DeadlineState.TODO
-
-    private val checkBoxIdTime = mapOf(
-        R.id.radio_notification_1h to Duration.ofHours(1).toMillis(),
-        R.id.radio_notification_5h to Duration.ofHours(5).toMillis(),
-        R.id.radio_notification_1d to Duration.ofDays(1).toMillis(),
-        R.id.radio_notification_3d to Duration.ofDays(3).toMillis()
-    )
 
 
     @SuppressLint("CutPasteId")
@@ -161,22 +152,19 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         DeadlineNotification.editNotification(id, newDeadline, retrieveNotificationsTimes(), this)
     }
 
-    private fun setCheckBoxTexts(){
-        findViewById<CheckBox>(R.id.radio_notification_1h).text =
-            getString(R.string.notify_before, "1 hour")
-        findViewById<CheckBox>(R.id.radio_notification_5h).text =
-            getString(R.string.notify_before, "5 hours")
-        findViewById<CheckBox>(R.id.radio_notification_1d).text =
-            getString(R.string.notify_before, "1 day")
-        findViewById<CheckBox>(R.id.radio_notification_3d).text =
-            getString(R.string.notify_before, "3 days")
+    private fun setCheckBoxTexts() {
+        for ((id, text) in idToText.entries) {
+            findViewById<CheckBox>(id).text =
+                getString(R.string.notify_before, text)
+        }
     }
-    private fun setNotificationCheckBox(){
+
+    private fun setNotificationCheckBox() {
         val notifications = DeadlineNotification.listDeadlineNotification(id, this)
-        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1h])) findViewById<CheckBox>(R.id.radio_notification_1h).isChecked = true
-        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_5h])) findViewById<CheckBox>(R.id.radio_notification_5h).isChecked = true
-        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1d])) findViewById<CheckBox>(R.id.radio_notification_1d).isChecked = true
-        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_3d])) findViewById<CheckBox>(R.id.radio_notification_3d).isChecked = true
+        for (id in checkBoxIdTime.keys) {
+            if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1h]))
+                findViewById<CheckBox>(R.id.radio_notification_1h).isChecked = true
+        }
     }
 
     // Shift the TitleView to a modify state or to a uneditable state
@@ -196,7 +184,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                 id,
                 newDeadline
             )
-            if(state == DeadlineState.DONE) {
+            if (state == DeadlineState.DONE) {
                 DeadlineNotification.deleteNotification(id, this)
             }
         }
@@ -317,6 +305,20 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         private const val EXTRA_ID =
             "com.github.multimatum_team.deadline.details.id"
         private const val IS_DEFAULT_DARK_MODE_ENABLED = false
+
+        private val checkBoxIdTime = mapOf(
+            R.id.radio_notification_1h to Duration.ofHours(1).toMillis(),
+            R.id.radio_notification_5h to Duration.ofHours(5).toMillis(),
+            R.id.radio_notification_1d to Duration.ofDays(1).toMillis(),
+            R.id.radio_notification_3d to Duration.ofDays(3).toMillis()
+        )
+
+        private val idToText: Map<Int, String> = mapOf(
+            R.id.radio_notification_1h to "1 hour",
+            R.id.radio_notification_5h to "5 hours",
+            R.id.radio_notification_1d to "1 day",
+            R.id.radio_notification_3d to "3 days"
+        )
 
         // Launch an Intent to access this activity with a Deadline data
         fun newIntent(context: Context, id: DeadlineID): Intent {
