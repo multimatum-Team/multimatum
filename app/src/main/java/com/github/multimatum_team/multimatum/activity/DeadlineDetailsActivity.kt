@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.TextView
 import android.text.SpannableStringBuilder
@@ -32,6 +34,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     @Inject
     lateinit var clockService: ClockService
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     lateinit var id: DeadlineID
     private var editMode: Boolean = true
@@ -113,22 +118,14 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             else android.R.color.transparent
         )
 
+        adaptToCurrentTheme()
+
         dateView.isClickable = editMode
 
         doneButton.isClickable = editMode
         doneButton.visibility = if (editMode) View.VISIBLE else View.GONE
 
-        // Modify the deadline in the database when you quit the edition mode
-        if (!editMode) {
-            val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
-            deadlineListViewModel.modifyDeadline(
-                id,
-                newDeadline
-            )
-            val deadlineNotification = DeadlineNotification(this)
-            deadlineNotification.editNotification(id, newDeadline, deadlineNotification.listDeadlineNotification(id))
-        }
-
+        updateDeadlineAfterEditionModeExit()
         editMode = editMode.not()
     }
 
@@ -139,6 +136,23 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             if (edit) android.R.drawable.edit_text
             else android.R.color.transparent
         )
+    }
+
+    // Modify the deadline in the database when you quit the edition mode
+    private fun updateDeadlineAfterEditionModeExit() {
+        if (!editMode) {
+            val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
+            deadlineListViewModel.modifyDeadline(
+                id,
+                newDeadline
+            )
+            val deadlineNotification = DeadlineNotification(this)
+            deadlineNotification.editNotification(
+                id,
+                newDeadline,
+                deadlineNotification.listDeadlineNotification(id)
+            )
+        }
     }
 
     // When we go the first time to the Modify Mode, it happened that the TextView
@@ -156,7 +170,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     // This function setup the observer to update the information shown when the
     // deadline are updated
-    private fun setDeadlineObserver(){
+    private fun setDeadlineObserver() {
         deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
             // Recuperate the data from the deadline
             val deadline = deadlines[id]!!
@@ -228,6 +242,20 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
+    // Change the color of the date and title views according to the theme
+    private fun adaptToCurrentTheme() {
+        val isNightMode = sharedPreferences.getBoolean(
+            MainSettingsActivity.DARK_MODE_PREF_KEY,
+            IS_DEFAULT_DARK_MODE_ENABLED
+        )
+        val textColor = if (editMode) Color.BLACK else Color.WHITE
+
+        if (isNightMode) {
+            dateView.setTextColor(textColor)
+            titleView.setTextColor(textColor)
+        }
+    }
+
     /**
      * @param View: the current view
      * when clicking ont the button create an intent to launch the QR activity
@@ -241,6 +269,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_ID =
             "com.github.multimatum_team.deadline.details.id"
+        private const val IS_DEFAULT_DARK_MODE_ENABLED = false
 
         // Launch an Intent to access this activity with a Deadline data
         fun newIntent(context: Context, id: DeadlineID): Intent {
