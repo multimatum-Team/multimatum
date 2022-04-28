@@ -22,22 +22,18 @@ import javax.inject.Inject
 
 
 /**
- * This service provides function to manage notifications
+ * This provides util function to manage notifications
  * It provide functions to access and modifiy notifications that are set for a deadline,
  * A function that verify that notification are bound to existing deadline,
  * and a function to create notification channel
  */
-class DeadlineNotification(context: Context) {
-    private lateinit var alarmManager: AlarmManager
-    private lateinit var pendingIntent: PendingIntent
-    private val context= context
-
+object DeadlineNotification {
 
     /**
      * return a list of all notifications set for this deadline
      */
-    fun listDeadlineNotification(deadlineId: DeadlineID): List<Long> {
-        val res = readFromSharedPreference(deadlineId)
+    fun listDeadlineNotification(deadlineId: DeadlineID, context: Context): List<Long> {
+        val res = readFromSharedPreference(deadlineId, context)
         //this is just to remove decimal to the number
         return res.map { it.toLong() }
     }
@@ -45,19 +41,24 @@ class DeadlineNotification(context: Context) {
     /**
      * edit Notification for a given deadline
      */
-    fun editNotification(deadlineId: DeadlineID, deadline: Deadline, newNotificationTime: List<Long>) {
-        cancelDeadlineNotifications(deadlineId)
-        writeToSharedPreference(deadlineId, newNotificationTime)
-        setDeadlineNotifications(deadlineId, deadline, newNotificationTime)
-        //logNotificationSP()
+    fun editNotification(
+        deadlineId: DeadlineID,
+        deadline: Deadline,
+        newNotificationTime: List<Long>,
+        context: Context
+    ) {
+        cancelDeadlineNotifications(deadlineId, context)
+        writeToSharedPreference(deadlineId, newNotificationTime, context)
+        setDeadlineNotifications(deadlineId, deadline, newNotificationTime, context)
+        //logNotificationSP(context)
     }
 
     /**
      * delete all notification for a given deadline
      */
-    fun deleteNotification(deadlineId: DeadlineID) {
-        cancelDeadlineNotifications(deadlineId)
-        writeToSharedPreference(deadlineId, emptyList())
+    fun deleteNotification(deadlineId: DeadlineID, context: Context) {
+        cancelDeadlineNotifications(deadlineId, context)
+        writeToSharedPreference(deadlineId, emptyList(), context)
         //logNotificationSP()
     }
 
@@ -65,7 +66,7 @@ class DeadlineNotification(context: Context) {
      * Iterate through existing notification to ensure that there isn't any notification that aren't bound to a deadline.
      * If such a notification is detected, it'll delete it.
      */
-    fun updateNotifications(deadlineList:Map<DeadlineID, Deadline>) {
+    fun updateNotifications(deadlineList: Map<DeadlineID, Deadline>, context: Context) {
         val sp = context.getSharedPreferences(
             context.getString(R.string.notification_shared_preference),
             Context.MODE_PRIVATE
@@ -73,10 +74,10 @@ class DeadlineNotification(context: Context) {
         val notifications = sp.all.keys //key of deadline that have notification
         val existingDeadline = deadlineList.keys //keys of existing deadline
         val editor: SharedPreferences.Editor = sp.edit()
-        for(k in notifications) {
-            if (!existingDeadline.contains(k)){ //if deadlineId isn't in the list of deadline, then remove the notifications
+        for (k in notifications) {
+            if (!existingDeadline.contains(k)) { //if deadlineId isn't in the list of deadline, then remove the notifications
                 editor.remove(k)
-                cancelDeadlineNotifications(k)
+                cancelDeadlineNotifications(k, context)
             }
         }
         editor.apply()
@@ -86,7 +87,7 @@ class DeadlineNotification(context: Context) {
     /**
      * write an array of notification mapped to the daedline id to a sharedpreference file for storing notifications
      */
-    private fun writeToSharedPreference(id: String, value: List<Long>) {
+    private fun writeToSharedPreference(id: String, value: List<Long>, context: Context) {
         val jsonString = Gson().toJson(value)
         val sharedPref: SharedPreferences = context.getSharedPreferences(
             context.getString(R.string.notification_shared_preference),
@@ -101,28 +102,28 @@ class DeadlineNotification(context: Context) {
      * read the array of notification mapped to this daedline id from a sharedpreference file
      * return an empty list if there isn't any notification set for this deadline
      */
-    private fun readFromSharedPreference(id: String): List<Long> {
+    private fun readFromSharedPreference(id: String, context: Context): List<Long> {
         val jsonString = context.getSharedPreferences(
             context.getString(R.string.notification_shared_preference),
             Context.MODE_PRIVATE
         ).getString(id, "0")
-        if(jsonString == "0") return ArrayList<Long>()
+        if (jsonString == "0") return ArrayList<Long>()
         return Gson().fromJson(jsonString, ArrayList<Long>()::class.java)
     }
 
     /**
      * cancel all the notification for all deadlines
      */
-    private fun cancelAllNotification() {
+    private fun cancelAllNotification(context: Context) {
         val sharedPref = context.getSharedPreferences(
             context.getString(R.string.notification_shared_preference),
             Context.MODE_PRIVATE
         )
         val sharedPreferencesMap: Map<String, *> = sharedPref.all
-        for((k, v) in sharedPreferencesMap){
-            if (v.toString() !="0") {
-                cancelDeadlineNotifications(k)
-                writeToSharedPreference(k, emptyList())
+        for ((k, v) in sharedPreferencesMap) {
+            if (v.toString() != "0") {
+                cancelDeadlineNotifications(k, context)
+                writeToSharedPreference(k, emptyList(), context)
             }
         }
     }
@@ -132,7 +133,7 @@ class DeadlineNotification(context: Context) {
     Creating an existing notification channel with its original values performs no operation,
     so it's safe to call this code when starting an app.
      */
-    fun createNotificationChannel() {
+    fun createNotificationChannel(context: Context) {
         val channelName: CharSequence = "reminders channel"
         val description = "channel for reminders notifications"
         val channel = NotificationChannel(
@@ -161,9 +162,9 @@ class DeadlineNotification(context: Context) {
     private fun setNotification(
         id: String,
         deadline: Deadline,
-        timeBeforeDeadline: Long
+        timeBeforeDeadline: Long, context: Context
     ) {
-        alarmManager =
+        val alarmManager =
             context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
         val intent = Intent(
             context,
@@ -176,17 +177,18 @@ class DeadlineNotification(context: Context) {
         intent.putExtra("id", id)
 
         //compute the time where the alarm will be triggered in millis.
-        val alarmTriggerTimeMS:Long = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
+        val alarmTriggerTimeMS: Long = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()
             .toEpochMilli() - timeBeforeDeadline
-        if(alarmTriggerTimeMS>=SystemClockService().now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()) { //set notification only if it is trigger in the future
+        if (alarmTriggerTimeMS >= SystemClockService().now().atZone(ZoneId.systemDefault())
+                .toInstant().toEpochMilli()
+        ) { //set notification only if it is trigger in the future
             //set the receiver as pending intent
-            pendingIntent =
-                PendingIntent.getBroadcast(
-                    context,
-                    id.hashCode(),
-                    intent,
-                    PendingIntent.FLAG_IMMUTABLE
-                )
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                id.hashCode(),
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
 
             //set an alarm that will wake up the pending intent (receiver)
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTriggerTimeMS, pendingIntent)
@@ -198,22 +200,27 @@ class DeadlineNotification(context: Context) {
     /**
      * Set all the notification of a deadline's notificationsTimes list.
      */
-    private fun setDeadlineNotifications(deadlineId: DeadlineID, deadline: Deadline, notificationTimes: List<Long>) {
+    private fun setDeadlineNotifications(
+        deadlineId: DeadlineID,
+        deadline: Deadline,
+        notificationTimes: List<Long>,
+        context: Context
+    ) {
         for (notifTime in notificationTimes) {
-            setNotification(deadlineId + notifTime.toString(), deadline, notifTime)
+            setNotification(deadlineId + notifTime.toString(), deadline, notifTime, context)
         }
     }
 
     /**
      * Delete a notification
      */
-    private fun cancelNotification(notificationTag: String) {
+    private fun cancelNotification(notificationTag: String, context: Context) {
         val intent = Intent(
             context,
             ReminderBroadcastReceiver::class.java
         ) //this create an intent of broadcast receiver
 
-        pendingIntent =
+        val pendingIntent =
             PendingIntent.getBroadcast(
                 context,
                 notificationTag.hashCode(),
@@ -221,7 +228,7 @@ class DeadlineNotification(context: Context) {
                 PendingIntent.FLAG_IMMUTABLE
             )
 
-        alarmManager =
+        val alarmManager =
             context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
         alarmManager.cancel(pendingIntent)
     }
@@ -229,23 +236,23 @@ class DeadlineNotification(context: Context) {
     /**
      * delete all notification of a deadline's notificationsTimes list.
      */
-    private fun cancelDeadlineNotifications(deadlineId: DeadlineID) {
-        val notificationTimes: List<Long> = readFromSharedPreference(deadlineId)
+    private fun cancelDeadlineNotifications(deadlineId: DeadlineID, context: Context) {
+        val notificationTimes: List<Long> = readFromSharedPreference(deadlineId, context)
         for (notifTime in notificationTimes) {
-            cancelNotification(deadlineId + notifTime.toString())
+            cancelNotification(deadlineId + notifTime.toString(), context)
         }
     }
 
     /**
      * tool function to log the current sharedPreference file of notification
      */
-    private fun logNotificationSP() {
+    private fun logNotificationSP(context: Context) {
         Log.i("Notification", "list of notification in sp")
         val notifications: Map<DeadlineID, *> = context.getSharedPreferences(
             context.getString(R.string.notification_shared_preference),
             Context.MODE_PRIVATE
         ).all
-        for ((k, v) in notifications){
+        for ((k, v) in notifications) {
             Log.i(k, v.toString())
         }
     }

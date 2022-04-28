@@ -54,15 +54,15 @@
 
     <Button
         android:id="@+id/QRCodeButton"
+        style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="420dp"
         android:background="@drawable/circle_button"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-        app:icon="@drawable/ic_qr_generator"
         android:onClick="goQRGenerator"
         android:text="@string/generate_qrcode"
         android:visibility="visible"
+        app:icon="@drawable/ic_qr_generator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -90,5 +90,62 @@
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/deadline_details_activity_modify"
         app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="157dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="84dp"
+        android:text="@string/notification"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due"
+        tools:layout_editor_absoluteX="29dp" />
+
+    <CheckBox
+        android:id="@+id/radio_notification_1d"
+        android:layout_width="160dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <CheckBox
+        android:id="@+id/radio_notification_5h"
+        android:layout_width="160dp"
+        android:layout_height="52dp"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <CheckBox
+        android:id="@+id/radio_notification_1h"
+        android:layout_width="160dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radio_notification_1d" />
+
+    <CheckBox
+        android:id="@+id/radio_notification_3d"
+        android:layout_width="160dp"
+        android:layout_height="52dp"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radio_notification_5h" />
+
+    <Button
+        android:id="@+id/saveNotifSetting"
+        android:layout_width="352dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="30dp"
+        android:onClick="saveNotificationSetting"
+        android:text="@string/saveNotifSetting"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radio_notification_3d" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

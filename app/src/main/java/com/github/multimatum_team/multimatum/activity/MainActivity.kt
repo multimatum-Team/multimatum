@@ -39,8 +39,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
-    private val deadlineNotification:DeadlineNotification = DeadlineNotification(this)
-
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -61,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //create notification channel
-        deadlineNotification.createNotificationChannel()
+        DeadlineNotification.createNotificationChannel(this)
 
         // Set when you maintain your finger on an item of the list, launch the detail activity
         listView.setOnItemLongClickListener { _, _, position, _ ->
@@ -75,6 +73,8 @@ class MainActivity : AppCompatActivity() {
         setDeleteOnSweep(listView, deadlineListViewModel)
         setCurrentTheme()
     }
+
+    val context = this
 
     // Set the ListView to delete an item by sweeping it
     // Based on the tutorial:
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                     val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
                     val (idToDelete, _) = adapter.getItem(position)
                     viewModel.deleteDeadline(idToDelete) {
-                        deadlineNotification.deleteNotification(it)
+                        DeadlineNotification.deleteNotification(it, context)
                     }
                     adapter.setDeadlines(viewModel.getDeadlines().value!!)
 

@@ -1,12 +1,13 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import android.text.SpannableStringBuilder
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
@@ -15,13 +16,16 @@ import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
+import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
@@ -46,6 +50,15 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
     private var state: DeadlineState = DeadlineState.TODO
 
+    private val checkBoxIdTime = mapOf(
+        R.id.radio_notification_1h to Duration.ofHours(1).toMillis(),
+        R.id.radio_notification_5h to Duration.ofHours(5).toMillis(),
+        R.id.radio_notification_1d to Duration.ofDays(1).toMillis(),
+        R.id.radio_notification_3d to Duration.ofDays(3).toMillis()
+    )
+
+
+    @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
@@ -56,8 +69,24 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         detailView = findViewById(R.id.deadline_details_activity_done_or_due)
         doneButton = findViewById(R.id.deadline_details_activity_set_done)
 
+        findViewById<CheckBox>(R.id.radio_notification_1h).text =
+            getString(R.string.notify_before, "1 hour")
+        findViewById<CheckBox>(R.id.radio_notification_5h).text =
+            getString(R.string.notify_before, "5 hours")
+        findViewById<CheckBox>(R.id.radio_notification_1d).text =
+            getString(R.string.notify_before, "1 day")
+        findViewById<CheckBox>(R.id.radio_notification_3d).text =
+            getString(R.string.notify_before, "3 days")
+
         // Recuperate the id of the deadline
         id = intent.getStringExtra(EXTRA_ID) as DeadlineID
+        val notifications = DeadlineNotification.listDeadlineNotification(id, this)
+        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1h])) findViewById<CheckBox>(R.id.radio_notification_1h).isChecked = true
+        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_5h])) findViewById<CheckBox>(R.id.radio_notification_5h).isChecked = true
+        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1d])) findViewById<CheckBox>(R.id.radio_notification_1d).isChecked = true
+        if (notifications.contains(checkBoxIdTime[R.id.radio_notification_3d])) findViewById<CheckBox>(R.id.radio_notification_3d).isChecked = true
+
+
 
         // As the viewModel doesn't recuperate immediately the deadlines,
         // we need an update the moment they are fetched
@@ -75,6 +104,14 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Set the detail text to inform the user if it is due, done or the remaining time
         updateDetail()
 
+    }
+
+    private fun retrieveNotificationsTimes(): ArrayList<Long> {
+        val res = ArrayList<Long>()
+        for (checkBox in checkBoxIdTime) {
+            if (findViewById<CheckBox>(checkBox.key).isChecked) res.add(checkBox.value)
+        }
+        return res
     }
 
     // This display a DatePickerDialog and afterward a TimePickerDialog to modify the date
@@ -125,11 +162,17 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                 id,
                 newDeadline
             )
-            val deadlineNotification = DeadlineNotification(this)
-            deadlineNotification.editNotification(id, newDeadline, deadlineNotification.listDeadlineNotification(id))
+            if(state == DeadlineState.DONE) {
+                DeadlineNotification.deleteNotification(id, this)
+            }
         }
 
         editMode = editMode.not()
+    }
+
+    fun saveNotificationSetting(view: View) {
+        val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
+        DeadlineNotification.editNotification(id, newDeadline, retrieveNotificationsTimes(), this)
     }
 
     // Shift the TitleView to a modify state or to a uneditable state
