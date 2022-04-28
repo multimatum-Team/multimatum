@@ -4,12 +4,14 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.hardware.SensorManager
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -68,10 +70,13 @@ class ReminderBroadcastReceiverTest {
 
         @Provides
         fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
+
+        @Provides
+        fun provideSensorManager(@ApplicationContext context: Context): SensorManager = DependenciesProvider.provideSensorManager(context)
     }
 
     companion object {
-        val mockSharedPreferences: SharedPreferences = mock()
+        private val mockSharedPreferences: SharedPreferences = mock()
     }
 
 }
