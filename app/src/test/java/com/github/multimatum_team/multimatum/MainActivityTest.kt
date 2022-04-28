@@ -1,9 +1,10 @@
 package com.github.multimatum_team.multimatum
 
+import android.Manifest
+import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.hardware.SensorManager
-import android.os.Build
 import android.view.View
 import android.widget.ListView
 import androidx.test.espresso.Espresso.onData
@@ -12,11 +13,11 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiSelector
 import com.github.multimatum_team.multimatum.activity.*
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -41,12 +42,17 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
+import org.robolectric.shadow.api.Shadow.extract
+import org.robolectric.shadows.ShadowApplication
 import java.time.LocalDateTime
 import javax.inject.Singleton
 
+
 @UninstallModules(DependenciesProvider::class, RepositoryModule::class)
 @HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
 class MainActivityTest {
 
     @get:Rule(order = 0)
@@ -116,24 +122,24 @@ class MainActivityTest {
         )
     }
 
-//    @Test
-//    fun buttonOpensQrCodeReader() {
-//        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
-//        grantPermission()
-//        Intents.intended(
-//            allOf(
-//                hasComponent(QRCodeReaderActivity::class.java.name),
-//                toPackage("com.github.multimatum_team.multimatum")
-//            )
-//        )
-//    }
+    @Test
+    fun buttonOpensQrCodeReader() {
+        grantPermission()
+        onView(withId(R.id.goToQrCodeReader)).perform(click())
+        Intents.intended(
+            allOf(
+                hasComponent(QRCodeReaderActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+    }
 
-//    @Test
-//    fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
-//        onView(withId(R.id.goToQrCodeReader)).perform(ViewActions.click())
-//        denyPermission()
-//        onView(withId(R.id.goToQrCodeReader)).check(matches(ViewMatchers.isDisplayed()))
-//    }
+    @Test
+    fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
+        onView(withId(R.id.goToQrCodeReader)).perform(click())
+        denyPermission()
+        onView(withId(R.id.goToQrCodeReader)).check(matches(isDisplayed()))
+    }
 
     @Test
     fun swipeDeadlineTwiceShouldDelete() {
@@ -175,32 +181,20 @@ class MainActivityTest {
     https://alexzh.com/ui-testing-of-android-runtime-permissions/
      */
     private fun grantPermission() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val allowPermission = UiDevice.getInstance(instrumentation).findObject(
-            UiSelector().text(
-                when {
-                    Build.VERSION.SDK_INT <= 28 -> "ALLOW"
-                    Build.VERSION.SDK_INT == 29 -> "Allow only while using the app"
-                    else -> "While using the app"
-                }
-            )
+        val application = InstrumentationRegistry.getInstrumentation().targetContext as Application
+        val shadowApplication = extract<ShadowApplication>(application)
+        shadowApplication.grantPermissions(
+            Manifest.permission.CAMERA
         )
-        assert(allowPermission.exists())
-        allowPermission.click()
+
     }
 
     private fun denyPermission() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val denyPermission = UiDevice.getInstance(instrumentation).findObject(
-            UiSelector().text(
-                when (Build.VERSION.SDK_INT) {
-                    in 26..28 -> "DENY"
-                    else -> "Deny"
-                }
-            )
+        val application = InstrumentationRegistry.getInstrumentation().targetContext as Application
+        val shadowApplication = extract<ShadowApplication>(application)
+        shadowApplication.denyPermissions(
+            Manifest.permission.CAMERA
         )
-        assert(denyPermission.exists())
-        denyPermission.click()
     }
 
     @Module
