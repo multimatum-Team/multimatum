@@ -45,7 +45,7 @@
             android:inputType="text"
             android:maxLines="1"
             android:imeOptions="actionDone"
-            android:textColorHint="#616161"
+            android:textColorHint="@color/gray_variation_text"
             tools:ignore="TextContrastCheck,TextContrastCheck" />
     </com.google.android.material.textfield.TextInputLayout>
 

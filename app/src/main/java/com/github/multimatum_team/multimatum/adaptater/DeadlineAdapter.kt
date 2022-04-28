@@ -9,17 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import android.widget.ToggleButton
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import java.time.temporal.ChronoUnit
-import java.util.*
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -32,22 +33,26 @@ Class which is used to show the deadline in a clear list.
 Based on the tutorial:
 https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
  */
-class DeadlineAdapter(private val context: Context) : BaseAdapter() {
+class DeadlineAdapter(
+    private val context: Context,
+    private val deadlineListViewModel: DeadlineListViewModel
+) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline
         const val URGENT_THRESHOLD_DAYS = 5
         const val PRESSING_THRESHOLD_DAYS = 10
 
+
         private fun sortDeadline(deadlines: Map<DeadlineID, Deadline>): List<Pair<DeadlineID, Deadline>> {
-            val partition = DeadlineState.values().associate {
-                state -> Pair<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>>(state, mutableListOf())
+            val partition = DeadlineState.values().associate { state ->
+                Pair<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>>(state, mutableListOf())
             }.toMap()
-            for ((id, deadline) in deadlines.entries){
+            for ((id, deadline) in deadlines.entries) {
                 partition[deadline.state]!!.add(Pair(id, deadline))
             }
 
             val result: MutableList<Pair<DeadlineID, Deadline>> = mutableListOf()
-            for (state in DeadlineState.values()){
+            for (state in DeadlineState.values()) {
                 result.addAll(partition[state]!!.sortedBy { it.second.dateTime })
             }
             return result
@@ -92,8 +97,10 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         val subtitleTextView = rowView.findViewById<TextView>(R.id.deadline_list_subtitle)
         // Get detail element
         val detailTextView = rowView.findViewById<TextView>(R.id.deadline_list_detail)
+        // Get Checkbox
+        val doneCheckbox = rowView.findViewById<ToggleButton>(R.id.deadline_list_check_done)
 
-        val (_, deadline) = getItem(position)
+        val (id, deadline) = getItem(position)
 
         // Show the title
         titleTextView.text = deadline.title
@@ -108,15 +115,31 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
         subtitleTextView.setTypeface(null, Typeface.ITALIC)
 
         // Show how much time left or if it is due or done.
+        updateDetails(detailTextView, deadline)
+
+        // Set the checkbox
+        doneCheckbox.isChecked = (deadline.state == DeadlineState.DONE)
+        doneCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            val newDeadline =
+                deadline.copy(state = if (isChecked) DeadlineState.DONE else DeadlineState.TODO)
+            updateDetails(detailTextView, newDeadline)
+            deadlineListViewModel.modifyDeadline(id, newDeadline)
+        }
+        return rowView
+    }
+
+    private fun updateDetails(detailTextView: TextView, deadline: Deadline) {
         val detail: String
         when {
             deadline.state == DeadlineState.DONE -> {
                 detail = context.getString(R.string.done)
                 detailTextView.setTextColor(Color.GREEN)
-                detailTextView.setTypeface(null, Typeface.BOLD)
+                detailTextView.setTypeface(detailTextView.typeface, Typeface.BOLD)
             }
             clockService.now() > deadline.dateTime -> {
                 detail = context.getString(R.string.isAlreadyDue)
+                detailTextView.setTextColor(Color.BLACK)
+                detailTextView.setTypeface(detailTextView.typeface, Typeface.NORMAL)
             }
             else -> {
                 val timeRemaining = clockService.now().until(deadline.dateTime, ChronoUnit.DAYS)
@@ -133,15 +156,14 @@ class DeadlineAdapter(private val context: Context) : BaseAdapter() {
                 // If the remaining days is too small, put the text in red or orange
                 if (timeRemaining < URGENT_THRESHOLD_DAYS) {
                     detailTextView.setTextColor(Color.RED)
-                    detailTextView.setTypeface(null, Typeface.BOLD)
+                    detailTextView.setTypeface(detailTextView.typeface, Typeface.BOLD)
                 } else if (timeRemaining < PRESSING_THRESHOLD_DAYS) {
                     detailTextView.setTextColor(Color.rgb(255, 165, 0))
-                    detailTextView.setTypeface(null, Typeface.BOLD)
+                    detailTextView.setTypeface(detailTextView.typeface, Typeface.BOLD)
                 }
             }
         }
         detailTextView.text = detail
-        return rowView
     }
 
 }
