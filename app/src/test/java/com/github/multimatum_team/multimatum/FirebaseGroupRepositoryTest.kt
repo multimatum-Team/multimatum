@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.FirebaseGroupRepository
-import com.github.multimatum_team.multimatum.util.MockFirestore
+import com.github.multimatum_team.multimatum.util.MockFirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -16,6 +16,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -96,13 +97,21 @@ class FirebaseGroupRepositoryTest {
         )
     }
 
+    @Test
+    fun `Creating a group notifies the owner`() = runTest {
+        var notified = false
+        repository.onUpdate { notified = true }
+        repository.create("Group 4")
+        assertTrue(notified)
+    }
+
     @Module
     @InstallIn(SingletonComponent::class)
     object TestFirebaseModule {
         @Singleton
         @Provides
         fun provideFirebaseFirestore(): FirebaseFirestore =
-            MockFirestore(
+            MockFirebaseFirestore(
                 listOf(
                     UserGroup("0", "Group 1", "0", setOf("0", "1", "2")),
                     UserGroup("1", "Group 2", "1", setOf("0", "1")),
