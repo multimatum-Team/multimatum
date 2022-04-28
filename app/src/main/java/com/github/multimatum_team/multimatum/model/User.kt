@@ -4,15 +4,16 @@ typealias UserID = String
 
 /**
  * Model for users.
- * @param id an unique identifier provided by the user repository
  */
-sealed class User(open val id: UserID)
+sealed interface User {
+    val id: UserID
+}
 
 /**
  * A model for users that have not yet signed-in using an e-mail.
  * @param id an unique identifier provided by the user repository
  */
-data class AnonymousUser(override val id: UserID) : User(id)
+data class AnonymousUser(override val id: UserID) : User
 
 /**
  * A model for users that have signed-in with an e-mail.
@@ -22,4 +23,4 @@ data class AnonymousUser(override val id: UserID) : User(id)
 data class SignedInUser(
     override val id: UserID,
     val email: String
-) : User(id)
+) : User
