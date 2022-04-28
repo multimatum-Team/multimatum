@@ -19,6 +19,6 @@ internal class LocalDateTimeSerializer : JsonSerializer<LocalDateTime?> {
     }
 
     companion object {
-        private val formatter = DateTimeFormatter.ofPattern("d::MMM::uuuu HH::mm::ss")
+        private val formatter = DateTimeFormatter.ofPattern("d::MM::uuuu HH::mm::ss")
     }
 }

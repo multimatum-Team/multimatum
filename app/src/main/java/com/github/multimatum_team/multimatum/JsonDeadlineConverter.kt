@@ -8,7 +8,7 @@ class JsonDeadlineConverter {
     val gsonBuilder = GsonBuilder().registerTypeAdapter(LocalDateTime::class.java,
         LocalDateTimeSerializer()).registerTypeAdapter(LocalDateTime::class.java,
         LocalDateTimeDeserializer())
-    val gson = gsonBuilder.setPrettyPrinting().create()
+    val gson = gsonBuilder.create()
 
     fun toJson(deadline: Deadline): String? {
       return  gson.toJson(deadline)

@@ -18,7 +18,7 @@ internal class LocalDateTimeDeserializer : JsonDeserializer<LocalDateTime?> {
     override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?):
             LocalDateTime {
         return LocalDateTime.parse(json.asString,
-            DateTimeFormatter.ofPattern("d::MMM::uuuu HH::mm::ss").withLocale(Locale.ENGLISH)
+            DateTimeFormatter.ofPattern("d::MM::uuuu HH::mm::ss").withLocale(Locale.ENGLISH)
         )
     }
 }
