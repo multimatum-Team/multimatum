@@ -85,8 +85,6 @@ object DateTimeExtractor {
      * is applied to the list [15, SymbolToken(":"), 0] and builds an ExtractedTime that contains
      * the time 15:00
      */
-    // Warning: you are about to read one of the most complicated pieces of code of this project
-    // Disclaimer: this would not be necessary if Kotlin implemented pattern matching properly...
     private val PATTERNS: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo>> = listOf(
         listOf(
             Token::asHour,
@@ -160,6 +158,43 @@ object DateTimeExtractor {
         } else str
 
     /**
+     * Iterates on the list of tokens
+     */
+    private tailrec fun recursivelyParse(
+        remTokens: List<Token>,
+        date: Date?,
+        time: LocalTime?,
+        alreadyProcessedTokensList: MutableList<Token>
+    ): Pair<Date?, LocalTime?> =
+        if (remTokens.isEmpty()) {
+            Pair(date, time)  // end of list, return found info
+        } else {
+            val (extractedInfo, newRemTokens, consumed) = extractDateTimeInfo(remTokens)
+            when (extractedInfo) {
+                is ExtractedDate -> {
+                    // if a date has already been found, ignore the newly found one (treat it as normal text)
+                    val newDate = date ?: extractedInfo.date
+                    if (date != null) {
+                        alreadyProcessedTokensList.addAll(consumed)
+                    }
+                    recursivelyParse(newRemTokens, newDate, time, alreadyProcessedTokensList)
+                }
+                is ExtractedTime -> {
+                    // if a time has already been found, ignore the newly found one (treat it as normal text)
+                    val newTime = time ?: extractedInfo.time
+                    if (time != null) {
+                        alreadyProcessedTokensList.addAll(consumed)
+                    }
+                    recursivelyParse(newRemTokens, date, newTime, alreadyProcessedTokensList)
+                }
+                is NoInfo -> {
+                    alreadyProcessedTokensList.addAll(consumed)
+                    recursivelyParse(newRemTokens, date, time, alreadyProcessedTokensList)
+                }
+            }
+        }
+
+    /**
      * Analyzes the given string and uses the patterns above to extract date or time info
      * @return a DateTimeExtractionResult, containing:
      * - the title after removing the date and time info
@@ -171,44 +206,13 @@ object DateTimeExtractor {
         // this list will be filled with the tokens that do not provide info on date/time
         val alreadyProcessedTokensWithoutTimeInfo = mutableListOf<Token>()
 
-        /**
-         * Iterates on the list of tokens
-         */
-        tailrec fun recurse(
-            remTokens: List<Token>,
-            date: Date?,
-            time: LocalTime?
-        ): Pair<Date?, LocalTime?> =
-            if (remTokens.isEmpty()) {
-                Pair(date, time)  // end of list, return found info
-            } else {
-                val (extractedInfo, newRemTokens, consumed) = extractDateTimeInfo(remTokens)
-                when (extractedInfo) {
-                    is ExtractedDate -> {
-                        // if a date has already been found, ignore the newly found one (treat it as normal text)
-                        val newDate = date ?: extractedInfo.date
-                        if (date != null) {
-                            alreadyProcessedTokensWithoutTimeInfo.addAll(consumed)
-                        }
-                        recurse(newRemTokens, newDate, time)
-                    }
-                    is ExtractedTime -> {
-                        // if a time has already been found, ignore the newly found one (treat it as normal text)
-                        val newTime = time ?: extractedInfo.time
-                        if (time != null) {
-                            alreadyProcessedTokensWithoutTimeInfo.addAll(consumed)
-                        }
-                        recurse(newRemTokens, date, newTime)
-                    }
-                    is NoInfo -> {
-                        alreadyProcessedTokensWithoutTimeInfo.addAll(consumed)
-                        recurse(newRemTokens, date, time)
-                    }
-                }
-            }
-
         val initTokens = Tokenizer.tokenize(str)
-        val (date, time) = recurse(initTokens, null, null)
+        val (date, time) = recursivelyParse(
+            initTokens,
+            null,
+            null,
+            alreadyProcessedTokensWithoutTimeInfo
+        )
         val text = alreadyProcessedTokensWithoutTimeInfo
             .dropWhile { it is WhitespaceToken }     // ignore leading whitespaces
             .dropLastWhile { it is WhitespaceToken } // ignore trailing whitespaces
