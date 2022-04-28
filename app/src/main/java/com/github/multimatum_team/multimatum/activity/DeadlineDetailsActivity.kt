@@ -12,6 +12,8 @@ import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.github.multimatum_team.multimatum.LocalDateTimeDeserializer
+import com.github.multimatum_team.multimatum.LocalDateTimeSerializer
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -20,10 +22,15 @@ import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.DateFormat
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+
+
+
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
@@ -236,7 +243,18 @@ class DeadlineDetailsActivity : AppCompatActivity() {
      */
     fun goQRGenerator(view: View) {
         val intent = Intent(this, QRGeneratorActivity::class.java)
-        val json = Gson().toJson(deadlineListViewModel.getDeadline(id))
+        val deadline = deadlineListViewModel.getDeadline(id)
+
+        //need to create a custom gsonbuilder to convert LocalDateTime to Json
+        val gsonBuilder = GsonBuilder()
+
+        gsonBuilder.registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+
+
+        gsonBuilder.registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+
+        val gson = gsonBuilder.setPrettyPrinting().create()
+        val json = gson.toJson(deadline)
         intent.putExtra(EXTRA_TEXT, json)
         startActivity(intent)
     }

@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import com.budiyev.android.codescanner.AutoFocusMode
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.CodeScannerView
@@ -10,7 +11,11 @@ import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
 import com.github.multimatum_team.multimatum.R
+import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.repository.DeadlineID
+import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 
 /**
  * The purpose of this activity is to provide the user an interface to scan QR-Codes.
@@ -19,6 +24,8 @@ import com.github.multimatum_team.multimatum.repository.DeadlineID
  */
 class QRCodeReaderActivity : AppCompatActivity() {
     private lateinit var codeScanner: CodeScanner
+    private val deadlineListViewModel: DeadlineListViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Launching the QR Code reader with default parameters
@@ -38,12 +45,12 @@ class QRCodeReaderActivity : AppCompatActivity() {
 
         // Callback for successful scanning
         codeScanner.decodeCallback = DecodeCallback {
-            displayOnToast("Scan result: ${it.text}")
+            scanDeadline(it.text)
         }
 
         // Callback for the initialization error of the camera
         codeScanner.errorCallback = ErrorCallback {
-            displayOnToast("Camera initialization error: ${it.message}")
+            Toast.makeText(this, "Camera initialization error: ${it.message}", Toast.LENGTH_LONG).show()
         }
 
         // Start the scanner
@@ -53,9 +60,15 @@ class QRCodeReaderActivity : AppCompatActivity() {
     }
 
     // Useful function to display a given string using the Toast interface
-    private fun displayOnToast(deadlineID: DeadlineID) {
+    private fun scanDeadline(scan: String) {
         runOnUiThread {
-            Toast.makeText(this, deadlineID, Toast.LENGTH_LONG).show()
+            try {
+                val deadline = Gson().fromJson(scan, Deadline::class.java)
+                Toast.makeText(this, "Deadline successfully added", Toast.LENGTH_LONG).show()
+                deadlineListViewModel.addDeadline(deadline)
+            }catch (e: JsonSyntaxException){
+                Toast.makeText(this, "provide a valid QRCode please", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
