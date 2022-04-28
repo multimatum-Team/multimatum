@@ -78,6 +78,7 @@ class ReminderBroadcastReceiverTest {
         @Provides
         fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
     }
+
     companion object {
         val mockSharedPreferences: SharedPreferences = mock()
     }

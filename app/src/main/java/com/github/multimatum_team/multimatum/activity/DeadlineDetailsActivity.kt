@@ -92,7 +92,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
-    private fun retrieveNotificationsTimes(): List<Long> = (checkBoxIdTime.filter { checkBox -> findViewById<CheckBox>(checkBox.key).isChecked }).values.toList()
+    private fun retrieveNotificationsTimes(): List<Long> =
+        (checkBoxIdTime.filter { checkBox -> findViewById<CheckBox>(checkBox.key).isChecked }).values.toList()
 
     // This display a DatePickerDialog and afterward a TimePickerDialog to modify the date
     fun changeDateAndTime(view: View) {
