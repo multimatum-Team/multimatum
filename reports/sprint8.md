@@ -2,6 +2,11 @@ Sprint 8 summary
 ================
 
 ### Florian
+This week I have implemented the option to modify the state of a deadline (TODO or DONE) from the main 
+activity to increase the usability of our app. I had some problem with adding a button in the adapter
+but I have found a solution after some research. I have also resolved the tests that checked permissions
+who were causing instability in the CI by passing them in Robolectric. In overall, I have correctly 
+estimated my time and I will work on adding description in deadline next week.
 
 ### Joseph
 
