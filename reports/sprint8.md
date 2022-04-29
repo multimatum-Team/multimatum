@@ -25,6 +25,8 @@ while I will try to implement the viewmodel, and figure out how to use
 Firebase email actions to send invites for people to join our group.
 
 ### Lenny
+This week I finish to implement notifications by adding a modification menu to the deadline modification activity. I also make notification enable/disable in setting functionnal.
+Next week I'll work on the user story about adding additionnal data to deadline such as pdf or images.
 
 ### Léo
 I refactored and finished the dark mode feature. I centralized every
@@ -50,3 +52,5 @@ is currently able to recognize some expressions of a time (e.g. "8am"), but it c
 so I will have to continue working on it next sprint. I spent more time than estimated on this task.
 
 ### Overall team
+During the week, everyone worked well, we completed the login, the notifications and the dark mode features. We keep fixing bug and working on having a good test coverage. Some of us also started working on new features.
+During our meeting, we went trhough the product backlog and we conclude that we had a good rythm that should allow us to complete all our users stories at the end of the project, with some additionnal time to fix bug and fine tuning the application.
