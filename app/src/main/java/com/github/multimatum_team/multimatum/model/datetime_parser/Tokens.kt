@@ -29,6 +29,12 @@ sealed class Token {
      */
     open fun asMinute(): Int? = null
 
+    open fun asPossibleDayOfMonthIndex(): Int? = null
+
+    open fun asMonthIndex(): Int? = null
+
+    open fun asPossibleYear(): Int? = null
+
     fun strWithWhitespaceIfNeeded(): String =
         if (followedByWhitespace) "$str "
         else str
@@ -49,8 +55,15 @@ data class NumericToken(override val str: String) : Token() {
     }
 
     val numericValue: Int get() = str.toInt()
-    override fun asHour(): Int? = if (numericValue in 0..23) numericValue else null
-    override fun asMinute(): Int? = if (numericValue in 0..59) numericValue else null
+
+    private fun inRangeOrNull(range: IntRange): Int? =
+        if (numericValue in range) numericValue else null
+
+    override fun asHour(): Int? = inRangeOrNull(0..23)
+    override fun asMinute(): Int? = inRangeOrNull(0..59)
+    override fun asPossibleDayOfMonthIndex(): Int? = inRangeOrNull(1..31)
+    override fun asMonthIndex(): Int? = inRangeOrNull(1..12)
+    override fun asPossibleYear(): Int? = inRangeOrNull(1900..2999)
 }
 
 /**

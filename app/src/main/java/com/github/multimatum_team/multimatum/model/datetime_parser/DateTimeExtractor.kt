@@ -1,9 +1,10 @@
 package com.github.multimatum_team.multimatum.model.datetime_parser
 
+import java.time.LocalDate
 import java.time.LocalTime
-import java.util.*
 
 object DateTimeExtractor {
+
 
     /*
         TODO implement date recognition + more patterns for time recognition
@@ -21,99 +22,6 @@ object DateTimeExtractor {
         on Monday
         etc.
      */
-
-    private fun List<Any?>.getInt(idx: Int): Int = get(idx) as Int
-
-    /**
-     * Time information extracted from a string
-     * Can be a date, a time or NoInfo if no info was found
-     */
-    private sealed interface ExtractedInfo
-    private data class ExtractedDate(val date: Date) : ExtractedInfo
-    private data class ExtractedTime(val time: LocalTime) : ExtractedInfo
-    private object NoInfo : ExtractedInfo
-
-    /**
-     * @return a function that takes a token and returns it if it contains the provided string,
-     * null o.w.
-     */
-    private fun tokenMatching(cmpStr: String) =
-        { tok: Token -> if (tok.str == cmpStr) tok else null }
-
-    /**
-     * All the patterns that the parser should recognize
-     *
-     * Implemented as a list of pairs where the first element is an "extractor", a list of functions
-     * that map a token to any kind of value. This list is applied to the beginning of a list of
-     * tokens by applying the function at index i to the token at index i in the list. A pattern is
-     * considered to match the beginning of the list iff all of these function applications return
-     * something else than null. If it matches, the (non-null) results of these function applications
-     * are used to build a list that is given as an argument to the second element of the pair, that
-     * should use it to build an appropriate ExtractedInfo
-     *
-     * E.g.: for the pair
-     *
-     *    listOf(
-     *       Token::asHour,
-     *       tokenMatching(":"),
-     *       Token::asMinute
-     *    ) to { args: List<Any?> ->
-     *       ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
-     *    }
-     *
-     * the pattern
-     *
-     *    listOf(
-     *       Token::asHour,
-     *       tokenMatching(":"),
-     *       Token::asMinute
-     *    )
-     *
-     * matches the list
-     *
-     *     listOf(NumericToken("15"), SymbolToken(":"), NumericToken("00"))
-     *
-     * (obtained by tokenizing the string 15:00)
-     *
-     * because asHour returns 15, the function created by tokenMatching(":") returns a non-null
-     * value (the SymbolToken itself) and asMinute returns 0.
-     *
-     * Then the "extractor"
-     *
-     *     args: List<Any?> -> ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
-     *
-     * is applied to the list [15, SymbolToken(":"), 0] and builds an ExtractedTime that contains
-     * the time 15:00
-     */
-    private val PATTERNS: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo>> = listOf(
-        listOf(
-            Token::asHour,
-            tokenMatching(":"),
-            Token::asMinute
-        ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
-        },
-        listOf(
-            tokenMatching("at"),
-            Token::asHour,
-            tokenMatching(":"),
-            Token::asMinute
-        ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(1), args.getInt(3)))
-        },
-        listOf(
-            Token::asHour,
-            tokenMatching("am")
-        ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(0), 0))
-        },
-        listOf(
-            Token::asHour,
-            tokenMatching("pm")
-        ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(0) + 12, 0))
-        }
-    )
 
     /**
      * Return value of extractDateTimeInfo
@@ -133,7 +41,7 @@ object DateTimeExtractor {
      */
     private fun extractDateTimeInfo(tokens: List<Token>): ExtractionResult {
         require(tokens.isNotEmpty())
-        return PATTERNS.asSequence()
+        return DateTimePatterns.PATTERNS.asSequence()
             .filter { (pattern, _) -> pattern.size <= tokens.size }
             .map { (pattern, createExtractedInfoFunc) ->
                 val currentTokens = tokens.take(pattern.size)
@@ -145,14 +53,21 @@ object DateTimeExtractor {
                     Pair(nextTokens, currentTokens)
                 )
             }
-            .find { (args, _, _) -> args.all { it != null } }
-            ?.let { (args, createExtractedInfoFunc, nextAndCurrTokens) ->
-                ExtractionResult(
-                    createExtractedInfoFunc(args),
-                    nextAndCurrTokens.first,
-                    nextAndCurrTokens.second
-                )
-            } ?: ExtractionResult(NoInfo, tokens.drop(1), tokens.subList(0, 1))
+            .filter { (args, _, _) ->
+                args.all { it != null }
+            }
+            .map { (args, createExtractedInfoFunc, nextAndCurrTokens) ->
+                val extractedInfo = createExtractedInfoFunc(args)
+                extractedInfo?.let {
+                    ExtractionResult(
+                        it,
+                        nextAndCurrTokens.first,
+                        nextAndCurrTokens.second
+                    )
+                }
+            }
+            .find { it != null }
+            ?: ExtractionResult(NoInfo, tokens.drop(1), tokens.subList(0, 1))
     }
 
     /**
@@ -168,10 +83,10 @@ object DateTimeExtractor {
      */
     private tailrec fun recursivelyParse(
         remTokens: List<Token>,
-        date: Date?,
+        date: LocalDate?,
         time: LocalTime?,
         alreadyProcessedTokensList: MutableList<Token>
-    ): Pair<Date?, LocalTime?> =
+    ): Pair<LocalDate?, LocalTime?> =
         if (remTokens.isEmpty()) {
             Pair(date, time)  // end of list, return found info
         } else {
@@ -250,7 +165,7 @@ object DateTimeExtractor {
  */
 data class DateTimeExtractionResult(
     val text: String,
-    val date: Date? = null,
+    val date: LocalDate? = null,
     val time: LocalTime? = null
 ) {
     val dateFound get() = (date != null)
