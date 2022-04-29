@@ -154,7 +154,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             editText.text = ""
 
             deadlineListViewModel.addDeadline(deadline) {
-                DeadlineNotification(this).editNotification(it, deadline, notificationsTimes)
+                DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
                 finish()
             }
         }

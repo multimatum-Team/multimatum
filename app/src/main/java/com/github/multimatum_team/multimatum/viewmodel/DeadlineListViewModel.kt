@@ -29,7 +29,6 @@ class DeadlineListViewModel @Inject constructor(
     private val deadlineRepository: DeadlineRepository
 ) : AndroidViewModel(application) {
     private val _deadlines: MutableLiveData<Map<DeadlineID, Deadline>> = MutableLiveData()
-    private var deadlineNotification: DeadlineNotification
 
     init {
         // Initialize the deadline repository with the currently logged in user, then fetch the data
@@ -39,15 +38,16 @@ class DeadlineListViewModel @Inject constructor(
             _deadlines.value = deadlineRepository.fetchAll()
         }
 
-        deadlineNotification =
-            DeadlineNotification(getApplication<Application>().applicationContext)
-        _deadlines.value?.let { deadlineNotification.updateNotifications(it) }
+
+
+        val context = getApplication<Application>().applicationContext
+        _deadlines.value?.let { DeadlineNotification.updateNotifications(it, context) }
 
         // Listen for authentication updates, upon which the deadline list is re-fetched
         authRepository.onUpdate {
             deadlineRepository.setUser(it)
             refreshDeadlines() { deadlinesMap ->
-                deadlineNotification.updateNotifications(deadlinesMap)
+                DeadlineNotification.updateNotifications(deadlinesMap, context)
             }
         }
 
