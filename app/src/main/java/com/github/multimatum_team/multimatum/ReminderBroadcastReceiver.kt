@@ -55,7 +55,6 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .setCategory(NotificationCompat.CATEGORY_REMINDER)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
             //send the notification
