@@ -95,12 +95,11 @@ object DateTimeExtractor {
         },
         listOf(
             tokenMatching("at"),
-            Token::filterWhitespace,
             Token::asHour,
             tokenMatching(":"),
             Token::asMinute
         ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(2), args.getInt(4)))
+            ExtractedTime(LocalTime.of(args.getInt(1), args.getInt(3)))
         },
         listOf(
             Token::asHour,
@@ -201,6 +200,18 @@ object DateTimeExtractor {
             }
         }
 
+    private fun markTokensFollowedByWhitespace(tokens: List<Token>) {
+        tokens.fold(null as Token?) { prevTok, currTok ->
+            if (currTok.isWhitespace()) {
+                prevTok?.followedByWhitespace = true
+            }
+            currTok
+        }
+    }
+
+    private fun String.removeTrailingWhitespaces(): String =
+        dropLastWhile { it.isWhitespace() }
+
     /**
      * Analyzes the given string and uses the patterns above to extract date or time info
      * @return a DateTimeExtractionResult, containing:
@@ -214,17 +225,18 @@ object DateTimeExtractor {
         val alreadyProcessedTokensWithoutTimeInfo = mutableListOf<Token>()
 
         val initTokens = Tokenizer.tokenize(str)
+        markTokensFollowedByWhitespace(initTokens)
+        val nonWhiteSpaceTokens = initTokens.filter { !it.isWhitespace() }
+
         val (date, time) = recursivelyParse(
-            initTokens,
+            nonWhiteSpaceTokens,
             null,
             null,
             alreadyProcessedTokensWithoutTimeInfo
         )
         val text = alreadyProcessedTokensWithoutTimeInfo
-            .dropWhile { it is WhitespaceToken }     // ignore leading whitespaces
-            .dropLastWhile { it is WhitespaceToken } // ignore trailing whitespaces
-            .joinToString(separator = "", transform = Token::str)
-            .let(::removeMultipleWhitespaces)
+            .joinToString(separator = "", transform = Token::strWithWhitespaceIfNeeded)
+            .removeTrailingWhitespaces()
         return DateTimeExtractionResult(text, date, time)
     }
 
