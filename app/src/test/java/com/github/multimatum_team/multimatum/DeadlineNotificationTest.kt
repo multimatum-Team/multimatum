@@ -35,7 +35,6 @@ import javax.inject.Inject
 class DeadlineNotificationTest {
 
     private lateinit var context: Context
-    private lateinit var deadlineNotification: DeadlineNotification
     private lateinit var shadowNotificationManager: ShadowNotificationManager
 
 
@@ -51,7 +50,6 @@ class DeadlineNotificationTest {
     fun setUp() {
         Intents.init()
         context = ApplicationProvider.getApplicationContext<Context>()
-        deadlineNotification = DeadlineNotification(context)
         hiltRule.inject()
         val notificationManager =
             ApplicationProvider.getApplicationContext<Context>()
@@ -77,7 +75,7 @@ class DeadlineNotificationTest {
         )
         channel.description = "channel for reminders notifications"
 
-        deadlineNotification.createNotificationChannel()
+        DeadlineNotification.createNotificationChannel(context)
 
         Assert.assertEquals(channel, shadowNotificationManager.notificationChannels[0])
 
@@ -92,12 +90,12 @@ class DeadlineNotificationTest {
         val deadline1 = getDeadlineSample(1)
         val notificationDeadline1 = getNotificationsSample(1)
         //add some notification for deadline1
-        deadlineNotification.editNotification(id, deadline1, notificationDeadline1)
+        DeadlineNotification.editNotification(id, deadline1, notificationDeadline1, context)
 
         Assert.assertEquals(2, shadowAlarmManager.scheduledAlarms.size)
 
 
-        deadlineNotification.deleteNotification(id)
+        DeadlineNotification.deleteNotification(id, context)
 
         Assert.assertEquals(0, shadowAlarmManager.scheduledAlarms.size)
 
@@ -116,13 +114,13 @@ class DeadlineNotificationTest {
 
         val deadlineList = mapOf<DeadlineID, Deadline>(id1 to deadline1)
 
-        deadlineNotification.editNotification(id1, deadline1, notificationDeadline1)
-        deadlineNotification.editNotification(id2, deadline2, notificationDeadline2)
+        DeadlineNotification.editNotification(id1, deadline1, notificationDeadline1, context)
+        DeadlineNotification.editNotification(id2, deadline2, notificationDeadline2, context)
         Assert.assertEquals(4, shadowAlarmManager.scheduledAlarms.size)
-        val list = deadlineNotification.listDeadlineNotification("ADDED_DEADLINE_1")
+        val list = DeadlineNotification.listDeadlineNotification("ADDED_DEADLINE_1", context)
         Assert.assertEquals(notificationDeadline1, list)
 
-        deadlineNotification.updateNotifications(deadlineList)
+        DeadlineNotification.updateNotifications(deadlineList, context)
         //since deadline2 isn't in the list, its notification should've been deleted
         Assert.assertEquals(2, shadowAlarmManager.scheduledAlarms.size)
 

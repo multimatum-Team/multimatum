@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -8,7 +9,6 @@ import android.content.Intent.EXTRA_TEXT
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.TextView
 import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.*
@@ -23,12 +23,10 @@ import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-
-
-
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
@@ -56,6 +54,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
     private var state: DeadlineState = DeadlineState.TODO
 
+
+    @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
@@ -68,6 +68,12 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Recuperate the id of the deadline
         id = intent.getStringExtra(EXTRA_ID) as DeadlineID
+
+        //set checkbox caption with the right time string
+        setCheckBoxTexts()
+
+        //retrieve current notification and set checkboxes accordingly
+        setNotificationCheckBox()
 
         // As the viewModel doesn't recuperate immediately the deadlines,
         // we need an update the moment they are fetched
@@ -86,6 +92,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         updateDetail()
 
     }
+
+    private fun retrieveNotificationsTimes(): List<Long> =
+        (checkBoxIdTime.filter { checkBox -> findViewById<CheckBox>(checkBox.key).isChecked }).values.toList()
 
     // This display a DatePickerDialog and afterward a TimePickerDialog to modify the date
     fun changeDateAndTime(view: View) {
@@ -134,6 +143,27 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         editMode = editMode.not()
     }
 
+    fun saveNotificationSetting(view: View) {
+        val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
+        DeadlineNotification.editNotification(id, newDeadline, retrieveNotificationsTimes(), this)
+        Toast.makeText(this, getString(R.string.notification_saved), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setCheckBoxTexts() {
+        for ((id, text) in idToText.entries) {
+            findViewById<CheckBox>(id).text =
+                getString(R.string.notify_before, text)
+        }
+    }
+
+    private fun setNotificationCheckBox() {
+        val notifications = DeadlineNotification.listDeadlineNotification(id, this)
+        for (id in checkBoxIdTime.keys) {
+            if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1h]))
+                findViewById<CheckBox>(R.id.radio_notification_1h).isChecked = true
+        }
+    }
+
     // Shift the TitleView to a modify state or to a uneditable state
     private fun editTitle(edit: Boolean) {
         titleView.isEnabled = edit
@@ -151,12 +181,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                 id,
                 newDeadline
             )
-            val deadlineNotification = DeadlineNotification(this)
-            deadlineNotification.editNotification(
-                id,
-                newDeadline,
-                deadlineNotification.listDeadlineNotification(id)
-            )
+            if (state == DeadlineState.DONE) {
+                DeadlineNotification.deleteNotification(id, this)
+            }
         }
     }
 
@@ -281,6 +308,20 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         private const val EXTRA_ID =
             "com.github.multimatum_team.deadline.details.id"
         private const val IS_DEFAULT_DARK_MODE_ENABLED = false
+
+        private val checkBoxIdTime = mapOf(
+            R.id.radio_notification_1h to Duration.ofHours(1).toMillis(),
+            R.id.radio_notification_5h to Duration.ofHours(5).toMillis(),
+            R.id.radio_notification_1d to Duration.ofDays(1).toMillis(),
+            R.id.radio_notification_3d to Duration.ofDays(3).toMillis()
+        )
+
+        private val idToText: Map<Int, String> = mapOf(
+            R.id.radio_notification_1h to "1 hour",
+            R.id.radio_notification_5h to "5 hours",
+            R.id.radio_notification_1d to "1 day",
+            R.id.radio_notification_3d to "3 days"
+        )
 
         // Launch an Intent to access this activity with a Deadline data
         fun newIntent(context: Context, id: DeadlineID): Intent {
