@@ -50,6 +50,7 @@ import java.time.temporal.TemporalAdjusters
  * is applied to the list [15, SymbolToken(":"), 0] and builds an ExtractedTime that contains
  * the time 15:00
  */
+@Suppress("PrivatePropertyName")
 class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
 
     /**
@@ -83,7 +84,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
         return ExtractedDate(nextMatchingDay)
     }
 
-    private val simpleTimePat =
+    private val `15h00` =
         listOf(
             Token::asHour,
             Token::asTimeSeparator,
@@ -92,7 +93,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             timeFor(hour = args.getInt(0), minute = args.getInt(2))
         }
 
-    private val atTimePat =
+    private val at_15h00 =
         listOf(
             tokenMatchingOneOf("at"),
             Token::asHour,
@@ -102,7 +103,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             timeFor(hour = args.getInt(1), minute = args.getInt(3))
         }
 
-    private val amTimePat =
+    private val `3am` =
         listOf(
             Token::asHour,
             tokenMatchingOneOf("am")
@@ -110,7 +111,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             timeFor(hour = args.getInt(0), minute = 0)
         }
 
-    private val pmTimePat =
+    private val `3pm` =
         listOf(
             Token::asHour,
             tokenMatchingOneOf("pm")
@@ -118,7 +119,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             timeFor(hour = args.getInt(0) + 12, minute = 0)
         }
 
-    private val completeDateDayMonthYearDotsWithSepPat =
+    private val `1-01-2000` =
         listOf(
             Token::asPossibleDayOfMonthIndex,
             Token::asDateSeparator,
@@ -129,7 +130,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             dateFor(year = args.getInt(4), month = args.getMonth(2), day = args.getInt(0))
         }
 
-    private val completeDateYearMonthDayWithSepPat =
+    private val `2000-1-1` =
         listOf(
             Token::asPossibleYear,
             Token::asDateSeparator,
@@ -140,7 +141,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             dateFor(day = args.getInt(4), month = args.getMonth(2), year = args.getInt(0))
         }
 
-    private val completeDateDayMonthYearNoSepPat =
+    private val `1_01_2000` =
         listOf(
             Token::asPossibleDayOfMonthIndex,
             Token::asMonth,
@@ -149,7 +150,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             dateFor(day = args.getInt(0), month = args.getMonth(1), year = args.getInt(2))
         }
 
-    private val dayOfWeekDatePat =
+    private val monday =
         listOf(
             Token::asDayOfWeek
         ) to { args: List<Any?> ->
@@ -157,7 +158,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             dateForNextDayMatching(requestedDayOfWeek)
         }
 
-    private val onDayOfWeekDatePat =
+    private val on_monday =
         listOf(
             tokenMatchingOneOf("on", "next"),
             Token::asDayOfWeek
@@ -168,15 +169,15 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
 
     val patterns: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo?>> =
         listOf(
-            simpleTimePat,
-            atTimePat,
-            amTimePat,
-            pmTimePat,
-            completeDateDayMonthYearDotsWithSepPat,
-            completeDateYearMonthDayWithSepPat,
-            completeDateDayMonthYearNoSepPat,
-            dayOfWeekDatePat,
-            onDayOfWeekDatePat
+            `15h00`,
+            at_15h00,
+            `3am`,
+            `3pm`,
+            `1-01-2000`,
+            `2000-1-1`,
+            `1_01_2000`,
+            monday,
+            on_monday
         )
 
 }
