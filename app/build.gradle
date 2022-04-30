@@ -74,6 +74,7 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.4.0"
     implementation "androidx.fragment:fragment-ktx:1.4.1"
     implementation 'com.hudomju:swipe-to-dismiss-undo:1.0'
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC2'
     kapt 'com.google.dagger:hilt-android-compiler:2.41'
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt 'androidx.lifecycle:lifecycle-compiler:2.4.1'

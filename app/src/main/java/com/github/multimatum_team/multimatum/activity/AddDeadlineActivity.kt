@@ -13,10 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -32,14 +35,17 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     private lateinit var selectedDate: LocalDateTime
 
+    private val dateTimeExtractor = DateTimeExtractor { clockService.now().toLocalDate() }
 
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
+    private lateinit var editText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_deadline)
+        editText = findViewById(R.id.add_deadline_select_title)
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
         findViewById<CheckBox>(R.id.radio_notification_1h).text =
@@ -51,6 +57,34 @@ class AddDeadlineActivity : AppCompatActivity() {
         findViewById<CheckBox>(R.id.radio_notification_3d).text =
             getString(R.string.notify_before, "3 days")
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
+        updateDisplayedDateAndTime()
+        KeyboardVisibilityEvent.setEventListener(this, object : KeyboardVisibilityEventListener {
+            override fun onVisibilityChanged(isOpen: Boolean) {
+                if (!isOpen) {
+                    extractDateAndTimeIfAny()
+                }
+            }
+        })
+    }
+
+    private fun extractDateAndTimeIfAny() {
+        val dateTimeExtractionResult = dateTimeExtractor.parse(editText.text.toString())
+        dateTimeExtractionResult.date?.also { foundDate ->
+            selectedDate = selectedDate
+                .withYear(foundDate.year)
+                .withDayOfYear(foundDate.dayOfYear)
+        }
+        dateTimeExtractionResult.time?.also { foundTime ->
+            selectedDate = selectedDate
+                .withHour(foundTime.hour)
+                .withMinute(foundTime.minute)
+                .withSecond(foundTime.second)
+        }
+        updateDisplayedDateAndTime()
+        editText.text = dateTimeExtractionResult.text
+    }
+
+    private fun updateDisplayedDateAndTime() {
         textDate.text = selectedDate.toLocalDate().toString()
         textTime.text = selectedDate.toLocalTime().toString()
     }
@@ -127,9 +161,6 @@ class AddDeadlineActivity : AppCompatActivity() {
      *  Add a deadline based on the data recuperated on the other TextViews
      */
     fun addDeadline(view: View) {
-        // Getting the necessary views
-        val editText = findViewById<TextView>(R.id.add_deadline_select_title)
-
         // Getting the entered text
         val titleDeadline = editText.text.toString()
 
