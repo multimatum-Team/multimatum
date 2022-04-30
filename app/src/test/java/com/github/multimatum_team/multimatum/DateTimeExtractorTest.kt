@@ -186,4 +186,20 @@ class DateTimeExtractorTest {
         assertFound(expText, expDate = LocalDate.of(2022, Month.JANUARY, 14))(actualRes)
     }
 
+    @Test
+    fun midday_is_parsed_correctly(){
+        val str = "Lunch at noon"
+        val expText = "Lunch"
+        val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
+        assertFound(expText, expTime = LocalTime.NOON)(actualRes)
+    }
+
+    @Test
+    fun midnight_is_parsed_correctly(){
+        val str = "Due work at midnight"
+        val expText = "Due work"
+        val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
+        assertFound(expText, expTime = LocalTime.MIDNIGHT)(actualRes)
+    }
+
 }

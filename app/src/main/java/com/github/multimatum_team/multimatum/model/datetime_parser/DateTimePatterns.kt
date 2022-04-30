@@ -71,6 +71,9 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
     private fun timeFor(hour: Int, minute: Int): ExtractedTime =
         ExtractedTime(LocalTime.of(hour, minute))
 
+    /**
+     * @return an instance of LocalDate if the given date is valid, null o.w.
+     */
     private fun localDateForIfExists(year: Int, month: Month, day: Int): LocalDate? {
         val yearMonth = YearMonth.of(year, month)
         return if (yearMonth.isValidDay(day))
@@ -81,6 +84,10 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
     private fun dateForIfExists(year: Int, month: Month, day: Int): ExtractedDate? =
         localDateForIfExists(year, month, day)?.let(::ExtractedDate)
 
+    /**
+     * @return the next date (after the current one) matching the given day of week
+     * (e.g. for expressions like "next monday")
+     */
     private fun dateForNextDayMatching(requestedDayOfWeek: DayOfWeek): ExtractedDate {
         val currDate = currentDateProvider()
         val nextMatchingDay = currDate.with(TemporalAdjusters.next(requestedDayOfWeek))
@@ -89,7 +96,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
 
     private val `15h` =
         listOf(
-            Token::asHour,
+            Token::asHour24,
             tokenMatchingOneOf("h", "hour")
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0), 0)
@@ -97,26 +104,16 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
 
     private val `15h00` =
         listOf(
-            Token::asHour,
+            Token::asHour24,
             Token::asTimeSeparator,
             Token::asMinute
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0), minute = args.getInt(2))
         }
 
-    private val at_15h00 =
-        listOf(
-            tokenMatchingOneOf("at"),
-            Token::asHour,
-            Token::asTimeSeparator,
-            Token::asMinute
-        ) to { args: List<Any?> ->
-            timeFor(hour = args.getInt(1), minute = args.getInt(3))
-        }
-
     private val `3am` =
         listOf(
-            Token::asHour,
+            Token::asHour12,
             tokenMatchingOneOf("am")
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0), minute = 0)
@@ -124,7 +121,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
 
     private val `3pm` =
         listOf(
-            Token::asHour,
+            Token::asHour12,
             tokenMatchingOneOf("pm")
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0) + 12, minute = 0)
@@ -169,15 +166,6 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             dateForNextDayMatching(requestedDayOfWeek)
         }
 
-    private val on_monday =
-        listOf(
-            tokenMatchingOneOf("on", "next"),
-            Token::asDayOfWeek
-        ) to { args: List<Any?> ->
-            val requestedDayOfWeek = args.getDayOfWeek(1)
-            dateForNextDayMatching(requestedDayOfWeek)
-        }
-
     private val monday_15 =
         listOf(
             Token::asDayOfWeek,
@@ -186,26 +174,41 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             val targetDayOfWeek = args.getDayOfWeek(0)
             val dayOfMonthIdx = args.getInt(1)
             val currentDate = currentDateProvider()
-            val targetDate = localDateForIfExists(currentDate.year, currentDate.month, dayOfMonthIdx)
+            val targetDate =
+                localDateForIfExists(currentDate.year, currentDate.month, dayOfMonthIdx)
             targetDate?.let {
                 if (targetDate.dayOfWeek == targetDayOfWeek) ExtractedDate(targetDate)
                 else null
             }
         }
 
+    private val midday =
+        listOf(
+            tokenMatchingOneOf("noon", "midday")
+        ) to { _: List<Any?> ->
+            timeFor(12, 0)
+        }
+
+    private val midnight =
+        listOf(
+            tokenMatchingOneOf("midnight")
+        ) to { _: List<Any?> ->
+            timeFor(0, 0)
+        }
+
     val patterns: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo?>> =
         listOf(
             `15h`,
             `15h00`,
-            at_15h00,
             `3am`,
             `3pm`,
             `1-01-2000`,
             `2000-1-1`,
             `1_01_2000`,
             monday,
-            on_monday,
-            monday_15
+            monday_15,
+            midday,
+            midnight
         )
 
 }

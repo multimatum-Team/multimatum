@@ -26,7 +26,9 @@ sealed class Token {
      * @return the numeric value of this token if it is numeric and if it is acceptable
      * as an hour (0..23), null o.w.
      */
-    open fun asHour(): Int? = null
+    open fun asHour24(): Int? = null
+
+    open fun asHour12(): Int? = null
 
     /**
      * @return the numeric value of this token if it is numeric and if it is acceptable
@@ -78,7 +80,8 @@ data class NumericToken(override val str: String) : Token() {
     private fun inRangeOrNull(range: IntRange): Int? =
         if (numericValue in range) numericValue else null
 
-    override fun asHour(): Int? = inRangeOrNull(0..23)
+    override fun asHour24(): Int? = inRangeOrNull(0..23)
+    override fun asHour12(): Int? = inRangeOrNull(1..11)
     override fun asMinute(): Int? = inRangeOrNull(0..59)
     override fun asPossibleDayOfMonthIndex(): Int? = inRangeOrNull(1..31)
     override fun asMonth(): Month? = if (numericValue in 1..12) Month.of(numericValue) else null
@@ -109,6 +112,11 @@ object WhitespaceToken : Token() {
     override val str = " "
     override fun toString(): String = "WhitespaceToken"
     override fun filterWhitespace(): Token = this
+}
+
+object RemovedToken : Token(){
+    override val str: String = ""
+    override fun toString(): String = "RemovedToken"
 }
 
 

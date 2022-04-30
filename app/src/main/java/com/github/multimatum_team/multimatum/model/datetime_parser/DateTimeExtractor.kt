@@ -4,22 +4,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
-    constructor(currentDateProvider: () -> LocalDate) : this(DateTimePatterns(currentDateProvider))
-
-
-    /*
-        TODO implement date recognition + more patterns for time recognition
-        When finished, should be able to parse:
-        18h00
-        18h
-        6am
-        6pm
-        etc.
-        Monday
-        next Monday
-        on Monday
-        etc.
-     */
+    constructor(currentDateProvider: () -> LocalDate) :
+            this(DateTimePatterns(currentDateProvider))
 
     /**
      * Return value of extractDateTimeInfo
@@ -86,18 +72,14 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
             when (extractedInfo) {
                 is ExtractedDate -> {
                     // if a date has already been found, ignore the newly found one (treat it as normal text)
+                    alreadyProcessedTokensList.addAll(if (date == null) listOf(RemovedToken) else consumed)
                     val newDate = date ?: extractedInfo.date
-                    if (date != null) {
-                        alreadyProcessedTokensList.addAll(consumed)
-                    }
                     recursivelyParse(newRemTokens, newDate, time, alreadyProcessedTokensList)
                 }
                 is ExtractedTime -> {
                     // if a time has already been found, ignore the newly found one (treat it as normal text)
+                    alreadyProcessedTokensList.addAll(if (time == null) listOf(RemovedToken) else consumed)
                     val newTime = time ?: extractedInfo.time
-                    if (time != null) {
-                        alreadyProcessedTokensList.addAll(consumed)
-                    }
                     recursivelyParse(newRemTokens, date, newTime, alreadyProcessedTokensList)
                 }
                 is NoInfo -> {
@@ -118,6 +100,21 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
 
     private fun String.removeTrailingWhitespaces(): String =
         dropLastWhile { it.isWhitespace() }
+
+    private fun removeDanglingConjunctions(tokens: List<Token>): List<Token> {
+        val remainingTokens = mutableListOf<Token>()
+        val lastToken = tokens.fold(null as Token?) { prevTok, currTok ->
+            if (prevTok != null
+                && (currTok !is RemovedToken
+                        || !CONJUNCTIONS_TO_REMOVE_WHEN_DANGLING.contains(prevTok.str))
+            ) {
+                remainingTokens.add(prevTok)
+            }
+            currTok
+        }
+        lastToken?.let { remainingTokens.add(it) }
+        return remainingTokens
+    }
 
     /**
      * Analyzes the given string and uses the patterns above to extract date or time info
@@ -142,9 +139,16 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
             alreadyProcessedTokensWithoutTimeInfo
         )
         val text = alreadyProcessedTokensWithoutTimeInfo
+            .let(::removeDanglingConjunctions)
             .joinToString(separator = "", transform = Token::strWithWhitespaceIfNeeded)
             .removeTrailingWhitespaces()
         return DateTimeExtractionResult(text, date, time)
+    }
+
+    companion object {
+        private val CONJUNCTIONS_TO_REMOVE_WHEN_DANGLING = listOf(
+            "at", "on", "next"
+        )
     }
 
 }
