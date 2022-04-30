@@ -61,13 +61,17 @@ class AddDeadlineActivity : AppCompatActivity() {
         KeyboardVisibilityEvent.setEventListener(this, object : KeyboardVisibilityEventListener {
             override fun onVisibilityChanged(isOpen: Boolean) {
                 if (!isOpen) {
-                    extractDateAndTimeIfAny()
+                    updateDisplayedInfoAfterTitleChange()
                 }
             }
         })
     }
 
-    private fun extractDateAndTimeIfAny() {
+    /**
+     * Analyses the title and tries to find date or time information,
+     * then uses it to update the displayed fields
+     */
+    private fun updateDisplayedInfoAfterTitleChange() {
         val dateTimeExtractionResult = dateTimeExtractor.parse(editText.text.toString())
         dateTimeExtractionResult.date?.also { foundDate ->
             selectedDate = selectedDate

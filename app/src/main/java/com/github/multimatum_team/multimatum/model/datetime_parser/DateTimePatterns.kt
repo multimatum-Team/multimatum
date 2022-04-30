@@ -3,8 +3,6 @@ package com.github.multimatum_team.multimatum.model.datetime_parser
 import java.time.*
 import java.time.temporal.TemporalAdjusters
 
-// TODO update doc
-
 /**
  * Contains all the patterns that the parser should recognize
  *
@@ -14,7 +12,8 @@ import java.time.temporal.TemporalAdjusters
  * considered to match the beginning of the list iff all of these function applications return
  * something else than null. If it matches, the (non-null) results of these function applications
  * are used to build a list that is given as an argument to the second element of the pair, that
- * should use it to build an appropriate ExtractedInfo
+ * should use it to build an appropriate ExtractedInfo. If this ExtractedInfo is null, search for
+ * a matching pattern will resume, until no pattern is left.
  *
  * E.g.: for the pair
  *
@@ -93,6 +92,8 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
         val nextMatchingDay = currDate.with(TemporalAdjusters.next(requestedDayOfWeek))
         return ExtractedDate(nextMatchingDay)
     }
+
+    // Patterns
 
     private val `15h` =
         listOf(

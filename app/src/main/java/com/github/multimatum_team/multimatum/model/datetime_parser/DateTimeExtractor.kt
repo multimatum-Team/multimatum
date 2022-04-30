@@ -89,6 +89,9 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
             }
         }
 
+    /**
+     * Set followedByWhitespace to true for each token that is followed by a WhitespaceToken
+     */
     private fun markTokensFollowedByWhitespace(tokens: List<Token>) {
         tokens.fold(null as Token?) { prevTok, currTok ->
             if (currTok.isWhitespace()) {
@@ -101,7 +104,12 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
     private fun String.removeTrailingWhitespaces(): String =
         dropLastWhile { it.isWhitespace() }
 
-    private fun removeDanglingConjunctions(tokens: List<Token>): List<Token> {
+    /**
+     * Removes the conjunctions like "at", or "on" that are left after removal of date or time
+     * E.g. when parsing "Example at 10am", the "at" is not contained in the pattern, but should
+     * still be removed
+     */
+    private fun danglingConjunctionsRemoved(tokens: List<Token>): List<Token> {
         val remainingTokens = mutableListOf<Token>()
         val lastToken = tokens.fold(null as Token?) { prevTok, currTok ->
             if (prevTok != null
@@ -139,7 +147,7 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
             alreadyProcessedTokensWithoutTimeInfo
         )
         val text = alreadyProcessedTokensWithoutTimeInfo
-            .let(::removeDanglingConjunctions)
+            .let(::danglingConjunctionsRemoved)
             .joinToString(separator = "", transform = Token::strWithWhitespaceIfNeeded)
             .removeTrailingWhitespaces()
         return DateTimeExtractionResult(text, date, time)
