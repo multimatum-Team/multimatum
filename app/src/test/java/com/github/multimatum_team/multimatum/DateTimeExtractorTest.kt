@@ -37,7 +37,15 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun time_is_parsed_correctly() {
+    fun `18h_is_parsed_correctly`(){
+        val str = "Geography 18h"
+        val expText = "Geography"
+        val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
+        assertFound(expText, expTime = LocalTime.of(18, 0))(actualRes)
+    }
+
+    @Test
+    fun `10h00_is_parsed_correctly`() {
         val str = "Aqua-pony at 10:00"
         val expText = "Aqua-pony"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -140,21 +148,42 @@ class DateTimeExtractorTest {
     @Test
     fun month_given_by_3_letters_name_is_parsed_correctly() {
         val str = "Devoir a rendre 15 oct 2019"
-        val expStr = "Devoir a rendre"
+        val expText = "Devoir a rendre"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
-        assertFound(expStr, expDate = LocalDate.of(2019, Month.OCTOBER, 15))(
+        assertFound(expText, expDate = LocalDate.of(2019, Month.OCTOBER, 15))(
             actualRes
         )
     }
 
     @Test
-    fun month_given_by_full_name_is_parsed_correctly(){
+    fun month_given_by_full_name_is_parsed_correctly() {
         val str = "Something to hand-in 23 jan 2018 in math"
-        val expStr = "Something to hand-in in math"
+        val expText = "Something to hand-in in math"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
-        assertFound(expStr, expDate = LocalDate.of(2018, Month.JANUARY, 23))(
+        assertFound(expText, expDate = LocalDate.of(2018, Month.JANUARY, 23))(
             actualRes
         )
+    }
+
+    @Test
+    fun thursday_20_is_parsed_correctly() {
+        val str = "Physics experiment report thursday 20"
+        val expText = "Physics experiment report"
+        val currentDate = LocalDate.of(2022, Month.JANUARY, 12)
+        val actualRes = DateTimeExtractor { currentDate }.parse(str)
+        assertFound(expText, expDate = LocalDate.of(2022, Month.JANUARY, 20))(actualRes)
+    }
+
+    @Test
+    fun friday_20_is_rejected_when_the_20th_is_not_a_friday() {
+        /* what happens here is that the extractor tries
+         * to match "friday 20", notices that the 20th is not
+         * a friday and falls back to parsing only "friday" */
+        val str = "Physics experiment report friday 20"
+        val expText = "Physics experiment report 20"
+        val currentDate = LocalDate.of(2022, Month.JANUARY, 12)
+        val actualRes = DateTimeExtractor { currentDate }.parse(str)
+        assertFound(expText, expDate = LocalDate.of(2022, Month.JANUARY, 14))(actualRes)
     }
 
 }

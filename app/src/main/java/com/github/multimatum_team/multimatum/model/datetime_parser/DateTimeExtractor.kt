@@ -39,7 +39,9 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
      */
     private fun extractDateTimeInfo(tokens: List<Token>): ExtractionResult {
         require(tokens.isNotEmpty())
-        return dateTimePatterns.patterns.asSequence()
+        return dateTimePatterns.patterns
+            .sortedByDescending { it.first.size }
+            .asSequence()
             .filter { (pattern, _) -> pattern.size <= tokens.size }
             .map { (pattern, createExtractedInfoFunc) ->
                 val currentTokens = tokens.take(pattern.size)
