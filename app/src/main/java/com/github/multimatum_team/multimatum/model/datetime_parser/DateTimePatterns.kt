@@ -60,13 +60,23 @@ object DateTimePatterns {
 
     private fun List<Any?>.getInt(idx: Int): Int = get(idx) as Int
 
+    private fun timeFor(hour: Int, minute: Int): ExtractedTime =
+        ExtractedTime(LocalTime.of(hour, minute))
+
+    private fun dateFor(year: Int, month: Int, day: Int): ExtractedDate? {
+        val yearMonth = YearMonth.of(year, month)
+        return if (yearMonth.isValidDay(day)) ExtractedDate(
+            LocalDate.of(year, month, day)
+        ) else null
+    }
+
     private val SIMPLE_DATE_PAT =
         listOf(
             Token::asHour,
             tokenMatching(":"),
             Token::asMinute
         ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
+            timeFor(hour = args.getInt(0), minute = args.getInt(2))
         }
 
     private val AT_TIME_PAT =
@@ -76,7 +86,7 @@ object DateTimePatterns {
             tokenMatching(":"),
             Token::asMinute
         ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(1), args.getInt(3)))
+            timeFor(hour = args.getInt(1), minute = args.getInt(3))
         }
 
     private val AM_TIME_PAT =
@@ -84,7 +94,7 @@ object DateTimePatterns {
             Token::asHour,
             tokenMatching("am")
         ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(0), 0))
+            timeFor(hour = args.getInt(0), minute = 0)
         }
 
     private val PM_TIME_PAT =
@@ -92,7 +102,7 @@ object DateTimePatterns {
             Token::asHour,
             tokenMatching("pm")
         ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(0) + 12, 0))
+            timeFor(hour = args.getInt(0) + 12, minute = 0)
         }
 
     private val COMPLETE_DATE_DAY_MONTH_YEAR_PAT =
@@ -103,20 +113,10 @@ object DateTimePatterns {
             tokenMatching("."),
             Token::asPossibleYear
         ) to { args: List<Any?> ->
-            val dayOfMonth = args.getInt(0)
-            val monthIdx = args.getInt(2)
-            val year = args.getInt(4)
-            val yearMonth = YearMonth.of(year, monthIdx)
-            if (yearMonth.isValidDay(dayOfMonth)) ExtractedDate(
-                LocalDate.of(
-                    year,
-                    monthIdx,
-                    dayOfMonth
-                )
-            ) else null
+            dateFor(year = args.getInt(4), month = args.getInt(2), day = args.getInt(0))
         }
 
-    private val COMPLETE_DATE_YEAR_MONTH_DATE =
+    private val COMPLETE_DATE_YEAR_MONTH_DAY_PAT =
         listOf(
             Token::asPossibleYear,
             tokenMatching("."),
@@ -124,17 +124,7 @@ object DateTimePatterns {
             tokenMatching("."),
             Token::asPossibleDayOfMonthIndex
         ) to { args: List<Any?> ->
-            val dayOfMonth = args.getInt(4)
-            val monthIdx = args.getInt(2)
-            val year = args.getInt(0)
-            val yearMonth = YearMonth.of(year, monthIdx)
-            if (yearMonth.isValidDay(dayOfMonth)) ExtractedDate(
-                LocalDate.of(
-                    year,
-                    monthIdx,
-                    dayOfMonth
-                )
-            ) else null
+            dateFor(day = args.getInt(4), month = args.getInt(2), year = args.getInt(0))
         }
 
     val PATTERNS: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo?>> =
@@ -144,7 +134,7 @@ object DateTimePatterns {
             AM_TIME_PAT,
             PM_TIME_PAT,
             COMPLETE_DATE_DAY_MONTH_YEAR_PAT,
-            COMPLETE_DATE_YEAR_MONTH_DATE
+            COMPLETE_DATE_YEAR_MONTH_DAY_PAT
         )
 
 }
