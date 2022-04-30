@@ -69,14 +69,6 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
     }
 
     /**
-     * Replaces multiple whitespaces sequences by a single whitespace
-     */
-    private tailrec fun removeMultipleWhitespaces(str: String): String =
-        if (str.contains("  ", ignoreCase = true)) {
-            removeMultipleWhitespaces(str.replace("  ", " ", ignoreCase = true))
-        } else str
-
-    /**
      * Iterates on the list of tokens
      */
     private tailrec fun recursivelyParse(
