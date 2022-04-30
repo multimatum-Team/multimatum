@@ -117,8 +117,19 @@ class DateTimeExtractorTest {
 
     @Test
     fun day_of_week_should_be_parsed_correctly() {
-        val str = "Meeting SDP friday"
-        val expText = "Meeting SDP"
+        val str = "SDP meeting friday"
+        val expText = "SDP meeting"
+        val currentDate = LocalDate.of(2022, Month.APRIL, 30)
+        val nextFriday = LocalDate.of(2022, Month.MAY, 6)
+        val dateTimeExtractor = DateTimeExtractor { currentDate }
+        val actualRes = dateTimeExtractor.parse(str)
+        assertFound(expText, expDate = nextFriday)(actualRes)
+    }
+
+    @Test
+    fun day_of_week_with_on_should_be_parsed_correctly() {
+        val str = "SDP meeting on friday"
+        val expText = "SDP meeting"
         val currentDate = LocalDate.of(2022, Month.APRIL, 30)
         val nextFriday = LocalDate.of(2022, Month.MAY, 6)
         val dateTimeExtractor = DateTimeExtractor { currentDate }
