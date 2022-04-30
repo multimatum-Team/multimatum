@@ -1,5 +1,10 @@
 package com.github.multimatum_team.multimatum.model.datetime_parser
 
+import java.time.DayOfWeek
+import java.time.Month
+
+infix fun String.equalsIgnoreCase(that: String): Boolean = this.lowercase() == that.lowercase()
+
 /**
  * Chunk of text, built of one or several similar characters (e.g. all letters, all digits)
  */
@@ -31,9 +36,14 @@ sealed class Token {
 
     open fun asPossibleDayOfMonthIndex(): Int? = null
 
-    open fun asMonthIndex(): Int? = null
+    open fun asMonth(): Month? = null
 
     open fun asPossibleYear(): Int? = null
+
+    open fun asDayOfWeek(): DayOfWeek? = null
+
+    open fun asDateSeparator(): Token? = null
+    open fun asTimeSeparator(): Token? = null
 
     fun strWithWhitespaceIfNeeded(): String =
         if (followedByWhitespace) "$str "
@@ -44,7 +54,16 @@ sealed class Token {
 /**
  * Token containing only letters
  */
-data class AlphabeticToken(override val str: String) : Token()
+data class AlphabeticToken(override val str: String) : Token() {
+    override fun asDayOfWeek(): DayOfWeek? =
+        DayOfWeek.values().find { it.name equalsIgnoreCase str }
+
+    override fun asMonth(): Month? =
+        Month.values().find {
+            it.name equalsIgnoreCase str  // match full month name (e.g. march)
+                    || it.name.substring(0, 3) equalsIgnoreCase str  // or 3 letters code (e.g. mar)
+        }
+}
 
 /**
  * Token containing only digits
@@ -62,7 +81,7 @@ data class NumericToken(override val str: String) : Token() {
     override fun asHour(): Int? = inRangeOrNull(0..23)
     override fun asMinute(): Int? = inRangeOrNull(0..59)
     override fun asPossibleDayOfMonthIndex(): Int? = inRangeOrNull(1..31)
-    override fun asMonthIndex(): Int? = inRangeOrNull(1..12)
+    override fun asMonth(): Month? = if (numericValue in 1..12) Month.of(numericValue) else null
     override fun asPossibleYear(): Int? = inRangeOrNull(1900..2999)
 }
 
@@ -74,7 +93,13 @@ data class SymbolToken(override val str: String) : Token() {
         require(str.length == 1)
     }
 
+    private val dateSeparators = listOf('.', '/', '-')
+    private val timeSeparators = listOf(':', 'h')
+
     val charValue: Char get() = str[0]
+
+    override fun asDateSeparator(): Token? = if (dateSeparators.contains(charValue)) this else null
+    override fun asTimeSeparator(): Token? = if (timeSeparators.contains(charValue)) this else null
 }
 
 /**

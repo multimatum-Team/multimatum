@@ -3,20 +3,18 @@ package com.github.multimatum_team.multimatum.model.datetime_parser
 import java.time.LocalDate
 import java.time.LocalTime
 
-object DateTimeExtractor {
+class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
+    constructor(currentDateProvider: () -> LocalDate) : this(DateTimePatterns(currentDateProvider))
 
 
     /*
         TODO implement date recognition + more patterns for time recognition
-
         When finished, should be able to parse:
-
         18h00
         18h
         6am
         6pm
         etc.
-
         Monday
         next Monday
         on Monday
@@ -41,7 +39,7 @@ object DateTimeExtractor {
      */
     private fun extractDateTimeInfo(tokens: List<Token>): ExtractionResult {
         require(tokens.isNotEmpty())
-        return DateTimePatterns.PATTERNS.asSequence()
+        return dateTimePatterns.patterns.asSequence()
             .filter { (pattern, _) -> pattern.size <= tokens.size }
             .map { (pattern, createExtractedInfoFunc) ->
                 val currentTokens = tokens.take(pattern.size)

@@ -1,8 +1,9 @@
 package com.github.multimatum_team.multimatum.model.datetime_parser
 
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.YearMonth
+import java.time.*
+import java.time.temporal.TemporalAdjusters
+
+// TODO update doc
 
 /**
  * Contains all the patterns that the parser should recognize
@@ -49,92 +50,133 @@ import java.time.YearMonth
  * is applied to the list [15, SymbolToken(":"), 0] and builds an ExtractedTime that contains
  * the time 15:00
  */
-object DateTimePatterns {
+class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
 
     /**
      * @return a function that takes a token and returns it if it contains the provided string,
      * null o.w.
      */
-    private fun tokenMatching(cmpStr: String) =
-        { tok: Token -> if (tok.str == cmpStr) tok else null }
+    private fun tokenMatchingOneOf(vararg cmpStrings: String): (Token) -> Token? {
+        require(cmpStrings.isNotEmpty())
+        return { tok: Token ->
+            if (cmpStrings.map(String::lowercase).contains(tok.str.lowercase())) tok else null
+        }
+    }
 
     private fun List<Any?>.getInt(idx: Int): Int = get(idx) as Int
+    private fun List<Any?>.getDayOfWeek(idx: Int): DayOfWeek = get(idx) as DayOfWeek
+    private fun List<Any?>.getMonth(idx: Int): Month = get(idx) as Month
 
     private fun timeFor(hour: Int, minute: Int): ExtractedTime =
         ExtractedTime(LocalTime.of(hour, minute))
 
-    private fun dateFor(year: Int, month: Int, day: Int): ExtractedDate? {
+    private fun dateFor(year: Int, month: Month, day: Int): ExtractedDate? {
         val yearMonth = YearMonth.of(year, month)
-        return if (yearMonth.isValidDay(day)) ExtractedDate(
-            LocalDate.of(year, month, day)
-        ) else null
+        return if (yearMonth.isValidDay(day))
+            ExtractedDate(LocalDate.of(year, month, day))
+        else null
     }
 
-    private val SIMPLE_DATE_PAT =
+    private fun dateForNextDayMatching(requestedDayOfWeek: DayOfWeek): ExtractedDate {
+        val currDate = currentDateProvider()
+        val nextMatchingDay = currDate.with(TemporalAdjusters.next(requestedDayOfWeek))
+        return ExtractedDate(nextMatchingDay)
+    }
+
+    private val simpleTimePat =
         listOf(
             Token::asHour,
-            tokenMatching(":"),
+            Token::asTimeSeparator,
             Token::asMinute
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0), minute = args.getInt(2))
         }
 
-    private val AT_TIME_PAT =
+    private val atTimePat =
         listOf(
-            tokenMatching("at"),
+            tokenMatchingOneOf("at"),
             Token::asHour,
-            tokenMatching(":"),
+            Token::asTimeSeparator,
             Token::asMinute
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(1), minute = args.getInt(3))
         }
 
-    private val AM_TIME_PAT =
+    private val amTimePat =
         listOf(
             Token::asHour,
-            tokenMatching("am")
+            tokenMatchingOneOf("am")
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0), minute = 0)
         }
 
-    private val PM_TIME_PAT =
+    private val pmTimePat =
         listOf(
             Token::asHour,
-            tokenMatching("pm")
+            tokenMatchingOneOf("pm")
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0) + 12, minute = 0)
         }
 
-    private val COMPLETE_DATE_DAY_MONTH_YEAR_PAT =
+    private val completeDateDayMonthYearDotsWithSepPat =
         listOf(
             Token::asPossibleDayOfMonthIndex,
-            tokenMatching("."),
-            Token::asMonthIndex,
-            tokenMatching("."),
+            Token::asDateSeparator,
+            Token::asMonth,
+            Token::asDateSeparator,
             Token::asPossibleYear
         ) to { args: List<Any?> ->
-            dateFor(year = args.getInt(4), month = args.getInt(2), day = args.getInt(0))
+            dateFor(year = args.getInt(4), month = args.getMonth(2), day = args.getInt(0))
         }
 
-    private val COMPLETE_DATE_YEAR_MONTH_DAY_PAT =
+    private val completeDateYearMonthDayWithSepPat =
         listOf(
             Token::asPossibleYear,
-            tokenMatching("."),
-            Token::asMonthIndex,
-            tokenMatching("."),
+            Token::asDateSeparator,
+            Token::asMonth,
+            Token::asDateSeparator,
             Token::asPossibleDayOfMonthIndex
         ) to { args: List<Any?> ->
-            dateFor(day = args.getInt(4), month = args.getInt(2), year = args.getInt(0))
+            dateFor(day = args.getInt(4), month = args.getMonth(2), year = args.getInt(0))
         }
 
-    val PATTERNS: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo?>> =
+    private val completeDateDayMonthYearNoSepPat =
         listOf(
-            SIMPLE_DATE_PAT,
-            AT_TIME_PAT,
-            AM_TIME_PAT,
-            PM_TIME_PAT,
-            COMPLETE_DATE_DAY_MONTH_YEAR_PAT,
-            COMPLETE_DATE_YEAR_MONTH_DAY_PAT
+            Token::asPossibleDayOfMonthIndex,
+            Token::asMonth,
+            Token::asPossibleYear
+        ) to {args: List<Any?> ->
+            dateFor(day = args.getInt(0), month = args.getMonth(1), year = args.getInt(2))
+        }
+
+    private val dayOfWeekDatePat =
+        listOf(
+            Token::asDayOfWeek
+        ) to { args: List<Any?> ->
+            val requestedDayOfWeek = args.getDayOfWeek(0)
+            dateForNextDayMatching(requestedDayOfWeek)
+        }
+
+    private val onDayOfWeekDatePat =
+        listOf(
+            tokenMatchingOneOf("on", "next"),
+            Token::asDayOfWeek
+        ) to { args: List<Any?> ->
+            val requestedDayOfWeek = args.getDayOfWeek(1)
+            dateForNextDayMatching(requestedDayOfWeek)
+        }
+
+    val patterns: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo?>> =
+        listOf(
+            simpleTimePat,
+            atTimePat,
+            amTimePat,
+            pmTimePat,
+            completeDateDayMonthYearDotsWithSepPat,
+            completeDateYearMonthDayWithSepPat,
+            completeDateDayMonthYearNoSepPat,
+            dayOfWeekDatePat,
+            onDayOfWeekDatePat
         )
 
 }
