@@ -87,24 +87,17 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
             Pair(date, time)  // end of list, return found info
         } else {
             val (extractedInfo, newRemTokens, consumed) = extractDateTimeInfo(remTokens)
-            when (extractedInfo) {
-                is ExtractedDate -> {
-                    // if a date has already been found, ignore the newly found one (treat it as normal text)
-                    alreadyProcessedTokensList.addAll(if (date == null) listOf(RemovedToken) else consumed)
-                    val newDate = date ?: extractedInfo.date
-                    recursivelyParse(newRemTokens, newDate, time, alreadyProcessedTokensList)
-                }
-                is ExtractedTime -> {
-                    // if a time has already been found, ignore the newly found one (treat it as normal text)
-                    alreadyProcessedTokensList.addAll(if (time == null) listOf(RemovedToken) else consumed)
-                    val newTime = time ?: extractedInfo.time
-                    recursivelyParse(newRemTokens, date, newTime, alreadyProcessedTokensList)
-                }
-                is NoInfo -> {
-                    alreadyProcessedTokensList.addAll(consumed)
-                    recursivelyParse(newRemTokens, date, time, alreadyProcessedTokensList)
-                }
+            val newDate =
+                if (extractedInfo is ExtractedDate && date == null) extractedInfo.date else date
+            val newTime =
+                if (extractedInfo is ExtractedTime && time == null) extractedInfo.time else time
+            val newProcessedTokens = when (extractedInfo) {
+                is ExtractedDate -> if (date == null) listOf(RemovedToken) else consumed
+                is ExtractedTime -> if (time == null) listOf(RemovedToken) else consumed
+                is NoInfo -> consumed
             }
+            alreadyProcessedTokensList.addAll(newProcessedTokens)
+            recursivelyParse(newRemTokens, newDate, newTime, alreadyProcessedTokensList)
         }
 
     /**
