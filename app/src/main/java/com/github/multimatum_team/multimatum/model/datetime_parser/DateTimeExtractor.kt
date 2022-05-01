@@ -74,6 +74,29 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
             ?: ExtractionResult(NoInfo, tokens.drop(1), tokens.subList(0, 1))
     }
 
+    private fun firstFoundTimeIfAny(
+        extractedInfo: ExtractedInfo,
+        previouslySelectedTime: LocalTime?
+    ) =
+        if (extractedInfo is ExtractedTime && previouslySelectedTime == null) extractedInfo.time else previouslySelectedTime
+
+    private fun firstFoundDateIfAny(
+        extractedInfo: ExtractedInfo,
+        previouslySelectedDate: LocalDate?
+    ) =
+        if (extractedInfo is ExtractedDate && previouslySelectedDate == null) extractedInfo.date else previouslySelectedDate
+
+    private fun computeTokensToAddToAlreadyProcessedList(
+        extractedInfo: ExtractedInfo,
+        date: LocalDate?,
+        consumed: List<Token>,
+        time: LocalTime?
+    ) = when (extractedInfo) {
+        is ExtractedDate -> if (date == null) listOf(RemovedToken) else consumed
+        is ExtractedTime -> if (time == null) listOf(RemovedToken) else consumed
+        is NoInfo -> consumed
+    }
+
     /**
      * Iterates on the list of tokens
      */
@@ -83,19 +106,14 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
         time: LocalTime?,
         alreadyProcessedTokensList: MutableList<Token>
     ): Pair<LocalDate?, LocalTime?> =
-        if (remTokens.isEmpty()) {
-            Pair(date, time)  // end of list, return found info
-        } else {
+        if (remTokens.isEmpty()) Pair(date, time)  // end of list, return found info
+        else {
             val (extractedInfo, newRemTokens, consumed) = extractDateTimeInfo(remTokens)
-            val newDate =
-                if (extractedInfo is ExtractedDate && date == null) extractedInfo.date else date
-            val newTime =
-                if (extractedInfo is ExtractedTime && time == null) extractedInfo.time else time
-            val newProcessedTokens = when (extractedInfo) {
-                is ExtractedDate -> if (date == null) listOf(RemovedToken) else consumed
-                is ExtractedTime -> if (time == null) listOf(RemovedToken) else consumed
-                is NoInfo -> consumed
-            }
+            /* if date or time already exists, keep already existing one and treat consumed
+             * tokens as normal text */
+            val newDate = firstFoundDateIfAny(extractedInfo, date)
+            val newTime = firstFoundTimeIfAny(extractedInfo, time)
+            val newProcessedTokens = computeTokensToAddToAlreadyProcessedList(extractedInfo, date, consumed, time)
             alreadyProcessedTokensList.addAll(newProcessedTokens)
             recursivelyParse(newRemTokens, newDate, newTime, alreadyProcessedTokensList)
         }
