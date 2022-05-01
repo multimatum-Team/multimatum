@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.EXTRA_TEXT
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -25,7 +27,6 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
@@ -293,7 +294,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
      */
     fun goQRGenerator(view: View) {
         val intent = Intent(this, QRGeneratorActivity::class.java)
-        intent.putExtra(EXTRA_ID, id)
+        val deadline = deadlineListViewModel.getDeadline(id)
+
+        //need to create a custom gsonbuilder to convert LocalDateTime to Json
+        val jsonConverter = JsonDeadlineConverter()
+
+        val json = jsonConverter.toJson(deadline)
+        intent.putExtra(EXTRA_TEXT, json)
         startActivity(intent)
     }
 

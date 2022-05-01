@@ -1,7 +1,6 @@
 package com.github.multimatum_team.multimatum.model
 
 import java.time.LocalDateTime
-
 /**
  * The state of a deadline.
  *
