@@ -82,9 +82,9 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
         date: LocalDate?,
         time: LocalTime?,
         alreadyProcessedTokensList: MutableList<Token>
-    ): Pair<LocalDate?, LocalTime?> {
+    ): Pair<LocalDate?, LocalTime?> =
         if (remTokens.isEmpty()) {
-            return Pair(date, time)  // end of list, return found info
+            Pair(date, time)  // end of list, return found info
         } else {
             val (extractedInfo, newRemTokens, consumed) = extractDateTimeInfo(remTokens)
             when (extractedInfo) {
@@ -92,21 +92,20 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
                     // if a date has already been found, ignore the newly found one (treat it as normal text)
                     alreadyProcessedTokensList.addAll(if (date == null) listOf(RemovedToken) else consumed)
                     val newDate = date ?: extractedInfo.date
-                    return recursivelyParse(newRemTokens, newDate, time, alreadyProcessedTokensList)
+                    recursivelyParse(newRemTokens, newDate, time, alreadyProcessedTokensList)
                 }
                 is ExtractedTime -> {
                     // if a time has already been found, ignore the newly found one (treat it as normal text)
                     alreadyProcessedTokensList.addAll(if (time == null) listOf(RemovedToken) else consumed)
                     val newTime = time ?: extractedInfo.time
-                    return recursivelyParse(newRemTokens, date, newTime, alreadyProcessedTokensList)
+                    recursivelyParse(newRemTokens, date, newTime, alreadyProcessedTokensList)
                 }
                 is NoInfo -> {
                     alreadyProcessedTokensList.addAll(consumed)
-                    return recursivelyParse(newRemTokens, date, time, alreadyProcessedTokensList)
+                    recursivelyParse(newRemTokens, date, time, alreadyProcessedTokensList)
                 }
             }
         }
-    }
 
     /**
      * Set followedByWhitespace to true for each token that is followed by a WhitespaceToken
