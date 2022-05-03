@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +10,7 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,36 +26,53 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class DeadlineListViewModel @Inject constructor(
-    authRepository: AuthRepository,
     application: Application,
+    authRepository: AuthRepository,
+    groupRepository: GroupRepository,
     private val deadlineRepository: DeadlineRepository
 ) : AndroidViewModel(application) {
     private val _deadlines: MutableLiveData<Map<DeadlineID, Deadline>> = MutableLiveData()
 
     init {
+        val context = getApplication<Application>().applicationContext
+
         // Initialize the deadline repository with the currently logged in user, then fetch the data
         // to initialize the deadline list
-        deadlineRepository.setUser(runBlocking { authRepository.getCurrentUser() })
-        viewModelScope.launch {
-            _deadlines.value = deadlineRepository.fetchAll()
+        authRepository.getUser().let { user ->
+            groupRepository.setUserID(user.id)
+            deadlineRepository.setUser(user)
+            deadlineRepository.setGroups(runBlocking { groupRepository.fetchAll() })
+            runBlocking { deadlineRepository.fetchAll() }.let { deadlines ->
+                Log.d("DeadlineListViewModel", "fetching initial deadlines: $deadlines")
+                _deadlines.value = deadlines
+                DeadlineNotification.updateNotifications(deadlines, context)
+            }
         }
 
-
-
-        val context = getApplication<Application>().applicationContext
-        _deadlines.value?.let { DeadlineNotification.updateNotifications(it, context) }
-
         // Listen for authentication updates, upon which the deadline list is re-fetched
-        authRepository.onUpdate {
-            deadlineRepository.setUser(it)
-            refreshDeadlines() { deadlinesMap ->
+        authRepository.onUpdate { newUser ->
+            Log.d("DeadlineListViewModel", "update auth: $newUser")
+            deadlineRepository.setUser(newUser)
+            refreshDeadlines { deadlinesMap ->
+                DeadlineNotification.updateNotifications(deadlinesMap, context)
+            }
+        }
+
+        // Listen for group updates, upon which the deadline list is re-fetched
+        groupRepository.onUpdate { newGroups ->
+            Log.d("DeadlineListViewModel", "update groups: $newGroups")
+            deadlineRepository.setGroups(newGroups)
+            refreshDeadlines { deadlinesMap ->
                 DeadlineNotification.updateNotifications(deadlinesMap, context)
             }
         }
 
         // Listen for changes in the deadline list as well, in order to synchronize between the
         // Firebase database contents
-        deadlineRepository.onUpdate { _deadlines.value = it }
+        deadlineRepository.onUpdate { newDeadlines ->
+            Log.d("DeadlineListViewModel", "update deadlines: $newDeadlines")
+            _deadlines.value = newDeadlines
+        }
     }
 
     /**
@@ -61,7 +80,9 @@ class DeadlineListViewModel @Inject constructor(
      */
     private fun refreshDeadlines(callback: (Map<DeadlineID, Deadline>) -> Unit = {}) =
         viewModelScope.launch {
-            _deadlines.value = deadlineRepository.fetchAll()
+            val newDeadlines = deadlineRepository.fetchAll()
+            _deadlines.value = newDeadlines
+            Log.d("DeadlineListViewModel", "update deadlines: $newDeadlines")
             callback(_deadlines.value!!)
         }
 
@@ -80,6 +101,7 @@ class DeadlineListViewModel @Inject constructor(
     fun addDeadline(deadline: Deadline, callback: (DeadlineID) -> Unit = {}) =
         viewModelScope.launch {
             val id = deadlineRepository.put(deadline)
+            Log.d("DeadlineListViewModel", "add deadline: $deadline with id $id")
             callback(id)
         }
 
@@ -89,6 +111,7 @@ class DeadlineListViewModel @Inject constructor(
     fun deleteDeadline(id: DeadlineID, callback: (DeadlineID) -> Unit = {}) =
         viewModelScope.launch {
             deadlineRepository.delete(id)
+            Log.d("DeadlineListViewModel", "deleting deadline with id $id")
             callback(id)
         }
 
@@ -96,6 +119,7 @@ class DeadlineListViewModel @Inject constructor(
      * Modify a deadline from the repository.
      */
     fun modifyDeadline(id: DeadlineID, newDeadline: Deadline) = viewModelScope.launch {
+        Log.d("DeadlineListViewModel", "modifying deadline with id $id to $newDeadline")
         deadlineRepository.modify(id, newDeadline)
     }
 }

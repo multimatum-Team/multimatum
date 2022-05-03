@@ -5,10 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.multimatum_team.multimatum.LogUtil
+import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
 import com.github.multimatum_team.multimatum.repository.AuthRepository
+import com.github.multimatum_team.multimatum.repository.GroupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,12 +22,13 @@ class UserViewModel @Inject constructor(
     private val _user: MutableLiveData<User> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
-            _user.value = authRepository.getCurrentUser()
+        authRepository.getUser().let { user ->
+            Log.d("UserViewModel", "initiating viewmodel with user $user")
+            _user.value = user
         }
 
         authRepository.onUpdate { newUser ->
-            Log.d("UserViewModel", "update: $newUser")
+            Log.d("UserViewModel", "update auth: $newUser")
             _user.value = newUser
         }
     }
@@ -32,6 +37,7 @@ class UserViewModel @Inject constructor(
         _user
 
     fun signOut() = viewModelScope.launch {
-        _user.value = authRepository.signOut()
+        Log.d("UserViewModel", "signing out from ${_user.value}")
+        authRepository.signOut()
     }
 }
