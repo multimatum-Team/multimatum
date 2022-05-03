@@ -4,8 +4,6 @@ import android.util.Log
 import com.github.multimatum_team.multimatum.model.*
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.*
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
 import java.time.ZoneId
@@ -14,9 +12,8 @@ import javax.inject.Inject
 /**
  * Remote Firebase repository for storing deadlines.
  */
-class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
-    private var database: FirebaseFirestore = Firebase.firestore
-
+class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore) :
+    DeadlineRepository() {
     private val deadlinesRef = database
         .collection("deadlines")
 
@@ -76,11 +73,11 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
                     .toEpochSecond(),
                 0
             ),
+            "description" to deadline.description,
             "owner" to when (deadline.owner) {
                 is UserOwned -> hashMapOf("type" to "user", "id" to _user.id)
                 is GroupOwned -> hashMapOf("type" to "group", "id" to deadline.owner.groupID)
-            },
-            "description" to deadline.description
+            }
         )
 
     /**
@@ -109,13 +106,7 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
             else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected String or Map")
         }
 
-        return Deadline(
-            title,
-            state,
-            date,
-            description = description,
-            owner
-        )
+        return Deadline(title, state, date, description, owner)
     }
 
     /**
@@ -142,9 +133,7 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
      * Fetch all personal deadlines from the database.
      */
     private suspend fun fetchFromGroup(groupID: GroupID): Map<DeadlineID, Deadline> = fetchQuery(
-        deadlinesRef
-            .whereEqualTo(FieldPath.of("owner", "type"), "group")
-            .whereEqualTo(FieldPath.of("owner", "id"), groupID)
+        deadlinesRef.whereEqualTo("owner", mapOf("type" to "group", "id" to groupID))
     )
 
     /**
@@ -160,7 +149,7 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
      * Fetch all deadlines from the database.
      */
     override suspend fun fetchAll(): Map<DeadlineID, Deadline> =
-        fetchQuery (allDeadlinesQuery)
+        fetchQuery(allDeadlinesQuery)
 
     /**
      * Insert new deadline in the database.
