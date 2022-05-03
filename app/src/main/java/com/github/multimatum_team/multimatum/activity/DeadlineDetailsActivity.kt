@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -7,26 +8,43 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.EXTRA_TEXT
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.DocumentsContract
 import android.text.SpannableStringBuilder
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
+import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.pspdfkit.configuration.activity.PdfActivityConfiguration
+import com.pspdfkit.document.download.DownloadJob
+import com.pspdfkit.document.download.DownloadRequest
+import com.pspdfkit.document.download.Progress
+import com.pspdfkit.document.providers.AssetDataProvider
+import com.pspdfkit.ui.PdfActivity
+import com.pspdfkit.ui.PdfActivityIntentBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.IOException
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
@@ -53,6 +71,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     // Set them on default value, waiting the fetch of the deadlines
     private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
     private var state: DeadlineState = DeadlineState.TODO
+
+    private lateinit var deadline:Deadline
 
 
     @SuppressLint("CutPasteId")
@@ -90,8 +110,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Set the detail text to inform the user if it is due, done or the remaining time
         updateDetail()
-
     }
+
 
     private fun retrieveNotificationsTimes(): List<Long> =
         (checkBoxIdTime.filter { checkBox -> findViewById<CheckBox>(checkBox.key).isChecked }).values.toList()
@@ -205,7 +225,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private fun setDeadlineObserver() {
         deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
             // Recuperate the data from the deadline
-            val deadline = deadlines[id]!!
+            deadline = deadlines[id]!!
             dateTime = deadline.dateTime
             state = deadline.state
             val title = deadline.title

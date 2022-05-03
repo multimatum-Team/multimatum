@@ -38,7 +38,8 @@ data class Deadline(
     val state: DeadlineState,
     val dateTime: LocalDateTime,
     val description: String = "",
-    val notificationsTimes: List<Long> = ArrayList()
+    val notificationsTimes: List<Long> = ArrayList(),
+    val pdfURI: String = ""
 ) {
     init {
         if (title.isEmpty()) {

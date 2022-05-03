@@ -50,4 +50,6 @@
     <string name="select_time">Select Time</string>
     <string name="notification_shared_preference">com.github.multimatum_team.multimatum.notifications</string>
     <string name="not_done">Not Done</string>
+    <string name="link_pdf_to_deadline_title">Link pdf :</string>
+    <string name="pick_pdf">Click To Pick PDF From Storage</string>
 </resources>

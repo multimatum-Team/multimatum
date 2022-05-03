@@ -1,13 +1,21 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
+import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
+import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.R
@@ -15,8 +23,10 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
+import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.URI
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -36,6 +46,8 @@ class AddDeadlineActivity : AppCompatActivity() {
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
+    private lateinit var pdfTextView: TextView
+    private  var pdfUri: Uri = Uri.EMPTY
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +65,12 @@ class AddDeadlineActivity : AppCompatActivity() {
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         textDate.text = selectedDate.toLocalDate().toString()
         textTime.text = selectedDate.toLocalTime().toString()
+
+        pdfTextView = findViewById(R.id.selectedPdf)
+        // Setting click listener to the PDF TextView
+        pdfTextView.setOnClickListener {
+            selectPDF()
+        }
     }
 
     /**
@@ -141,7 +159,8 @@ class AddDeadlineActivity : AppCompatActivity() {
             val deadline = Deadline(
                 titleDeadline,
                 DeadlineState.TODO,
-                selectedDate
+                selectedDate,
+                pdfURI = pdfUri.toString()
             )
 
             val notificationsTimes = retrieveNotificationsTimes()
@@ -159,4 +178,36 @@ class AddDeadlineActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun selectPDF() {
+        PDFUtil.selectPdfIntent() {
+            startForResult.launch(it)
+        }
+    }
+    //handle result of startActivity
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result?.data!!
+                pdfUri = intent.data!!
+                val uriString: String = pdfUri.toString()
+                var pdfName: String? = null
+                if (uriString.startsWith("content://")) {
+                    var myCursor: Cursor? = null
+                    try {
+                        // Setting the PDF to the TextView
+                        myCursor =
+                            applicationContext!!.contentResolver.query(pdfUri, null, null, null, null)
+                        if (myCursor != null && myCursor.moveToFirst()) {
+                            pdfName =
+                                myCursor.getString(myCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                            pdfTextView.text = pdfName
+                        }
+                    } finally {
+                        myCursor?.close()
+                    }
+                }
+            }
+        }
+
 }
