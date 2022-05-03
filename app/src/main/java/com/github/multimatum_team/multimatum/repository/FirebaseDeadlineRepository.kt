@@ -1,11 +1,9 @@
 package com.github.multimatum_team.multimatum.repository
 
 import android.util.Log
-import com.github.multimatum_team.multimatum.model.Deadline
-import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.*
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -22,6 +20,49 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
     private val deadlinesRef = database
         .collection("deadlines")
 
+    private val updateCallbacks: MutableList<(Map<DeadlineID, Deadline>) -> Unit> = mutableListOf()
+
+    private lateinit var registeredListener: ListenerRegistration
+
+    private val userOwnedOwnerList: List<Any>
+        get() = listOf(_user.id, mapOf("type" to "user", "id" to _user.id))
+
+    private val ownerList: List<Any>
+        get() {
+            val owners: MutableList<Any> = userOwnedOwnerList.toMutableList()
+            for (groupID in _groups.keys) {
+                owners.add(mapOf("type" to "group", "id" to groupID))
+            }
+            return owners
+        }
+
+    private val allDeadlinesQuery: Query
+        get() = deadlinesRef.whereIn("owner", ownerList)
+
+
+    private fun addListenerForQuery(query: Query): ListenerRegistration =
+        query.addSnapshotListener { deadlineSnapshots, error ->
+            if (error != null) {
+                Log.w("FirebaseDeadlineRepository", "Failed to retrieve data from database")
+                return@addSnapshotListener
+            }
+            val deadlineMap: MutableMap<DeadlineID, Deadline> = mutableMapOf()
+            deadlineSnapshots!!.forEach { deadlineSnapshot ->
+                deadlineMap[deadlineSnapshot.id] = deserializeDeadline(deadlineSnapshot)
+            }
+            for (callback in updateCallbacks) {
+                callback(deadlineMap)
+            }
+        }
+
+    override fun setUser(newUser: User) {
+        super.setUser(newUser)
+        if (this::registeredListener.isInitialized) {
+            registeredListener.remove()
+        }
+        registeredListener = addListenerForQuery(allDeadlinesQuery)
+    }
+
     /**
      * Convert a deadline into a hashmap, so that we can send the deadline data to Firebase.
      */
@@ -35,9 +76,11 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
                     .toEpochSecond(),
                 0
             ),
-            "owner" to _user.id,
-            "description" to deadline.description,
-            "notificationsTimes" to deadline.notificationsTimes.toList()
+            "owner" to when (deadline.owner) {
+                is UserOwned -> hashMapOf("type" to "user", "id" to _user.id)
+                is GroupOwned -> hashMapOf("type" to "group", "id" to deadline.owner.groupID)
+            },
+            "description" to deadline.description
         )
 
     /**
@@ -52,13 +95,18 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
             .ofEpochMilli(milliseconds)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
-        var description = ""
-        if (deadlineSnapshot["description"] != null) {
-            description = deadlineSnapshot["description"] as String
-        }
-        var notificationsTimes = ArrayList<Long>()
-        if (deadlineSnapshot["notificationsTimes"] != null) {
-            notificationsTimes = deadlineSnapshot["notificationsTimes"] as ArrayList<Long>
+        val description = deadlineSnapshot["description"] as String
+        val owner = when (deadlineSnapshot["owner"]) {
+            is String -> UserOwned
+            is Map<*, *> -> {
+                val ownerMap = deadlineSnapshot["owner"] as Map<String, String>
+                when (ownerMap["type"]) {
+                    "user" -> UserOwned
+                    "group" -> GroupOwned(ownerMap["id"] as String)
+                    else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
+                }
+            }
+            else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected String or Map")
         }
 
         return Deadline(
@@ -66,7 +114,7 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
             state,
             date,
             description = description,
-            notificationsTimes = notificationsTimes
+            owner
         )
     }
 
@@ -76,16 +124,43 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
     override suspend fun fetch(id: DeadlineID): Deadline =
         deserializeDeadline(deadlinesRef.document(id).get().await())
 
-    /**
-     * Fetch all deadlines from the database.
-     */
-    override suspend fun fetchAll(): Map<DeadlineID, Deadline> =
-        deadlinesRef
-            .whereEqualTo("owner", _user.id)
+    private suspend fun fetchQuery(query: Query): Map<DeadlineID, Deadline> =
+        query
             .get()
             .await()
             .documents
             .associate { it.id to deserializeDeadline(it) }
+
+    /**
+     * Fetch all personal deadlines from the database.
+     */
+    private suspend fun fetchPersonal(): Map<DeadlineID, Deadline> = fetchQuery(
+        deadlinesRef.whereIn("owner", userOwnedOwnerList)
+    )
+
+    /**
+     * Fetch all personal deadlines from the database.
+     */
+    private suspend fun fetchFromGroup(groupID: GroupID): Map<DeadlineID, Deadline> = fetchQuery(
+        deadlinesRef
+            .whereEqualTo(FieldPath.of("owner", "type"), "group")
+            .whereEqualTo(FieldPath.of("owner", "id"), groupID)
+    )
+
+    /**
+     * Fetch all deadlines associated to the given owner.
+     */
+    override suspend fun fetchFromOwner(owner: DeadlineOwner): Map<DeadlineID, Deadline> =
+        when (owner) {
+            is UserOwned -> fetchPersonal()
+            is GroupOwned -> fetchFromGroup(owner.groupID)
+        }
+
+    /**
+     * Fetch all deadlines from the database.
+     */
+    override suspend fun fetchAll(): Map<DeadlineID, Deadline> =
+        fetchQuery (allDeadlinesQuery)
 
     /**
      * Insert new deadline in the database.
@@ -119,18 +194,6 @@ class FirebaseDeadlineRepository @Inject constructor() : DeadlineRepository() {
      * Add listener for firebase updates.
      */
     override fun onUpdate(callback: (Map<DeadlineID, Deadline>) -> Unit) {
-        deadlinesRef
-            .whereEqualTo("owner", _user.id)
-            .addSnapshotListener { deadlineSnapshots, error ->
-                if (error != null) {
-                    Log.w("FirebaseDeadlineRepository", "Failed to retrieve data from database")
-                    return@addSnapshotListener
-                }
-                val deadlineMap: MutableMap<DeadlineID, Deadline> = mutableMapOf()
-                deadlineSnapshots!!.forEach { deadlineSnapshot ->
-                    deadlineMap[deadlineSnapshot.id] = deserializeDeadline(deadlineSnapshot)
-                }
-                callback(deadlineMap)
-            }
+        updateCallbacks.add(callback)
     }
 }

@@ -1,8 +1,6 @@
 package com.github.multimatum_team.multimatum.repository
 
-import com.github.multimatum_team.multimatum.model.Deadline
-import com.github.multimatum_team.multimatum.model.User
-import java.io.Serializable
+import com.github.multimatum_team.multimatum.model.*
 import java.time.LocalDateTime
 
 typealias DeadlineID = String
@@ -15,12 +13,20 @@ typealias DeadlineID = String
  */
 abstract class DeadlineRepository {
     protected lateinit var _user: User
+    protected var _groups: Map<GroupID, UserGroup> = mapOf()
 
     /**
      * Set the user associated to the deadlines.
      */
-    fun setUser(newUser: User) {
+    open fun setUser(newUser: User) {
         _user = newUser
+    }
+
+    /**
+     * Set the user associated to the deadlines.
+     */
+    open fun setGroups(newGroups: Map<GroupID, UserGroup>) {
+        _groups = newGroups
     }
 
     /**
@@ -28,6 +34,12 @@ abstract class DeadlineRepository {
      */
     open suspend fun fetch(id: String): Deadline? =
         fetchAll()[id]
+
+    /**
+     * Fetch all deadlines owned by a given owner.
+     */
+    open suspend fun fetchFromOwner(owner: DeadlineOwner): Map<DeadlineID, Deadline> =
+        fetchAll().filterValues { it.owner == owner }
 
     /**
      * Fetch all user-defined deadlines from the repository.
