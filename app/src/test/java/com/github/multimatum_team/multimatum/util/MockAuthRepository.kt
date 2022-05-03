@@ -11,36 +11,35 @@ import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 /**
  * Defines a dummy AuthRepository that works locally by generating unique anonymous users.
  */
-class MockAuthRepository : AuthRepository {
+class MockAuthRepository : AuthRepository() {
     private var uniqueIDSupply = 0
 
-    private var user: User = generateNewAnonymousUser()
+    init {
+        _user = generateNewAnonymousUser()
+    }
 
     private val updateListeners: MutableList<(User) -> Unit> =
         mutableListOf()
 
     private fun notifyUpdateListeners() =
-        updateListeners.forEach { it(user) }
+        updateListeners.forEach { it(_user) }
 
     private fun generateNewAnonymousUser(): AnonymousUser =
         AnonymousUser((uniqueIDSupply++).toString())
 
-    override suspend fun getCurrentUser(): User =
-        user
-
     fun signIn(email: String) {
-        user = SignedInUser(user.id, email)
+        _user = SignedInUser(_user.id, email)
         notifyUpdateListeners()
     }
 
     fun logIn(newUser: User) {
-        user = newUser
+        _user = newUser
         notifyUpdateListeners()
     }
 
     override suspend fun signOut(): AnonymousUser {
         val anonymousUser = AnonymousUser((uniqueIDSupply++).toString())
-        user = anonymousUser
+        _user = anonymousUser
         notifyUpdateListeners()
         return anonymousUser
     }
