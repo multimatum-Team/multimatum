@@ -41,7 +41,7 @@ class FirebaseGroupRepositoryTest {
     fun setup() {
         hiltRule.inject()
         repository = FirebaseGroupRepository(database)
-        repository.setUser(AnonymousUser("1"))
+        repository.setUserID("1")
     }
 
     @Test

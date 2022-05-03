@@ -48,7 +48,7 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
      */
     override suspend fun fetchAll(): Map<GroupID, UserGroup> =
         groupsRef
-            .whereArrayContains("members", _user.id)
+            .whereArrayContains("members", _userID)
             .get()
             .await()
             .documents
@@ -59,7 +59,7 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
      */
     override suspend fun fetchOwned(): Map<GroupID, UserGroup> =
         groupsRef
-            .whereEqualTo("owner", _user.id)
+            .whereEqualTo("owner", _userID)
             .get()
             .await()
             .documents
@@ -76,7 +76,7 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
                     UserGroup(
                         id = "",
                         name = name,
-                        owner = _user.id
+                        owner = _userID
                     )
                 )
             )
@@ -100,7 +100,7 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
      */
     override fun onUpdate(callback: (Map<GroupID, UserGroup>) -> Unit) {
         groupsRef
-            .whereArrayContains("members", _user.id)
+            .whereArrayContains("members", _userID)
             .addSnapshotListener { groupSnapshots, error ->
                 if (error != null) {
                     Log.w("FirebaseDeadlineRepository", "Failed to retrieve data from database")
