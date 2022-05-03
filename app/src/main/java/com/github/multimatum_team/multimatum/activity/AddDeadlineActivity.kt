@@ -1,11 +1,11 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.View
-import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -22,6 +22,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
+
 /**
  *  Activity who create a deadline using a DatePickerDialog and a TimePickerDialog
  */
@@ -32,24 +33,26 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     private lateinit var selectedDate: LocalDateTime
 
-
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
+
+    // Memorisation of which checkBox is selected for the notifications
+    private val notificationSelected = booleanArrayOf(false, false, false, false)
+    private val nameCheckBox = arrayOf("1 hour", "5 hours", "1 day", "3 days")
+    private val checkBoxIdTime = mapOf(
+        "1 hour" to Duration.ofHours(1).toMillis(),
+        "5 hours" to Duration.ofHours(5).toMillis(),
+        "1 day" to Duration.ofDays(1).toMillis(),
+        "3 days" to Duration.ofDays(3).toMillis()
+    )
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_deadline)
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
-        findViewById<CheckBox>(R.id.radio_notification_1h).text =
-            getString(R.string.notify_before, "1 hour")
-        findViewById<CheckBox>(R.id.radio_notification_5h).text =
-            getString(R.string.notify_before, "5 hours")
-        findViewById<CheckBox>(R.id.radio_notification_1d).text =
-            getString(R.string.notify_before, "1 day")
-        findViewById<CheckBox>(R.id.radio_notification_3d).text =
-            getString(R.string.notify_before, "3 days")
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         textDate.text = selectedDate.toLocalDate().toString()
         textTime.text = selectedDate.toLocalTime().toString()
@@ -108,19 +111,29 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     }
 
-    private val checkBoxIdTime = mapOf(
-        R.id.radio_notification_1h to Duration.ofHours(1).toMillis(),
-        R.id.radio_notification_5h to Duration.ofHours(5).toMillis(),
-        R.id.radio_notification_1d to Duration.ofDays(1).toMillis(),
-        R.id.radio_notification_3d to Duration.ofDays(3).toMillis()
-    )
+    /**
+     * Setup an AlertDialog that will select when there will be notifications for the deadline
+     */
+    fun selectNotifications(view: View) {
+        val alertDialogBuilder = AlertDialog.Builder(this)
 
-    private fun retrieveNotificationsTimes(): ArrayList<Long> {
-        val res = ArrayList<Long>()
-        for (checkBox in checkBoxIdTime) {
-            if (findViewById<CheckBox>(checkBox.key).isChecked) res.add(checkBox.value)
+        // Set the title
+        alertDialogBuilder.setTitle("Notify Me:")
+
+        // Set the checkbox, their name in the dialog and what happen when checked
+        alertDialogBuilder.setMultiChoiceItems(
+            nameCheckBox.map { s ->
+                getString(R.string.notify_before, s)
+            }.toTypedArray(),
+            notificationSelected
+        ) { _, which, isChecked ->
+            notificationSelected[which] = isChecked
         }
-        return res
+
+        // Set the name of the done button
+        alertDialogBuilder.setPositiveButton(getString(R.string.done), null)
+        alertDialogBuilder.create()
+        alertDialogBuilder.show()
     }
 
     /**
@@ -128,10 +141,11 @@ class AddDeadlineActivity : AppCompatActivity() {
      */
     fun addDeadline(view: View) {
         // Getting the necessary views
-        val editText = findViewById<TextView>(R.id.add_deadline_select_title)
+        val textTitle = findViewById<TextView>(R.id.add_deadline_select_title)
+        val textDescription = findViewById<TextView>(R.id.add_deadline_select_description)
 
         // Getting the entered text
-        val titleDeadline = editText.text.toString()
+        val titleDeadline = textTitle.text.toString()
 
         // Check if the title is not empty
         if (titleDeadline == "") {
@@ -141,22 +155,30 @@ class AddDeadlineActivity : AppCompatActivity() {
             val deadline = Deadline(
                 titleDeadline,
                 DeadlineState.TODO,
-                selectedDate
+                selectedDate,
+                textDescription.text.toString()
             )
 
             val notificationsTimes = retrieveNotificationsTimes()
 
-
-
             Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
 
             // Reset the text input for future use
-            editText.text = ""
+            textTitle.text = ""
 
             deadlineListViewModel.addDeadline(deadline) {
                 DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
                 finish()
             }
         }
+    }
+
+    // Recuperate the information on which notification must be set before returning it in an array
+    private fun retrieveNotificationsTimes(): ArrayList<Long> {
+        val res = ArrayList<Long>()
+        for (i in 0 until checkBoxIdTime.count()) {
+            if (notificationSelected[i]) res.add(checkBoxIdTime[nameCheckBox[i]]!!)
+        }
+        return res
     }
 }
