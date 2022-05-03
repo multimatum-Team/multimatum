@@ -112,6 +112,7 @@ class FirebaseGroupRepositoryTest {
         @Provides
         fun provideFirebaseFirestore(): FirebaseFirestore =
             MockFirebaseFirestore(
+                listOf(),
                 listOf(
                     UserGroup("0", "Group 1", "0", setOf("0", "1", "2")),
                     UserGroup("1", "Group 2", "1", setOf("0", "1")),
