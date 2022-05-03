@@ -4,12 +4,10 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
-import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
@@ -26,7 +24,6 @@ import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.net.URI
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -47,7 +44,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
     private lateinit var pdfTextView: TextView
-    private  var pdfUri: Uri = Uri.EMPTY
+    private var pdfUri: Uri = Uri.EMPTY
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -184,6 +181,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             startForResult.launch(it)
         }
     }
+
     //handle result of startActivity
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -197,7 +195,13 @@ class AddDeadlineActivity : AppCompatActivity() {
                     try {
                         // Setting the PDF to the TextView
                         myCursor =
-                            applicationContext!!.contentResolver.query(pdfUri, null, null, null, null)
+                            applicationContext!!.contentResolver.query(
+                                pdfUri,
+                                null,
+                                null,
+                                null,
+                                null
+                            )
                         if (myCursor != null && myCursor.moveToFirst()) {
                             pdfName =
                                 myCursor.getString(myCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))

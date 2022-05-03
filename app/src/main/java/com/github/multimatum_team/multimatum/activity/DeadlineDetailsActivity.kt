@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum.activity
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -8,20 +7,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.EXTRA_TEXT
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.graphics.Color
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -30,16 +22,7 @@ import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.pspdfkit.configuration.activity.PdfActivityConfiguration
-import com.pspdfkit.document.download.DownloadJob
-import com.pspdfkit.document.download.DownloadRequest
-import com.pspdfkit.document.download.Progress
-import com.pspdfkit.document.providers.AssetDataProvider
-import com.pspdfkit.ui.PdfActivity
-import com.pspdfkit.ui.PdfActivityIntentBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.File
-import java.io.IOException
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -72,7 +55,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
     private var state: DeadlineState = DeadlineState.TODO
 
-    private lateinit var deadline:Deadline
+    private lateinit var deadline: Deadline
 
 
     @SuppressLint("CutPasteId")

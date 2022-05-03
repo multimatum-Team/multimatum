@@ -14,7 +14,7 @@ class JsonDeadlineConverterTest {
     @Test
     fun `check right result when converting from deadline into json`(){
         val deadline = Deadline("Bloup", DeadlineState.TODO, LocalDateTime.of(2022, Month.APRIL, 29, 14, 32))
-        assertEquals("""{"title":"Bloup","state":"TODO","dateTime":"29::04::2022 14::32::00","description":"","notificationsTimes":[]}""",
+        assertEquals("""{"title":"Bloup","state":"TODO","dateTime":"29::04::2022 14::32::00","description":"","notificationsTimes":[],"pdfURI":""}""",
             jsonDeadlineConverter.toJson(deadline))
     }
 
