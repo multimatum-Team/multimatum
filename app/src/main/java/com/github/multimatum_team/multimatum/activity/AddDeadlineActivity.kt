@@ -177,42 +177,42 @@ class AddDeadlineActivity : AppCompatActivity() {
     }
 
     private fun selectPDF() {
-        //handle result of startActivity
-        val startForResult =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    val intent = result?.data!!
-                    pdfUri = intent.data!!
-                    val uriString: String = pdfUri.toString()
-                    var pdfName: String? = null
-                    if (uriString.startsWith("content://")) {
-                        var myCursor: Cursor? = null
-                        try {
-                            // Setting the PDF to the TextView
-                            myCursor =
-                                applicationContext!!.contentResolver.query(
-                                    pdfUri,
-                                    null,
-                                    null,
-                                    null,
-                                    null
-                                )
-                            if (myCursor != null && myCursor.moveToFirst()) {
-                                pdfName =
-                                    myCursor.getString(myCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                                pdfTextView.text = pdfName
-                            }
-                        } finally {
-                            myCursor?.close()
-                        }
-                    }
-                }
-            }
         PDFUtil.selectPdfIntent() {
             startForResult.launch(it)
         }
     }
 
+    //handle result of startActivity
+    val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result?.data!!
+                pdfUri = intent.data!!
+                val uriString: String = pdfUri.toString()
+                var pdfName: String? = null
+                if (uriString.startsWith("content://")) {
+                    var myCursor: Cursor? = null
+                    try {
+                        // Setting the PDF to the TextView
+                        myCursor =
+                            applicationContext!!.contentResolver.query(
+                                pdfUri,
+                                null,
+                                null,
+                                null,
+                                null
+                            )
+                        if (myCursor != null && myCursor.moveToFirst()) {
+                            pdfName =
+                                myCursor.getString(myCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                            pdfTextView.text = pdfName
+                        }
+                    } finally {
+                        myCursor?.close()
+                    }
+                }
+            }
+        }
 
 
 }
