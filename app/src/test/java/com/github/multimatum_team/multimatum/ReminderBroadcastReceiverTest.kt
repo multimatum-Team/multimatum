@@ -78,7 +78,6 @@ class ReminderBroadcastReceiverTest {
     @Module
     @InstallIn(SingletonComponent::class)
     object TestDependenciesProvider {
-
         @Provides
         fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
 

@@ -14,11 +14,15 @@ import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineID
+import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockClockService
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockGroupRepository
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.Module
 import dagger.Provides
@@ -31,20 +35,38 @@ import org.junit.*
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
-@UninstallModules(ClockModule::class)
+@UninstallModules(FirebaseRepositoryModule::class, ClockModule::class)
 class DeadlineAdapterTest {
+    companion object {
+        private val deadlines: List<Deadline> = listOf(
+            Deadline("Number 1", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 13, 0)),
+            Deadline("Number 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 12, 0)),
+            Deadline("Number 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 1, 10, 0)),
+            Deadline("Number 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 11, 0)),
+        )
+    }
+
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
     lateinit var clockService: ClockService
 
+    @Inject
+    lateinit var authRepository: AuthRepository
+
+    @Inject
+    lateinit var groupRepository: GroupRepository
+
+    @Inject
+    lateinit var deadlineRepository: DeadlineRepository
+
     private lateinit var adapter: DeadlineAdapter
     private var context: Application? = null
-    private lateinit var deadlinesList: List<Deadline>
     private lateinit var deadlinesMap: Map<DeadlineID, Deadline>
 
     @Before
@@ -53,18 +75,11 @@ class DeadlineAdapterTest {
         Intents.init()
         hiltRule.inject()
         context = ApplicationProvider.getApplicationContext()
-        deadlinesList = listOf(
-            Deadline("Number 1", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 13, 0)),
-            Deadline("Number 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 12, 0)),
-            Deadline("Number 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 1, 10, 0)),
-            Deadline("Number 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 11, 0)),
-        )
-        val authRepository = MockAuthRepository()
-        authRepository.logIn(AnonymousUser("0"))
-        val deadlineRepository = MockDeadlineRepository(deadlinesList)
+        (authRepository as MockAuthRepository).logIn(AnonymousUser("0"))
         val viewModel = DeadlineListViewModel(
-            authRepository,
             ApplicationProvider.getApplicationContext(),
+            authRepository,
+            groupRepository,
             deadlineRepository
         )
         adapter = DeadlineAdapter(context!!, viewModel)
@@ -292,5 +307,24 @@ class DeadlineAdapterTest {
         @Provides
         fun provideClockService(): ClockService =
             MockClockService(LocalDateTime.of(2022, 3, 12, 0, 1))
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestRepositoryModule {
+        @Singleton
+        @Provides
+        fun provideDeadlineRepository(): DeadlineRepository =
+            MockDeadlineRepository(deadlines)
+
+        @Singleton
+        @Provides
+        fun provideGroupRepository(): GroupRepository =
+            MockGroupRepository(listOf())
+
+        @Singleton
+        @Provides
+        fun provideAuthRepository(): AuthRepository =
+            MockAuthRepository()
     }
 }
