@@ -12,23 +12,20 @@ import java.time.Month
 /**
  * Unit tests for the Deadline class.
  */
-class DeadlineTests {
+class DeadlineTest {
     @Test
     fun `Constructor should return Deadline instance defining the right properties`() {
         val title = "Implement tests for Deadline class"
         val state = DeadlineState.DONE
         val date = LocalDateTime.of(2022, Month.MARCH, 11, 0, 0)
         val description = "Some description"
-        val notificationsTimes = arrayListOf<Long>(1000, Duration.ofDays(1).toMillis())
         val deadline = Deadline(
             title,
             state,
             date,
-            description = description,
-            notificationsTimes = notificationsTimes
+            description = description
         )
         assertEquals(deadline.description, description)
-        assertEquals(deadline.notificationsTimes, notificationsTimes)
         assertEquals(deadline.title, title)
         assertEquals(deadline.state, state)
         assertEquals(deadline.dateTime, date)
