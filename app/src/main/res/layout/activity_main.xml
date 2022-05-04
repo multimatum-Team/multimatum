@@ -85,4 +85,18 @@
         android:orientation="vertical"
         app:layout_constraintGuide_begin="20dp" />
 
+    <Button
+        android:id="@+id/groupButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/circle_button"
+        android:onClick="goToGroups"
+        android:text="@string/groups"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/goToQrCodeReader"
+        app:layout_constraintHorizontal_bias="0.102"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/goToCalendarButton"
+        app:layout_constraintVertical_bias="0.917" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

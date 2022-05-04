@@ -21,6 +21,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.multimatum_team.multimatum.activity.*
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
@@ -137,6 +138,17 @@ class MainActivityTest {
     }
 
     @Test
+    fun goToGroupsTest(){
+        onView(withId(R.id.groupButton)).perform(click())
+        Intents.intended(
+            allOf(
+                hasComponent(GroupsActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+    }
+
+    @Test
     fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
         onView(withId(R.id.goToQrCodeReader)).perform(click())
         denyPermission()
@@ -228,7 +240,11 @@ class MainActivityTest {
         @Singleton
         @Provides
         fun provideGroupRepository(): GroupRepository =
-            MockGroupRepository(listOf())
+            MockGroupRepository(listOf(
+                UserGroup("1", "SDP", "joseph"),
+                UserGroup("2", "JDR", "Florian"),
+                UserGroup("3", "Camera", "Leo")
+            ))
 
         @Singleton
         @Provides

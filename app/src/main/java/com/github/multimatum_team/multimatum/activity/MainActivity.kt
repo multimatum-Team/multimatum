@@ -170,6 +170,11 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun goToGroups(view: View){
+        val intent = Intent(this, GroupsActivity::class.java)
+        startActivity(intent)
+    }
+
     companion object {
         private const val CAMERA_PERMISSION_REQUEST_CODE = 123
     }
