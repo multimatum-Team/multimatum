@@ -1,6 +1,6 @@
 package com.github.multimatum_team.multimatum.activity
 
-import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -49,38 +49,33 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private lateinit var dateView: TextView
     private lateinit var detailView: TextView
     private lateinit var doneButton: CheckBox
+    private lateinit var notificationView: TextView
+    private lateinit var descriptionView: EditText
 
     // Set them on default value, waiting the fetch of the deadlines
+    private var notificationSelected: BooleanArray = booleanArrayOf(false, false, false, false)
     private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
     private var state: DeadlineState = DeadlineState.TODO
 
 
-    @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
 
-        // Recuperate the necessary TextView
+        // Recuperate the necessary TextViews
         titleView = findViewById(R.id.deadline_details_activity_title)
         dateView = findViewById(R.id.deadline_details_activity_date)
         detailView = findViewById(R.id.deadline_details_activity_done_or_due)
         doneButton = findViewById(R.id.deadline_details_activity_set_done)
+        notificationView = findViewById(R.id.deadline_details_activity_notifications)
+        descriptionView = findViewById(R.id.deadline_details_activity_description)
 
         // Recuperate the id of the deadline
         id = intent.getStringExtra(EXTRA_ID) as DeadlineID
 
-        //set checkbox caption with the right time string
-        setCheckBoxTexts()
-
-        //retrieve current notification and set checkboxes accordingly
-        setNotificationCheckBox()
-
         // As the viewModel doesn't recuperate immediately the deadlines,
         // we need an update the moment they are fetched
         setDeadlineObserver()
-
-        // Set the View to be unmodifiable at the start and remove displacement of the texts
-        fixArrangement()
 
         // Setup the CheckBox to be checked if done
         doneButton.setOnCheckedChangeListener { _, isChecked ->
@@ -93,8 +88,21 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
-    private fun retrieveNotificationsTimes(): List<Long> =
-        (checkBoxIdTime.filter { checkBox -> findViewById<CheckBox>(checkBox.key).isChecked }).values.toList()
+    /**
+     * @param View: the current view
+     * when clicking ont the button create an intent to launch the QR activity
+     */
+    fun goQRGenerator(view: View) {
+        val intent = Intent(this, QRGeneratorActivity::class.java)
+        val deadline = deadlineListViewModel.getDeadline(id)
+
+        // Need to create a custom json builder to convert LocalDateTime to Json
+        val jsonConverter = JsonDeadlineConverter()
+
+        val json = jsonConverter.toJson(deadline)
+        intent.putExtra(EXTRA_TEXT, json)
+        startActivity(intent)
+    }
 
     // This display a DatePickerDialog and afterward a TimePickerDialog to modify the date
     fun changeDateAndTime(view: View) {
@@ -116,135 +124,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         )
         // Show the Dialog on the screen
         datePickerDialog.show()
-    }
-
-    // Function that put the activity to the Edit Mode or to the Uneditable Mode
-    fun goToModifyOrBack(view: View) {
-        editTitle(editMode)
-        findViewById<ImageButton>(R.id.deadline_details_activity_modify)
-            .setImageResource(
-                if (editMode) android.R.drawable.checkbox_on_background
-                else android.R.drawable.ic_menu_manage
-            )
-
-        dateView.setBackgroundResource(
-            if (editMode) android.R.drawable.btn_default
-            else android.R.color.transparent
-        )
-
-        adaptToCurrentTheme()
-
-        dateView.isClickable = editMode
-
-        doneButton.isClickable = editMode
-        doneButton.visibility = if (editMode) View.VISIBLE else View.GONE
-
-        updateDeadlineAfterEditionModeExit()
-        editMode = editMode.not()
-    }
-
-    fun saveNotificationSetting(view: View) {
-        val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
-        DeadlineNotification.editNotification(id, newDeadline, retrieveNotificationsTimes(), this)
-        Toast.makeText(this, getString(R.string.notification_saved), Toast.LENGTH_SHORT).show()
-    }
-
-    private fun setCheckBoxTexts() {
-        for ((id, text) in idToText.entries) {
-            findViewById<CheckBox>(id).text =
-                getString(R.string.notify_before, text)
-        }
-    }
-
-    private fun setNotificationCheckBox() {
-        val notifications = DeadlineNotification.listDeadlineNotification(id, this)
-        for (id in checkBoxIdTime.keys) {
-            if (notifications.contains(checkBoxIdTime[R.id.radio_notification_1h]))
-                findViewById<CheckBox>(R.id.radio_notification_1h).isChecked = true
-        }
-    }
-
-    // Shift the TitleView to a modify state or to a uneditable state
-    private fun editTitle(edit: Boolean) {
-        titleView.isEnabled = edit
-        titleView.setBackgroundResource(
-            if (edit) android.R.drawable.edit_text
-            else android.R.color.transparent
-        )
-    }
-
-    // Modify the deadline in the database when you quit the edition mode
-    private fun updateDeadlineAfterEditionModeExit() {
-        if (!editMode) {
-            val newDeadline = Deadline(titleView.text.toString(), state, dateTime)
-            deadlineListViewModel.modifyDeadline(
-                id,
-                newDeadline
-            )
-            if (state == DeadlineState.DONE) {
-                DeadlineNotification.deleteNotification(id, this)
-            }
-        }
-    }
-
-    // When we go the first time to the Modify Mode, it happened that the TextView
-    // shifted a little. This function do the shift at the very beginning of the
-    // activity to fix it
-    // TODO: Find a way to setup the layout to remove this problem
-    private fun fixArrangement() {
-        editTitle(true)
-        editTitle(false)
-        dateView.isClickable = false
-        doneButton.isClickable = false
-        dateView.setBackgroundResource(android.R.drawable.btn_default)
-        dateView.setBackgroundResource(android.R.color.transparent)
-    }
-
-    // This function setup the observer to update the information shown when the
-    // deadline are updated
-    private fun setDeadlineObserver() {
-        deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
-            // Recuperate the data from the deadline
-            val deadline = deadlines[id]!!
-            dateTime = deadline.dateTime
-            state = deadline.state
-            val title = deadline.title
-
-            // Update the data shown
-            dateView.text =
-                getString(R.string.DueTheXatX, dateTime.toLocalDate(), dateTime.toLocalTime())
-            titleView.text = SpannableStringBuilder(title)
-            doneButton.isChecked = (state == DeadlineState.DONE)
-            updateDetail()
-        }
-
-    }
-
-    // Update the information shown in the TextView detailView
-    private fun updateDetail() {
-        val actualDate = clockService.now()
-        when {
-            state == DeadlineState.DONE -> {
-                detailView.text = getString(R.string.done)
-            }
-            dateTime.isBefore(actualDate) -> {
-                detailView.text = getString(R.string.isAlreadyDue)
-            }
-            else -> {
-                val remainingTime = actualDate.until(dateTime, ChronoUnit.DAYS)
-                detailView.text = if (remainingTime <= 0) {
-                    getString(
-                        R.string.DueInXHours,
-                        actualDate.until(dateTime, ChronoUnit.HOURS).toString()
-                    )
-                } else {
-                    getString(
-                        R.string.DueInXDays,
-                        actualDate.until(dateTime, ChronoUnit.DAYS).toString()
-                    )
-                }
-            }
-        }
     }
 
     // Setup a TimePickerDialog that will select a time for the deadline, show it and update the details
@@ -274,6 +153,191 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
+    // Edit the notification preferences with an AlertDialog
+    fun updateNotifications(view: View) {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+
+        // Set the title
+        alertDialogBuilder.setTitle("Notify Me:")
+
+        // Set the checkbox, their name in the dialog and what happen when checked
+        alertDialogBuilder.setMultiChoiceItems(
+            nameCheckBox.map { s ->
+                getString(R.string.notify_before, s)
+            }.toTypedArray(),
+            notificationSelected
+        ) { _, which, isChecked ->
+            notificationSelected[which] = isChecked
+        }
+
+        // Set the name of the done button
+        alertDialogBuilder.setPositiveButton(getString(R.string.done)) { _, _ ->
+            notificationView.text = textNotification()
+        }
+        alertDialogBuilder.show()
+    }
+
+    // Function that put the activity to the Edit Mode or to the Uneditable Mode
+    fun goToEditOrNormalMode(view: View) {
+        // Put the title, the date, the done button and the notification text to the edit mode or not
+        editTitle(editMode)
+        editDate(editMode)
+        editDone(editMode)
+        editNotification(editMode)
+        editDescription(editMode)
+
+        // Put the setting image or the tick image on the button to show in which mode we are
+        findViewById<ImageButton>(R.id.deadline_details_activity_modify)
+            .setImageResource(
+                if (editMode) android.R.drawable.checkbox_on_background
+                else android.R.drawable.ic_menu_manage
+            )
+
+        // Set the color of the text in white if we are in black mode
+        adaptToCurrentTheme()
+
+        // Update the data of the deadline in the viewModel
+        if (!editMode) updateDeadlineAfterEditionModeExit()
+
+        // Inverse the actual mode (read-only mode, edit mode)
+        editMode = editMode.not()
+    }
+
+    // Modify the deadline in the database when you quit the edition mode
+    private fun updateDeadlineAfterEditionModeExit() {
+        val newDeadline = Deadline(titleView.text.toString(), state, dateTime, descriptionView.text.toString())
+        deadlineListViewModel.modifyDeadline(id, newDeadline)
+
+        // If the deadline is done, we don't need anymore of the notifications
+        if (state == DeadlineState.DONE) {
+            DeadlineNotification.deleteNotification(id, this)
+        } else {
+            DeadlineNotification.editNotification(
+                id, newDeadline, retrieveNotificationsTimes(), this
+            )
+        }
+    }
+
+    private fun retrieveNotificationsTimes(): List<Long> =
+        (checkBoxIdTime.filter { checkBox -> notificationSelected[nameCheckBox.indexOf(checkBox.key)] }).values.toList()
+
+    // Shift the titleView to a modify state or to a uneditable state
+    private fun editTitle(edit: Boolean) {
+        titleView.isEnabled = edit
+        titleView.setBackgroundResource(
+            if (edit) android.R.drawable.edit_text
+            else android.R.color.transparent
+        )
+    }
+
+    // Shift the dateView to a modify state or to a uneditable state
+    private fun editDate(edit: Boolean) {
+        dateView.isClickable = edit
+        dateView.setBackgroundResource(
+            if (edit) android.R.drawable.btn_default
+            else android.R.color.transparent
+        )
+    }
+
+    // Shift the doneView to a modify state or to a uneditable state
+    private fun editDone(edit: Boolean) {
+        doneButton.isClickable = edit
+        doneButton.visibility = if (edit) View.VISIBLE else View.GONE
+    }
+
+    // Shift the notificationView to a modify state or to a uneditable state
+    private fun editNotification(edit: Boolean) {
+        notificationView.isClickable = edit
+        notificationView.setBackgroundResource(
+            if (edit) android.R.drawable.btn_default
+            else android.R.color.transparent
+        )
+    }
+
+    // Shift the descriptionView to a modify state or to a uneditable state
+    private fun editDescription(edit: Boolean) {
+       descriptionView.isEnabled = edit
+       descriptionView.setBackgroundResource(
+           if (edit) android.R.drawable.edit_text
+           else android.R.color.transparent
+       )
+    }
+
+    // This function setup the observer to update the information shown when the
+    // deadline are updated
+    private fun setDeadlineObserver() {
+        deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
+            // Recuperate the data from the deadline
+            val deadline = deadlines[id]!!
+            dateTime = deadline.dateTime
+            state = deadline.state
+            val title = deadline.title
+            val description = deadline.description
+
+            // Update the information of the notification
+            val notifications = DeadlineNotification.listDeadlineNotification(id, this)
+            for (id in checkBoxIdTime.keys) {
+                notificationSelected[nameCheckBox.indexOf(id)] =
+                    notifications.contains(checkBoxIdTime[id])
+            }
+            notificationView.text = textNotification()
+
+            // Update the data shown
+            dateView.text =
+                getString(R.string.DueTheXatX, dateTime.toLocalDate(), dateTime.toLocalTime())
+            titleView.text = SpannableStringBuilder(title)
+            descriptionView.text = SpannableStringBuilder(description)
+            doneButton.isChecked = (state == DeadlineState.DONE)
+            updateDetail()
+
+            // Set the View to be unmodifiable at the start and remove displacement of the texts
+            normalSetup()
+        }
+
+    }
+
+    // Give the text that must be shown in function on how many notifications were selected
+    private fun textNotification(): String {
+        val notifications =
+            nameCheckBox.filter { t -> notificationSelected[nameCheckBox.indexOf(t)] }
+        if (notifications.isEmpty()) return getString(R.string.no_alarm_planned)
+        return getString(
+            R.string.alarm_X_before, when (notifications.size) {
+                1 -> notifications[0]
+                2 -> notifications[0] + " and " + notifications[1]
+                3 -> notifications[0] + ", " + notifications[1] + " and " + notifications[2]
+                else -> notifications[0] + ", " + notifications[1] + ", " + notifications[2] + " and " + notifications[3]
+            }
+        )
+    }
+
+    // Update the information shown in the TextView detailView
+    private fun updateDetail() {
+        val actualDate = clockService.now()
+        when {
+            state == DeadlineState.DONE -> {
+                detailView.text = getString(R.string.done)
+            }
+            dateTime.isBefore(actualDate) -> {
+                detailView.text = getString(R.string.isAlreadyDue)
+            }
+            else -> {
+                val remainingTime = actualDate.until(dateTime, ChronoUnit.DAYS)
+                detailView.text = if (remainingTime <= 0) {
+                    getString(
+                        R.string.DueInXHours,
+                        actualDate.until(dateTime, ChronoUnit.HOURS).toString()
+                    )
+                } else {
+                    getString(
+                        R.string.DueInXDays,
+                        actualDate.until(dateTime, ChronoUnit.DAYS).toString()
+                    )
+                }
+            }
+        }
+    }
+
     // Change the color of the date and title views according to the theme
     private fun adaptToCurrentTheme() {
         val isNightMode = sharedPreferences.getBoolean(
@@ -285,23 +349,22 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         if (isNightMode) {
             dateView.setTextColor(textColor)
             titleView.setTextColor(textColor)
+            notificationView.setTextColor(textColor)
+            descriptionView.setTextColor(textColor)
         }
     }
 
-    /**
-     * @param View: the current view
-     * when clicking ont the button create an intent to launch the QR activity
-     */
-    fun goQRGenerator(view: View) {
-        val intent = Intent(this, QRGeneratorActivity::class.java)
-        val deadline = deadlineListViewModel.getDeadline(id)
-
-        //need to create a custom gsonbuilder to convert LocalDateTime to Json
-        val jsonConverter = JsonDeadlineConverter()
-
-        val json = jsonConverter.toJson(deadline)
-        intent.putExtra(EXTRA_TEXT, json)
-        startActivity(intent)
+    // Assure the everything is unmodifiable and fix arrangement
+    private fun normalSetup() {
+        editTitle(true)
+        editTitle(false)
+        editDate(true)
+        editDate(false)
+        doneButton.isClickable = false
+        editNotification(true)
+        editNotification(false)
+        editDescription(true)
+        editDescription(false)
     }
 
     companion object {
@@ -309,18 +372,12 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             "com.github.multimatum_team.deadline.details.id"
         private const val IS_DEFAULT_DARK_MODE_ENABLED = false
 
+        private val nameCheckBox = arrayOf("1 hour", "5 hours", "1 day", "3 days")
         private val checkBoxIdTime = mapOf(
-            R.id.radio_notification_1h to Duration.ofHours(1).toMillis(),
-            R.id.radio_notification_5h to Duration.ofHours(5).toMillis(),
-            R.id.radio_notification_1d to Duration.ofDays(1).toMillis(),
-            R.id.radio_notification_3d to Duration.ofDays(3).toMillis()
-        )
-
-        private val idToText: Map<Int, String> = mapOf(
-            R.id.radio_notification_1h to "1 hour",
-            R.id.radio_notification_5h to "5 hours",
-            R.id.radio_notification_1d to "1 day",
-            R.id.radio_notification_3d to "3 days"
+            "1 hour" to Duration.ofHours(1).toMillis(),
+            "5 hours" to Duration.ofHours(5).toMillis(),
+            "1 day" to Duration.ofDays(1).toMillis(),
+            "3 days" to Duration.ofDays(3).toMillis()
         )
 
         // Launch an Intent to access this activity with a Deadline data
@@ -329,6 +386,5 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             detailIntent.putExtra(EXTRA_ID, id)
             return detailIntent
         }
-
     }
 }

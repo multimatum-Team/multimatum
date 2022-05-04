@@ -1,18 +1,22 @@
 package com.github.multimatum_team.multimatum
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.widget.CheckedTextView
+import androidx.core.view.get
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.DeadlineDetailsActivity
 import com.github.multimatum_team.multimatum.activity.QRGeneratorActivity
@@ -33,11 +37,13 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.hamcrest.Matchers.allOf
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.shadows.ShadowAlertDialog
+import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -164,6 +170,7 @@ class DeadlineDetailsTest {
                     )
                 )
             onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 6 Hours")))
+            onView(withId(R.id.deadline_details_activity_description)).check(matches(withText("Do not panic, this is a test")))
         }
     }
 
@@ -187,7 +194,6 @@ class DeadlineDetailsTest {
             val dateDialog = ShadowAlertDialog.getLatestDialog() as DatePickerDialog
             dateDialog.updateDate(2022, 10, 23)
             dateDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).performClick()
-            println(ShadowAlertDialog.getShownDialogs())
 
             // An action is necessary to let the time to ShadowAlertDialog to find the TimeDialog
             onView(withId(R.id.deadline_details_activity_set_done)).perform(click())
@@ -201,12 +207,63 @@ class DeadlineDetailsTest {
             onView(withId(R.id.deadline_details_activity_date))
                 .check(matches(withText("Due the 2022-11-23 at 10:10")))
 
-            //Modify the done
+            // Modify the done
             onView(withId(R.id.deadline_details_activity_set_done)).perform(click())
             onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
 
+            // Modify the description
+            onView(withId(R.id.deadline_details_activity_description)).perform(ViewActions.replaceText("Test 66"))
+            Espresso.closeSoftKeyboard()
+            onView(withId(R.id.deadline_details_activity_description)).check(matches(withText("Test 66")))
+
             //Go back to Normal Mode
             onView(withId(R.id.deadline_details_activity_modify)).perform(click())
+        }
+    }
+
+    @Test
+    fun `Changing the notifications change the displayed text`() {
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "3")
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            // Check that no alarm is planned
+            onView(withId(R.id.deadline_details_activity_notifications)).check(matches(withText("No Alarm Planned")))
+
+            // Go in Modify Mode
+            onView(withId(R.id.deadline_details_activity_modify)).perform(click())
+
+            // Add a notification and check the displayed information
+            onView(withId(R.id.deadline_details_activity_notifications)).perform(click())
+            var dialog = ShadowAlertDialog.getLatestAlertDialog()
+            // Only way found to click on the correct area
+            dialog.listView.performItemClick(dialog.listView.adapter.getView(0, null, null), 0, 0)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+            onView(withId(R.id.deadline_details_activity_notifications)).check(matches(withText("Alarm 1 hour before")))
+
+            // Add another notification and check the displayed information
+            onView(withId(R.id.deadline_details_activity_notifications)).perform(click())
+            dialog = ShadowAlertDialog.getLatestAlertDialog()
+            // Only way found to click on the correct area
+            dialog.listView.performItemClick(dialog.listView.adapter.getView(1, null, null), 1, 0)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+            onView(withId(R.id.deadline_details_activity_notifications)).check(matches(withText("Alarm 1 hour and 5 hours before")))
+
+            // Add another notification and check the displayed information
+            onView(withId(R.id.deadline_details_activity_notifications)).perform(click())
+            dialog = ShadowAlertDialog.getLatestAlertDialog()
+            // Only way found to click on the correct area
+            dialog.listView.performItemClick(dialog.listView.adapter.getView(2, null, null), 2, 0)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+            onView(withId(R.id.deadline_details_activity_notifications)).check(matches(withText("Alarm 1 hour, 5 hours and 1 day before")))
+
+            // Add a last notification and check the displayed information
+            onView(withId(R.id.deadline_details_activity_notifications)).perform(click())
+            dialog = ShadowAlertDialog.getLatestAlertDialog()
+            // Only way found to click on the correct area
+            dialog.listView.performItemClick(dialog.listView.adapter.getView(3, null, null), 3, 0)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+            onView(withId(R.id.deadline_details_activity_notifications)).check(matches(withText("Alarm 1 hour, 5 hours, 1 day and 3 days before")))
         }
     }
 
@@ -221,7 +278,7 @@ class DeadlineDetailsTest {
                     Deadline("Test 1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 0, 0)),
                     Deadline("Test 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 19, 0, 0)),
                     Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 10, 0, 0)),
-                    Deadline("Test 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 6, 0))
+                    Deadline("Test 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 6, 0), "Do not panic, this is a test")
                 )
             )
 

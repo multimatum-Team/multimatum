@@ -52,4 +52,6 @@
     <string name="not_done">Not Done</string>
     <string name="select_notifications">Select Notifications</string>
     <string name="write_description_here">Write description here</string>
+    <string name="no_alarm_planned">No Alarm Planned</string>
+    <string name="alarm_X_before">Alarm %s before</string>
 </resources>
