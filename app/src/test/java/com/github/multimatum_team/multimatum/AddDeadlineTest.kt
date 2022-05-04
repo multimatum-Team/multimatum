@@ -14,7 +14,6 @@ import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.GrantPermissionRule
 import com.github.multimatum_team.multimatum.activity.AddDeadlineActivity
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
@@ -60,16 +59,6 @@ class AddDeadlineTest {
 
     @get:Rule(order = 1)
     val activityRule = ActivityScenarioRule(AddDeadlineActivity::class.java)
-
-    @get:Rule
-    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-        android.Manifest.permission.ACCESS_COARSE_LOCATION
-    )
-
-    @get:Rule
-    val permissionRule2: GrantPermissionRule = GrantPermissionRule.grant(
-        android.Manifest.permission.ACCESS_FINE_LOCATION
-    )
 
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
