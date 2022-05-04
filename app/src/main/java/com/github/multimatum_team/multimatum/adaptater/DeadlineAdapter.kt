@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -138,7 +139,12 @@ class DeadlineAdapter(
             }
             clockService.now() > deadline.dateTime -> {
                 detail = context.getString(R.string.isAlreadyDue)
-                detailTextView.setTextColor(Color.BLACK)
+                detailTextView.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.due_to_base_color
+                    )
+                )
                 detailTextView.setTypeface(detailTextView.typeface, Typeface.NORMAL)
             }
             else -> {

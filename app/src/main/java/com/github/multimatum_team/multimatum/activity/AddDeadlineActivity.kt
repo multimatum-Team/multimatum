@@ -3,7 +3,9 @@ package com.github.multimatum_team.multimatum.activity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
@@ -16,11 +18,17 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 /**
  *  Activity who create a deadline using a DatePickerDialog and a TimePickerDialog
@@ -53,6 +61,40 @@ class AddDeadlineActivity : AppCompatActivity() {
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         textDate.text = selectedDate.toLocalDate().toString()
         textTime.text = selectedDate.toLocalTime().toString()
+
+        initializePlacesAutocomplete()
+    }
+
+    /**
+     * Setup the PlacesAutocompleteClient used to select a location for a deadline
+     */
+    private fun initializePlacesAutocomplete() {
+        Places.initialize(applicationContext, getString(R.string.places_key))
+        Places.createClient(this)
+        initializeAutocompleteFragment()
+    }
+
+    /**
+     * Setup the AutocompleteSupportFragment with all its parameters
+     */
+    private fun initializeAutocompleteFragment() {
+        val autocompleteFragment =
+            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+
+        autocompleteFragment
+            .setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME)) //Returned fields
+            .setCountries(listOf("CH")) // Default startup country
+
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                // TO DO: Define here what we do with the returned place
+                Log.i(TAG, "Place: ${place.name}, ${place.id}")
+            }
+
+            override fun onError(status: Status) {
+                Log.i(TAG, "An error occurred: $status")
+            }
+        })
     }
 
     /**
