@@ -13,6 +13,21 @@ data class PatternMatchCase(
     val extractionFunc: (List<Any?>) -> ExtractedInfo?
 )
 
+/**
+ * Contains the info extracted by parsing
+ * @param text the text after removing the parts that contain time/date info
+ * @param date the date found in the initial text, if any was found
+ * @param time the time found in the initial text if any was found
+ */
+data class DateTimeExtractionResult(
+    val text: String,
+    val date: LocalDate? = null,
+    val time: LocalTime? = null
+) {
+    val dateFound get() = (date != null)
+    val timeFound get() = (time != null)
+}
+
 class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsGenerator) {
     constructor(currentDateProvider: () -> LocalDate) :
             this(DateTimePatternsGenerator(currentDateProvider))
@@ -240,19 +255,4 @@ class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsG
         )
     }
 
-}
-
-/**
- * Contains the info extracted by parsing
- * @param text the text after removing the parts that contain time/date info
- * @param date the date found in the initial text, if any was found
- * @param time the time found in the initial text if any was found
- */
-data class DateTimeExtractionResult(
-    val text: String,
-    val date: LocalDate? = null,
-    val time: LocalTime? = null
-) {
-    val dateFound get() = (date != null)
-    val timeFound get() = (time != null)
 }
