@@ -71,16 +71,10 @@ class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsG
 
     /**
      * Applies the functions of the patterns to the corresponding tokens
-     * @return a sequence of triples, each containing:
-     *   1. the list of results of these function applications
-     *   2. the extractor corresponding to the pattern
-     *   3. a pair containing:
-     *      1) the tokens that remain to be consumed by the parser
-     *      2) the tokens that the were consumed by this pattern
      */
     private fun Sequence<PatternMatchCase>.matchTokensAgainstPattern(
         tokens: List<Token>
-    ) = map { (pattern, createExtractedInfoFunc) ->
+    ): Sequence<MatchingResult> = map { (pattern, createExtractedInfoFunc) ->
         val currentTokens = tokens.take(pattern.size)
         val nextTokens = tokens.drop(pattern.size)
         MatchingResult(
