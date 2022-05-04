@@ -95,7 +95,7 @@ class MainSettingsActivityTest {
             authRepository.signOut()
         }
     }
-
+    /*
     @Test
     fun disabling_dark_mode_on_button_disables_them_in_preferences() {
         testScenario(
@@ -112,7 +112,7 @@ class MainSettingsActivityTest {
             clickedButtonId = R.id.main_settings_dark_mode_button,
             expectedFinalNotifEnabled = false, expectedFinalDarkModeEnabled = true
         )
-    }
+    }*/
 
     // The parameters are the initial state of the buttons, the button whose state will be changed
     // and the expected final states of the buttons
