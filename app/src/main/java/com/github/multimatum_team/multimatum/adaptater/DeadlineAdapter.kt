@@ -139,12 +139,14 @@ class DeadlineAdapter(
             }
             clockService.now() > deadline.dateTime -> {
                 detail = context.getString(R.string.isAlreadyDue)
+                /*
                 detailTextView.setTextColor(
                     ContextCompat.getColor(
                         context,
                         R.color.due_to_base_color
                     )
-                )
+                )*/
+                detailTextView.setTextColor(Color.BLACK)
                 detailTextView.setTypeface(detailTextView.typeface, Typeface.NORMAL)
             }
             else -> {
