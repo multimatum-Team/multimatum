@@ -3,19 +3,15 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.widget.CheckedTextView
-import androidx.core.view.get
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
-import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.DeadlineDetailsActivity
@@ -37,13 +33,11 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.hamcrest.Matchers.allOf
 import org.junit.After
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.shadows.ShadowAlertDialog
-import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -212,7 +206,11 @@ class DeadlineDetailsTest {
             onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Done")))
 
             // Modify the description
-            onView(withId(R.id.deadline_details_activity_description)).perform(ViewActions.replaceText("Test 66"))
+            onView(withId(R.id.deadline_details_activity_description)).perform(
+                ViewActions.replaceText(
+                    "Test 66"
+                )
+            )
             Espresso.closeSoftKeyboard()
             onView(withId(R.id.deadline_details_activity_description)).check(matches(withText("Test 66")))
 
@@ -278,7 +276,12 @@ class DeadlineDetailsTest {
                     Deadline("Test 1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 0, 0)),
                     Deadline("Test 2", DeadlineState.DONE, LocalDateTime.of(2022, 3, 19, 0, 0)),
                     Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 10, 0, 0)),
-                    Deadline("Test 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 6, 0), "Do not panic, this is a test")
+                    Deadline(
+                        "Test 4",
+                        DeadlineState.TODO,
+                        LocalDateTime.of(2022, 3, 12, 6, 0),
+                        "Do not panic, this is a test"
+                    )
                 )
             )
 

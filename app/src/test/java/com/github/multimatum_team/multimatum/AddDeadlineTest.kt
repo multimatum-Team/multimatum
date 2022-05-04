@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.view.View
 import android.widget.TextView
-import androidx.core.view.get
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
@@ -124,12 +123,12 @@ class AddDeadlineTest {
 
         // Select Notifications
         onView(withId(R.id.add_deadline_select_notification)).perform(ViewActions.click())
-        val notificationDialog = ShadowAlertDialog.getLatestAlertDialog()
-        notificationDialog.listView[0].performClick()
-        notificationDialog.listView[1].performClick()
-        notificationDialog.listView[2].performClick()
-        notificationDialog.listView[3].performClick()
-        notificationDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+        val dialog = ShadowAlertDialog.getLatestAlertDialog()
+        dialog.listView.performItemClick(dialog.listView.adapter.getView(0, null, null), 0, 0)
+        dialog.listView.performItemClick(dialog.listView.adapter.getView(1, null, null), 1, 0)
+        dialog.listView.performItemClick(dialog.listView.adapter.getView(2, null, null), 2, 0)
+        dialog.listView.performItemClick(dialog.listView.adapter.getView(3, null, null), 3, 0)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
 
         // Check if Toast correctly appear
         onView(withId(R.id.add_deadline_button)).perform(ViewActions.click())

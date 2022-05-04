@@ -205,7 +205,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     // Modify the deadline in the database when you quit the edition mode
     private fun updateDeadlineAfterEditionModeExit() {
-        val newDeadline = Deadline(titleView.text.toString(), state, dateTime, descriptionView.text.toString())
+        val newDeadline =
+            Deadline(titleView.text.toString(), state, dateTime, descriptionView.text.toString())
         deadlineListViewModel.modifyDeadline(id, newDeadline)
 
         // If the deadline is done, we don't need anymore of the notifications
@@ -256,11 +257,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     // Shift the descriptionView to a modify state or to a uneditable state
     private fun editDescription(edit: Boolean) {
-       descriptionView.isEnabled = edit
-       descriptionView.setBackgroundResource(
-           if (edit) android.R.drawable.edit_text
-           else android.R.color.transparent
-       )
+        descriptionView.isEnabled = edit
+        descriptionView.setBackgroundResource(
+            if (edit) android.R.drawable.edit_text
+            else android.R.color.transparent
+        )
     }
 
     // This function setup the observer to update the information shown when the
