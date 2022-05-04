@@ -50,7 +50,7 @@ import java.time.temporal.TemporalAdjusters
  * the time 15:00
  */
 @Suppress("PrivatePropertyName")
-class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
+class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate) {
 
     /**
      * @return a function that takes a token and returns it if it contains the provided string,
@@ -197,7 +197,7 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             timeFor(0, 0)
         }
 
-    val patterns: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo?>> =
+    val patterns: List<PatternMatchCase> =
         listOf(
             `15h`,
             `15h00`,
@@ -210,6 +210,8 @@ class DateTimePatterns(private val currentDateProvider: () -> LocalDate) {
             monday_15,
             midday,
             midnight
-        )
+        ).map { (pattern, extractionFunc) ->
+            PatternMatchCase(pattern, extractionFunc)
+        }
 
 }

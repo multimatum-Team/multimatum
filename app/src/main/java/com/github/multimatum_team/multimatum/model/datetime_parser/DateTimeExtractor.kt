@@ -3,12 +3,36 @@ package com.github.multimatum_team.multimatum.model.datetime_parser
 import java.time.LocalDate
 import java.time.LocalTime
 
-typealias Pattern = List<(Token) -> Any?>
-typealias Extractor = (List<Any?>) -> ExtractedInfo?
+/**
+ * @param pattern the pattern to be matched
+ * @param extractionFunc the function that, given a list of token matching the pattern,
+ * produces the corresponding ExtractedInfo
+ */
+data class PatternMatchCase(
+    val pattern: List<(Token) -> Any?>,
+    val extractionFunc: (List<Any?>) -> ExtractedInfo?
+)
 
-class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
+class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsGenerator) {
     constructor(currentDateProvider: () -> LocalDate) :
-            this(DateTimePatterns(currentDateProvider))
+            this(DateTimePatternsGenerator(currentDateProvider))
+
+    /**
+     * Intermediate representation used by the parser
+     * @param extractedValues the value extracted from the token by the corresponding
+     * extraction function of the pattern
+     * @param extractor the function that, given `extractedValues`, produces the ExtractedInfo
+     * corresponding to these values
+     * @param remainingTokens the tokens that remain to be processed by the parser
+     * @param consumedTokens the tokens that were consumed by this pattern
+     */
+    private data class MatchingResult(
+        val extractedValues: List<Any?>,
+        val extractor: (List<Any?>) -> ExtractedInfo?,
+        val remainingTokens: List<Token>,
+        val consumedTokens: List<Token>
+    )
+
 
     /**
      * Return value of extractDateTimeInfo
@@ -26,7 +50,7 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
     /**
      * Filters out the patterns involving more tokens than the pattern
      */
-    private fun Sequence<Pair<Pattern, Extractor>>.filterForMaxLength(
+    private fun Sequence<PatternMatchCase>.filterForMaxLength(
         maxLength: Int
     ) = filter { (pat, _) -> pat.size <= maxLength }
 
@@ -39,16 +63,17 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
      *      1) the tokens that remain to be consumed by the parser
      *      2) the tokens that the were consumed by this pattern
      */
-    private fun Sequence<Pair<Pattern, Extractor>>.matchTokensAgainstPattern(
+    private fun Sequence<PatternMatchCase>.matchTokensAgainstPattern(
         tokens: List<Token>
     ) = map { (pattern, createExtractedInfoFunc) ->
         val currentTokens = tokens.take(pattern.size)
         val nextTokens = tokens.drop(pattern.size)
-        Triple(
+        MatchingResult(
             pattern.zip(currentTokens)
                 .map { (extractValueFunc, tok) -> extractValueFunc(tok) },
             createExtractedInfoFunc,
-            Pair(nextTokens, currentTokens)
+            nextTokens,
+            currentTokens
         )
     }
 
@@ -56,9 +81,9 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
      * Stops the processing of the patterns that lead to null values when applying functions
      * to corresponding tokens (= pattern not matched)
      */
-    private fun Sequence<Triple<List<Any?>, Extractor, Pair<List<Token>, List<Token>>>>.filterAllArgsNotNull() =
-        filter { (args, _, _) ->
-            args.all { it != null }
+    private fun Sequence<MatchingResult>.filterAllArgsNotNull() =
+        filter { matchingRes ->
+            matchingRes.extractedValues.all { it != null }
         }
 
     /**
@@ -67,14 +92,14 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
      * an additional condition that is checked in the extractor, this would occur e.g.
      * when parsing "31.02.2000")
      */
-    private fun Sequence<Triple<List<Any?>, Extractor, Pair<List<Token>, List<Token>>>>.mapToExtractionResults() =
-        map { (args, createExtractedInfoFunc, nextAndCurrTokens) ->
+    private fun Sequence<MatchingResult>.mapToExtractionResults(): Sequence<ExtractionResult?> =
+        map { (args, createExtractedInfoFunc, remainingTokens, consumedTokens) ->
             val extractedInfo = createExtractedInfoFunc(args)
             extractedInfo?.let {
                 ExtractionResult(
                     it,
-                    nextAndCurrTokens.first,
-                    nextAndCurrTokens.second
+                    remainingTokens,
+                    consumedTokens
                 )
             }
         }
@@ -84,8 +109,8 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
      */
     private fun extractDateTimeInfo(tokens: List<Token>): ExtractionResult {
         require(tokens.isNotEmpty())
-        return dateTimePatterns.patterns
-            .sortedByDescending { it.first.size }
+        return dateTimePatternsGenerator.patterns
+            .sortedByDescending { it.pattern.size }
             .asSequence()
             .filterForMaxLength(tokens.size)
             .matchTokensAgainstPattern(tokens)
