@@ -1,120 +1,53 @@
 package com.github.multimatum_team.multimatum.model.datetime_parser
 
+import java.time.LocalDate
 import java.time.LocalTime
-import java.util.*
 
-object DateTimeExtractor {
+/**
+ * @param pattern the pattern to be matched
+ * @param extractionFunc the function that, given a list of token matching the pattern,
+ * produces the corresponding ExtractedInfo
+ */
+data class PatternMatchCase(
+    val pattern: List<(Token) -> Any?>,
+    val extractionFunc: (List<Any?>) -> ExtractedInfo?
+)
 
-    /*
-        TODO implement date recognition + more patterns for time recognition
+/**
+ * Contains the info extracted by parsing
+ * @param text the text after removing the parts that contain time/date info
+ * @param date the date found in the initial text, if any was found
+ * @param time the time found in the initial text if any was found
+ */
+data class DateTimeExtractionResult(
+    val text: String,
+    val date: LocalDate? = null,
+    val time: LocalTime? = null
+) {
+    val dateFound get() = (date != null)
+    val timeFound get() = (time != null)
+}
 
-        When finished, should be able to parse:
-
-        18h00
-        18h
-        6am
-        6pm
-        etc.
-
-        Monday
-        next Monday
-        on Monday
-        etc.
-     */
-
-    private fun List<Any?>.getInt(idx: Int): Int = get(idx) as Int
-
-    /**
-     * Time information extracted from a string
-     * Can be a date, a time or NoInfo if no info was found
-     */
-    private sealed interface ExtractedInfo
-    private data class ExtractedDate(val date: Date) : ExtractedInfo
-    private data class ExtractedTime(val time: LocalTime) : ExtractedInfo
-    private object NoInfo : ExtractedInfo
+class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsGenerator) {
+    constructor(currentDateProvider: () -> LocalDate) :
+            this(DateTimePatternsGenerator(currentDateProvider))
 
     /**
-     * @return a function that takes a token and returns it if it contains the provided string,
-     * null o.w.
+     * Intermediate representation used by the parser
+     * @param extractedValues the value extracted from the token by the corresponding
+     * extraction function of the pattern
+     * @param extractor the function that, given `extractedValues`, produces the ExtractedInfo
+     * corresponding to these values
+     * @param remainingTokens the tokens that remain to be processed by the parser
+     * @param consumedTokens the tokens that were consumed by this pattern
      */
-    private fun tokenMatching(cmpStr: String) =
-        { tok: Token -> if (tok.str == cmpStr) tok else null }
-
-    /**
-     * All the patterns that the parser should recognize
-     *
-     * Implemented as a list of pairs where the first element is an "extractor", a list of functions
-     * that map a token to any kind of value. This list is applied to the beginning of a list of
-     * tokens by applying the function at index i to the token at index i in the list. A pattern is
-     * considered to match the beginning of the list iff all of these function applications return
-     * something else than null. If it matches, the (non-null) results of these function applications
-     * are used to build a list that is given as an argument to the second element of the pair, that
-     * should use it to build an appropriate ExtractedInfo
-     *
-     * E.g.: for the pair
-     *
-     *    listOf(
-     *       Token::asHour,
-     *       tokenMatching(":"),
-     *       Token::asMinute
-     *    ) to { args: List<Any?> ->
-     *       ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
-     *    }
-     *
-     * the pattern
-     *
-     *    listOf(
-     *       Token::asHour,
-     *       tokenMatching(":"),
-     *       Token::asMinute
-     *    )
-     *
-     * matches the list
-     *
-     *     listOf(NumericToken("15"), SymbolToken(":"), NumericToken("00"))
-     *
-     * (obtained by tokenizing the string 15:00)
-     *
-     * because asHour returns 15, the function created by tokenMatching(":") returns a non-null
-     * value (the SymbolToken itself) and asMinute returns 0.
-     *
-     * Then the "extractor"
-     *
-     *     args: List<Any?> -> ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
-     *
-     * is applied to the list [15, SymbolToken(":"), 0] and builds an ExtractedTime that contains
-     * the time 15:00
-     */
-    private val PATTERNS: List<Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo>> = listOf(
-        listOf(
-            Token::asHour,
-            tokenMatching(":"),
-            Token::asMinute
-        ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(0), args.getInt(2)))
-        },
-        listOf(
-            tokenMatching("at"),
-            Token::filterWhitespace,
-            Token::asHour,
-            tokenMatching(":"),
-            Token::asMinute
-        ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(2), args.getInt(4)))
-        },
-        listOf(
-            Token::asHour,
-            tokenMatching("am")
-        ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(0), 0))
-        },
-        listOf(
-            Token::asHour,
-            tokenMatching("pm")
-        ) to { args: List<Any?> ->
-            ExtractedTime(LocalTime.of(args.getInt(0) + 12, 0))
-        }
+    private data class MatchingResult(
+        val extractedValues: List<Any?>,
+        val extractor: (List<Any?>) -> ExtractedInfo?,
+        val remainingTokens: List<Token>,
+        val consumedTokens: List<Token>
     )
+
 
     /**
      * Return value of extractDateTimeInfo
@@ -130,76 +63,156 @@ object DateTimeExtractor {
     )
 
     /**
+     * Filters out the patterns involving more tokens than the pattern
+     */
+    private fun Sequence<PatternMatchCase>.filterForMaxLength(
+        maxLength: Int
+    ) = filter { (pat, _) -> pat.size <= maxLength }
+
+    /**
+     * Applies the functions of the patterns to the corresponding tokens
+     */
+    private fun Sequence<PatternMatchCase>.matchTokensAgainstPattern(
+        tokens: List<Token>
+    ): Sequence<MatchingResult> = map { (pattern, createExtractedInfoFunc) ->
+        val currentTokens = tokens.take(pattern.size)
+        val nextTokens = tokens.drop(pattern.size)
+        MatchingResult(
+            pattern.zip(currentTokens)
+                .map { (extractValueFunc, tok) -> extractValueFunc(tok) },
+            createExtractedInfoFunc,
+            nextTokens,
+            currentTokens
+        )
+    }
+
+    /**
+     * Stops the processing of the patterns that lead to null values when applying functions
+     * to corresponding tokens (= pattern not matched)
+     */
+    private fun Sequence<MatchingResult>.filterAllArgsNotNull() =
+        filter { matchingRes ->
+            matchingRes.extractedValues.all { it != null }
+        }
+
+    /**
+     * Applies the extractors to the result of applying functions to corresponding tokens,
+     * producing an ExtractionResult (or null if the pattern failed to match because of
+     * an additional condition that is checked in the extractor, this would occur e.g.
+     * when parsing "31.02.2000")
+     */
+    private fun Sequence<MatchingResult>.mapToExtractionResults(): Sequence<ExtractionResult?> =
+        map { (args, createExtractedInfoFunc, remainingTokens, consumedTokens) ->
+            val extractedInfo = createExtractedInfoFunc(args)
+            extractedInfo?.let {
+                ExtractionResult(
+                    it,
+                    remainingTokens,
+                    consumedTokens
+                )
+            }
+        }
+
+    /**
      * Attempts to match each of the patterns with the beginning of the list
      */
     private fun extractDateTimeInfo(tokens: List<Token>): ExtractionResult {
         require(tokens.isNotEmpty())
-        return PATTERNS.asSequence()
-            .filter { (pattern, _) -> pattern.size <= tokens.size }
-            .map { (pattern, createExtractedInfoFunc) ->
-                val currentTokens = tokens.take(pattern.size)
-                val nextTokens = tokens.drop(pattern.size)
-                Triple(
-                    pattern.zip(currentTokens)
-                        .map { (extractValueFunc, tok) -> extractValueFunc(tok) },
-                    createExtractedInfoFunc,
-                    Pair(nextTokens, currentTokens)
-                )
-            }
-            .find { (args, _, _) -> args.all { it != null } }
-            ?.let { (args, createExtractedInfoFunc, nextAndCurrTokens) ->
-                ExtractionResult(
-                    createExtractedInfoFunc(args),
-                    nextAndCurrTokens.first,
-                    nextAndCurrTokens.second
-                )
-            } ?: ExtractionResult(NoInfo, tokens.drop(1), tokens.subList(0, 1))
+        return dateTimePatternsGenerator.patterns
+            .sortedByDescending { it.pattern.size }
+            .asSequence()
+            .filterForMaxLength(tokens.size)
+            .matchTokensAgainstPattern(tokens)
+            .filterAllArgsNotNull()
+            .mapToExtractionResults()
+            .filterNotNull()
+            .firstOrNull()
+            ?: ExtractionResult(NoInfo, tokens.drop(1), tokens.subList(0, 1))
     }
 
-    /**
-     * Replaces multiple whitespaces sequences by a single whitespace
-     */
-    private tailrec fun removeMultipleWhitespaces(str: String): String =
-        if (str.contains("  ", ignoreCase = true)) {
-            removeMultipleWhitespaces(str.replace("  ", " ", ignoreCase = true))
-        } else str
+    private fun firstFoundTimeIfAny(
+        extractedInfo: ExtractedInfo,
+        previouslySelectedTime: LocalTime?
+    ) =
+        if (extractedInfo is ExtractedTime && previouslySelectedTime == null)
+            extractedInfo.time
+        else previouslySelectedTime
+
+    private fun firstFoundDateIfAny(
+        extractedInfo: ExtractedInfo,
+        previouslySelectedDate: LocalDate?
+    ) =
+        if (extractedInfo is ExtractedDate && previouslySelectedDate == null)
+            extractedInfo.date
+        else previouslySelectedDate
+
+    private fun computeTokensToAddToAlreadyProcessedList(
+        extractedInfo: ExtractedInfo,
+        date: LocalDate?,
+        consumed: List<Token>,
+        time: LocalTime?
+    ) = when (extractedInfo) {
+        is ExtractedDate -> if (date == null) listOf(RemovedToken) else consumed
+        is ExtractedTime -> if (time == null) listOf(RemovedToken) else consumed
+        is NoInfo -> consumed
+    }
 
     /**
      * Iterates on the list of tokens
      */
     private tailrec fun recursivelyParse(
         remTokens: List<Token>,
-        date: Date?,
+        date: LocalDate?,
         time: LocalTime?,
         alreadyProcessedTokensList: MutableList<Token>
-    ): Pair<Date?, LocalTime?> =
-        if (remTokens.isEmpty()) {
-            Pair(date, time)  // end of list, return found info
-        } else {
+    ): Pair<LocalDate?, LocalTime?> =
+        if (remTokens.isEmpty()) Pair(date, time)  // end of list, return found info
+        else {
             val (extractedInfo, newRemTokens, consumed) = extractDateTimeInfo(remTokens)
-            when (extractedInfo) {
-                is ExtractedDate -> {
-                    // if a date has already been found, ignore the newly found one (treat it as normal text)
-                    val newDate = date ?: extractedInfo.date
-                    if (date != null) {
-                        alreadyProcessedTokensList.addAll(consumed)
-                    }
-                    recursivelyParse(newRemTokens, newDate, time, alreadyProcessedTokensList)
-                }
-                is ExtractedTime -> {
-                    // if a time has already been found, ignore the newly found one (treat it as normal text)
-                    val newTime = time ?: extractedInfo.time
-                    if (time != null) {
-                        alreadyProcessedTokensList.addAll(consumed)
-                    }
-                    recursivelyParse(newRemTokens, date, newTime, alreadyProcessedTokensList)
-                }
-                is NoInfo -> {
-                    alreadyProcessedTokensList.addAll(consumed)
-                    recursivelyParse(newRemTokens, date, time, alreadyProcessedTokensList)
-                }
-            }
+            /* if date or time already exists, keep already existing one and treat consumed
+             * tokens as normal text */
+            val newDate = firstFoundDateIfAny(extractedInfo, date)
+            val newTime = firstFoundTimeIfAny(extractedInfo, time)
+            val newProcessedTokens =
+                computeTokensToAddToAlreadyProcessedList(extractedInfo, date, consumed, time)
+            alreadyProcessedTokensList.addAll(newProcessedTokens)
+            recursivelyParse(newRemTokens, newDate, newTime, alreadyProcessedTokensList)
         }
+
+    /**
+     * Set followedByWhitespace to true for each token that is followed by a WhitespaceToken
+     */
+    private fun markTokensFollowedByWhitespace(tokens: List<Token>) {
+        tokens.fold(null as Token?) { prevTok, currTok ->
+            if (currTok.isWhitespace()) {
+                prevTok?.followedByWhitespace = true
+            }
+            currTok
+        }
+    }
+
+    private fun String.removeTrailingWhitespaces(): String =
+        dropLastWhile { it.isWhitespace() }
+
+    /**
+     * Removes the conjunctions like "at", or "on" that are left after removal of date or time
+     * E.g. when parsing "Example at 10am", the "at" is not contained in the pattern, but should
+     * still be removed
+     */
+    private fun danglingConjunctionsRemoved(tokens: List<Token>): List<Token> {
+        val remainingTokens = mutableListOf<Token>()
+        val lastToken = tokens.fold(null as Token?) { prevTok, currTok ->
+            if (prevTok != null
+                && (currTok !is RemovedToken
+                        || !CONJUNCTIONS_TO_REMOVE_WHEN_DANGLING.contains(prevTok.str))
+            ) {
+                remainingTokens.add(prevTok)
+            }
+            currTok
+        }
+        lastToken?.let { remainingTokens.add(it) }
+        return remainingTokens
+    }
 
     /**
      * Analyzes the given string and uses the patterns above to extract date or time info
@@ -214,33 +227,26 @@ object DateTimeExtractor {
         val alreadyProcessedTokensWithoutTimeInfo = mutableListOf<Token>()
 
         val initTokens = Tokenizer.tokenize(str)
+        markTokensFollowedByWhitespace(initTokens)
+        val nonWhiteSpaceTokens = initTokens.filter { !it.isWhitespace() }
+
         val (date, time) = recursivelyParse(
-            initTokens,
+            nonWhiteSpaceTokens,
             null,
             null,
             alreadyProcessedTokensWithoutTimeInfo
         )
         val text = alreadyProcessedTokensWithoutTimeInfo
-            .dropWhile { it is WhitespaceToken }     // ignore leading whitespaces
-            .dropLastWhile { it is WhitespaceToken } // ignore trailing whitespaces
-            .joinToString(separator = "", transform = Token::str)
-            .let(::removeMultipleWhitespaces)
+            .let(::danglingConjunctionsRemoved)
+            .joinToString(separator = "", transform = Token::strWithWhitespaceIfNeeded)
+            .removeTrailingWhitespaces()
         return DateTimeExtractionResult(text, date, time)
     }
 
-}
+    companion object {
+        private val CONJUNCTIONS_TO_REMOVE_WHEN_DANGLING = listOf(
+            "at", "on", "next"
+        )
+    }
 
-/**
- * Contains the info extracted by parsing
- * @param text the text after removing the parts that contain time/date info
- * @param date the date found in the initial text, if any was found
- * @param time the time found in the initial text if any was found
- */
-data class DateTimeExtractionResult(
-    val text: String,
-    val date: Date? = null,
-    val time: LocalTime? = null
-) {
-    val dateFound get() = (date != null)
-    val timeFound get() = (time != null)
 }
