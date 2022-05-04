@@ -40,8 +40,8 @@ class AddDeadlineActivity : AppCompatActivity() {
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
-    private lateinit var textTitle: EditText
-    private lateinit var textDescription: EditText
+    private lateinit var textTitle: TextView
+    private lateinit var textDescription: TextView
 
     // Memorisation of which checkBox is selected for the notifications
     private val notificationSelected = booleanArrayOf(false, false, false, false)
