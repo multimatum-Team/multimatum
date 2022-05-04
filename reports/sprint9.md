@@ -2,6 +2,15 @@ Sprint 9 summary
 ================
 
 ### Florian
+This week, my main focus was adding on AddDeadlineActivity and DeadlineDetailsActivity 
+the option to add and modify descriptions for the deadline. As the area in the UI 
+for the desciption take space, I have decided to refactor the selection and the 
+editions of the notification to free space and allowing to add more options in 
+the future. The add of the description didn't take much time, but the refactoring
+of the notifications what much more difficult than expected, I suppose because
+it wasn't me that have wrote this part during last sprints. Next week, I think I
+willwork on the UI to add the possibility to select a group when adding deadline
+or to create one.
 
 ### Joseph
 
