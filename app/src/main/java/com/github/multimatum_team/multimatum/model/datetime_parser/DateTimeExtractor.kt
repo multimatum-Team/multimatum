@@ -23,10 +23,22 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
         val consumed: List<Token>
     )
 
+    /**
+     * Filters out the patterns involving more tokens than the pattern
+     */
     private fun Sequence<Pair<Pattern, Extractor>>.filterForMaxLength(
         maxLength: Int
     ) = filter { (pat, _) -> pat.size <= maxLength }
 
+    /**
+     * Applies the functions of the patterns to the corresponding tokens
+     * @return a sequence of triples, each containing:
+     *   1. the list of results of these function applications
+     *   2. the extractor corresponding to the pattern
+     *   3. a pair containing:
+     *      1) the tokens that remain to be consumed by the parser
+     *      2) the tokens that the were consumed by this pattern
+     */
     private fun Sequence<Pair<Pattern, Extractor>>.matchTokensAgainstPattern(
         tokens: List<Token>
     ) = map { (pattern, createExtractedInfoFunc) ->
@@ -40,11 +52,21 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
         )
     }
 
+    /**
+     * Stops the processing of the patterns that lead to null values when applying functions
+     * to corresponding tokens (= pattern not matched)
+     */
     private fun Sequence<Triple<List<Any?>, Extractor, Pair<List<Token>, List<Token>>>>.filterAllArgsNotNull() =
         filter { (args, _, _) ->
             args.all { it != null }
         }
 
+    /**
+     * Applies the extractors to the result of applying functions to corresponding tokens,
+     * producing an ExtractionResult (or null if the pattern failed to match because of
+     * an additional condition that is checked in the extractor, this would occur e.g.
+     * when parsing "31.02.2000")
+     */
     private fun Sequence<Triple<List<Any?>, Extractor, Pair<List<Token>, List<Token>>>>.mapToExtractionResults() =
         map { (args, createExtractedInfoFunc, nextAndCurrTokens) ->
             val extractedInfo = createExtractedInfoFunc(args)
@@ -78,13 +100,17 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
         extractedInfo: ExtractedInfo,
         previouslySelectedTime: LocalTime?
     ) =
-        if (extractedInfo is ExtractedTime && previouslySelectedTime == null) extractedInfo.time else previouslySelectedTime
+        if (extractedInfo is ExtractedTime && previouslySelectedTime == null)
+            extractedInfo.time
+        else previouslySelectedTime
 
     private fun firstFoundDateIfAny(
         extractedInfo: ExtractedInfo,
         previouslySelectedDate: LocalDate?
     ) =
-        if (extractedInfo is ExtractedDate && previouslySelectedDate == null) extractedInfo.date else previouslySelectedDate
+        if (extractedInfo is ExtractedDate && previouslySelectedDate == null)
+            extractedInfo.date
+        else previouslySelectedDate
 
     private fun computeTokensToAddToAlreadyProcessedList(
         extractedInfo: ExtractedInfo,
@@ -113,7 +139,8 @@ class DateTimeExtractor(private val dateTimePatterns: DateTimePatterns) {
              * tokens as normal text */
             val newDate = firstFoundDateIfAny(extractedInfo, date)
             val newTime = firstFoundTimeIfAny(extractedInfo, time)
-            val newProcessedTokens = computeTokensToAddToAlreadyProcessedList(extractedInfo, date, consumed, time)
+            val newProcessedTokens =
+                computeTokensToAddToAlreadyProcessedList(extractedInfo, date, consumed, time)
             alreadyProcessedTokensList.addAll(newProcessedTokens)
             recursivelyParse(newRemTokens, newDate, newTime, alreadyProcessedTokensList)
         }
