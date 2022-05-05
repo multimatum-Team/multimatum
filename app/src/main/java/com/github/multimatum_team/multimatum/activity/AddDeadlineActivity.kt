@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
@@ -24,6 +25,7 @@ import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -205,8 +207,10 @@ class AddDeadlineActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val intent = result?.data!!
-                pdfUri = intent.data!!
-                pdfTextView.text = pdfUri.authority
+                val pdfUri = intent.data!!
+                val path: String = pdfUri.toString()
+                val lastSlashIndex = path.lastIndexOf("/")
+                pdfTextView.text = path.substring(lastSlashIndex + 1, path.length)
             }
         }
     fun selectPDF(view: View) {
