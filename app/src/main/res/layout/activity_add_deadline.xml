@@ -15,7 +15,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.497">
+        app:layout_constraintVertical_bias="0.498">
 
         <EditText
             android:id="@+id/add_deadline_select_title"
@@ -38,7 +38,7 @@
             style="@style/Widget.MaterialComponents.Button.Icon"
             android:layout_width="100dp"
             android:layout_height="49dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="4dp"
             android:background="@drawable/circle_button"
             android:onClick="addDeadline"
             android:text="@string/calender_add_new_deadline_button_text"
@@ -131,6 +131,41 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintPDFSelection"
+            android:layout_width="297dp"
+            android:layout_height="52dp"
+            app:layout_constraintBottom_toTopOf="@+id/add_deadline_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+            app:layout_constraintVertical_bias="0.487">
+
+            <TextView
+                android:id="@+id/selectedPdf"
+                android:layout_width="259dp"
+                android:layout_height="22dp"
+                android:layout_marginTop="4dp"
+                android:onClick="selectPDF"
+                android:text="@string/pick_pdf"
+                android:textColor="#0798DA"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pdfTitle" />
+
+            <TextView
+                android:id="@+id/pdfTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/link_pdf_to_deadline_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.188"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <Button
             android:id="@+id/add_deadline_select_notification"
             android:layout_width="215dp"
@@ -162,43 +197,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.72" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintPDFSelection"
-            android:layout_width="297dp"
-            android:layout_height="52dp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/add_deadline_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.342"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <TextView
-                android:id="@+id/selectedPdf"
-                android:layout_width="259dp"
-                android:layout_height="22dp"
-                android:layout_marginTop="4dp"
-                android:onClick="selectPDF"
-                android:text="@string/pick_pdf"
-                android:textColor="#0798DA"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pdfTitle" />
-
-            <TextView
-                android:id="@+id/pdfTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/link_pdf_to_deadline_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.188"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
-            tools:ignore="TextContrastCheck" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

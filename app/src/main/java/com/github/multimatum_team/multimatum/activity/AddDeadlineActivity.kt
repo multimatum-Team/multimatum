@@ -8,6 +8,7 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -69,14 +70,6 @@ class AddDeadlineActivity : AppCompatActivity() {
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
         pdfTextView = findViewById(R.id.selectedPdf)
-        findViewById<CheckBox>(R.id.radio_notification_1h).text =
-            getString(R.string.notify_before, "1 hour")
-        findViewById<CheckBox>(R.id.radio_notification_5h).text =
-            getString(R.string.notify_before, "5 hours")
-        findViewById<CheckBox>(R.id.radio_notification_1d).text =
-            getString(R.string.notify_before, "1 day")
-        findViewById<CheckBox>(R.id.radio_notification_3d).text =
-            getString(R.string.notify_before, "3 days")
 
         textDescription = findViewById(R.id.add_deadline_select_description)
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
