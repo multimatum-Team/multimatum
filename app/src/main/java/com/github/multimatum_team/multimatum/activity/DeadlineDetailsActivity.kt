@@ -248,6 +248,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                 DeadlineNotification.deleteNotification(id, this)
             }
         }
+    }
 
     // Shift the dateView to a modify state or to a uneditable state
     private fun editDate(edit: Boolean) {
