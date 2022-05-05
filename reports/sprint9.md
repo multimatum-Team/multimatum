@@ -13,7 +13,6 @@ willwork on the UI to add the possibility to select a group when adding deadline
 or to create one.
 
 ### Joseph
-
 This week I worked on implementing the grou viewmodel which required a bunch
 of refactoring in other repositories and activities. While refactoring, I spot
 a few bugs which I managed to fix. Yet again, I am working on Firebase code so
@@ -27,11 +26,21 @@ group, and I might try to work on the UI as well.
 ### Lenny
 
 ### Léo
+This week my job was to start the location autocomplete feature. This feature gives
+the user the ability to enter a location when he creates a deadline the same way as
+he does it for a usual Google Maps query. Then, he can select the right location that
+is suggested by Google. This information is returned to the AddDeadlineActivity and the
+next step will be to process this information and store it with the deadline. I encountered
+a major problem, the Google API is the only one I found that is able to do that, but to be
+used, it requires billing information (it will be discussed on friday). So it works, but the
+user query returns no result. I also adapted the darkmode to the new deadline list model.
+Next week, I will continue to work on the location feature (processing and storing location),
+but it will depend on what we have decided during the meeting (billing problem). Otherwise,
+I will work with other teammates on the group feature.
 
 ### Louis
 
 ### Valentin
-
 My task for this week was to (almost) finish the parser for dates and times.
 There were 3 scrum board tasks to implement this, but they are strongly
 connected so I was working on all three at the same time and thus it is a
