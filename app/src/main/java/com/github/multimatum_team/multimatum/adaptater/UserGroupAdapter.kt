@@ -12,9 +12,6 @@ import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 
 class UserGroupAdapter(context: Context,
     private val groupViewModel: GroupViewModel
@@ -26,6 +23,7 @@ class UserGroupAdapter(context: Context,
 
     fun setGroups(groups: Map<GroupID, UserGroup>){
         dataSource = groups.values.toList()
+        notifyDataSetChanged()
     }
 
     /**
