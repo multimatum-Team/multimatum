@@ -72,7 +72,7 @@ class AddDeadlineActivity : AppCompatActivity() {
                 }
             }
         })
-        initializePlacesAutocomplete()
+        //initializePlacesAutocomplete()
     }
 
     /**
