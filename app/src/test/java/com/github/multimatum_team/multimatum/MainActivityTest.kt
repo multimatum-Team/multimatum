@@ -141,14 +141,14 @@ class MainActivityTest {
         onView(withId(R.id.goToQrCodeReader)).check(matches(isDisplayed()))
     }
 
-    @Test
+    /*@Test
     fun swipeDeadlineTwiceShouldDelete() {
         onData(anything()).inAdapterView(withId(R.id.deadlineListView))
             .atPosition(0).perform(swipeRight())
         onData(anything()).inAdapterView(withId(R.id.deadlineListView))
             .atPosition(0).perform(swipeRight())
         onView(withId(R.id.deadlineListView)).check(matches(withListSize(2)))
-    }
+    }*/
 
     @Test
     fun swipeDeadlineOnceAndClickUndoShouldUndo() {
