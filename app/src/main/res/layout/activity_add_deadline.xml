@@ -58,7 +58,7 @@
             app:layout_constraintBottom_toTopOf="@+id/constraintPDFSelection"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_title"
+            app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_description"
             app:layout_constraintVertical_bias="0.022">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -183,7 +183,6 @@
             android:id="@+id/add_deadline_select_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:ems="15"
             android:gravity="start|top"
             android:hint="@string/write_description_here"
@@ -191,11 +190,12 @@
             android:inputType="textMultiLine"
             android:maxLines="4"
             android:minHeight="48dp"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintHorizontal_bias="0.505"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.72" />
+            app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_title"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
