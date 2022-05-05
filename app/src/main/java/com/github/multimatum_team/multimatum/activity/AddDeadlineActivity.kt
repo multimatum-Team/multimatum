@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
@@ -8,8 +9,11 @@ import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.R
@@ -18,6 +22,7 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
+import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
@@ -27,6 +32,7 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import dagger.hilt.android.AndroidEntryPoint
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -47,6 +53,8 @@ class AddDeadlineActivity : AppCompatActivity() {
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
+    private lateinit var editText: TextView
+    private lateinit var pdfTextView: TextView
     private lateinit var textTitle: TextView
     private lateinit var textDescription: TextView
 
@@ -67,6 +75,8 @@ class AddDeadlineActivity : AppCompatActivity() {
         textTitle = findViewById(R.id.add_deadline_select_title)
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
+        pdfTextView = findViewById(R.id.selectedPdf)
+
         textDescription = findViewById(R.id.add_deadline_select_description)
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         updateDisplayedDateAndTime()
@@ -249,6 +259,21 @@ class AddDeadlineActivity : AppCompatActivity() {
                 DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
                 finish()
             }
+        }
+    }
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result?.data!!
+                val pdfUri = intent.data!!
+                val path: String = pdfUri.toString()
+                val lastSlashIndex = path.lastIndexOf("/")
+                pdfTextView.text = path.substring(lastSlashIndex + 1, path.length)
+            }
+        }
+    fun selectPDF(view: View) {
+        PDFUtil.selectPdfIntent() {
+            startForResult.launch(it)
         }
     }
 
