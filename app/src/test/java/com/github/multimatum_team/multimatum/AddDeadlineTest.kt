@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.view.View
@@ -10,8 +11,7 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.AddDeadlineActivity
@@ -38,6 +38,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowDatePickerDialog
 import org.robolectric.shadows.ShadowTimePickerDialog
 import org.robolectric.shadows.ShadowToast
@@ -115,7 +116,19 @@ class AddDeadlineTest {
         // Check if time is correctly selected
         assertEquals("10:10", getText(withId(R.id.add_deadline_text_time)))
 
-        onView(withId(R.id.radio_notification_1h)).perform()
+        // Select Description
+        onView(withId(R.id.add_deadline_select_description))
+            .perform(ViewActions.replaceText("This is a test, do not panic."))
+        Espresso.closeSoftKeyboard()
+
+        // Select Notifications
+        onView(withId(R.id.add_deadline_select_notification)).perform(ViewActions.click())
+        val dialog = ShadowAlertDialog.getLatestAlertDialog()
+        dialog.listView.performItemClick(dialog.listView.adapter.getView(0, null, null), 0, 0)
+        dialog.listView.performItemClick(dialog.listView.adapter.getView(1, null, null), 1, 0)
+        dialog.listView.performItemClick(dialog.listView.adapter.getView(2, null, null), 2, 0)
+        dialog.listView.performItemClick(dialog.listView.adapter.getView(3, null, null), 3, 0)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
 
         // Check if Toast correctly appear
         onView(withId(R.id.add_deadline_button)).perform(ViewActions.click())
