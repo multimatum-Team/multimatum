@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
@@ -18,12 +17,8 @@ import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthSettings
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.hudomju.swipe.SwipeToDismissTouchListener

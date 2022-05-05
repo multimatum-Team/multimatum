@@ -23,12 +23,12 @@ class UserViewModel @Inject constructor(
 
     init {
         authRepository.getUser().let { user ->
-            Log.d("UserViewModel", "initiating viewmodel with user $user")
+            LogUtil.debugLog("initiating viewmodel with user $user")
             _user.value = user
         }
 
         authRepository.onUpdate { newUser ->
-            Log.d("UserViewModel", "update auth: $newUser")
+            LogUtil.debugLog("update auth: $newUser")
             _user.value = newUser
         }
     }
@@ -37,7 +37,7 @@ class UserViewModel @Inject constructor(
         _user
 
     fun signOut() = viewModelScope.launch {
-        Log.d("UserViewModel", "signing out from ${_user.value}")
+        LogUtil.debugLog("signing out from ${_user.value}")
         authRepository.signOut()
     }
 }

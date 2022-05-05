@@ -47,13 +47,21 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
     override suspend fun create(name: String): GroupID {
         val id = counter.toString()
         counter++
-        groups[id] = UserGroup(id, name, _userID, setOf())
+        groups[id] = UserGroup(id, name, _userID)
         notifyUpdateListeners()
         return id
     }
 
     override suspend fun delete(id: GroupID) {
         groups.remove(id)
+    }
+
+    override suspend fun rename(id: GroupID, newName: String) {
+        groups[id] = groups[id]!!.copy(name = newName)
+    }
+
+    override suspend fun invite(id: GroupID, email: String) {
+        throw NotImplementedError("MockGroupViewModel.invite is not implemented")
     }
 
     override fun onUpdate(callback: (Map<GroupID, UserGroup>) -> Unit) {

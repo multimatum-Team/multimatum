@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineID
@@ -43,7 +44,7 @@ class DeadlineListViewModel @Inject constructor(
             deadlineRepository.setUser(user)
             deadlineRepository.setGroups(runBlocking { groupRepository.fetchAll() })
             runBlocking { deadlineRepository.fetchAll() }.let { deadlines ->
-                Log.d("DeadlineListViewModel", "fetching initial deadlines: $deadlines")
+                LogUtil.debugLog("fetching initial deadlines: $deadlines")
                 _deadlines.value = deadlines
                 DeadlineNotification.updateNotifications(deadlines, context)
             }
@@ -51,7 +52,7 @@ class DeadlineListViewModel @Inject constructor(
 
         // Listen for authentication updates, upon which the deadline list is re-fetched
         authRepository.onUpdate { newUser ->
-            Log.d("DeadlineListViewModel", "update auth: $newUser")
+            LogUtil.debugLog("update auth: $newUser")
             deadlineRepository.setUser(newUser)
             refreshDeadlines { deadlinesMap ->
                 DeadlineNotification.updateNotifications(deadlinesMap, context)
@@ -60,7 +61,7 @@ class DeadlineListViewModel @Inject constructor(
 
         // Listen for group updates, upon which the deadline list is re-fetched
         groupRepository.onUpdate { newGroups ->
-            Log.d("DeadlineListViewModel", "update groups: $newGroups")
+            LogUtil.debugLog("update groups: $newGroups")
             deadlineRepository.setGroups(newGroups)
             refreshDeadlines { deadlinesMap ->
                 DeadlineNotification.updateNotifications(deadlinesMap, context)
@@ -70,7 +71,7 @@ class DeadlineListViewModel @Inject constructor(
         // Listen for changes in the deadline list as well, in order to synchronize between the
         // Firebase database contents
         deadlineRepository.onUpdate { newDeadlines ->
-            Log.d("DeadlineListViewModel", "update deadlines: $newDeadlines")
+            LogUtil.debugLog("update deadlines: $newDeadlines")
             _deadlines.value = newDeadlines
         }
     }
@@ -82,7 +83,7 @@ class DeadlineListViewModel @Inject constructor(
         viewModelScope.launch {
             val newDeadlines = deadlineRepository.fetchAll()
             _deadlines.value = newDeadlines
-            Log.d("DeadlineListViewModel", "update deadlines: $newDeadlines")
+            LogUtil.debugLog("update deadlines: $newDeadlines")
             callback(_deadlines.value!!)
         }
 
@@ -101,7 +102,7 @@ class DeadlineListViewModel @Inject constructor(
     fun addDeadline(deadline: Deadline, callback: (DeadlineID) -> Unit = {}) =
         viewModelScope.launch {
             val id = deadlineRepository.put(deadline)
-            Log.d("DeadlineListViewModel", "add deadline: $deadline with id $id")
+            LogUtil.debugLog("add deadline: $deadline with id $id")
             callback(id)
         }
 
@@ -111,7 +112,7 @@ class DeadlineListViewModel @Inject constructor(
     fun deleteDeadline(id: DeadlineID, callback: (DeadlineID) -> Unit = {}) =
         viewModelScope.launch {
             deadlineRepository.delete(id)
-            Log.d("DeadlineListViewModel", "deleting deadline with id $id")
+            LogUtil.debugLog("deleting deadline with id $id")
             callback(id)
         }
 
@@ -119,7 +120,7 @@ class DeadlineListViewModel @Inject constructor(
      * Modify a deadline from the repository.
      */
     fun modifyDeadline(id: DeadlineID, newDeadline: Deadline) = viewModelScope.launch {
-        Log.d("DeadlineListViewModel", "modifying deadline with id $id to $newDeadline")
+        LogUtil.debugLog("modifying deadline with id $id to $newDeadline")
         deadlineRepository.modify(id, newDeadline)
     }
 }
