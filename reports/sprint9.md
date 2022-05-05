@@ -39,6 +39,7 @@ but it will depend on what we have decided during the meeting (billing problem).
 I will work with other teammates on the group feature.
 
 ### Louis
+This week I implemented activity and adapter for display groups. It was a lot of recupartion of what we did for displaying deadlines. The hard parts was to write test. The way the groups are working is slighlty different than deadlines so I did more bruteforce way but it works. I planned to work on some more UI feature, like a details for the groups, but the tests tooks me too much time. I'll do this next week. 
 
 ### Valentin
 My task for this week was to (almost) finish the parser for dates and times.
