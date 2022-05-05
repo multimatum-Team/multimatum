@@ -21,12 +21,12 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
 
     private lateinit var registeredListener: ListenerRegistration
 
-    private val userOwnedOwnerList: List<Any>
-        get() = listOf(_user.id, mapOf("type" to "user", "id" to _user.id))
+    private val userOwnerField: Map<String, String>
+        get() = mapOf("type" to "user", "id" to _user.id)
 
-    private val ownerList: List<Any>
+    private val ownerFieldList: List<Map<String, String>>
         get() {
-            val owners: MutableList<Any> = userOwnedOwnerList.toMutableList()
+            val owners: MutableList<Map<String, String>> = mutableListOf(userOwnerField)
             for (groupID in _groups.keys) {
                 owners.add(mapOf("type" to "group", "id" to groupID))
             }
@@ -34,7 +34,7 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
         }
 
     private val allDeadlinesQuery: Query
-        get() = deadlinesRef.whereIn("owner", ownerList)
+        get() = deadlinesRef.whereIn("owner", ownerFieldList)
 
 
     private fun addListenerForQuery(query: Query): ListenerRegistration =
@@ -93,19 +93,12 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
         val description = deadlineSnapshot["description"] as String
-        val owner = when (deadlineSnapshot["owner"]) {
-            is String -> UserOwned
-            is Map<*, *> -> {
-                val ownerMap = deadlineSnapshot["owner"] as Map<String, String>
-                when (ownerMap["type"]) {
-                    "user" -> UserOwned
-                    "group" -> GroupOwned(ownerMap["id"] as String)
-                    else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
-                }
-            }
-            else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected String or Map")
+        val ownerMap = deadlineSnapshot["owner"] as Map<String, String>
+        val owner = when (ownerMap["type"]) {
+            "user" -> UserOwned
+            "group" -> GroupOwned(ownerMap["id"] as String)
+            else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
         }
-
         return Deadline(title, state, date, description, owner)
     }
 
@@ -126,7 +119,7 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
      * Fetch all personal deadlines from the database.
      */
     private suspend fun fetchPersonal(): Map<DeadlineID, Deadline> = fetchQuery(
-        deadlinesRef.whereIn("owner", userOwnedOwnerList)
+        deadlinesRef.whereEqualTo("owner", userOwnerField)
     )
 
     /**
