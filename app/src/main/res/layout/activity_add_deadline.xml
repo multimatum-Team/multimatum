@@ -55,7 +55,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
 
-            app:layout_constraintBottom_toTopOf="@+id/add_deadline_button"
+            app:layout_constraintBottom_toTopOf="@+id/constraintPDFSelection"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_title"
@@ -135,7 +135,7 @@
             android:id="@+id/constraintPDFSelection"
             android:layout_width="297dp"
             android:layout_height="52dp"
-            app:layout_constraintBottom_toTopOf="@+id/add_deadline_button"
+            app:layout_constraintBottom_toTopOf="@+id/add_deadline_select_notification"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
@@ -177,7 +177,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_description" />
+            app:layout_constraintTop_toBottomOf="@+id/constraintPDFSelection" />
 
         <EditText
             android:id="@+id/add_deadline_select_description"
