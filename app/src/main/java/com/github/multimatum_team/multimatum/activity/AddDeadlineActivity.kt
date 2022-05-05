@@ -126,12 +126,12 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
-                // TO DO: Define here what we do with the returned place
+                // TODO: Define here what we do with the returned place
                 Log.i(ContentValues.TAG, "Place: ${place.name}, ${place.id}")
             }
 
             override fun onError(status: Status) {
-                Log.i(ContentValues.TAG, "An error occurred: $status")
+                Log.e(ContentValues.TAG, "An error occurred: $status")
             }
         })
     }
