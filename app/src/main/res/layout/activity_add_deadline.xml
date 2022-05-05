@@ -35,25 +35,26 @@
 
         <Button
             android:id="@+id/add_deadline_button"
+            style="@style/Widget.MaterialComponents.Button.Icon"
             android:layout_width="100dp"
             android:layout_height="49dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/circle_button"
-            style="@style/Widget.MaterialComponents.Button.Icon"
-            app:icon="@drawable/ic_add_deadline"
             android:onClick="addDeadline"
             android:text="@string/calender_add_new_deadline_button_text"
+            app:icon="@drawable/ic_add_deadline"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/add_deadline_button"
 
+            app:layout_constraintBottom_toTopOf="@+id/add_deadline_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_title"
@@ -91,6 +92,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/add_deadline_text_time"
                     app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -128,61 +130,36 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/add_notification_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/add_notification_title"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <Button
+            android:id="@+id/add_deadline_select_notification"
+            android:layout_width="215dp"
+            android:layout_height="49dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/circle_button"
+            android:onClick="selectNotifications"
+            android:text="@string/select_notifications"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.177"
+            app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.501" />
+            app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_description" />
 
-        <CheckBox
-            android:id="@+id/radio_notification_1d"
+        <EditText
+            android:id="@+id/add_deadline_select_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="16dp"
+            android:ems="15"
+            android:gravity="start|top"
+            android:hint="@string/write_description_here"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:maxLines="4"
+            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.203"
+            app:layout_constraintHorizontal_bias="0.502"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.58" />
-
-        <CheckBox
-            android:id="@+id/radio_notification_5h"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.724"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.58" />
-
-        <CheckBox
-            android:id="@+id/radio_notification_1h"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.203"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.72" />
-
-        <CheckBox
-            android:id="@+id/radio_notification_3d"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.724"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.72" />
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+            tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

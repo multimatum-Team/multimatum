@@ -257,10 +257,6 @@ class DeadlineAdapterTest {
             deadlineListDetails
                 .typeface.style
         )
-        Assert.assertEquals(
-            Color.BLACK,
-            deadlineListDetails.currentTextColor
-        )
     }
 
     @Test
@@ -277,10 +273,6 @@ class DeadlineAdapterTest {
             Typeface.NORMAL,
             deadlineListDetails
                 .typeface.style
-        )
-        Assert.assertEquals(
-            Color.BLACK,
-            deadlineListDetails.currentTextColor
         )
         //Set in done
         listItemView.findViewById<ToggleButton>(R.id.deadline_list_check_done).performClick()
