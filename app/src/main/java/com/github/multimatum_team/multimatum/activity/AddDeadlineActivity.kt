@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
@@ -177,33 +178,13 @@ class AddDeadlineActivity : AppCompatActivity() {
         }
     }
 
+
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val intent = result?.data!!
                 pdfUri = intent.data!!
-                val uriString: String = pdfUri.toString()
-                if (uriString.startsWith("content://")) {
-                    var myCursor: Cursor? = null
-                    try {
-                        // Setting the PDF to the TextView
-                        myCursor =
-                            applicationContext!!.contentResolver.query(
-                                pdfUri,
-                                null,
-                                null,
-                                null,
-                                null
-                            )
-                        if (myCursor != null && myCursor.moveToFirst()) {
-                            val pdfName =
-                                myCursor.getString(myCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                            pdfTextView.text = pdfName
-                        }
-                    } finally {
-                        myCursor?.close()
-                    }
-                }
+                pdfTextView.text = pdfUri.authority
             }
         }
     fun selectPDF(view: View) {
