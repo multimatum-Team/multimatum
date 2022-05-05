@@ -9,16 +9,24 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.github.multimatum_team.multimatum.R
+import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
-class UserGroupAdapter(
-    private val context: Context,
+class UserGroupAdapter(context: Context,
     private val groupViewModel: GroupViewModel
 ): BaseAdapter() {
     private var dataSource: List<UserGroup> = listOf()
     private val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+
+    fun setGroups(groups: Map<GroupID, UserGroup>){
+        dataSource = groups.values.toList()
+    }
 
     /**
      * How many items are in the data set represented by this Adapter.
@@ -86,7 +94,7 @@ class UserGroupAdapter(
         titleView.setTypeface(null, Typeface.BOLD)
 
         //show the owner
-        subtitleView.text = "owned by :" + group.owner
+        subtitleView.text = "own by: " + group.owner
         subtitleView.setTypeface(null, Typeface.ITALIC)
 
         return rowView
