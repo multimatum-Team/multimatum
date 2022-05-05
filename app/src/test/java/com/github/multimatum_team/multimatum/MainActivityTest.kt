@@ -23,8 +23,10 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockGroupRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -50,7 +52,7 @@ import java.time.LocalDateTime
 import javax.inject.Singleton
 
 
-@UninstallModules(DependenciesProvider::class, RepositoryModule::class)
+@UninstallModules(DependenciesProvider::class, FirebaseRepositoryModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -200,7 +202,6 @@ class MainActivityTest {
     @Module
     @InstallIn(SingletonComponent::class)
     object TestDependenciesProvider {
-
         @Provides
         fun provideSharedPreferences(): SharedPreferences =
             mockSharedPreferences
@@ -208,12 +209,11 @@ class MainActivityTest {
         @Provides
         fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
             DependenciesProvider.provideSensorManager(applicationContext)
-
     }
 
     @Module
     @InstallIn(SingletonComponent::class)
-    object TestDeadlineRepositoryModule {
+    object MockRepositoryModule {
         @Singleton
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
@@ -224,6 +224,11 @@ class MainActivityTest {
                     Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 7, 0, 0))
                 )
             )
+
+        @Singleton
+        @Provides
+        fun provideGroupRepository(): GroupRepository =
+            MockGroupRepository(listOf())
 
         @Singleton
         @Provides

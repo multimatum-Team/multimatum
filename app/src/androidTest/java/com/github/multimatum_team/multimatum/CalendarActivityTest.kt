@@ -10,8 +10,10 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.multimatum_team.multimatum.activity.CalendarActivity
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockGroupRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +27,7 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Singleton
 
-@UninstallModules(RepositoryModule::class)
+@UninstallModules(FirebaseRepositoryModule::class)
 @HiltAndroidTest
 class CalendarActivityTest {
     @get:Rule
@@ -85,11 +87,16 @@ class CalendarActivityTest {
 
     @Module
     @InstallIn(SingletonComponent::class)
-    object TestDeadlineRepositoryModule {
+    object TestRepositoryModule {
         @Singleton
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
             MockDeadlineRepository(listOf())
+
+        @Singleton
+        @Provides
+        fun provideGroupRepository(): GroupRepository =
+            MockGroupRepository(listOf())
 
         @Singleton
         @Provides

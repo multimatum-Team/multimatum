@@ -20,8 +20,10 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockGroupRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,7 +47,7 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@UninstallModules(DependenciesProvider::class, RepositoryModule::class)
+@UninstallModules(DependenciesProvider::class, FirebaseRepositoryModule::class)
 @HiltAndroidTest
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -194,6 +196,11 @@ class MainSettingsActivityTest {
                     Deadline("Test 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 7, 0, 0))
                 )
             )
+
+        @Singleton
+        @Provides
+        fun provideGroupRepository(): GroupRepository =
+            MockGroupRepository(listOf())
 
         @Singleton
         @Provides

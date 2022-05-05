@@ -5,13 +5,16 @@ import java.time.LocalDateTime
 import com.github.multimatum_team.multimatum.model.Deadline
 
 class JsonDeadlineConverter {
-    val gsonBuilder = GsonBuilder().registerTypeAdapter(
-        LocalDateTime::class.java,
-        LocalDateTimeSerializer()
-    ).registerTypeAdapter(
-        LocalDateTime::class.java,
-        LocalDateTimeDeserializer()
-    )
+    companion object {
+        private val gsonBuilder = GsonBuilder().registerTypeAdapter(
+            Deadline::class.java,
+            DeadlineSerializer()
+        ).registerTypeAdapter(
+            Deadline::class.java,
+            DeadlineDeserializer()
+        )
+    }
+
     val gson = gsonBuilder.create()
 
     fun toJson(deadline: Deadline): String {

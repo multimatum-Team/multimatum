@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
@@ -37,7 +36,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
-
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -53,7 +51,6 @@ class MainActivity : AppCompatActivity() {
 
         listView.adapter = adapter
         deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
-            Log.d("deadlines", deadlines.toString())
             adapter.setDeadlines(deadlines)
         }
 

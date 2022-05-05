@@ -43,7 +43,16 @@ object ClockModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
+object FirebaseModule {
+    @Singleton
+    @Provides
+    fun provideFirebaseFirestore(): FirebaseFirestore =
+        FirebaseFirestore.getInstance()
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class FirebaseRepositoryModule {
     @Singleton
     @Binds
     abstract fun provideDeadlineRepository(impl: FirebaseDeadlineRepository): DeadlineRepository
@@ -55,13 +64,4 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun provideAuthRepository(impl: FirebaseAuthRepository): AuthRepository
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object FirebaseModule {
-    @Singleton
-    @Provides
-    fun provideFirebaseFirestore(): FirebaseFirestore =
-        FirebaseFirestore.getInstance()
 }

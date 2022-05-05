@@ -6,10 +6,12 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
 import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.IllegalStateException
 
 /**
  * An activity to display the account that the user is currently logged in.
@@ -38,19 +40,23 @@ class ProfileActivity : AppCompatActivity() {
 
         // Update the e-mail when the account changes.
         userViewModel.getUser().observe(this) { user ->
-            updateUI(user)
+            if (user is SignedInUser) {
+                updateUI(user)
+            } else {
+                throw IllegalStateException("ProfileActivity launched while the current user is not signed in")
+            }
         }
     }
 
     /**
      * Update the e-mail with the new user.
      */
-    private fun updateUI(user: User) {
+    private fun updateUI(user: SignedInUser) {
         loginMessage.text =
-            getString(R.string.you_re_logged_in_as, (user as SignedInUser).email)
+            getString(R.string.you_re_logged_in_as, user.email)
     }
 
     companion object {
-        private const val TAG = "ProfileFragment"
+        private const val TAG = "ProfileActivity"
     }
 }

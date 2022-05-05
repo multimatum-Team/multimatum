@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +43,7 @@ class SignInActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             // Successfully signed in
             val user = FirebaseAuth.getInstance().currentUser!!
-            Log.d(TAG, "onSignInResult:success")
+            LogUtil.debugLog("onSignInResult:success")
             Toast.makeText(
                 baseContext, "Successfully authenticated as\n${user.email}.",
                 Toast.LENGTH_SHORT
@@ -50,7 +51,7 @@ class SignInActivity : AppCompatActivity() {
             finish()
         } else {
             // Sign-in failed
-            Log.w(TAG, "onSignInResult:failure: ${response?.error?.errorCode}")
+            LogUtil.debugLog("onSignInResult:failure: ${response?.error?.errorCode}")
             Toast.makeText(
                 baseContext, "Authentication failed.",
                 Toast.LENGTH_SHORT
@@ -72,9 +73,5 @@ class SignInActivity : AppCompatActivity() {
             .build()
 
         signInLauncher.launch(intent)
-    }
-
-    companion object {
-        private const val TAG = "AccountActivity"
     }
 }

@@ -1,49 +1,75 @@
 package com.github.multimatum_team.multimatum.util
 
-import com.github.multimatum_team.multimatum.model.UserGroup
-import com.github.multimatum_team.multimatum.model.UserID
+import com.github.multimatum_team.multimatum.model.*
+import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import org.mockito.Mockito.*
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
-class MockFirebaseFirestore(initialContents: List<UserGroup>) {
-    private var counter: Int = 0
+sealed interface DeadlineOwnerData
+data class UserOwnedData(val userID: UserID) : DeadlineOwnerData
+data class GroupOwnedData(val groupID: GroupID) : DeadlineOwnerData
 
-    private val groups: MutableList<UserGroup> =
-        initialContents.map { group ->
-            val newID = counter.toString()
-            counter++
-            group.copy(id = newID)
-        }.toMutableList()
+data class DeadlineData(
+    val title: String,
+    val state: DeadlineState,
+    val dateTime: LocalDateTime,
+    val description: String,
+    val ownerData: DeadlineOwnerData
+)
+
+class MockFirebaseFirestore(deadlines: List<DeadlineData>, groups: List<UserGroup>) {
+    private var deadlineCounter = 0
+    private var groupCounter = 0
+
+    private val groups: MutableMap<GroupID, UserGroup> =
+        groups.associate { group ->
+            val newID = groupCounter.toString()
+            groupCounter++
+            newID to group.copy(id = newID)
+        }.toMutableMap()
+
+    private val deadlines: MutableMap<DeadlineID, DeadlineData> =
+        deadlines.associate { deadlineData ->
+            val id = deadlineCounter.toString()
+            deadlineCounter++
+            id to deadlineData
+        }.toMutableMap()
 
     val database: FirebaseFirestore = mock(FirebaseFirestore::class.java)
 
-    private val snapshotListeners: MutableMap<UserID, MutableList<EventListener<QuerySnapshot>>> =
+    private val groupSnapshotListeners: MutableMap<UserID, MutableList<EventListener<QuerySnapshot>>> =
+        mutableMapOf()
+
+    private val deadlineSnapshotListeners: MutableMap<List<DeadlineOwnerData>, MutableList<EventListener<QuerySnapshot>>> =
         mutableMapOf()
 
     init {
         generateDatabase()
     }
 
-    private fun notifyListeners(userID: UserID) {
-        println("notifying $userID, ${snapshotListeners[userID]}")
-        for (listener in snapshotListeners.getOrElse(userID) { listOf() }) {
+    private fun notifyGroupListeners(userID: UserID) {
+        for (listener in groupSnapshotListeners.getOrElse(userID) { listOf() }) {
             listener.onEvent(
-                runBlocking { generateOwnerQuery(userID).get().await() },
+                runBlocking { generateGroupOwnerQuery(userID).get().await() },
                 null
             )
         }
     }
 
-    private fun notifyListeners(members: Iterable<UserID>) {
+    private fun notifyGroupListeners(members: Iterable<UserID>) {
         for (memberID in members) {
-            notifyListeners(memberID)
+            notifyGroupListeners(memberID)
         }
     }
 
-    private fun generateDocumentSnapshot(group: UserGroup): DocumentSnapshot {
+    private fun generateGroupDocumentSnapshot(group: UserGroup): DocumentSnapshot {
         val snapshot = mock(DocumentSnapshot::class.java)
         `when`(snapshot.id).thenReturn(group.id)
         `when`(snapshot.get("name")).thenReturn(group.name)
@@ -52,7 +78,7 @@ class MockFirebaseFirestore(initialContents: List<UserGroup>) {
         return snapshot
     }
 
-    private fun generateQueryDocumentSnapshot(group: UserGroup): QueryDocumentSnapshot {
+    private fun generateGroupQueryDocumentSnapshot(group: UserGroup): QueryDocumentSnapshot {
         val snapshot = mock(QueryDocumentSnapshot::class.java)
         `when`(snapshot.id).thenReturn(group.id)
         `when`(snapshot.get("name")).thenReturn(group.name)
@@ -61,24 +87,24 @@ class MockFirebaseFirestore(initialContents: List<UserGroup>) {
         return snapshot
     }
 
-    private fun generateDocument(group: UserGroup): DocumentReference {
-        val snapshot = generateDocumentSnapshot(group)
+    private fun generateGroupDocument(group: UserGroup): DocumentReference {
+        val snapshot = generateGroupDocumentSnapshot(group)
         val document = mock(DocumentReference::class.java)
         `when`(document.id).thenReturn(group.id)
         `when`(document.get()).thenReturn(Tasks.forResult(snapshot))
         `when`(document.delete()).then {
-            groups.removeIf { it.id == group.id }
+            groups.remove(group.id)
             generateDatabase()
-            notifyListeners(group.members)
+            notifyGroupListeners(group.members)
             Tasks.forResult(Unit)
         }
         return document
     }
 
-    private fun generateQuerySnapshot(queryResult: List<UserGroup>): QuerySnapshot {
+    private fun generateGroupQuerySnapshot(queryResult: List<UserGroup>): QuerySnapshot {
         val querySnapshot = mock(QuerySnapshot::class.java)
-        val groupSnapshots = queryResult.map { generateDocumentSnapshot(it) }
-        val groupQuerySnapshots = queryResult.map { generateQueryDocumentSnapshot(it) }
+        val groupSnapshots = queryResult.map { generateGroupDocumentSnapshot(it) }
+        val groupQuerySnapshots = queryResult.map { generateGroupQueryDocumentSnapshot(it) }
         `when`(querySnapshot.documents).thenReturn(groupSnapshots)
         `when`(querySnapshot.iterator()).then {
             groupQuerySnapshots.iterator()
@@ -86,71 +112,266 @@ class MockFirebaseFirestore(initialContents: List<UserGroup>) {
         return querySnapshot
     }
 
-    private fun generateMemberQuery(userID: UserID): Query {
+    private fun generateGroupMemberQuery(userID: UserID): Query {
         val query = mock(Query::class.java)
-        val filteredGroups = groups.filter { group ->
+        val filteredGroups = groups.filterValues { group ->
             group.members.any { it == userID }
         }
-        val querySnapshot = generateQuerySnapshot(filteredGroups)
+        val querySnapshot = generateGroupQuerySnapshot(filteredGroups.values.toList())
         `when`(query.get()).thenReturn(Tasks.forResult(querySnapshot))
         `when`(query.addSnapshotListener(any())).then {
             val listener = it.getArgument<EventListener<QuerySnapshot>>(0)
-            snapshotListeners.getOrPut(userID) { mutableListOf() }.add(listener)
+            groupSnapshotListeners.getOrPut(userID) { mutableListOf() }.add(listener)
             ListenerRegistration { }
         }
         return query
     }
 
-    private fun generateOwnerQuery(userID: UserID): Query {
+    private fun generateGroupOwnerQuery(userID: UserID): Query {
         val query = mock(Query::class.java)
-        val querySnapshot = generateQuerySnapshot(groups.filter { group ->
+        val querySnapshot = generateGroupQuerySnapshot(groups.filterValues { group ->
             group.owner == userID
-        })
+        }.values.toList())
         `when`(query.get()).thenReturn(Tasks.forResult(querySnapshot))
         return query
     }
 
-    private fun generateNewDocument(serializedGroup: HashMap<String, *>): DocumentReference {
-        val newID = counter.toString()
-        counter++
+    private fun generateNewGroupDocument(serializedGroup: HashMap<String, *>): DocumentReference {
+        val newID = groupCounter.toString()
+        groupCounter++
         val group = UserGroup(
             newID,
             (serializedGroup["name"]!! as UserID),
             (serializedGroup["owner"]!! as UserID),
             (serializedGroup["members"]!! as List<UserID>).toSet()
         )
-        groups.add(group)
-        return generateDocument(group)
+        groups.put(newID, group)
+        return generateGroupDocument(group)
     }
 
-    private fun generateCollection(groups: List<UserGroup>): CollectionReference {
+    private fun generateGroupCollection(groups: List<UserGroup>): CollectionReference {
         val collection = mock(CollectionReference::class.java)
         for (group in groups) {
-            val document = generateDocument(group)
+            val document = generateGroupDocument(group)
             `when`(collection.document(group.id)).thenReturn(document)
         }
         `when`(collection.whereArrayContains(eq("members"), anyString()))
             .then {
                 val userID = it.getArgument<String>(1)
-                generateMemberQuery(userID)
+                generateGroupMemberQuery(userID)
             }
         `when`(collection.whereEqualTo(eq("owner"), anyString())).then {
             val userID = it.getArgument<String>(1)
-            generateOwnerQuery(userID)
+            generateGroupOwnerQuery(userID)
         }
         `when`(collection.add(any())).then {
             val serializedGroup = it.getArgument<HashMap<String, *>>(0)
-            val document = generateNewDocument(serializedGroup)
+            val document = generateNewGroupDocument(serializedGroup)
             generateDatabase()
-            notifyListeners(serializedGroup["members"] as List<UserID>)
+            notifyGroupListeners(serializedGroup["members"] as List<UserID>)
             Tasks.forResult(document)
         }
         return collection
     }
 
-    fun generateDatabase() {
-        val collection = generateCollection(groups)
+    // Deadlines
+
+    private fun notifyDeadlineListeners(ownerData: DeadlineOwnerData) {
+        for ((ownerList, listeners) in deadlineSnapshotListeners.entries) {
+            if (ownerList.contains(ownerData)) {
+                for (listener in listeners) {
+                    listener.onEvent(
+                        runBlocking { generateDeadlineOwnerQuery(ownerList).get().await() },
+                        null
+                    )
+                }
+            }
+        }
+    }
+
+    private fun generateDeadlineDocumentSnapshot(
+        id: DeadlineID,
+        deadlineData: DeadlineData
+    ): DocumentSnapshot {
+        val snapshot = mock(DocumentSnapshot::class.java)
+        `when`(snapshot.id).thenReturn(id)
+        `when`(snapshot.get("title")).thenReturn(deadlineData.title)
+        `when`(snapshot.get("state")).thenReturn(deadlineData.state.ordinal.toLong())
+        `when`(snapshot.get("date")).thenReturn(
+            Timestamp(
+                deadlineData.dateTime
+                    .atZone(ZoneId.systemDefault())
+                    .toEpochSecond(),
+                0
+            )
+        )
+        `when`(snapshot.get("description")).thenReturn(deadlineData.description)
+        `when`(snapshot.get("owner")).thenReturn(
+            when (deadlineData.ownerData) {
+                is UserOwnedData -> mapOf(
+                    "type" to "user",
+                    "id" to deadlineData.ownerData.userID
+                )
+                is GroupOwnedData -> mapOf(
+                    "type" to "group",
+                    "id" to deadlineData.ownerData.groupID
+                )
+            }
+        )
+        return snapshot
+    }
+
+    private fun generateDeadlineDocument(
+        id: DeadlineID,
+        deadlineData: DeadlineData
+    ): DocumentReference {
+        val snapshot = generateDeadlineDocumentSnapshot(id, deadlineData)
+        val document = mock(DocumentReference::class.java)
+        `when`(document.id).thenReturn(id)
+        `when`(document.get()).thenReturn(Tasks.forResult(snapshot))
+        `when`(document.delete()).then {
+            deadlines.remove(id)
+            generateDatabase()
+            notifyDeadlineListeners(deadlineData.ownerData)
+            Tasks.forResult(Unit)
+        }
+        return document
+    }
+
+    private fun generateDeadlineQueryDocumentSnapshot(
+        id: DeadlineID,
+        deadlineData: DeadlineData
+    ): QueryDocumentSnapshot {
+        val snapshot = mock(QueryDocumentSnapshot::class.java)
+        `when`(snapshot.id).thenReturn(id)
+        `when`(snapshot.get("title")).thenReturn(deadlineData.title)
+        `when`(snapshot.get("state")).thenReturn(deadlineData.state.ordinal.toLong())
+        `when`(snapshot.get("date")).thenReturn(
+            Timestamp(
+                deadlineData.dateTime
+                    .atZone(ZoneId.systemDefault())
+                    .toEpochSecond(),
+                0
+            )
+        )
+        `when`(snapshot.get("description")).thenReturn(deadlineData.description)
+        `when`(snapshot.get("owner")).thenReturn(
+            when (deadlineData.ownerData) {
+                is UserOwnedData -> mapOf(
+                    "type" to "user",
+                    "id" to deadlineData.ownerData.userID
+                )
+                is GroupOwnedData -> mapOf(
+                    "type" to "group",
+                    "id" to deadlineData.ownerData.groupID
+                )
+            }
+        )
+        return snapshot
+    }
+
+    private fun generateNewDeadlineDocument(serializedDeadline: HashMap<String, *>): DocumentReference {
+        val newID = deadlineCounter.toString()
+        deadlineCounter++
+        val title = serializedDeadline["title"] as String
+        val state = DeadlineState.values()[serializedDeadline["state"] as Int]
+        val timestamp = serializedDeadline["date"] as Timestamp
+        val milliseconds = timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
+        val date = Instant
+            .ofEpochMilli(milliseconds)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
+        val description = serializedDeadline["description"] as String
+        val ownerMap = serializedDeadline["owner"] as Map<String, String>
+        val ownerData = when (ownerMap["type"]) {
+            "user" -> UserOwnedData(ownerMap["id"] as UserID)
+            "group" -> GroupOwnedData(ownerMap["id"] as GroupID)
+            else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
+        }
+        val deadlineData = DeadlineData(title, state, date, description, ownerData)
+        deadlines[newID] = deadlineData
+        return generateDeadlineDocument(newID, deadlineData)
+    }
+
+    private fun generateDeadlineQuerySnapshot(queryResult: Map<DeadlineID, DeadlineData>): QuerySnapshot {
+        val querySnapshot = mock(QuerySnapshot::class.java)
+        val deadlineSnapshots =
+            queryResult.map { generateDeadlineDocumentSnapshot(it.key, it.value) }
+        val deadlineQuerySnapshots =
+            queryResult.map { generateDeadlineQueryDocumentSnapshot(it.key, it.value) }
+        `when`(querySnapshot.documents).thenReturn(deadlineSnapshots)
+        `when`(querySnapshot.iterator()).then {
+            deadlineQuerySnapshots.iterator()
+        }
+        return querySnapshot
+    }
+
+    private fun generateDeadlineOwnerQuery(ownerList: List<DeadlineOwnerData>): Query {
+        val query = mock(Query::class.java)
+        val querySnapshot = generateDeadlineQuerySnapshot(deadlines.filterValues { deadlineData ->
+            ownerList.contains(deadlineData.ownerData)
+        })
+        `when`(query.get()).thenReturn(Tasks.forResult(querySnapshot))
+        `when`(query.addSnapshotListener(any())).then {
+            val listener = it.getArgument<EventListener<QuerySnapshot>>(0)
+            deadlineSnapshotListeners.getOrPut(ownerList) { mutableListOf() }.add(listener)
+            ListenerRegistration { }
+        }
+        return query
+    }
+
+    private fun generateDeadlineCollection(deadlines: Map<DeadlineID, DeadlineData>): CollectionReference {
+        val collection = mock(CollectionReference::class.java)
+        for ((id, deadlineData) in deadlines.entries) {
+            val document = generateDeadlineDocument(id, deadlineData)
+            `when`(collection.document(id)).thenReturn(document)
+        }
+        `when`(collection.whereIn(eq("owner"), anyList()))
+            .then {
+                val ownerList = it.getArgument<List<Any>>(1).map { ownerMap ->
+                    when (ownerMap) {
+                        is String -> UserOwnedData(ownerMap)
+                        is Map<*, *> -> when (ownerMap["type"]!! as String) {
+                            "user" -> UserOwnedData(ownerMap["id"]!! as String)
+                            "group" -> GroupOwnedData(ownerMap["id"]!! as String)
+                            else -> throw IllegalArgumentException("invalid owner type")
+                        }
+                        else -> throw IllegalArgumentException("invalid owner query")
+                    }
+                }
+                generateDeadlineOwnerQuery(ownerList)
+            }
+        `when`(collection.whereEqualTo(eq("owner"), anyMap<String, String>()))
+            .then {
+                val ownerMap = it.getArgument<Map<String, String>>(1)
+                val ownerData = when (ownerMap["type"]!!) {
+                    "user" -> UserOwnedData(ownerMap["id"]!!)
+                    "group" -> GroupOwnedData(ownerMap["id"]!!)
+                    else -> throw IllegalArgumentException("invalid owner type")
+                }
+                generateDeadlineOwnerQuery(listOf(ownerData))
+            }
+        `when`(collection.add(any())).then {
+            val serializedDeadline = it.getArgument<HashMap<String, *>>(0)
+            val document = generateNewDeadlineDocument(serializedDeadline)
+            generateDatabase()
+            val ownerMap = serializedDeadline["owner"] as Map<String, String>
+            val ownerData = when (ownerMap["type"]!!) {
+                "user" -> UserOwnedData(ownerMap["id"]!!)
+                "group" -> GroupOwnedData(ownerMap["id"]!!)
+                else -> throw IllegalArgumentException("invalid owner type")
+            }
+            notifyDeadlineListeners(ownerData)
+            Tasks.forResult(document)
+        }
+        return collection
+    }
+
+    private fun generateDatabase() {
+        val groupCollection = generateGroupCollection(groups.values.toList())
+        val deadlineCollection = generateDeadlineCollection(deadlines)
         reset(database)
-        `when`(database.collection("groups")).thenReturn(collection)
+        `when`(database.collection("groups")).thenReturn(groupCollection)
+        `when`(database.collection("deadlines")).thenReturn(deadlineCollection)
     }
 }

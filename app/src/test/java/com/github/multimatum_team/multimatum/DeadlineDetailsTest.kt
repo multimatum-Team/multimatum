@@ -20,10 +20,12 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockClockService
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
+import com.github.multimatum_team.multimatum.util.MockGroupRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,7 +47,7 @@ import javax.inject.Singleton
 /**
  * Tests for the DeadlineDetailsActivity class
  */
-@UninstallModules(RepositoryModule::class, ClockModule::class)
+@UninstallModules(FirebaseRepositoryModule::class, ClockModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class DeadlineDetailsTest {
@@ -267,7 +269,15 @@ class DeadlineDetailsTest {
 
     @Module
     @InstallIn(SingletonComponent::class)
-    object TestDeadlineRepositoryModule {
+    object TestClockModule {
+        @Provides
+        fun provideClockService(): ClockService =
+            MockClockService(LocalDateTime.of(2022, 3, 12, 0, 0))
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestRepositoryModule {
         @Singleton
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
@@ -287,15 +297,12 @@ class DeadlineDetailsTest {
 
         @Singleton
         @Provides
+        fun provideGroupRepository(): GroupRepository =
+            MockGroupRepository(listOf())
+
+        @Singleton
+        @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
-    }
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    object TestClockModule {
-        @Provides
-        fun provideClockService(): ClockService =
-            MockClockService(LocalDateTime.of(2022, 3, 12, 0, 0))
     }
 }

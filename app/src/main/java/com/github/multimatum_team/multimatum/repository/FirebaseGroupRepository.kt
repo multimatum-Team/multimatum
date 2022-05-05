@@ -48,7 +48,7 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
      */
     override suspend fun fetchAll(): Map<GroupID, UserGroup> =
         groupsRef
-            .whereArrayContains("members", _user.id)
+            .whereArrayContains("members", _userID)
             .get()
             .await()
             .documents
@@ -59,7 +59,7 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
      */
     override suspend fun fetchOwned(): Map<GroupID, UserGroup> =
         groupsRef
-            .whereEqualTo("owner", _user.id)
+            .whereEqualTo("owner", _userID)
             .get()
             .await()
             .documents
@@ -76,7 +76,7 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
                     UserGroup(
                         id = "",
                         name = name,
-                        owner = _user.id
+                        owner = _userID
                     )
                 )
             )
@@ -95,12 +95,33 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
     }
 
     /**
+     * Rename a group.
+     * @param id the ID of the group to rename
+     * @param newName the new name of the group
+     */
+    override suspend fun rename(id: GroupID, newName: String) {
+        groupsRef
+            .document(id)
+            .update("name", newName)
+            .await()
+    }
+
+    /**
+     * Invite an user to join a group.
+     * @param id the ID of the grop to which we want to invite the user
+     * @param email the email of the user to invite
+     */
+    override suspend fun invite(id: GroupID, email: String) {
+        throw NotImplementedError("FirebaseGroupRepository.invite is not implemented")
+    }
+
+    /**
      * Add listener for database updates.
      * @param callback the callback to run when the groups of the current user changes.
      */
     override fun onUpdate(callback: (Map<GroupID, UserGroup>) -> Unit) {
         groupsRef
-            .whereArrayContains("members", _user.id)
+            .whereArrayContains("members", _userID)
             .addSnapshotListener { groupSnapshots, error ->
                 if (error != null) {
                     Log.w("FirebaseDeadlineRepository", "Failed to retrieve data from database")

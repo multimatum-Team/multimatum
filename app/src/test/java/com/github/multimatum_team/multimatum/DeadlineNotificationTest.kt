@@ -33,10 +33,8 @@ import javax.inject.Inject
 @HiltAndroidTest
 @UninstallModules(ClockModule::class)
 class DeadlineNotificationTest {
-
     private lateinit var context: Context
     private lateinit var shadowNotificationManager: ShadowNotificationManager
-
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
