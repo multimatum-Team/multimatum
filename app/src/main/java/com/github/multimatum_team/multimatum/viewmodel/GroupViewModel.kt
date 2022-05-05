@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.AuthRepository
@@ -36,12 +37,12 @@ class GroupViewModel @Inject constructor(
         viewModelScope.launch {
             val groups = groupRepository.fetchAll()
             _groups.value = groups
-            Log.d("GroupViewModel", "fetching for the first time: $groups")
+            LogUtil.debugLog("fetching for the first time: $groups")
         }
 
         // Listen for authentication updates, upon which the group list is re-fetched
         authRepository.onUpdate { newUser ->
-            Log.d("GroupViewModel", "update auth: $newUser")
+            LogUtil.debugLog("update auth: $newUser")
             groupRepository.setUserID(newUser.id)
             refreshGroups()
         }
@@ -49,7 +50,7 @@ class GroupViewModel @Inject constructor(
         // Listen for changes in the group list as well, in order to synchronize between the
         // Firebase database contents
         groupRepository.onUpdate { newGroups ->
-            Log.d("GroupViewModel", "update groups: $newGroups")
+            LogUtil.debugLog("update groups: $newGroups")
             _groups.value = newGroups
         }
     }
@@ -60,7 +61,7 @@ class GroupViewModel @Inject constructor(
     private fun refreshGroups(callback: (Map<GroupID, UserGroup>) -> Unit = {}) =
         viewModelScope.launch {
             val groups = groupRepository.fetchAll()
-            Log.d("GroupViewModel", "refreshing groups: ${_groups.value} -> $groups")
+            LogUtil.debugLog("refreshing groups: ${_groups.value} -> $groups")
             _groups.value = groups
             callback(groups)
         }
@@ -85,7 +86,7 @@ class GroupViewModel @Inject constructor(
     fun createGroup(name: String, callback: (GroupID) -> Unit = {}) =
         viewModelScope.launch {
             val id = groupRepository.create(name)
-            Log.d("GroupViewModel", "creating group named $name with id $id")
+            LogUtil.debugLog("creating group named $name with id $id")
             callback(id)
         }
 
@@ -97,7 +98,7 @@ class GroupViewModel @Inject constructor(
     fun deleteGroup(id: GroupID, callback: (GroupID) -> Unit = {}) =
         viewModelScope.launch {
             groupRepository.delete(id)
-            Log.d("GroupViewModel", "deleting group with id $id")
+            LogUtil.debugLog("deleting group with id $id")
             callback(id)
         }
 
@@ -109,7 +110,7 @@ class GroupViewModel @Inject constructor(
     fun renameGroup(id: GroupID, newName: String) =
         viewModelScope.launch {
             groupRepository.rename(id, newName)
-            Log.d("GroupViewModel", "renaming group with id $id to $newName")
+            LogUtil.debugLog("renaming group with id $id to $newName")
         }
 
     /**
@@ -120,6 +121,6 @@ class GroupViewModel @Inject constructor(
     fun inviteUser(id: GroupID, email: String) =
         viewModelScope.launch {
             groupRepository.invite(id, email)
-            Log.d("GroupViewModel", "inviting user with email $email to group with id $id")
+            LogUtil.debugLog("inviting user with email $email to group with id $id")
         }
 }
