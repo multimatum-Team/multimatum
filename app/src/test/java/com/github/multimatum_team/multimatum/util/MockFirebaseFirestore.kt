@@ -22,19 +22,7 @@ data class DeadlineData(
     val dateTime: LocalDateTime,
     val description: String,
     val ownerData: DeadlineOwnerData
-) {
-    fun toDeadline(): Deadline =
-        Deadline(
-            title = title,
-            state = state,
-            dateTime = dateTime,
-            description = description,
-            owner = when (ownerData) {
-                is UserOwnedData -> UserOwned
-                is GroupOwnedData -> GroupOwned(ownerData.groupID)
-            }
-        )
-}
+)
 
 class MockFirebaseFirestore(deadlines: List<DeadlineData>, groups: List<UserGroup>) {
     private var deadlineCounter = 0
@@ -294,20 +282,14 @@ class MockFirebaseFirestore(deadlines: List<DeadlineData>, groups: List<UserGrou
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
         val description = serializedDeadline["description"] as String
-        val ownerData = when (serializedDeadline["owner"]) {
-            is String -> UserOwnedData(serializedDeadline["owner"] as UserID)
-            is Map<*, *> -> {
-                val ownerMap = serializedDeadline["owner"] as Map<String, String>
-                when (ownerMap["type"]) {
-                    "user" -> UserOwnedData(ownerMap["id"] as UserID)
-                    "group" -> GroupOwnedData(ownerMap["id"] as GroupID)
-                    else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
-                }
-            }
-            else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected String or Map")
+        val ownerMap = serializedDeadline["owner"] as Map<String, String>
+        val ownerData = when (ownerMap["type"]) {
+            "user" -> UserOwnedData(ownerMap["id"] as UserID)
+            "group" -> GroupOwnedData(ownerMap["id"] as GroupID)
+            else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
         }
         val deadlineData = DeadlineData(title, state, date, description, ownerData)
-        deadlines.put(newID, deadlineData)
+        deadlines[newID] = deadlineData
         return generateDeadlineDocument(newID, deadlineData)
     }
 
@@ -362,9 +344,9 @@ class MockFirebaseFirestore(deadlines: List<DeadlineData>, groups: List<UserGrou
         `when`(collection.whereEqualTo(eq("owner"), anyMap<String, String>()))
             .then {
                 val ownerMap = it.getArgument<Map<String, String>>(1)
-                val ownerData = when (ownerMap["type"]!! as String) {
-                    "user" -> UserOwnedData(ownerMap["id"]!! as String)
-                    "group" -> GroupOwnedData(ownerMap["id"]!! as String)
+                val ownerData = when (ownerMap["type"]!!) {
+                    "user" -> UserOwnedData(ownerMap["id"]!!)
+                    "group" -> GroupOwnedData(ownerMap["id"]!!)
                     else -> throw IllegalArgumentException("invalid owner type")
                 }
                 generateDeadlineOwnerQuery(listOf(ownerData))
@@ -385,7 +367,7 @@ class MockFirebaseFirestore(deadlines: List<DeadlineData>, groups: List<UserGrou
         return collection
     }
 
-    fun generateDatabase() {
+    private fun generateDatabase() {
         val groupCollection = generateGroupCollection(groups.values.toList())
         val deadlineCollection = generateDeadlineCollection(deadlines)
         reset(database)

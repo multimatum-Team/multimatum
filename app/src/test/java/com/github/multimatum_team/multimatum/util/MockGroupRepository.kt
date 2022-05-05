@@ -57,11 +57,12 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
     }
 
     override suspend fun rename(id: GroupID, newName: String) {
+        require(groups.containsKey(id))
         groups[id] = groups[id]!!.copy(name = newName)
     }
 
     override suspend fun invite(id: GroupID, email: String) {
-        throw NotImplementedError("MockGroupViewModel.invite is not implemented")
+        throw UnsupportedOperationException("group invites are not supported")
     }
 
     override fun onUpdate(callback: (Map<GroupID, UserGroup>) -> Unit) {

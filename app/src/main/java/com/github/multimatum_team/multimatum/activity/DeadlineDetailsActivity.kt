@@ -204,22 +204,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         editMode = editMode.not()
     }
 
-    // Modify the deadline in the database when you quit the edition mode
-    private fun updateDeadlineAfterEditionModeExit() {
-        val newDeadline =
-            Deadline(titleView.text.toString(), state, dateTime, descriptionView.text.toString())
-        deadlineListViewModel.modifyDeadline(id, newDeadline)
-
-        // If the deadline is done, we don't need anymore of the notifications
-        if (state == DeadlineState.DONE) {
-            DeadlineNotification.deleteNotification(id, this)
-        } else {
-            DeadlineNotification.editNotification(
-                id, newDeadline, retrieveNotificationsTimes(), this
-            )
-        }
-    }
-
     private fun retrieveNotificationsTimes(): List<Long> =
         (checkBoxIdTime.filter { checkBox -> notificationSelected[nameCheckBox.indexOf(checkBox.key)] }).values.toList()
 
@@ -232,6 +216,24 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         )
     }
 
+    // Modify the deadline in the database when you quit the edition mode
+    private fun updateDeadlineAfterEditionModeExit() {
+        if (!editMode) {
+            val newDeadline = deadlineListViewModel.getDeadline(id).copy(
+                title = titleView.text.toString(),
+                state = state,
+                dateTime = dateTime
+            )
+            deadlineListViewModel.modifyDeadline(
+                id,
+                newDeadline
+            )
+            if (state == DeadlineState.DONE) {
+                DeadlineNotification.deleteNotification(id, this)
+            }
+        }
+    }
+    
     // Shift the dateView to a modify state or to a uneditable state
     private fun editDate(edit: Boolean) {
         dateView.isClickable = edit
