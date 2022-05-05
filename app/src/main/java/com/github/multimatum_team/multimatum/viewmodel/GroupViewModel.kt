@@ -1,10 +1,8 @@
 package com.github.multimatum_team.multimatum.viewmodel
 
-import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.GroupID
@@ -24,10 +22,9 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class GroupViewModel @Inject constructor(
-    application: Application,
     authRepository: AuthRepository,
     private val groupRepository: GroupRepository
-) : AndroidViewModel(application) {
+) : ViewModel() {
     private val _groups: MutableLiveData<Map<GroupID, UserGroup>> = MutableLiveData()
 
     init {

@@ -70,7 +70,6 @@ class GroupViewModelTest {
         hiltRule.inject()
         (authRepository as MockAuthRepository).logIn(AnonymousUser("alice"))
         viewModel = GroupViewModel(
-            ApplicationProvider.getApplicationContext(),
             authRepository,
             groupRepository
         )
