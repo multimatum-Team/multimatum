@@ -24,6 +24,7 @@ I will work on Firebase action links to enable users to invite people to their
 group, and I might try to work on the UI as well.
 
 ### Lenny
+This week I was suppose to add the possibility to add some pdf file with dealine. I started be implementing a pdf picker in the add deadline view which was quite easy. Then I tried to set up a way to view pdf, I tried many things but I didn't manage to achieve anything despite many (like way too many) hours spend on it. Therefore, I will try again next week. 
 
 ### Léo
 This week my job was to start the location autocomplete feature. This feature gives
