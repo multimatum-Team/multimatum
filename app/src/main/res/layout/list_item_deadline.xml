@@ -44,7 +44,6 @@
             android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp"
             android:maxLines="1"
-            android:textColor="@color/black"
             android:textSize="12sp"
             tools:ignore="RelativeOverlap"
             tools:text="Detail" />
@@ -58,7 +57,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:maxLines="1"
-            android:textColor="#000000"
+            android:textColor="@color/deadline_details_title"
             android:textOff="@string/not_done"
             android:textOn="@string/done"
             android:textSize="12sp" />

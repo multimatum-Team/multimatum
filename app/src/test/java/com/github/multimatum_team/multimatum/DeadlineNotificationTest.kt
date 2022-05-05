@@ -92,7 +92,6 @@ class DeadlineNotificationTest {
 
         Assert.assertEquals(2, shadowAlarmManager.scheduledAlarms.size)
 
-
         DeadlineNotification.deleteNotification(id, context)
 
         Assert.assertEquals(0, shadowAlarmManager.scheduledAlarms.size)
