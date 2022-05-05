@@ -46,7 +46,7 @@ object LogUtilImpl: LogUtil.FunctionsProvider {
     private const val TAG = "DebugUtil"
 
     // index in the stack to find the environment function
-    private const val STACK_IDX_FOR_ENV_FUNC = 6
+    private const val STACK_IDX_FOR_ENV_FUNC = 7
 
     // counter for the indexing of logging events
     private object Counter {
