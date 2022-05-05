@@ -51,6 +51,7 @@
     <string name="notification_shared_preference">com.github.multimatum_team.multimatum.notifications</string>
     <string name="not_done">Not Done</string>
     <string name="groups">Groups</string>
+    <string name="places_key">AIzaSyCXC2DH6UC_dvvFsLRMxDOhouJSp4GIwzk</string>
     <string name="select_notifications">Select Notifications</string>
     <string name="write_description_here">Write description here</string>
     <string name="no_alarm_planned">No Alarm Planned</string>
