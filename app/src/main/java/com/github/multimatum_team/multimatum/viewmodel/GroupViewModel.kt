@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.repository.GroupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,8 +23,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class GroupViewModel @Inject constructor(
-    authRepository: AuthRepository,
     application: Application,
+    authRepository: AuthRepository,
     private val groupRepository: GroupRepository
 ) : AndroidViewModel(application) {
     private val _groups: MutableLiveData<Map<GroupID, UserGroup>> = MutableLiveData()
@@ -40,7 +39,7 @@ class GroupViewModel @Inject constructor(
             Log.d("GroupViewModel", "fetching for the first time: $groups")
         }
 
-        // Listen for authentication updates, upon which the deadline list is re-fetched
+        // Listen for authentication updates, upon which the group list is re-fetched
         authRepository.onUpdate { newUser ->
             Log.d("GroupViewModel", "update auth: $newUser")
             groupRepository.setUserID(newUser.id)
@@ -69,14 +68,19 @@ class GroupViewModel @Inject constructor(
     /**
      * Get all groups.
      */
-    fun getDeadlines(): LiveData<Map<GroupID, UserGroup>> =
+    fun getGroups(): LiveData<Map<GroupID, UserGroup>> =
         _groups
 
-    fun getDeadline(id: DeadlineID): UserGroup =
+    /**
+     * Get a single group from its ID.
+     */
+    fun getGroup(id: GroupID): UserGroup =
         _groups.value!![id]!!
 
     /**
      * Add a new group to the repository.
+     * @param name the name of the new group to create
+     * @param callback what to do when the group creation is complete
      */
     fun createGroup(name: String, callback: (GroupID) -> Unit = {}) =
         viewModelScope.launch {
@@ -87,11 +91,35 @@ class GroupViewModel @Inject constructor(
 
     /**
      * Remove a group from the repository.
+     * @param id the id of the group to remove
+     * @param callback what to do when the deletion is finished
      */
     fun deleteGroup(id: GroupID, callback: (GroupID) -> Unit = {}) =
         viewModelScope.launch {
             groupRepository.delete(id)
             Log.d("GroupViewModel", "deleting group with id $id")
             callback(id)
+        }
+
+    /**
+     * Rename a group with a given ID.
+     * @pram id the ID of the group to rename
+     * @param newName the new name of the group
+     */
+    fun renameGroup(id: GroupID, newName: String) =
+        viewModelScope.launch {
+            groupRepository.rename(id, newName)
+            Log.d("GroupViewModel", "renaming group with id $id to $newName")
+        }
+
+    /**
+     * Invite an user to join a group given from its ID.
+     * @param id the ID of the group to which we want to invite the user
+     * @param email the email of the user to invite
+     */
+    fun inviteUser(id: GroupID, email: String) =
+        viewModelScope.launch {
+            groupRepository.invite(id, email)
+            Log.d("GroupViewModel", "inviting user with email $email to group with id $id")
         }
 }

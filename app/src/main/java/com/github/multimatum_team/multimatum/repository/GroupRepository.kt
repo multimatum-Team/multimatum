@@ -48,9 +48,23 @@ abstract class GroupRepository {
 
     /**
      * Delete a given group.
-     * @param id the ID of the group to delete.
+     * @param id the ID of the group to delete
      */
-    abstract suspend fun delete(id: DeadlineID)
+    abstract suspend fun delete(id: GroupID)
+
+    /**
+     * Rename a group.
+     * @param id the ID of the group to rename
+     * @param newName the new name of the group
+     */
+    abstract suspend fun rename(id: GroupID, newName: String)
+
+    /**
+     * Invite an user to a group.
+     * @param id the ID of the group to which we want to invite the new user
+     * @param email the email of the user to invite
+     */
+    abstract suspend fun invite(id: GroupID, email: String)
 
     /**
      * Add listener for database updates.
