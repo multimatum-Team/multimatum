@@ -232,24 +232,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         )
     }
 
-    // Modify the deadline in the database when you quit the edition mode
-    private fun updateDeadlineAfterEditionModeExit() {
-        if (!editMode) {
-            val newDeadline = deadlineListViewModel.getDeadline(id).copy(
-                title = titleView.text.toString(),
-                state = state,
-                dateTime = dateTime
-            )
-            deadlineListViewModel.modifyDeadline(
-                id,
-                newDeadline
-            )
-            if (state == DeadlineState.DONE) {
-                DeadlineNotification.deleteNotification(id, this)
-            }
-        }
-    }
-
     // Shift the dateView to a modify state or to a uneditable state
     private fun editDate(edit: Boolean) {
         dateView.isClickable = edit
