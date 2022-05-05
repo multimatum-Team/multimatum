@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
@@ -8,6 +9,8 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.R
@@ -16,6 +19,7 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
+import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
@@ -41,6 +45,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
     private lateinit var editText: TextView
+    private lateinit var pdfTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +53,7 @@ class AddDeadlineActivity : AppCompatActivity() {
         editText = findViewById(R.id.add_deadline_select_title)
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
+        pdfTextView = findViewById(R.id.selectedPdf)
         findViewById<CheckBox>(R.id.radio_notification_1h).text =
             getString(R.string.notify_before, "1 hour")
         findViewById<CheckBox>(R.id.radio_notification_5h).text =
@@ -194,4 +200,19 @@ class AddDeadlineActivity : AppCompatActivity() {
             }
         }
     }
+
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result?.data!!
+                pdfUri = intent.data!!
+                pdfTextView.text = pdfUri.authority
+            }
+        }
+    fun selectPDF(view: View) {
+        PDFUtil.selectPdfIntent() {
+            startForResult.launch(it)
+        }
+    }
+
 }

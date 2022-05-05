@@ -29,6 +29,8 @@
     <string name="notification_saved">Notifications Saved</string>
     <string name="notification">Notifications :</string>
     <string name="notify_before">%1s before</string>
+    <string name="link_pdf_to_deadline_title">Link pdf:</string>
+    <string name="pick_pdf">Select a PDF</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="you_re_logged_in_as">You\'re logged in as %1s</string>
