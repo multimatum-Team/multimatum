@@ -38,12 +38,13 @@ class AddDeadlineActivity : AppCompatActivity() {
     lateinit var clockService: ClockService
 
     private lateinit var selectedDate: LocalDateTime
-
-
-    private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
     private lateinit var pdfTextView: TextView
+
+
+    private val deadlineListViewModel: DeadlineListViewModel by viewModels()
+
     private var pdfUri: Uri = Uri.EMPTY
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +67,7 @@ class AddDeadlineActivity : AppCompatActivity() {
         pdfTextView = findViewById(R.id.selectedPdf)
         // Setting click listener to the PDF TextView
         pdfTextView.setOnClickListener {
-            selectPDF()
+            selectPDF(it)
         }
     }
 
@@ -176,20 +177,12 @@ class AddDeadlineActivity : AppCompatActivity() {
         }
     }
 
-    private fun selectPDF() {
-        PDFUtil.selectPdfIntent() {
-            startForResult.launch(it)
-        }
-    }
-
-    //handle result of startActivity
-    val startForResult =
+    private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val intent = result?.data!!
                 pdfUri = intent.data!!
                 val uriString: String = pdfUri.toString()
-                var pdfName: String? = null
                 if (uriString.startsWith("content://")) {
                     var myCursor: Cursor? = null
                     try {
@@ -203,7 +196,7 @@ class AddDeadlineActivity : AppCompatActivity() {
                                 null
                             )
                         if (myCursor != null && myCursor.moveToFirst()) {
-                            pdfName =
+                            val pdfName =
                                 myCursor.getString(myCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                             pdfTextView.text = pdfName
                         }
@@ -213,6 +206,11 @@ class AddDeadlineActivity : AppCompatActivity() {
                 }
             }
         }
+    fun selectPDF(view: View) {
+        PDFUtil.selectPdfIntent() {
+            startForResult.launch(it)
+        }
+    }
 
 
 }

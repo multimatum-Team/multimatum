@@ -191,15 +191,16 @@
                 android:layout_width="259dp"
                 android:layout_height="22dp"
                 android:layout_marginTop="4dp"
+                android:onClick="selectPDF"
                 android:text="@string/pick_pdf"
                 android:textColor="#0798DA"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                app:layout_constraintTop_toBottomOf="@+id/pdfTitle" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/pdfTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
