@@ -107,7 +107,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     private fun initializePlacesAutocomplete() {
         Places.initialize(applicationContext, getString(R.string.places_key))
         Places.createClient(this)
-        initializeAutocompleteFragment()
+        //initializeAutocompleteFragment()
     }
 
     /**
