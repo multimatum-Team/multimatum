@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.firebase.ui.auth.AuthUI
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
@@ -35,6 +36,7 @@ class ProfileActivity : AppCompatActivity() {
         logOutButton.setOnClickListener {
             Log.d(TAG, "Logging out...")
             userViewModel.signOut()
+            AuthUI.getInstance().signOut(this)
             finish()
         }
 
