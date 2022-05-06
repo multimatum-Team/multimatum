@@ -59,3 +59,5 @@ created and add a slider to modifiy the sensitivity of the procrastination
 detector.
 
 ### Overall team
+
+This week everyone works on news feature, a lots of refractoring was done.  All this feature have a solid basis to work on it efficiently next week. But a lots of task seems to take more time than expecte so we didn't plan all our task for next week. We have to do this by the end of the sprint.
