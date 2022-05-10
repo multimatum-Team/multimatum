@@ -8,6 +8,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="deadline_details_title">#FFFFFFFF</color>
     <color name="deadline_item_background">#FF000000</color>
+    <color name="group_member_item_background">#FF000000</color>
     <color name="settings_icons_color">#FF03DAC5</color>
     <color name="gray_variation_text">#BDBDBD</color>
 </resources>
