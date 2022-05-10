@@ -11,18 +11,17 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.AddDeadlineActivity
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.service.ClockService
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockClockService
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockGroupRepository
+import com.github.multimatum_team.multimatum.util.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -200,6 +199,11 @@ class AddDeadlineTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 
     @Module

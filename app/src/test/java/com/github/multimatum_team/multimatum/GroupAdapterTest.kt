@@ -1,7 +1,6 @@
 package com.github.multimatum_team.multimatum
 
 import android.app.Application
-import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
 import android.widget.ListView
@@ -17,9 +16,11 @@ import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockGroupRepository
+import com.github.multimatum_team.multimatum.util.MockUserRepository
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import dagger.Module
 import dagger.Provides
@@ -30,10 +31,8 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.junit.*
 import org.junit.runner.RunWith
-import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.jvm.Throws
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
@@ -59,6 +58,9 @@ class GroupAdapterTest {
     @Inject
     lateinit var authRepository: AuthRepository
 
+    @Inject
+    lateinit var userRepository: UserRepository
+
     private lateinit var adapter: UserGroupAdapter
     private var context: Application? = null
     private lateinit var groupMap: Map<GroupID, UserGroup>
@@ -75,7 +77,7 @@ class GroupAdapterTest {
             groupRepository
         )
 
-        adapter = UserGroupAdapter(context!!, viewModel)
+        adapter = UserGroupAdapter(context!!, viewModel, userRepository)
         groupMap = groups.associateBy { it.id }
         adapter.setGroups(groupMap)
     }
@@ -86,8 +88,14 @@ class GroupAdapterTest {
     }
 
     @Test
-    fun `Get count should give correct count`(){
-        (authRepository as MockAuthRepository).logIn(SignedInUser("Val", "val.dormeur@décédé.fr"))
+    fun `Get count should give correct count`() {
+        (authRepository as MockAuthRepository).logIn(
+            SignedInUser(
+                "Val",
+                "Val Dormeur",
+                "val.dormeur@décédé.fr"
+            )
+        )
         Assert.assertEquals(4, adapter.count)
     }
 
@@ -100,7 +108,7 @@ class GroupAdapterTest {
     }
 
     @Test
-    fun `GetItemId should give the correct id`(){
+    fun `GetItemId should give the correct id`() {
         Assert.assertEquals(adapter.getItemId(0), 0.toLong())
         Assert.assertEquals(adapter.getItemId(1), 1.toLong())
         Assert.assertEquals(adapter.getItemId(2), 2.toLong())
@@ -108,8 +116,14 @@ class GroupAdapterTest {
     }
 
     @Test
-    fun `GetView should display all field with correct font`(){
-        (authRepository as MockAuthRepository).logIn(SignedInUser("Val", "val.dormeur@décédé.fr"))
+    fun `GetView should display all field with correct font`() {
+        (authRepository as MockAuthRepository).logIn(
+            SignedInUser(
+                "Val",
+                "Val Dormeur",
+                "val.dormeur@décédé.fr"
+            )
+        )
         val parent = ListView(context)
         val listItemView: View = adapter.getView(1, null, parent)
         //check title
@@ -149,5 +163,10 @@ class GroupAdapterTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 }

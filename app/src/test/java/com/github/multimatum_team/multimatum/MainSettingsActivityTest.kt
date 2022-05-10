@@ -21,9 +21,11 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockGroupRepository
+import com.github.multimatum_team.multimatum.util.MockUserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -206,6 +208,11 @@ class MainSettingsActivityTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 
     companion object {

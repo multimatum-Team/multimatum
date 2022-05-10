@@ -9,9 +9,8 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PDFUtilTest {
-
     @Test
-    fun testSelectPDF (){
+    fun testSelectPDF() {
         PDFUtil.selectPdfIntent {
             assertEquals(Intent.ACTION_GET_CONTENT, it.action)
         }

@@ -1,7 +1,6 @@
 package com.github.multimatum_team.multimatum
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.FirebaseGroupRepository
 import com.github.multimatum_team.multimatum.util.MockFirebaseFirestore

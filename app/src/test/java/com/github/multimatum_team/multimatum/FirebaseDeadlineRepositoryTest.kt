@@ -45,11 +45,13 @@ class FirebaseDeadlineRepositoryTest {
         hiltRule.inject()
         repository = FirebaseDeadlineRepository(database)
         repository.setUser(AnonymousUser("0"))
-        repository.setGroups(mapOf(
-            "0" to UserGroup("0", "Group 1", "0", setOf("0", "1", "2")),
-            "1" to UserGroup("1", "Group 2", "1", setOf("0", "1")),
-            "2" to UserGroup("2", "Group 3", "0", setOf("0", "2")),
-        ))
+        repository.setGroups(
+            mapOf(
+                "0" to UserGroup("0", "Group 1", "0", setOf("0", "1", "2")),
+                "1" to UserGroup("1", "Group 2", "1", setOf("0", "1")),
+                "2" to UserGroup("2", "Group 3", "0", setOf("0", "2")),
+            )
+        )
     }
 
     @Test
@@ -123,13 +125,15 @@ class FirebaseDeadlineRepositoryTest {
 
     @Test
     fun `Creating a deadline inserts a new deadline owned by the current user`() = runTest {
-        repository.put(Deadline(
-            "Deadline 4",
-            DeadlineState.TODO,
-            LocalDateTime.of(2022, 5, 15, 0, 0),
-            "Deadline 4 description",
-            UserOwned
-        ))
+        repository.put(
+            Deadline(
+                "Deadline 4",
+                DeadlineState.TODO,
+                LocalDateTime.of(2022, 5, 15, 0, 0),
+                "Deadline 4 description",
+                UserOwned
+            )
+        )
         assertEquals(
             mapOf(
                 "1" to Deadline(
@@ -179,13 +183,15 @@ class FirebaseDeadlineRepositoryTest {
     fun `Creating a deadline notifies the owner`() = runTest {
         var notified = false
         repository.onUpdate { notified = true }
-        repository.put(Deadline(
-            "Deadline 4",
-            DeadlineState.TODO,
-            LocalDateTime.of(2022, 5, 15, 0, 0),
-            "Deadline 4 description",
-            UserOwned
-        ))
+        repository.put(
+            Deadline(
+                "Deadline 4",
+                DeadlineState.TODO,
+                LocalDateTime.of(2022, 5, 15, 0, 0),
+                "Deadline 4 description",
+                UserOwned
+            )
+        )
         assertTrue(notified)
     }
 
