@@ -9,7 +9,6 @@ import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -19,11 +18,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.GroupID
+import com.github.multimatum_team.multimatum.model.GroupOwned
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -32,7 +34,6 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import dagger.hilt.android.AndroidEntryPoint
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
-import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -51,16 +52,22 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     private val dateTimeExtractor = DateTimeExtractor { clockService.now().toLocalDate() }
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
+    private val groupViewModel: GroupViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
-    private lateinit var editText: TextView
     private lateinit var pdfTextView: TextView
     private lateinit var textTitle: TextView
     private lateinit var textDescription: TextView
 
     // Memorisation of which checkBox is selected for the notifications
     private val notificationSelected = booleanArrayOf(false, false, false, false)
-    private val nameCheckBox = arrayOf("1 hour", "5 hours", "1 day", "3 days")
+    private val nameNotifications = arrayOf("1 hour", "5 hours", "1 day", "3 days")
+
+    // Memorisation of which group is selected for the deadline
+    private var groupSelected = 0
+    private var nameGroups = arrayOf("No group")
+    private var idGroups = arrayOf("0")
+
     private val checkBoxIdTime = mapOf(
         "1 hour" to Duration.ofHours(1).toMillis(),
         "5 hours" to Duration.ofHours(5).toMillis(),
@@ -88,6 +95,14 @@ class AddDeadlineActivity : AppCompatActivity() {
             }
         })
         initializePlacesAutocomplete()
+
+        // Update the groups owned by the user
+        groupViewModel.getGroups().observe(this) {
+            nameGroups = arrayOf("No group")
+            groupViewModel.getOwnedGroups().map { (id, group) ->
+                nameGroups.plus(group.name)
+                idGroups.plus(id)}
+        }
     }
 
     /**
@@ -215,7 +230,7 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         // Set the checkbox, their name in the dialog and what happen when checked
         alertDialogBuilder.setMultiChoiceItems(
-            nameCheckBox.map { s ->
+            nameNotifications.map { s ->
                 getString(R.string.notify_before, s)
             }.toTypedArray(),
             notificationSelected
@@ -229,6 +244,27 @@ class AddDeadlineActivity : AppCompatActivity() {
         alertDialogBuilder.show()
     }
 
+    fun selectGroups(view: View) {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+
+        // Set the title
+        alertDialogBuilder.setTitle("Select Group:")
+
+        // Set the checkbox, their name in the dialog and what happen when checked
+        alertDialogBuilder.setSingleChoiceItems(
+            nameGroups,
+            groupSelected
+        ) { _, which ->
+            groupSelected = which
+        }
+
+        // Set the name of the done button
+        alertDialogBuilder.setPositiveButton(getString(R.string.done), null)
+        alertDialogBuilder.create()
+        alertDialogBuilder.show()
+
+    }
+
     /**
      *  Add a deadline based on the data recuperated on the other TextViews
      */
@@ -240,13 +276,26 @@ class AddDeadlineActivity : AppCompatActivity() {
         if (titleDeadline == "") {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
-            // Add the deadline
-            val deadline = Deadline(
-                titleDeadline,
-                DeadlineState.TODO,
-                selectedDate,
-                textDescription.text.toString()
-            )
+            val deadline: Deadline
+
+            // Getting the groups
+            if (groupSelected == 0) {
+                // Add the deadline
+                deadline = Deadline(
+                    titleDeadline,
+                    DeadlineState.TODO,
+                    selectedDate,
+                    textDescription.text.toString()
+                )
+            } else {
+                deadline = Deadline(
+                    titleDeadline,
+                    DeadlineState.TODO,
+                    selectedDate,
+                    textDescription.text.toString(),
+                    GroupOwned(idGroups[groupSelected])
+                )
+            }
 
             val notificationsTimes = retrieveNotificationsTimes()
 
@@ -261,18 +310,20 @@ class AddDeadlineActivity : AppCompatActivity() {
             }
         }
     }
+
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result?.data!!
+                val intent = result.data!!
                 val pdfUri = intent.data!!
                 val path: String = pdfUri.toString()
                 val lastSlashIndex = path.lastIndexOf("/")
                 pdfTextView.text = path.substring(lastSlashIndex + 1, path.length)
             }
         }
+
     fun selectPDF(view: View) {
-        PDFUtil.selectPdfIntent() {
+        PDFUtil.selectPdfIntent {
             startForResult.launch(it)
         }
     }
@@ -281,7 +332,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     private fun retrieveNotificationsTimes(): ArrayList<Long> {
         val res = ArrayList<Long>()
         for (i in 0 until checkBoxIdTime.count()) {
-            if (notificationSelected[i]) res.add(checkBoxIdTime[nameCheckBox[i]]!!)
+            if (notificationSelected[i]) res.add(checkBoxIdTime[nameNotifications[i]]!!)
         }
         return res
     }
