@@ -70,4 +70,8 @@ abstract class FirebaseRepositoryModule {
     @Singleton
     @Binds
     abstract fun provideAuthRepository(impl: FirebaseAuthRepository): AuthRepository
+
+    @Singleton
+    @Binds
+    abstract fun provideUserRepository(impl: FirebaseUserRepository): UserRepository
 }

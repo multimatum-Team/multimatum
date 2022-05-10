@@ -33,6 +33,6 @@ data class SignedInUser(
     val name: String,
     val email: String
 ) : User {
-    val userInfo: UserInfo
+    val info: UserInfo
       get() = UserInfo(id, name)
 }

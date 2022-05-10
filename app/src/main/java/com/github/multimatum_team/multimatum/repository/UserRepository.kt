@@ -10,10 +10,16 @@ abstract class UserRepository {
     /**
      * Get public information of a user identified by a user ID.
      */
-    abstract suspend fun fetch(id: UserID): UserInfo
+    open suspend fun fetch(id: UserID): UserInfo =
+        fetch(listOf(id))[0]
+
+    /**
+     * Get public information of multiple users at once.
+     */
+    abstract suspend fun fetch(ids: List<UserID>): List<UserInfo>
 
     /**
      * Add information about an signed-in user.
      */
-    abstract suspend fun add(userInfo: UserInfo)
+    abstract suspend fun setInfo(userInfo: UserInfo)
 }
