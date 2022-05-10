@@ -378,7 +378,7 @@ class MockFirebaseFirestore(
 
     // Users
 
-    private fun generateSingleUserQueryDocumentSnapshot(
+    private fun generateUserQueryDocumentSnapshot(
         userInfo: UserInfo
     ): QueryDocumentSnapshot {
         val snapshot = mock(QueryDocumentSnapshot::class.java)
@@ -387,21 +387,21 @@ class MockFirebaseFirestore(
         return snapshot
     }
 
-    private fun generateMultipleUserQuerySnapshot(
+    private fun generateUserQuerySnapshot(
         userInfo: List<UserInfo>
     ): QuerySnapshot {
         val snapshot = mock(QuerySnapshot::class.java)
-        `when`(snapshot.toList()).thenReturn(userInfo.map {
-            generateSingleUserQueryDocumentSnapshot(
-                it
-            )
-        })
+        `when`(snapshot.iterator()).then {
+            userInfo.map {
+                generateUserQueryDocumentSnapshot(it)
+            }.iterator()
+        }
         return snapshot
     }
 
     private fun generateUserQuery(ids: List<UserID>): Query {
         val query = mock(Query::class.java)
-        val querySnapshot = generateMultipleUserQuerySnapshot(users.filterKeys { id ->
+        val querySnapshot = generateUserQuerySnapshot(users.filterKeys { id ->
             ids.contains(id)
         }.values.toList())
         `when`(query.get()).thenReturn(Tasks.forResult(querySnapshot))
@@ -420,9 +420,20 @@ class MockFirebaseFirestore(
         val document = mock(DocumentReference::class.java)
         `when`(document.id).thenReturn(userInfo.id)
         `when`(document.get()).thenReturn(Tasks.forResult(snapshot))
-        `when`(document.set(any<UserInfo>())).then {
-            val serializedInfo = it.getArgument<HashMap<String, *>>(0)
+        `when`(document.set(any())).then {
+            val serializedInfo = it.getArgument<Map<String, *>>(0)
             users[userInfo.id] = UserInfo(userInfo.id, serializedInfo["name"] as String)
+            generateDatabase()
+            Tasks.forResult(Unit)
+        }
+        return document
+    }
+
+    private fun generateNewUserDocument(id: UserID): DocumentReference {
+        val document = mock(DocumentReference::class.java)
+        `when`(document.set(any())).then {
+            val serializedInfo = it.getArgument<Map<String, *>>(0)
+            users[id] = UserInfo(id, serializedInfo["name"] as String)
             generateDatabase()
             Tasks.forResult(Unit)
         }
@@ -431,9 +442,12 @@ class MockFirebaseFirestore(
 
     private fun generateUserCollection(users: Map<UserID, UserInfo>): CollectionReference {
         val collection = mock(CollectionReference::class.java)
-        for (userInfo in users.values) {
-            val document = generateUserDocument(userInfo)
-            `when`(collection.document(userInfo.id)).thenReturn(document)
+        `when`(collection.document(anyString())).then {
+            val id = it.getArgument<UserID>(0)
+            when (val userInfo = users[id]) {
+                is UserInfo -> generateUserDocument(userInfo)
+                else -> generateNewUserDocument(id)
+            }
         }
         `when`(collection.whereIn(eq(FieldPath.documentId()), anyList<UserID>()))
             .then {

@@ -52,7 +52,6 @@ class FirebaseUserRepository @Inject constructor(database: FirebaseFirestore) : 
             .whereIn(FieldPath.documentId(), ids)
             .get()
             .await()
-            .toList()
             .map { deserializeUserInfo(it) }
 
     /**
