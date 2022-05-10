@@ -4,6 +4,7 @@ import android.util.Log
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
+import com.github.multimatum_team.multimatum.model.UserID
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,8 +17,7 @@ import javax.inject.Inject
  * Acts as a wrapper around the Firebase authentication library.
  */
 class FirebaseAuthRepository @Inject constructor(
-    private val auth: FirebaseAuth,
-    private val database: FirebaseFirestore
+    private val auth: FirebaseAuth
 ) : AuthRepository() {
 
     /**
@@ -50,7 +50,7 @@ class FirebaseAuthRepository @Inject constructor(
         if (firebaseUser.isAnonymous) {
             AnonymousUser(firebaseUser.uid)
         } else {
-            SignedInUser(firebaseUser.uid, firebaseUser.email!!)
+            SignedInUser(firebaseUser.uid, firebaseUser.displayName!!, firebaseUser.email!!)
         }
 
     /**

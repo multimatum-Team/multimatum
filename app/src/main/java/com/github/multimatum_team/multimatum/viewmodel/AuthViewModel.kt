@@ -16,7 +16,7 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
-class UserViewModel @Inject constructor(
+class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _user: MutableLiveData<User> = MutableLiveData()

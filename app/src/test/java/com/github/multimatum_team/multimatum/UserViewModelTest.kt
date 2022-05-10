@@ -10,7 +10,7 @@ import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockGroupRepository
-import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,7 +39,7 @@ class UserViewModelTest {
     @Inject
     lateinit var authRepository: AuthRepository
 
-    private lateinit var viewModel: UserViewModel
+    private lateinit var viewModel: AuthViewModel
 
     // Set executor to be synchronous so that LiveData's notify their observers immediately and
     // finish executing before continuing.
@@ -53,7 +53,7 @@ class UserViewModelTest {
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         hiltRule.inject()
-        viewModel = UserViewModel(authRepository)
+        viewModel = AuthViewModel(authRepository)
     }
 
     @Test
