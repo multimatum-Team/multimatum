@@ -162,12 +162,14 @@ class GroupAdapterTest {
         @Singleton
         @Provides
         fun provideUserRepository(): UserRepository =
-            MockUserRepository(listOf(
-                UserInfo(id = "Joseph", name = "Joseph"),
-                UserInfo(id = "Louis", name = "Louis"),
-                UserInfo(id = "Florian", name = "Florian"),
-                UserInfo(id = "Léo", name = "Léo"),
-                UserInfo(id = "Val", name = "Val"),
-            ))
+            MockUserRepository(
+                listOf(
+                    UserInfo(id = "Joseph", name = "Joseph"),
+                    UserInfo(id = "Louis", name = "Louis"),
+                    UserInfo(id = "Florian", name = "Florian"),
+                    UserInfo(id = "Léo", name = "Léo"),
+                    UserInfo(id = "Val", name = "Val"),
+                )
+            )
     }
 }
