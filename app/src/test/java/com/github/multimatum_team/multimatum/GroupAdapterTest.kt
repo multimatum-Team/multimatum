@@ -9,10 +9,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.adaptater.UserGroupAdapter
-import com.github.multimatum_team.multimatum.model.AnonymousUser
-import com.github.multimatum_team.multimatum.model.GroupID
-import com.github.multimatum_team.multimatum.model.SignedInUser
-import com.github.multimatum_team.multimatum.model.UserGroup
+import com.github.multimatum_team.multimatum.model.*
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
@@ -40,13 +37,11 @@ import javax.inject.Singleton
 class GroupAdapterTest {
     companion object {
         private val groups: List<UserGroup> = listOf(
-            UserGroup("1", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
-            UserGroup("2", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
-            UserGroup("3", "JDR", "Florian", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
-            UserGroup("4", "Quantic", "Léo", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
-            UserGroup("4", "Quantic", "Léo", setOf("Joseph", "Louis", "Florian", "Léo")),
-
-            )
+            UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
+            UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
+            UserGroup("2", "JDR", "Florian", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
+            UserGroup("3", "Quantic", "Léo", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
+        )
     }
 
     @get:Rule
@@ -137,7 +132,7 @@ class GroupAdapterTest {
         )
         //check subtitle
         Assert.assertEquals(
-            "own by: Louis",
+            "Owner: Louis",
             listItemView.findViewById<TextView>(R.id.group_list_owner).text
         )
         Assert.assertEquals(
@@ -167,6 +162,12 @@ class GroupAdapterTest {
         @Singleton
         @Provides
         fun provideUserRepository(): UserRepository =
-            MockUserRepository(listOf())
+            MockUserRepository(listOf(
+                UserInfo(id = "Joseph", name = "Joseph"),
+                UserInfo(id = "Louis", name = "Louis"),
+                UserInfo(id = "Florian", name = "Florian"),
+                UserInfo(id = "Léo", name = "Léo"),
+                UserInfo(id = "Val", name = "Val"),
+            ))
     }
 }

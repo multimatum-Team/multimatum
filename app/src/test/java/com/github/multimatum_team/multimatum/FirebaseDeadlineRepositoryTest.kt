@@ -3,10 +3,8 @@ package com.github.multimatum_team.multimatum
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.*
 import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineRepository
-import com.github.multimatum_team.multimatum.util.DeadlineData
-import com.github.multimatum_team.multimatum.util.GroupOwnedData
-import com.github.multimatum_team.multimatum.util.MockFirebaseFirestore
-import com.github.multimatum_team.multimatum.util.UserOwnedData
+import com.github.multimatum_team.multimatum.util.*
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -202,7 +200,7 @@ class FirebaseDeadlineRepositoryTest {
         @Provides
         fun provideFirebaseFirestore(): FirebaseFirestore =
             MockFirebaseFirestore(
-                listOf(
+                deadlines = listOf(
                     DeadlineData(
                         "Deadline 1",
                         DeadlineState.DONE,
@@ -225,11 +223,21 @@ class FirebaseDeadlineRepositoryTest {
                         GroupOwnedData("0")
                     )
                 ),
-                listOf(
+                groups = listOf(
                     UserGroup("0", "Group 1", "0", setOf("0", "1", "2")),
                     UserGroup("1", "Group 2", "1", setOf("0", "1")),
                     UserGroup("2", "Group 3", "0", setOf("0", "2")),
+                ),
+                users = listOf(
+                    UserInfo("0", "Pierre"),
+                    UserInfo("1", "Paul"),
+                    UserInfo("2", "Jacques"),
                 )
             ).database
+
+        @Singleton
+        @Provides
+        fun provideFirebaseAuth(): FirebaseAuth =
+            MockFirebaseAuth().auth
     }
 }

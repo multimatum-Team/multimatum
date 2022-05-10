@@ -24,7 +24,11 @@ data class DeadlineData(
     val ownerData: DeadlineOwnerData
 )
 
-class MockFirebaseFirestore(deadlines: List<DeadlineData>, groups: List<UserGroup>) {
+class MockFirebaseFirestore(
+    deadlines: List<DeadlineData>,
+    groups: List<UserGroup>,
+    users: List<UserInfo>
+) {
     private var deadlineCounter = 0
     private var groupCounter = 0
 
@@ -40,6 +44,11 @@ class MockFirebaseFirestore(deadlines: List<DeadlineData>, groups: List<UserGrou
             val id = deadlineCounter.toString()
             deadlineCounter++
             id to deadlineData
+        }.toMutableMap()
+
+    private val users: MutableMap<UserID, UserInfo> =
+        users.associate { userInfo ->
+            userInfo.id to userInfo
         }.toMutableMap()
 
     val database: FirebaseFirestore = mock(FirebaseFirestore::class.java)
@@ -367,11 +376,80 @@ class MockFirebaseFirestore(deadlines: List<DeadlineData>, groups: List<UserGrou
         return collection
     }
 
+    // Users
+
+    private fun generateSingleUserQueryDocumentSnapshot(
+        userInfo: UserInfo
+    ): QueryDocumentSnapshot {
+        val snapshot = mock(QueryDocumentSnapshot::class.java)
+        `when`(snapshot.id).thenReturn(userInfo.id)
+        `when`(snapshot.get("name")).thenReturn(userInfo.name)
+        return snapshot
+    }
+
+    private fun generateMultipleUserQuerySnapshot(
+        userInfo: List<UserInfo>
+    ): QuerySnapshot {
+        val snapshot = mock(QuerySnapshot::class.java)
+        `when`(snapshot.toList()).thenReturn(userInfo.map {
+            generateSingleUserQueryDocumentSnapshot(
+                it
+            )
+        })
+        return snapshot
+    }
+
+    private fun generateUserQuery(ids: List<UserID>): Query {
+        val query = mock(Query::class.java)
+        val querySnapshot = generateMultipleUserQuerySnapshot(users.filterKeys { id ->
+            ids.contains(id)
+        }.values.toList())
+        `when`(query.get()).thenReturn(Tasks.forResult(querySnapshot))
+        return query
+    }
+
+    private fun generateUserDocumentSnapshot(userInfo: UserInfo): DocumentSnapshot {
+        val snapshot = mock(DocumentSnapshot::class.java)
+        `when`(snapshot.id).thenReturn(userInfo.id)
+        `when`(snapshot.get("name")).thenReturn(userInfo.name)
+        return snapshot
+    }
+
+    private fun generateUserDocument(userInfo: UserInfo): DocumentReference {
+        val snapshot = generateUserDocumentSnapshot(userInfo)
+        val document = mock(DocumentReference::class.java)
+        `when`(document.id).thenReturn(userInfo.id)
+        `when`(document.get()).thenReturn(Tasks.forResult(snapshot))
+        `when`(document.set(any<UserInfo>())).then {
+            val serializedInfo = it.getArgument<HashMap<String, *>>(0)
+            users[userInfo.id] = UserInfo(userInfo.id, serializedInfo["name"] as String)
+            generateDatabase()
+            Tasks.forResult(Unit)
+        }
+        return document
+    }
+
+    private fun generateUserCollection(users: Map<UserID, UserInfo>): CollectionReference {
+        val collection = mock(CollectionReference::class.java)
+        for (userInfo in users.values) {
+            val document = generateUserDocument(userInfo)
+            `when`(collection.document(userInfo.id)).thenReturn(document)
+        }
+        `when`(collection.whereIn(eq(FieldPath.documentId()), anyList<UserID>()))
+            .then {
+                val idList = it.getArgument<List<UserID>>(1)
+                generateUserQuery(idList)
+            }
+        return collection
+    }
+
     private fun generateDatabase() {
         val groupCollection = generateGroupCollection(groups.values.toList())
         val deadlineCollection = generateDeadlineCollection(deadlines)
+        val userCollection = generateUserCollection(users)
         reset(database)
         `when`(database.collection("groups")).thenReturn(groupCollection)
         `when`(database.collection("deadlines")).thenReturn(deadlineCollection)
+        `when`(database.collection("users")).thenReturn(userCollection)
     }
 }

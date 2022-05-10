@@ -68,7 +68,7 @@ class AuthViewModelTest {
 
     @Test
     fun `LiveData is updated when the user signs in`() {
-        (authRepository as MockAuthRepository).signIn("john.doe@example.com")
+        (authRepository as MockAuthRepository).signIn("John Doe", "john.doe@example.com")
         assertEquals(viewModel.getUser().value!!, SignedInUser("0","John Doe", "john.doe@example.com"))
     }
 

@@ -91,7 +91,7 @@ class MainSettingsActivityTest {
 
     @Test
     fun launchProfileActivityIntent() = runTest {
-        (authRepository as MockAuthRepository).signIn("john.doe@example.com")
+        (authRepository as MockAuthRepository).signIn("John Doe", "john.doe@example.com")
         val scenario = ActivityScenario.launch(MainSettingsActivity::class.java)
         scenario.use {
             onView(withId(R.id.main_settings_account_button)).perform(click())
