@@ -1,8 +1,11 @@
 package com.github.multimatum_team.multimatum
 
+import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityService.SoftKeyboardController
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
 import androidx.test.espresso.Espresso
@@ -10,6 +13,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -39,11 +43,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowDatePickerDialog
 import org.robolectric.shadows.ShadowTimePickerDialog
 import org.robolectric.shadows.ShadowToast
+import org.robolectric.shadows.ShadowView.clickOn
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -93,10 +99,12 @@ class AddDeadlineTest {
     @Test
     fun `The button should add a deadline given a title, a date and a time`() {
 
-        // Select Title
+        // Select Title and press enter
         onView(withId(R.id.add_deadline_select_title))
-            .perform(ViewActions.replaceText("Test 1"))
-        Espresso.closeSoftKeyboard()
+            .perform(ViewActions.replaceText("Test 1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+
+
+
 
         // Select Date
         onView(withId(R.id.add_deadline_select_date))
