@@ -9,11 +9,14 @@ import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +28,6 @@ import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.android.material.textfield.TextInputEditText
-import com.google.rpc.context.AttributeContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -66,6 +68,7 @@ class GroupDetailsActivity : AppCompatActivity() {
 
         // Get the necessary widgets
         groupNameView = findViewById(R.id.group_details_name)
+        initTextInput()
         groupOwnerView = findViewById(R.id.group_details_owner)
         groupMembersView = findViewById(R.id.group_details_members)
 
@@ -92,12 +95,10 @@ class GroupDetailsActivity : AppCompatActivity() {
             }
         }
 
-        initTextInput()
-
         // Get the ID of the group from intent extras
         id = intent.getStringExtra(EXTRA_ID) as GroupID
 
-        groupViewModel.getGroups().observe(this){groups ->
+        groupViewModel.getGroups().observe(this) { groups ->
             group = groups[id]!!
             adapter.setGroup(group)
             updateView()
@@ -105,6 +106,12 @@ class GroupDetailsActivity : AppCompatActivity() {
     }
 
     private fun updateView() {
+        groupNameView.focusable = if (currentUserIsGroupOwner()) {
+            View.FOCUSABLE_AUTO
+        } else {
+            View.NOT_FOCUSABLE
+        }
+
         groupNameView.text = SpannableStringBuilder.valueOf(group.name)
         val ownerName = runBlocking { userRepository.fetch(group.owner).name }
         groupOwnerView.text = getString(R.string.group_owner, ownerName)
@@ -135,6 +142,12 @@ class GroupDetailsActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val newName = groupNameView.text.toString()
                 groupViewModel.renameGroup(id, newName)
+                val view = this.currentFocus
+                if (view != null) {
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+                groupNameView.clearFocus()
                 // The listener has consumed the event
                 return@OnEditorActionListener true
             }
