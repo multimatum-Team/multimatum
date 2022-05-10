@@ -123,7 +123,7 @@ class AddDeadlineActivity : AppCompatActivity() {
         var message = "title: " + res.text
         if(res.date!= null) (message + "\ndate: " + res.date.toString()).also { message = it }
         if(res.time!= null) (message + "\ntime: " + res.time.toString()).also { message = it }
-        alertBuilder.setCancelable(true).setTitle("Your title can be parse to :")
+        alertBuilder.setCancelable(true).setTitle(R.string.parsing_validation_title)
             .setMessage(message)
         alertBuilder.setNegativeButton("Cancel",
             DialogInterface.OnClickListener { dialogInterface, _ -> dialogInterface.cancel() })
