@@ -1,12 +1,18 @@
 package com.github.multimatum_team.multimatum.repository
 
+import android.net.Uri
 import android.util.Log
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserID
+import com.google.firebase.dynamiclinks.ktx.androidParameters
+import com.google.firebase.dynamiclinks.ktx.dynamicLink
+import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -114,7 +120,15 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
      * @param email the email of the user to invite
      */
     override suspend fun invite(id: GroupID, email: String) {
-        throw NotImplementedError("FirebaseGroupRepository.invite is not implemented")
+        val dynamicLink = Firebase.dynamicLinks.dynamicLink {
+            link = Uri.parse("https://multimatum.page.link/")
+            domainUriPrefix = "https://multimatum.page.link"
+            // Open links with this app on Android
+            androidParameters { }
+        }
+
+        val dynamicLinkUri = dynamicLink.uri
+        LogUtil.debugLog(dynamicLinkUri.toString())
     }
 
     /**
