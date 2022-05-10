@@ -11,6 +11,7 @@
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:hint="@string/group_details_group_name_hint"
         android:textSize="@dimen/group_details_group_name_font_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -21,30 +22,39 @@
         android:id="@+id/group_details_owner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
         android:textSize="@dimen/group_details_user_name_font_size"
         app:layout_constraintBottom_toTopOf="@+id/group_details_members"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/group_details_name"
         app:layout_constraintTop_toBottomOf="@+id/group_details_name" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/group_details_members"
-        android:layout_width="313dp"
-        android:layout_height="468dp"
+        android:layout_width="320dp"
+        android:layout_height="500dp"
         android:layout_marginTop="36dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/group_details_name"
+        app:layout_constraintStart_toStartOf="@+id/group_details_name"
         app:layout_constraintTop_toBottomOf="@+id/group_details_owner" />
 
     <Button
+        android:id="@+id/group_details_delete_button"
+        android:layout_width="144dp"
+        android:layout_height="44dp"
+        android:text="@string/group_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/group_details_members"
+        app:layout_constraintTop_toBottomOf="@+id/group_details_members"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Button
         android:id="@+id/group_details_invite_button"
-        android:layout_width="315dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="37dp"
+        android:layout_width="144dp"
+        android:layout_height="44dp"
         android:text="@string/group_invite"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/group_details_members"
         app:layout_constraintTop_toBottomOf="@+id/group_details_members"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.5" />
 </androidx.constraintlayout.widget.ConstraintLayout>

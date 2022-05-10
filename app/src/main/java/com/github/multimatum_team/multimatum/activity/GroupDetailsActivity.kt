@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.KeyEvent
@@ -12,6 +13,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,8 +22,10 @@ import com.github.multimatum_team.multimatum.adaptater.GroupMemberAdapter
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.UserRepository
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.android.material.textfield.TextInputEditText
+import com.google.rpc.context.AttributeContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -40,6 +44,7 @@ class GroupDetailsActivity : AppCompatActivity() {
     @Inject
     lateinit var userRepository: UserRepository
 
+    private val authViewModel: AuthViewModel by viewModels()
     private val groupViewModel: GroupViewModel by viewModels()
 
     private lateinit var group: UserGroup
@@ -47,6 +52,9 @@ class GroupDetailsActivity : AppCompatActivity() {
     private lateinit var groupNameView: TextInputEditText
     private lateinit var groupOwnerView: TextView
     private lateinit var groupMembersView: RecyclerView
+
+    private lateinit var groupInviteButton: Button
+    private lateinit var groupDeleteButton: Button
 
     private lateinit var adapter: GroupMemberAdapter
 
@@ -61,9 +69,28 @@ class GroupDetailsActivity : AppCompatActivity() {
         groupOwnerView = findViewById(R.id.group_details_owner)
         groupMembersView = findViewById(R.id.group_details_members)
 
+        groupInviteButton = findViewById(R.id.group_details_invite_button)
+        groupDeleteButton = findViewById(R.id.group_details_delete_button)
+
         groupMembersView.adapter = adapter
         groupMembersView.layoutManager = LinearLayoutManager(this)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            groupDeleteButton.setAllowClickWhenDisabled(true)
+        }
+
+        groupDeleteButton.setOnClickListener {
+            if (currentUserIsGroupOwner()) {
+                groupViewModel.deleteGroup(id)
+                finish()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Only owners can delete a group!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 
         initTextInput()
 
@@ -81,7 +108,12 @@ class GroupDetailsActivity : AppCompatActivity() {
         groupNameView.text = SpannableStringBuilder.valueOf(group.name)
         val ownerName = runBlocking { userRepository.fetch(group.owner).name }
         groupOwnerView.text = getString(R.string.group_owner, ownerName)
+
+        groupDeleteButton.setEnabled(currentUserIsGroupOwner())
     }
+
+    private fun currentUserIsGroupOwner(): Boolean =
+        group.owner == authViewModel.getUser().value!!.id
 
     /**
      * This function allows the user to rename the group directly, using the "ENTER" key (more intuitive).

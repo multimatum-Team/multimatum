@@ -60,4 +60,6 @@
     <string name="alarm_X_before">Alarm %s before</string>
     <string name="group_owner">Owner: %s</string>
     <string name="group_invite">Invite</string>
+    <string name="group_details_group_name_hint">Group name</string>
+    <string name="group_delete">Delete</string>
 </resources>
