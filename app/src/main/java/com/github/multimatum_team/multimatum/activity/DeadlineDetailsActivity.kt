@@ -10,19 +10,21 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.github.multimatum_team.multimatum.R
-import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.GroupOwned
+import com.github.multimatum_team.multimatum.model.UserOwned
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.LocalDateTime
@@ -45,6 +47,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     lateinit var id: DeadlineID
     private var editMode: Boolean = true
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
+    private val groupViewModel: GroupViewModel by viewModels()
 
     private lateinit var titleView: EditText
     private lateinit var dateView: TextView
@@ -277,6 +280,23 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             state = deadline.state
             val title = deadline.title
             val description = deadline.description
+            val group = deadline.owner
+
+            // Get the group of the deadline, if it exists
+            // If the group is owned by the user, he can edit it
+            val groupText = if (group is UserOwned){
+                "In no group"
+            } else {
+                val groupDeadline = groupViewModel.getGroup((group as GroupOwned).groupID)
+                // If the group of the deadline is not owned by the user,
+                // it can't modify it
+                if (!groupViewModel.getOwnedGroups().values.contains(groupDeadline)){
+                    val modifyButton = findViewById<ImageButton>(R.id.deadline_details_activity_modify)
+                    modifyButton.isClickable = false
+                    modifyButton.isVisible = false
+                }
+                "In the group: " + groupDeadline.name
+            }
 
             // Update the information of the notification
             val notifications = DeadlineNotification.listDeadlineNotification(id, this)
@@ -293,6 +313,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             descriptionView.text = SpannableStringBuilder(description)
             doneButton.isChecked = (state == DeadlineState.DONE)
             updateDetail()
+            findViewById<TextView>(R.id.deadline_details_activity_group).text = groupText
 
             // Set the View to be unmodifiable at the start and remove displacement of the texts
             normalSetup()

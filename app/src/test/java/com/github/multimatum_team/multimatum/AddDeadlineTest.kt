@@ -31,7 +31,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert
@@ -99,9 +98,9 @@ class AddDeadlineTest {
     fun `The Button Select Group should show only owned group`() {
         onView(withId(R.id.add_deadline_select_group))
             .perform(click())
+
         val dialog = ShadowAlertDialog.getLatestAlertDialog()
         assertEquals("No group", (dialog.listView.adapter.getView(0, null, null) as TextView).text)
-        assertEquals("Group 1", (dialog.listView.adapter.getView(1, null, null) as TextView).text)
 
     }
 
@@ -209,7 +208,12 @@ class AddDeadlineTest {
         @Singleton
         @Provides
         fun provideGroupRepository(): GroupRepository =
-            MockGroupRepository(listOf(UserGroup("0", "Group 1", "0"), UserGroup("1", "Group 2", "0")))
+            MockGroupRepository(
+                listOf(
+                    UserGroup("0", "Group 1", "0"),
+                    UserGroup("1", "Group 2", "0")
+                )
+            )
 
         @Singleton
         @Provides

@@ -73,7 +73,7 @@ class GroupViewModel @Inject constructor(
      * Get all owned groups.
      */
     fun getOwnedGroups(): Map<GroupID, UserGroup> =
-        _groups.value!!.filter { (_, group) -> (group.owner == authRepository.getUser().id)}
+        _groups.value!!.filterValues { group -> (group.owner == authRepository.getUser().id) }
 
     /**
      * Get a single group from its ID.

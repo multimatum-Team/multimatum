@@ -66,7 +66,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     // Memorisation of which group is selected for the deadline
     private var groupSelected = 0
     private var nameGroups = arrayOf("No group")
-    private var idGroups = arrayOf("0")
+    private var idGroups = arrayOf<GroupID>()
 
     private val checkBoxIdTime = mapOf(
         "1 hour" to Duration.ofHours(1).toMillis(),
@@ -99,9 +99,11 @@ class AddDeadlineActivity : AppCompatActivity() {
         // Update the groups owned by the user
         groupViewModel.getGroups().observe(this) {
             nameGroups = arrayOf("No group")
+            idGroups = arrayOf()
             groupViewModel.getOwnedGroups().map { (id, group) ->
                 nameGroups.plus(group.name)
-                idGroups.plus(id)}
+                idGroups.plus(id)
+            }
         }
     }
 
@@ -293,7 +295,7 @@ class AddDeadlineActivity : AppCompatActivity() {
                     DeadlineState.TODO,
                     selectedDate,
                     textDescription.text.toString(),
-                    GroupOwned(idGroups[groupSelected])
+                    GroupOwned(idGroups[groupSelected - 1])
                 )
             }
 
