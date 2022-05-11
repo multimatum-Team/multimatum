@@ -17,7 +17,7 @@ import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
-import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class MainSettingsActivity : AppCompatActivity() {
     private lateinit var procrastinationDetectorSlider: Slider
     private lateinit var procrastinationDetectorSliderBar: LinearLayout
 
-    private val userViewModel: UserViewModel by viewModels()
+    private val userViewModel: AuthViewModel by viewModels()
 
     @Inject
     lateinit var preferences: SharedPreferences

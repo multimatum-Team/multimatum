@@ -26,9 +26,11 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockGroupRepository
+import com.github.multimatum_team.multimatum.util.MockUserRepository
 import com.google.android.material.slider.Slider
 import dagger.Module
 import dagger.Provides
@@ -98,7 +100,7 @@ class MainSettingsActivityTest {
 
     @Test
     fun launchProfileActivityIntent() = runTest {
-        (authRepository as MockAuthRepository).signIn("john.doe@example.com")
+        (authRepository as MockAuthRepository).signIn("John Doe", "john.doe@example.com")
         val scenario = ActivityScenario.launch(MainSettingsActivity::class.java)
         scenario.use {
             onView(withId(R.id.main_settings_account_button)).perform(click())
@@ -266,6 +268,11 @@ class MainSettingsActivityTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 
     companion object {
