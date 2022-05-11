@@ -3,17 +3,12 @@ package com.github.multimatum_team.multimatum.activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -25,6 +20,8 @@ import com.github.multimatum_team.multimatum.adaptater.GroupMemberAdapter
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.UserRepository
+import com.github.multimatum_team.multimatum.util.hideKeyboardWhenClickingInTheVoid
+import com.github.multimatum_team.multimatum.util.setOnIMEActionDone
 import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -68,7 +65,6 @@ class GroupDetailsActivity : AppCompatActivity() {
 
         // Get the necessary widgets
         groupNameView = findViewById(R.id.group_details_name)
-        initTextInput()
         groupOwnerView = findViewById(R.id.group_details_owner)
         groupMembersView = findViewById(R.id.group_details_members)
 
@@ -78,22 +74,9 @@ class GroupDetailsActivity : AppCompatActivity() {
         groupMembersView.adapter = adapter
         groupMembersView.layoutManager = LinearLayoutManager(this)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            groupDeleteButton.setAllowClickWhenDisabled(true)
-        }
-
-        groupDeleteButton.setOnClickListener {
-            if (currentUserIsGroupOwner()) {
-                groupViewModel.deleteGroup(id)
-                finish()
-            } else {
-                Toast.makeText(
-                    this,
-                    "Only owners can delete a group!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+        // Initialize UI widgets
+        initTextInput()
+        initDeleteButton()
 
         // Get the ID of the group from intent extras
         id = intent.getStringExtra(EXTRA_ID) as GroupID
@@ -126,53 +109,33 @@ class GroupDetailsActivity : AppCompatActivity() {
      * This function allows the user to rename the group directly, using the "ENTER" key (more intuitive).
      */
     private fun initTextInput() {
-        // Adding a listener to handle the "ENTER" key pressed.
-        groupNameView.setOnKeyListener { v, keycode, event ->
-            if ((keycode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
-                val newName = groupNameView.text.toString()
-                groupViewModel.renameGroup(id, newName)
-                // The listener has consumed the event
-                return@setOnKeyListener true
-            }
-            false
-        }
-
         // Adding a listener to handle the "DONE" key pressed.
-        groupNameView.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val newName = groupNameView.text.toString()
-                groupViewModel.renameGroup(id, newName)
-                val view = this.currentFocus
-                if (view != null) {
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(view.windowToken, 0)
-                }
-                groupNameView.clearFocus()
-                // The listener has consumed the event
-                return@OnEditorActionListener true
-            }
-            false
-        })
+        groupNameView.setOnIMEActionDone(this) { newName ->
+            groupViewModel.renameGroup(id, newName)
+        }
     }
 
-    /*
-    This function allows the user to exit the text input intuitively, just by clicking outside
-     */
-    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_DOWN) {
-            // We are in the case were the user has touched outside
-            val v = currentFocus
-            if (v is EditText) {
-                val outRect = Rect()
-                v.getGlobalVisibleRect(outRect)
-                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
-                    // If the user has touched a place outside the keyboard, remove the focus and keyboard
-                    v.clearFocus()
-                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
-                }
+    private fun initDeleteButton() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            groupDeleteButton.setAllowClickWhenDisabled(true)
+        }
+
+        groupDeleteButton.setOnClickListener {
+            if (currentUserIsGroupOwner()) {
+                groupViewModel.deleteGroup(id)
+                finish()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Only owners can delete a group!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        hideKeyboardWhenClickingInTheVoid(event)
         return super.dispatchTouchEvent(event)
     }
 
