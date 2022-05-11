@@ -1,18 +1,29 @@
 package com.github.multimatum_team.multimatum.service
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.widget.Toast
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
+import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY
+import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService.Companion.DEFAULT_SENSITIVITY
+import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService.Companion.MAX_SENSITIVITY
 import kotlin.math.abs
 
-class ProcrastinationDetectorSensorListener(private val applicationContext: Context) :
+class ProcrastinationDetectorSensorListener(
+    private val applicationContext: Context,
+    private val sharedPreferences: SharedPreferences
+) :
     SensorEventListener {
 
+    // the first nonReportedDetectionsCntInit detected moves will be ignored
+    private var nonReportedDetectionsCntInit = 0
+
     // the service will wait for this number of detections before starting to display toasts
-    private var nonReportedDetectionsCnt = NON_REPORTED_DETECTIONS_CNT_INIT
+    private var nonReportedDetectionsCnt = nonReportedDetectionsCntInit
 
     // data relative to the last time a movement was detected
     private var lastDetectionTimestampNanos: Long = LAST_DETECTION_TIMESTAMP_NONINIT_CODE
@@ -39,6 +50,18 @@ class ProcrastinationDetectorSensorListener(private val applicationContext: Cont
             lastPosition = currentPosition
             lastDetectionTimestampNanos = currentTimeNanos
         }
+    }
+
+    /**
+     * Load the sensitivity from the SharedPreferences and recompute the number of ignored detections
+     */
+    fun reloadSensitivity() {
+        val sensitivity = sharedPreferences.getInt(
+            PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY,
+            DEFAULT_SENSITIVITY
+        )
+        LogUtil.logFunctionCall("load sensitivity: $sensitivity")
+        nonReportedDetectionsCntInit = MAX_SENSITIVITY - sensitivity
     }
 
     private fun initLastDetectionIfNotYetInitialized(currentTimeNanos: Long) {
@@ -71,7 +94,7 @@ class ProcrastinationDetectorSensorListener(private val applicationContext: Cont
     }
 
     private fun reactToAbsenceOfMove() {
-        nonReportedDetectionsCnt = NON_REPORTED_DETECTIONS_CNT_INIT
+        nonReportedDetectionsCnt = nonReportedDetectionsCntInit
     }
 
     private fun l1Distance(p1: Array<Float>, p2: Array<Float>): Float {
@@ -95,9 +118,6 @@ class ProcrastinationDetectorSensorListener(private val applicationContext: Cont
 
         // value that lastDetectionTimestampNanos takes when it is not initialized
         private const val LAST_DETECTION_TIMESTAMP_NONINIT_CODE = -1L
-
-        // the first NON_REPORTED_DETECTIONS_CNT_INIT detected moves will be ignored
-        private const val NON_REPORTED_DETECTIONS_CNT_INIT = 2
 
     }
 

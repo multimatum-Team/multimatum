@@ -14,6 +14,7 @@
     <string name="main_settings_enable_notif_button">Enable notifications</string>
     <string name="main_settings_procrastination_fighter_section_title">Procrastination fighter</string>
     <string name="main_settings_enable_procrastination_fighter_button">Notify me when I am procrastinating</string>
+    <string name="main_settings_procrastination_fighter_sensitivity">Sensitivity</string>
     <string name="main_open_settings_but_content_descr">Settings button</string>
     <string name="isAlreadyDue">Is already Due</string>
     <string name="done">Done</string>
@@ -58,4 +59,5 @@
     <string name="write_description_here">Write description here</string>
     <string name="no_alarm_planned">No Alarm Planned</string>
     <string name="alarm_X_before">Alarm %s before</string>
+    <string name="parsing_validation_title">Your title can be parse to :</string>
 </resources>

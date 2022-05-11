@@ -197,6 +197,13 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             timeFor(0, 0)
         }
 
+    private val tomorrow =
+        listOf(
+            tokenMatchingOneOf("tomorrow")
+        ) to { _: List<Any?> ->
+            ExtractedDate(currentDateProvider().plusDays(1))
+        }
+
     val patterns: List<PatternMatchCase> =
         listOf(
             `15h`,
@@ -209,7 +216,8 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             monday,
             monday_15,
             midday,
-            midnight
+            midnight,
+            tomorrow
         ).map { (pattern, extractionFunc) ->
             PatternMatchCase(pattern, extractionFunc)
         }
