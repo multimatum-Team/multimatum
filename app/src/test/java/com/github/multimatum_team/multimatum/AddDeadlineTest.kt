@@ -4,7 +4,6 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.provider.Settings.System.getString
 import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
@@ -14,6 +13,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -136,15 +136,20 @@ class AddDeadlineTest {
         )
     }
 
-    fun `parsing validation pop-up`(){
+    fun `parsing validation pop-up`() {
         onView(withId(R.id.add_deadline_select_title))
-            .perform(ViewActions.replaceText("foo 5pm")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+            .perform(replaceText("foo 5pm")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
         val dialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog())
-        //check if dialog is shown
-        assertEquals(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title), dialog.title)
-        //dismiss dialog
-        onView(withText(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title))).inRoot(isDialog()).check(matches(isDisplayed())).perform(pressBack())
-        //checkdialog is closed
+        // check if dialog is shown
+        assertEquals(
+            RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title),
+            dialog.title
+        )
+        // dismiss dialog
+        onView(withText(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title))).inRoot(
+            isDialog()
+        ).check(matches(isDisplayed())).perform(pressBack())
+        // check dialog is closed
         assert(!ShadowAlertDialog.getLatestAlertDialog().isShowing)
     }
 
@@ -153,7 +158,7 @@ class AddDeadlineTest {
 
         // Select Title and press enter
         onView(withId(R.id.add_deadline_select_title))
-            .perform(ViewActions.replaceText("Test 1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+            .perform(replaceText("Test 1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
 
         // Select Date
         onView(withId(R.id.add_deadline_select_date))

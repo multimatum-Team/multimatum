@@ -6,7 +6,6 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.content.ContentValues
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -35,8 +34,6 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import dagger.hilt.android.AndroidEntryPoint
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -120,12 +117,12 @@ class AddDeadlineActivity : AppCompatActivity() {
      */
     private fun updateDisplayedInfoAfterTitleChange() {
         val dateTimeExtractionResult = dateTimeExtractor.parse(textTitle.text.toString())
-        if(dateTimeExtractionResult.date != null || dateTimeExtractionResult.time!=null){
+        if (dateTimeExtractionResult.date != null || dateTimeExtractionResult.time != null) {
             launchParsingValidationAlert(dateTimeExtractionResult)
         }
     }
 
-    private fun applyParsing(dateTimeExtractionResult: DateTimeExtractionResult){
+    private fun applyParsing(dateTimeExtractionResult: DateTimeExtractionResult) {
         dateTimeExtractionResult.date?.also { foundDate ->
             selectedDate = selectedDate
                 .withYear(foundDate.year)
@@ -140,17 +137,20 @@ class AddDeadlineActivity : AppCompatActivity() {
         updateDisplayedDateAndTime()
         textTitle.text = dateTimeExtractionResult.text
     }
-    private fun launchParsingValidationAlert(res: DateTimeExtractionResult){
+
+    private fun launchParsingValidationAlert(res: DateTimeExtractionResult) {
         val alertBuilder = AlertDialog.Builder(this)
         var message = "title: " + res.text
-        if(res.date!= null) (message + "\ndate: " + res.date.toString()).also { message = it }
-        if(res.time!= null) (message + "\ntime: " + res.time.toString()).also { message = it }
+        if (res.date != null) (message + "\ndate: " + res.date.toString()).also { message = it }
+        if (res.time != null) (message + "\ntime: " + res.time.toString()).also { message = it }
         alertBuilder.setCancelable(true).setTitle(R.string.parsing_validation_title)
             .setMessage(message)
-        alertBuilder.setNegativeButton("Cancel",
-            DialogInterface.OnClickListener { dialogInterface, _ -> dialogInterface.cancel() })
-        alertBuilder.setPositiveButton("OK",
-            DialogInterface.OnClickListener { _, _ -> applyParsing(res) })
+        alertBuilder.setNegativeButton(
+            "Cancel"
+        ) { dialogInterface, _ -> dialogInterface.cancel() }
+        alertBuilder.setPositiveButton(
+            "OK"
+        ) { _, _ -> applyParsing(res) }
         alertBuilder.show()
     }
 
