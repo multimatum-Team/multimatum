@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum.service
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -28,6 +29,9 @@ import javax.inject.Inject
 class ProcrastinationDetectorService : Service(), SensorEventListener {
     @Inject
     lateinit var sensorManager: SensorManager
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     private var isServiceStarted = false
     private var wakeLock: PowerManager.WakeLock? = null
@@ -69,9 +73,10 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         return START_STICKY  // service must restart as soon as possible if preempted
     }
 
-    private fun initListenerIfNeeded(){
-        if (!this::sensorListener.isInitialized){
-            sensorListener = ProcrastinationDetectorSensorListener(applicationContext)
+    private fun initListenerIfNeeded() {
+        if (!this::sensorListener.isInitialized) {
+            sensorListener =
+                ProcrastinationDetectorSensorListener(applicationContext, sharedPreferences)
         }
     }
 
@@ -94,6 +99,7 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
         isServiceStarted = true
         acquireWakeLock()
         registerServiceAsSensorListener()
+        sensorListener.reloadSensitivity()
     }
 
     private fun registerServiceAsSensorListener() {
@@ -175,6 +181,9 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
          * The sensor used by this service to detect movements
          */
         const val REF_SENSOR = Sensor.TYPE_GRAVITY
+
+        const val MAX_SENSITIVITY = 10
+        const val DEFAULT_SENSITIVITY = 5
 
         private const val NOTIFICATION_CHANNEL_ID =
             "com.github.multimatum_team-mutlimatum.ProcrastinationDetectorServiceChannel"

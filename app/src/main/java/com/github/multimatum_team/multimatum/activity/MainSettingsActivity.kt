@@ -6,16 +6,19 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.ProfileActivity
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
 import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
+import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -24,6 +27,8 @@ class MainSettingsActivity : AppCompatActivity() {
     private lateinit var darkModeEnabledButton: SwitchCompat
     private lateinit var notifEnabledButton: SwitchCompat
     private lateinit var procrastinationDetectEnabledButton: SwitchCompat
+    private lateinit var procrastinationDetectorSlider: Slider
+    private lateinit var procrastinationDetectorSliderBar: LinearLayout
 
     private val userViewModel: UserViewModel by viewModels()
 
@@ -39,8 +44,23 @@ class MainSettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main_settings)
         assignWidgets()
         loadButtonsState()
+        initializeProcrastinationDetectorSensitivitySlider()
         setWidgetListeners()
         disableProcrastinationFighterButtonIfSensorNotFound()
+    }
+
+    private fun initializeProcrastinationDetectorSensitivitySlider() {
+        // slider can be moved iff procrastination fighter is enabled
+        procrastinationDetectorSlider.isEnabled = procrastinationDetectEnabledButton.isChecked
+        procrastinationDetectorSlider.valueFrom = 0f
+        procrastinationDetectorSlider.valueTo =
+            ProcrastinationDetectorService.MAX_SENSITIVITY.toFloat()
+        procrastinationDetectorSlider.stepSize = 1f
+        // progress stands for position on the bar
+        procrastinationDetectorSlider.value = preferences.getInt(
+            PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY,
+            ProcrastinationDetectorService.DEFAULT_SENSITIVITY
+        ).toFloat()
     }
 
     /*
@@ -53,7 +73,7 @@ class MainSettingsActivity : AppCompatActivity() {
         val sensorPresent = sensorFound()
         // if no sensor available then button should be gray to show that it is disabled
         procrastinationDetectEnabledButton.alpha =
-            if (sensorPresent) BUTTON_ALPHA_NORMAL else BUTTON_ALPHA_DISABLED
+            if (sensorPresent) ALPHA_NORMAL else ALPHA_DISABLED
         if (!sensorPresent) {
             procrastinationDetectEnabledButton.text = applicationContext.getString(
                 R.string.missing_sensor_msg, procrastinationDetectEnabledButton.text
@@ -69,14 +89,19 @@ class MainSettingsActivity : AppCompatActivity() {
                 true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 false -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
-            writeNewState(DARK_MODE_PREF_KEY, newState)
+            writeNewBooleanState(DARK_MODE_PREF_KEY, newState)
         }
         notifEnabledButton.setOnCheckedChangeListener { _, newState ->
-            writeNewState(NOTIF_ENABLED_PREF_KEY, newState)
+            writeNewBooleanState(NOTIF_ENABLED_PREF_KEY, newState)
         }
         procrastinationDetectEnabledButton.setOnCheckedChangeListener { _, newState ->
-            writeNewState(PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY, newState)
+            writeNewBooleanState(PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY, newState)
+            // slider can be moved iff procrastination detector is enabled
+            procrastinationDetectorSlider.isEnabled = newState
         }
+        procrastinationDetectorSlider.addOnChangeListener(Slider.OnChangeListener { _, value, _ ->
+            writeNewSensitivityValue(value.toInt())
+        })
     }
 
     // sets the buttons to the state they had last time the app was stopped
@@ -94,12 +119,24 @@ class MainSettingsActivity : AppCompatActivity() {
         notifEnabledButton = findViewById(R.id.main_settings_enable_notif_button)
         procrastinationDetectEnabledButton =
             findViewById(R.id.main_settings_enable_procrastination_fighter_button)
+        procrastinationDetectorSlider =
+            findViewById(R.id.main_settings_procrastination_detector_sensibility_slider)
+        procrastinationDetectorSliderBar =
+            findViewById(R.id.main_settings_procrastination_detector_sensibility_bar)
     }
 
     // writes the key/state pair to SharedPreferences
-    private fun writeNewState(key: String, currState: Boolean) {
+    private fun writeNewBooleanState(key: String, currState: Boolean) {
         val edit = preferences.edit()
         edit.putBoolean(key, currState)
+        edit.apply()
+    }
+
+    // write sensitivity to SharedPreferences
+    private fun writeNewSensitivityValue(sensitivityValue: Int) {
+        LogUtil.logFunctionCall("new sensitivity value: $sensitivityValue")
+        val edit = preferences.edit()
+        edit.putInt(PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY, sensitivityValue)
         edit.apply()
     }
 
@@ -109,8 +146,8 @@ class MainSettingsActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainSettingsActivity"
-        private const val BUTTON_ALPHA_NORMAL = 1F
-        private const val BUTTON_ALPHA_DISABLED = 0.5F
+        private const val ALPHA_NORMAL = 1F
+        private const val ALPHA_DISABLED = 0.5F
 
         /**
          * Key for the storage of whether dark mode is enabled in SharedPreferences
@@ -130,6 +167,11 @@ class MainSettingsActivity : AppCompatActivity() {
         const val PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY =
             "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.ProcrastinationFighterEnabled"
 
+        /**
+         * Key for the storage of the sensitivity of the procrastination detector
+         */
+        const val PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY =
+            "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.ProcrastinationFighterSensitivity"
     }
 
     fun goToAccountSettings(view: View) {
