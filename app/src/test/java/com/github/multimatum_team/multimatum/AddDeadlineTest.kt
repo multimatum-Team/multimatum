@@ -13,8 +13,11 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.pressBack
 import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -100,8 +103,12 @@ class AddDeadlineTest {
         onView(withId(R.id.add_deadline_select_title))
             .perform(ViewActions.replaceText("foo 5pm")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
         val dialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog())
+        //check if dialog is shown
         assertEquals(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title), dialog.title)
-
+        //dismiss dialog
+        onView(withText(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title))).inRoot(isDialog()).check(matches(isDisplayed())).perform(pressBack())
+        //checkdialog is closed
+        assert(!ShadowAlertDialog.getLatestAlertDialog().isShowing)
     }
 
     @Test
