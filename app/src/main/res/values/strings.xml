@@ -62,4 +62,8 @@
     <string name="group_invite">Invite</string>
     <string name="group_details_group_name_hint">Group name</string>
     <string name="group_delete">Delete</string>
+    <string name="group_member_confirm_removal">REMOVE</string>
+    <string name="group_member_cancel_removal">CANCEL</string>
+    <string name="group_member_removal_confirmation_dialog">\"Are you sure you want to remove %s from the group?\nThis action is irreversible\"</string>
+    <string name="group_member_attemt_removal_of_owner_error_dialog">You are the owner of this group, you cannot remove yourself!</string>
 </resources>

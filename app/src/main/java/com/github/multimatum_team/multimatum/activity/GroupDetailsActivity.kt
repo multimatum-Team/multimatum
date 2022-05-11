@@ -29,13 +29,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
+
 /**
  * Classes used when you select a group in `GroupsActivity`, displaying its details, namely
  * group name, owner and members.
  */
 @AndroidEntryPoint
 class GroupDetailsActivity : AppCompatActivity() {
-    lateinit var id: GroupID
+    lateinit var groupID: GroupID
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -55,13 +56,12 @@ class GroupDetailsActivity : AppCompatActivity() {
     private lateinit var groupInviteButton: Button
     private lateinit var groupDeleteButton: Button
 
-    private lateinit var adapter: GroupMemberAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_details)
 
-        adapter = GroupMemberAdapter(this, userRepository)
+        // Get the ID of the group from intent extras
+        groupID = intent.getStringExtra(EXTRA_ID) as GroupID
 
         // Get the necessary widgets
         groupNameView = findViewById(R.id.group_details_name)
@@ -71,21 +71,10 @@ class GroupDetailsActivity : AppCompatActivity() {
         groupInviteButton = findViewById(R.id.group_details_invite_button)
         groupDeleteButton = findViewById(R.id.group_details_delete_button)
 
-        groupMembersView.adapter = adapter
-        groupMembersView.layoutManager = LinearLayoutManager(this)
-
         // Initialize UI widgets
         initTextInput()
+        initGroupMemberView()
         initDeleteButton()
-
-        // Get the ID of the group from intent extras
-        id = intent.getStringExtra(EXTRA_ID) as GroupID
-
-        groupViewModel.getGroups().observe(this) { groups ->
-            group = groups[id]!!
-            adapter.setGroup(group)
-            updateView()
-        }
     }
 
     private fun updateView() {
@@ -105,13 +94,24 @@ class GroupDetailsActivity : AppCompatActivity() {
     private fun currentUserIsGroupOwner(): Boolean =
         group.owner == authViewModel.getUser().value!!.id
 
-    /**
-     * This function allows the user to rename the group directly, using the "ENTER" key (more intuitive).
-     */
     private fun initTextInput() {
         // Adding a listener to handle the "DONE" key pressed.
         groupNameView.setOnIMEActionDone(this) { newName ->
-            groupViewModel.renameGroup(id, newName)
+            groupViewModel.renameGroup(groupID, newName)
+        }
+    }
+
+    private fun initGroupMemberView() {
+        val adapter =
+            GroupMemberAdapter(this, userRepository, authViewModel, groupViewModel)
+
+        groupMembersView.adapter = adapter
+        groupMembersView.layoutManager = LinearLayoutManager(this)
+
+        groupViewModel.getGroups().observe(this) { groups ->
+            group = groups[groupID]!!
+            adapter.setGroup(group)
+            updateView()
         }
     }
 
@@ -122,7 +122,7 @@ class GroupDetailsActivity : AppCompatActivity() {
 
         groupDeleteButton.setOnClickListener {
             if (currentUserIsGroupOwner()) {
-                groupViewModel.deleteGroup(id)
+                groupViewModel.deleteGroup(groupID)
                 finish()
             } else {
                 Toast.makeText(
