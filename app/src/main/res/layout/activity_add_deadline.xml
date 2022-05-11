@@ -13,10 +13,8 @@
         android:layout_height="550dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.498">
+        app:layout_constraintTop_toTopOf="parent">
 
         <EditText
             android:id="@+id/add_deadline_select_title"
@@ -39,14 +37,13 @@
             style="@style/Widget.MaterialComponents.Button.Icon"
             android:layout_width="100dp"
             android:layout_height="49dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="4dp"
             android:background="@drawable/circle_button"
             android:onClick="addDeadline"
             android:text="@string/calender_add_new_deadline_button_text"
             app:icon="@drawable/ic_add_deadline"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -59,8 +56,7 @@
             app:layout_constraintBottom_toTopOf="@+id/constraintPDFSelection"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_description"
-            app:layout_constraintVertical_bias="0.022">
+            app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_description">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
@@ -115,7 +111,6 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0"
                     tools:hint="Selected Date" />
 
                 <Button
@@ -139,8 +134,7 @@
             app:layout_constraintBottom_toTopOf="@+id/add_deadline_select_notification"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
-            app:layout_constraintVertical_bias="0.487">
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
             <TextView
                 android:id="@+id/selectedPdf"
@@ -163,7 +157,6 @@
                 android:layout_marginTop="4dp"
                 android:text="@string/link_pdf_to_deadline_title"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.188"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -177,7 +170,6 @@
             android:onClick="selectNotifications"
             android:text="@string/select_notifications"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintPDFSelection" />
 
@@ -188,9 +180,8 @@
             android:layout_marginTop="16dp"
             android:background="@drawable/circle_button"
             android:onClick="selectGroups"
-            android:text="select group"
+            android:text="@string/select_group"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_notification" />
 
@@ -207,10 +198,8 @@
             android:minHeight="48dp"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.505"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_title"
-            app:layout_constraintVertical_bias="0.0"
             tools:ignore="TextContrastCheck" />
 
 

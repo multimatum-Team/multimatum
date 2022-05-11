@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.view.View
 import android.widget.TextView
+import androidx.core.view.size
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
@@ -100,7 +101,35 @@ class AddDeadlineTest {
             .perform(click())
 
         val dialog = ShadowAlertDialog.getLatestAlertDialog()
-        assertEquals("No group", (dialog.listView.adapter.getView(0, null, null) as TextView).text)
+        assertEquals(
+            "No group",
+            (dialog.listView.adapter.getView(0, null, null) as TextView).text
+        )
+        assertEquals(
+            "Group 2",
+            (dialog.listView.adapter.getView(1, null, null) as TextView).text
+        )
+        assertEquals(2, dialog.listView.size)
+
+        dialog.listView.performItemClick(
+            dialog.listView.adapter
+                .getView(1, null, null), 0, 0
+        )
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+
+        // Select Title
+        onView(withId(R.id.add_deadline_select_title))
+            .perform(replaceText("Test Group 2"))
+        Espresso.closeSoftKeyboard()
+
+        // Check if Toast correctly appear
+        onView(withId(R.id.add_deadline_button)).perform(click())
+        MatcherAssert.assertThat(
+            ShadowToast.getTextOfLatestToast(),
+            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created))
+        )
+
 
     }
 
@@ -210,7 +239,7 @@ class AddDeadlineTest {
         fun provideGroupRepository(): GroupRepository =
             MockGroupRepository(
                 listOf(
-                    UserGroup("0", "Group 1", "0"),
+                    UserGroup("0", "Group 1", "1"),
                     UserGroup("1", "Group 2", "0")
                 )
             )

@@ -79,12 +79,14 @@ class AddDeadlineActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_deadline)
+
+        // Recuperate all the necessary Views
         textTitle = findViewById(R.id.add_deadline_select_title)
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
         pdfTextView = findViewById(R.id.selectedPdf)
-
         textDescription = findViewById(R.id.add_deadline_select_description)
+
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         updateDisplayedDateAndTime()
         KeyboardVisibilityEvent.setEventListener(this, object : KeyboardVisibilityEventListener {
@@ -96,13 +98,14 @@ class AddDeadlineActivity : AppCompatActivity() {
         })
         initializePlacesAutocomplete()
 
-        // Update the groups owned by the user
+        // Update the groups owned by the user to be able to select them
+        // in the Dialog
         groupViewModel.getGroups().observe(this) {
             nameGroups = arrayOf("No group")
             idGroups = arrayOf()
             groupViewModel.getOwnedGroups().map { (id, group) ->
-                nameGroups.plus(group.name)
-                idGroups.plus(id)
+                nameGroups = nameGroups.plus(group.name)
+                idGroups = idGroups.plus(id)
             }
         }
     }
@@ -246,13 +249,16 @@ class AddDeadlineActivity : AppCompatActivity() {
         alertDialogBuilder.show()
     }
 
+    /**
+     * Setup an AlertDialog that will select the group of the deadline
+     */
     fun selectGroups(view: View) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
-        // Set the title
+        // Set the title of the Dialog
         alertDialogBuilder.setTitle("Select Group:")
 
-        // Set the checkbox, their name in the dialog and what happen when checked
+        // Set the options, their names in the dialog and what happen when selected
         alertDialogBuilder.setSingleChoiceItems(
             nameGroups,
             groupSelected
@@ -280,9 +286,9 @@ class AddDeadlineActivity : AppCompatActivity() {
         } else {
             val deadline: Deadline
 
-            // Getting the groups
+            // Putting the deadline in the corresponding group or
+            // in none if no group selected
             if (groupSelected == 0) {
-                // Add the deadline
                 deadline = Deadline(
                     titleDeadline,
                     DeadlineState.TODO,
@@ -306,6 +312,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             // Reset the text input for future use
             textTitle.text = ""
 
+            // Add the deadline
             deadlineListViewModel.addDeadline(deadline) {
                 DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
                 finish()

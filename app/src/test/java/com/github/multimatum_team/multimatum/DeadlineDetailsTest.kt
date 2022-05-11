@@ -16,8 +16,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.DeadlineDetailsActivity
 import com.github.multimatum_team.multimatum.activity.QRGeneratorActivity
-import com.github.multimatum_team.multimatum.model.Deadline
-import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.*
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
@@ -34,6 +33,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -167,6 +167,7 @@ class DeadlineDetailsTest {
                 )
             onView(withId(R.id.deadline_details_activity_done_or_due)).check(matches(withText("Due in 6 Hours")))
             onView(withId(R.id.deadline_details_activity_description)).check(matches(withText("Do not panic, this is a test")))
+            onView(withId(R.id.deadline_details_activity_group)).check(matches(withText("Not in any group")))
         }
     }
 
@@ -267,6 +268,30 @@ class DeadlineDetailsTest {
         }
     }
 
+    @Test
+    fun `a deadline in a group where the user is the owner should be modifiable`() {
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "4")
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.deadline_details_activity_group)).check(matches(withText("In the group: Group 1")))
+            onView(withId(R.id.deadline_details_activity_modify)).check(matches(isDisplayed()))
+        }
+
+    }
+
+    @Test
+    fun `a deadline in a group where the user is not the owner should not be modifiable`() {
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "5")
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.deadline_details_activity_group)).check(matches(withText("In the group: Group 2")))
+            onView(withId(R.id.deadline_details_activity_modify)).check(matches(not(isDisplayed())))
+        }
+    }
+
+
     @Module
     @InstallIn(SingletonComponent::class)
     object TestClockModule {
@@ -291,6 +316,21 @@ class DeadlineDetailsTest {
                         DeadlineState.TODO,
                         LocalDateTime.of(2022, 3, 12, 6, 0),
                         "Do not panic, this is a test"
+                    ),
+                    Deadline(
+                        "Test 5",
+                        DeadlineState.TODO,
+                        LocalDateTime.of(2022, 3, 12, 6, 0),
+                        "Deadline for testing owned group",
+                        GroupOwned("0")
+                    ),
+
+                    Deadline(
+                        "Test 6",
+                        DeadlineState.TODO,
+                        LocalDateTime.of(2022, 3, 12, 6, 0),
+                        "Deadline for testing not owned group",
+                        GroupOwned("1")
                     )
                 )
             )
@@ -298,7 +338,12 @@ class DeadlineDetailsTest {
         @Singleton
         @Provides
         fun provideGroupRepository(): GroupRepository =
-            MockGroupRepository(listOf())
+            MockGroupRepository(
+                listOf(
+                    UserGroup("0", "Group 1", "0"),
+                    UserGroup("1", "Group 2", "1", setOf("0", "1"))
+                )
+            )
 
         @Singleton
         @Provides
