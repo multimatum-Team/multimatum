@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.CalendarView
 import android.widget.EditText
 import androidx.activity.viewModels
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.util.hideKeyboard
 import com.github.multimatum_team.multimatum.util.hideKeyboardWhenClickingInTheVoid
 import com.github.multimatum_team.multimatum.util.setOnIMEActionDone
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
@@ -26,10 +28,21 @@ class CalendarActivity : AppCompatActivity() {
     private var selectedDate: LocalDateTime =
         Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime()
 
+    private lateinit var calendarView: CalendarView
+    private lateinit var deadlineTitleInputView: TextInputEditText
+    private lateinit var addDeadlineButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_calendar)
+
+        calendarView = findViewById(R.id.calendar_view)
+        deadlineTitleInputView = findViewById(R.id.textInputEditCalendar)
+        addDeadlineButton = findViewById(R.id.calendar_add_deadline_button)
+
         initCalendar()
         initTextInput()
+        initAddButton()
     }
 
     /**
@@ -37,13 +50,8 @@ class CalendarActivity : AppCompatActivity() {
      * an eventual date selection by the user.
      */
     private fun initCalendar() {
-        setContentView(R.layout.activity_calendar)
-
-        // Get the calendar view
-        val calendar = findViewById<CalendarView>(R.id.calendar_view)
-
         // Update the selected date in case of a selection in the calendar
-        calendar.setOnDateChangeListener { _, year, month, day ->
+        calendarView.setOnDateChangeListener { _, year, month, day ->
             selectedDate = LocalDateTime.of(year, month + 1, day, 0, 0)
         }
     }
@@ -52,13 +60,17 @@ class CalendarActivity : AppCompatActivity() {
      * This function allows the user to add a new deadline directly, using the "ENTER" key (more intuitive).
      */
     private fun initTextInput() {
-        val edit = findViewById<TextInputEditText>(R.id.textInputEditCalendar)
-
-        edit.setOnIMEActionDone(this) { deadlineTitle ->
+        deadlineTitleInputView.setOnIMEActionDone(this) { deadlineTitle ->
             val deadline = Deadline(deadlineTitle, DeadlineState.TODO, selectedDate)
             viewModel.addDeadline(deadline) {}
             // Reset the text input for future use
-            edit.setText("")
+            deadlineTitleInputView.setText("")
+        }
+    }
+
+    private fun initAddButton() {
+        addDeadlineButton.setOnClickListener {
+            deadlineTitleInputView.hideKeyboard(this)
         }
     }
 

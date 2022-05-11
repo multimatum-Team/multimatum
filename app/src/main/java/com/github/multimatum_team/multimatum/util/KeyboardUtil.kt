@@ -16,7 +16,7 @@ import com.google.android.material.textfield.TextInputEditText
  * @param activity the activity containing the text input
  * @param callback the callback to run when the button is pressed, providing the text input value
  */
-fun TextInputEditText.setOnIMEActionDone(activity: Activity, callback: (String) -> Unit) {
+fun EditText.setOnIMEActionDone(activity: Activity, callback: (String) -> Unit) {
     setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, _ ->
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             callback(text.toString())
@@ -34,6 +34,13 @@ fun TextInputEditText.setOnIMEActionDone(activity: Activity, callback: (String) 
     })
 }
 
+fun EditText.hideKeyboard(activity: Activity) {
+    clearFocus()
+    val imm =
+        activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(getWindowToken(), 0)
+}
+
 /**
  * This function allows the user to exit the text input intuitively, just by clicking outside
  */
@@ -46,10 +53,7 @@ fun AppCompatActivity.hideKeyboardWhenClickingInTheVoid(event: MotionEvent?) {
             v.getGlobalVisibleRect(outRect)
             if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
                 // If the user has touched a place outside the keyboard, remove the focus and keyboard
-                v.clearFocus()
-                val imm =
-                    getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                v.hideKeyboard(this)
             }
         }
     }
