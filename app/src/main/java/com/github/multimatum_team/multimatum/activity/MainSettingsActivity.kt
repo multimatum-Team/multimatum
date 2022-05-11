@@ -44,9 +44,9 @@ class MainSettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main_settings)
         assignWidgets()
         loadButtonsState()
+        initializeProcrastinationDetectorSensitivitySlider()
         setWidgetListeners()
         disableProcrastinationFighterButtonIfSensorNotFound()
-        initializeProcrastinationDetectorSensitivitySlider()
     }
 
     private fun initializeProcrastinationDetectorSensitivitySlider() {
@@ -99,14 +99,8 @@ class MainSettingsActivity : AppCompatActivity() {
             // slider can be moved iff procrastination detector is enabled
             procrastinationDetectorSlider.isEnabled = newState
         }
-        setOnSeekBarChangeListener()
-    }
-
-    private fun setOnSeekBarChangeListener() {
-        procrastinationDetectorSlider.addOnChangeListener(Slider.OnChangeListener { _, value, fromUser ->
-            if (fromUser) { // write only if from user, not when slider created
-                writeNewSensitivityValue(value.toInt())
-            }
+        procrastinationDetectorSlider.addOnChangeListener(Slider.OnChangeListener { _, value, _ ->
+            writeNewSensitivityValue(value.toInt())
         })
     }
 

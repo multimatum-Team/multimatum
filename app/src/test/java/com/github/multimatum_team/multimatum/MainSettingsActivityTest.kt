@@ -130,7 +130,6 @@ class MainSettingsActivityTest {
     @Test
     fun value_selected_on_slider_is_written_to_preferences() {
         val mockEditor: SharedPreferences.Editor = mock()
-        `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
         `when`(
             mockSharedPreferences.getBoolean(
                 eq(NOTIF_ENABLED_PREF_KEY),
@@ -140,20 +139,25 @@ class MainSettingsActivityTest {
             .thenReturn(true)
         `when`(mockSharedPreferences.getBoolean(eq(DARK_MODE_PREF_KEY), any()))
             .thenReturn(false)
-        val random = Random(415)
         val applicationContext = ApplicationProvider.getApplicationContext<Context>()
         val intent = Intent(applicationContext, MainSettingsActivity::class.java)
         val activityScenario: ActivityScenario<MainSettingsActivity> =
             ActivityScenario.launch(intent)
+        `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
+        `when`(mockEditor.apply()).then { /* do nothing */ }
+        `when`(mockEditor.putBoolean(any(), any())).then { /* do nothing */ }
+        var sensitivity = -1
+        var wasWritten: Boolean
+        `when`(mockEditor.putInt(eq(PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY), any()))
+            .then {
+                wasWritten = true
+                assertEquals(sensitivity, it.getArgument(1))
+                mockEditor
+            }
         activityScenario.use {
-            for (i in 1..15) {
-                val sensitivity = random.nextInt(from = 0, until = 10)
-                var wasWritten = false
-                `when`(mockEditor.putInt(eq(PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY), any()))
-                    .then {
-                        wasWritten = true
-                        assertEquals(sensitivity, it.getArgument(1))
-                    }
+            for (currSensitivity in (0..10).toList().shuffled()) {
+                sensitivity = currSensitivity
+                wasWritten = false
                 onView(withId(R.id.main_settings_procrastination_detector_sensibility_slider))
                     .perform(setSliderValueAction(sensitivity))
                     .check(matches(hasValue(sensitivity)))
