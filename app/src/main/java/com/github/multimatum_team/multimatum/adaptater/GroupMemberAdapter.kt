@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.multimatum_team.multimatum.R
-import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserInfo
 import com.github.multimatum_team.multimatum.repository.UserRepository
@@ -71,7 +70,7 @@ class GroupMemberAdapter(
     private fun showAttemptToRemoveOwnerErrorDialog() {
         AlertDialog.Builder(context)
             .setMessage(
-                context.getString(R.string.group_member_attemt_removal_of_owner_error_dialog)
+                context.getString(R.string.group_member_attempt_removal_of_owner_error_dialog)
             )
             .show()
     }

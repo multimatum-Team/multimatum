@@ -1,16 +1,16 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -54,7 +54,7 @@ class GroupDetailsActivity : AppCompatActivity() {
     private lateinit var groupMembersView: RecyclerView
 
     private lateinit var groupInviteButton: Button
-    private lateinit var groupDeleteButton: Button
+    private lateinit var groupDeleteOrLeaveButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,12 +69,12 @@ class GroupDetailsActivity : AppCompatActivity() {
         groupMembersView = findViewById(R.id.group_details_members)
 
         groupInviteButton = findViewById(R.id.group_details_invite_button)
-        groupDeleteButton = findViewById(R.id.group_details_delete_button)
+        groupDeleteOrLeaveButton = findViewById(R.id.group_details_delete_or_leave_button)
 
         // Initialize UI widgets
         initTextInput()
         initGroupMemberView()
-        initDeleteButton()
+        initLeaveButton()
     }
 
     private fun updateView() {
@@ -88,7 +88,11 @@ class GroupDetailsActivity : AppCompatActivity() {
         val ownerName = runBlocking { userRepository.fetch(group.owner).name }
         groupOwnerView.text = getString(R.string.group_owner, ownerName)
 
-        groupDeleteButton.setEnabled(currentUserIsGroupOwner())
+        if (currentUserIsGroupOwner()) {
+            initDeleteButton()
+        } else {
+            initLeaveButton()
+        }
     }
 
     private fun currentUserIsGroupOwner(): Boolean =
@@ -115,22 +119,48 @@ class GroupDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun initDeleteButton() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            groupDeleteButton.setAllowClickWhenDisabled(true)
+    private fun initLeaveButton() {
+        groupDeleteOrLeaveButton.text = getString(R.string.group_leave)
+        groupDeleteOrLeaveButton.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setMessage(getString(R.string.group_leave_confirmation_dialog))
+                .setPositiveButton(getString(R.string.group_leave_confirm),
+                    DialogInterface.OnClickListener { dialog, which ->
+                        dialog.dismiss()
+                        groupViewModel.removeMember(
+                            groupID,
+                            authViewModel.getUser().value!!.id
+                        )
+                        finish()
+                        return@OnClickListener
+                    })
+                .setNegativeButton(getString(R.string.group_leave_cancel),
+                    DialogInterface.OnClickListener { dialog, which ->
+                        dialog.dismiss()
+                        return@OnClickListener
+                    })
+                .show()
         }
+    }
 
-        groupDeleteButton.setOnClickListener {
-            if (currentUserIsGroupOwner()) {
-                groupViewModel.deleteGroup(groupID)
-                finish()
-            } else {
-                Toast.makeText(
-                    this,
-                    "Only owners can delete a group!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+    private fun initDeleteButton() {
+        groupDeleteOrLeaveButton.text = getString(R.string.group_delete)
+        groupDeleteOrLeaveButton.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setMessage(getString(R.string.group_delete_confirmation_dialog))
+                .setPositiveButton(getString(R.string.group_delete_dialog_confirm),
+                    DialogInterface.OnClickListener { dialog, which ->
+                        dialog.dismiss()
+                        groupViewModel.deleteGroup(groupID)
+                        finish()
+                        return@OnClickListener
+                    })
+                .setNegativeButton(getString(R.string.group_delete_dialog_cancel),
+                    DialogInterface.OnClickListener { dialog, which ->
+                        dialog.dismiss()
+                        return@OnClickListener
+                    })
+                .show()
         }
     }
 
