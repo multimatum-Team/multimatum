@@ -101,6 +101,15 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         // Update the groups owned by the user to be able to select them
         // in the Dialog
+        setGroupObserver()
+
+    }
+
+    /**
+     *  Update the groups owned by the user to be able to select them
+     *  in the Dialog
+     */
+    private fun setGroupObserver() {
         groupViewModel.getGroups().observe(this) {
             nameGroups = arrayOf("No group")
             idGroups = arrayOf()
@@ -300,33 +309,12 @@ class AddDeadlineActivity : AppCompatActivity() {
      *  Add a deadline based on the data recuperated on the other TextViews
      */
     fun addDeadline(view: View) {
-        // Getting the entered text
-        val titleDeadline = textTitle.text.toString()
 
         // Check if the title is not empty
-        if (titleDeadline == "") {
+        if (textTitle.text.toString() == "") {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
-            val deadline: Deadline
-
-            // Putting the deadline in the corresponding group or
-            // in none if no group selected
-            if (groupSelected == 0) {
-                deadline = Deadline(
-                    titleDeadline,
-                    DeadlineState.TODO,
-                    selectedDate,
-                    textDescription.text.toString()
-                )
-            } else {
-                deadline = Deadline(
-                    titleDeadline,
-                    DeadlineState.TODO,
-                    selectedDate,
-                    textDescription.text.toString(),
-                    GroupOwned(idGroups[groupSelected - 1])
-                )
-            }
+            val deadline = recuperateDeadlineFromInputText()
 
             val notificationsTimes = retrieveNotificationsTimes()
 
@@ -340,6 +328,32 @@ class AddDeadlineActivity : AppCompatActivity() {
                 DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
                 finish()
             }
+        }
+    }
+
+    /**
+     * Recuperate the deadline from all the text input in the activity
+     * WARNING: the textTile must not be empty
+     */
+
+    private fun recuperateDeadlineFromInputText(): Deadline {
+        // Putting the deadline in the corresponding group or
+        // in none if no group selected
+        if (groupSelected == 0) {
+            return Deadline(
+                textTitle.text.toString(),
+                DeadlineState.TODO,
+                selectedDate,
+                textDescription.text.toString()
+            )
+        } else {
+            return Deadline(
+                textTitle.text.toString(),
+                DeadlineState.TODO,
+                selectedDate,
+                textDescription.text.toString(),
+                GroupOwned(idGroups[groupSelected - 1])
+            )
         }
     }
 

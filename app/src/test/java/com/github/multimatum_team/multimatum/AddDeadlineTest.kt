@@ -118,7 +118,7 @@ class AddDeadlineTest {
 
         dialog.listView.performItemClick(
             dialog.listView.adapter
-                .getView(1, null, null), 0, 0
+                .getView(1, null, null), 1, 0
         )
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
