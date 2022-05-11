@@ -7,10 +7,12 @@ import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockGroupRepository
-import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
+import com.github.multimatum_team.multimatum.util.MockUserRepository
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,11 +37,14 @@ import javax.inject.Singleton
 @HiltAndroidTest
 @UninstallModules(FirebaseRepositoryModule::class)
 @ExperimentalCoroutinesApi
-class UserViewModelTest {
+class AuthViewModelTest {
     @Inject
     lateinit var authRepository: AuthRepository
 
-    private lateinit var viewModel: UserViewModel
+    @Inject
+    lateinit var userRepository: UserRepository
+
+    private lateinit var viewModel: AuthViewModel
 
     // Set executor to be synchronous so that LiveData's notify their observers immediately and
     // finish executing before continuing.
@@ -53,7 +58,7 @@ class UserViewModelTest {
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         hiltRule.inject()
-        viewModel = UserViewModel(authRepository)
+        viewModel = AuthViewModel(authRepository, userRepository)
     }
 
     @Test
@@ -63,8 +68,8 @@ class UserViewModelTest {
 
     @Test
     fun `LiveData is updated when the user signs in`() {
-        (authRepository as MockAuthRepository).signIn("john.doe@example.com")
-        assertEquals(viewModel.getUser().value!!, SignedInUser("0", "john.doe@example.com"))
+        (authRepository as MockAuthRepository).signIn("John Doe", "john.doe@example.com")
+        assertEquals(viewModel.getUser().value!!, SignedInUser("0","John Doe", "john.doe@example.com"))
     }
 
     @Test
@@ -90,5 +95,10 @@ class UserViewModelTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 }

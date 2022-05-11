@@ -27,8 +27,8 @@ class MockAuthRepository : AuthRepository() {
     private fun generateNewAnonymousUser(): AnonymousUser =
         AnonymousUser((uniqueIDSupply++).toString())
 
-    fun signIn(email: String) {
-        _user = SignedInUser(_user.id, email)
+    fun signIn(name: String, email: String) {
+        _user = SignedInUser(_user.id, name, email)
         notifyUpdateListeners()
     }
 
