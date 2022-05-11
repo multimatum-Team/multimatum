@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -19,6 +18,7 @@ import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
 import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
+import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,7 +27,7 @@ class MainSettingsActivity : AppCompatActivity() {
     private lateinit var darkModeEnabledButton: SwitchCompat
     private lateinit var notifEnabledButton: SwitchCompat
     private lateinit var procrastinationDetectEnabledButton: SwitchCompat
-    private lateinit var procrastinationDetectorSlider: SeekBar
+    private lateinit var procrastinationDetectorSlider: Slider
     private lateinit var procrastinationDetectorSliderBar: LinearLayout
 
     private val userViewModel: UserViewModel by viewModels()
@@ -52,12 +52,15 @@ class MainSettingsActivity : AppCompatActivity() {
     private fun initializeProcrastinationDetectorSensitivitySlider() {
         // slider can be moved iff procrastination fighter is enabled
         procrastinationDetectorSlider.isEnabled = procrastinationDetectEnabledButton.isChecked
-        procrastinationDetectorSlider.max = ProcrastinationDetectorService.MAX_SENSITIVITY
+        procrastinationDetectorSlider.valueFrom = 0f
+        procrastinationDetectorSlider.valueTo =
+            ProcrastinationDetectorService.MAX_SENSITIVITY.toFloat()
+        procrastinationDetectorSlider.stepSize = 1f
         // progress stands for position on the bar
-        procrastinationDetectorSlider.incrementProgressBy(preferences.getInt(
+        procrastinationDetectorSlider.value = preferences.getInt(
             PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY,
             ProcrastinationDetectorService.DEFAULT_SENSITIVITY
-        ))
+        ).toFloat()
     }
 
     /*
@@ -100,27 +103,11 @@ class MainSettingsActivity : AppCompatActivity() {
     }
 
     private fun setOnSeekBarChangeListener() {
-        procrastinationDetectorSlider.setOnSeekBarChangeListener(
-            object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    if (fromUser){ // write only if from user, not when slider created
-                        writeNewSensitivityValue(progress)
-                    }
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    /* do nothing */
-                }
-
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    /* do nothing */
-                }
+        procrastinationDetectorSlider.addOnChangeListener(Slider.OnChangeListener { _, value, fromUser ->
+            if (fromUser) { // write only if from user, not when slider created
+                writeNewSensitivityValue(value.toInt())
             }
-        )
+        })
     }
 
     // sets the buttons to the state they had last time the app was stopped

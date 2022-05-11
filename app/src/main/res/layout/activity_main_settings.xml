@@ -121,7 +121,7 @@
         <LinearLayout
             android:id="@+id/main_settings_procrastination_detector_sensibility_bar"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="50dp"
             android:orientation="horizontal">
 
             <TextView
@@ -129,10 +129,12 @@
                 android:layout_width="113dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
                 android:text="@string/main_settings_procrastination_fighter_sensitivity"
                 android:textSize="20sp" />
 
-            <SeekBar
+            <com.google.android.material.slider.Slider
                 android:id="@+id/main_settings_procrastination_detector_sensibility_slider"
                 android:layout_width="285dp"
                 android:layout_height="match_parent"
