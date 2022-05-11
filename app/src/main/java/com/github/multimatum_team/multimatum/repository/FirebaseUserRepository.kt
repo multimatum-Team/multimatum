@@ -52,7 +52,7 @@ class FirebaseUserRepository @Inject constructor(database: FirebaseFirestore) : 
             .whereIn(FieldPath.documentId(), ids)
             .get()
             .await()
-            .map { deserializeUserInfo(it) }
+            .map(::deserializeUserInfo)
 
     /**
      * Add information about an signed-in user.
