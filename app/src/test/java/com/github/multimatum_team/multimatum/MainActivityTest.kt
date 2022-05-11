@@ -25,9 +25,11 @@ import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockGroupRepository
+import com.github.multimatum_team.multimatum.util.MockUserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -138,7 +140,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToGroupsTest(){
+    fun goToGroupsTest() {
         onView(withId(R.id.groupButton)).perform(click())
         Intents.intended(
             allOf(
@@ -240,16 +242,23 @@ class MainActivityTest {
         @Singleton
         @Provides
         fun provideGroupRepository(): GroupRepository =
-            MockGroupRepository(listOf(
-                UserGroup("1", "SDP", "joseph"),
-                UserGroup("2", "JDR", "Florian"),
-                UserGroup("3", "Camera", "Leo")
-            ))
+            MockGroupRepository(
+                listOf(
+                    UserGroup("1", "SDP", "joseph"),
+                    UserGroup("2", "JDR", "Florian"),
+                    UserGroup("3", "Camera", "Leo")
+                )
+            )
 
         @Singleton
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 
     companion object {
