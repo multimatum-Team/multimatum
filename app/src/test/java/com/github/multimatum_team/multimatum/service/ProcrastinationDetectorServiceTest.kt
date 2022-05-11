@@ -301,7 +301,7 @@ class ProcrastinationDetectorServiceTest {
         controller.destroy()
     }
 
-    data class EventToSimulate(val x: Float, val y: Float, val z: Float, val timestamp: Long)
+    private data class EventToSimulate(val x: Float, val y: Float, val z: Float, val timestamp: Long)
 
     /**
      * WARNING this method does not perform any assertion
