@@ -96,10 +96,10 @@ class GroupAdapterTest {
 
     @Test
     fun `GetItem should give the correct group`() {
-        Assert.assertEquals(adapter.getItem(0), groupMap.entries.toList()[0].value)
+        Assert.assertEquals(adapter.getItem(0), groupMap.entries.toList()[2].value)
         Assert.assertEquals(adapter.getItem(1), groupMap.entries.toList()[1].value)
-        Assert.assertEquals(adapter.getItem(2), groupMap.entries.toList()[2].value)
-        Assert.assertEquals(adapter.getItem(3), groupMap.entries.toList()[3].value)
+        Assert.assertEquals(adapter.getItem(2), groupMap.entries.toList()[3].value)
+        Assert.assertEquals(adapter.getItem(3), groupMap.entries.toList()[0].value)
     }
 
     @Test
