@@ -1,12 +1,17 @@
 package com.github.multimatum_team.multimatum
 
+import android.app.AlertDialog
+import android.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Checks
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.DeadlineDetailsActivity
@@ -20,6 +25,7 @@ import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
+import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,13 +33,21 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.hamcrest.CoreMatchers.equalTo
+import kotlinx.coroutines.test.setMain
+import net.bytebuddy.matcher.CollectionItemMatcher
+import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import org.robolectric.shadows.ShadowAlertDialog
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,9 +58,13 @@ import javax.inject.Singleton
 @UninstallModules(FirebaseRepositoryModule::class, ClockModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
+@ExperimentalCoroutinesApi
 class GroupDetailsActivityTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val executorRule: TestRule = InstantTaskExecutorRule()
 
     @Inject
     lateinit var groupRepository: GroupRepository
@@ -57,18 +75,25 @@ class GroupDetailsActivityTest {
     @Inject
     lateinit var userRepository: UserRepository
 
+    companion object {
+        private val joseph = SignedInUser(
+            "Joseph",
+            "Joseph",
+            "unemail@jsp.com"
+        )
+
+        private val louis = SignedInUser(
+            "Louis",
+            "Louis",
+            "louis@mit.edu"
+        )
+    }
+
     @Before
     @Throws(Exception::class)
     fun setUp() {
         Intents.init()
         hiltRule.inject()
-        (authRepository as MockAuthRepository).logIn(
-            SignedInUser(
-                "Joseph",
-                "Joseph",
-                "unemail@jsp.com"
-            )
-        )
     }
 
     @After
@@ -79,6 +104,8 @@ class GroupDetailsActivityTest {
     @Test
     fun `Given a group owned by the current user, all widget have the right properties`() {
         // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
+        (authRepository as MockAuthRepository).logIn(joseph)
+        groupRepository.setUserID(joseph.id)
         val intent =
             GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
@@ -94,6 +121,8 @@ class GroupDetailsActivityTest {
     @Test
     fun `Given a group owned by the current user, they can rename the group`() = runTest {
         // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
+        (authRepository as MockAuthRepository).logIn(joseph)
+        groupRepository.setUserID(joseph.id)
         val intent =
             GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
@@ -110,15 +139,35 @@ class GroupDetailsActivityTest {
     }
 
     @Test
+    fun `Given a group owned by the current user, the leave button has the right behavior`() = runTest {
+        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
+        (authRepository as MockAuthRepository).logIn(joseph)
+        groupRepository.setUserID(joseph.id)
+        val intent =
+            GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.group_details_delete_or_leave_button))
+                .perform(ViewActions.click())
+            ShadowAlertDialog.getShownDialogs()
+            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                .getButton(AlertDialog.BUTTON_NEGATIVE)
+                .performClick()
+
+            onView(withId(R.id.group_details_delete_or_leave_button))
+                .perform(ViewActions.click())
+            ShadowAlertDialog.getShownDialogs()
+            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                .getButton(AlertDialog.BUTTON_POSITIVE)
+                .performClick()
+        }
+    }
+
+    @Test
     fun `Given a group which the the current user does not own, all widget have the right properties`() {
         // UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
-        (authRepository as MockAuthRepository).logIn(
-            SignedInUser(
-                "Joseph",
-                "Joseph",
-                "unemail@jsp.com"
-            )
-        )
+        (authRepository as MockAuthRepository).logIn(joseph)
+        groupRepository.setUserID(joseph.id)
         val intent =
             GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
@@ -128,6 +177,31 @@ class GroupDetailsActivityTest {
                 .check(matches(isNotFocusable()))
             onView(withId(R.id.group_details_owner)).check(matches(withText("Owner: Louis")))
             onView(withId(R.id.group_details_delete_or_leave_button)).check(matches(withText("Leave")))
+        }
+    }
+
+    @Test
+    fun `Given a group which the the current user does not own, the leave button has the right behavior`() = runTest {
+        // UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
+        (authRepository as MockAuthRepository).logIn(joseph)
+        groupRepository.setUserID(joseph.id)
+        val intent =
+            GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.group_details_delete_or_leave_button))
+                .perform(ViewActions.click())
+            ShadowAlertDialog.getShownDialogs()
+            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                .getButton(AlertDialog.BUTTON_NEGATIVE)
+                .performClick()
+
+            onView(withId(R.id.group_details_delete_or_leave_button))
+                .perform(ViewActions.click())
+            ShadowAlertDialog.getShownDialogs()
+            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                .getButton(AlertDialog.BUTTON_POSITIVE)
+                .performClick()
         }
     }
 

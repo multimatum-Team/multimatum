@@ -2,7 +2,6 @@ package com.github.multimatum_team.multimatum.adaptater
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,29 +52,22 @@ class GroupMemberAdapter(
      * Prompt the group owner for confirmation when pressing a member name.
      */
     private fun showConfirmMemberRemovalDialog(memberInfo: UserInfo, position: Int) {
+        val message =
+            context.getString(R.string.group_member_removal_confirmation_dialog, memberInfo.name)
         AlertDialog.Builder(context)
-            .setMessage(
-                context.getString(
-                    R.string.group_member_removal_confirmation_dialog,
-                    memberInfo.name
+            .setMessage(message)
+            .setPositiveButton(context.getString(R.string.group_member_confirm_removal)) { dialog, which ->
+                groupViewModel.removeMember(group.id, memberInfo.id)
+                dataSource.removeAt(position)
+                notifyItemRemoved(position)
+            }
+            .setNegativeButton(context.getString(R.string.group_member_cancel_removal)) { dialog, which ->
+                notifyItemRemoved(position + 1)
+                notifyItemRangeChanged(
+                    position,
+                    itemCount
                 )
-            )
-            .setPositiveButton(context.getString(R.string.group_member_confirm_removal),
-                DialogInterface.OnClickListener { dialog, which ->
-                    groupViewModel.removeMember(group.id, memberInfo.id)
-                    dataSource.removeAt(position)
-                    notifyItemRemoved(position)
-                    return@OnClickListener
-                })
-            .setNegativeButton(context.getString(R.string.group_member_cancel_removal),
-                DialogInterface.OnClickListener { dialog, which ->
-                    notifyItemRemoved(position + 1)
-                    notifyItemRangeChanged(
-                        position,
-                        itemCount
-                    )
-                    return@OnClickListener
-                })
+            }
             .show()
     }
 

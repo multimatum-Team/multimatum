@@ -68,7 +68,7 @@
     <string name="group_member_attempt_removal_of_owner_error_dialog">You are the owner of this group, you cannot remove yourself!</string>
     <string name="group_leave">Leave</string>
     <string name="group_leave_confirmation_dialog">Are you sure you want to leave the group?</string>
-    <string name="group_leave_confirm">Confirm</string>
+    <string name="group_leave_confirm">Leave</string>
     <string name="group_leave_cancel">Cancel</string>
     <string name="group_delete_dialog_confirm">Delete</string>
     <string name="group_delete_dialog_cancel">Cancel</string>

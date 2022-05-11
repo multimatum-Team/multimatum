@@ -68,10 +68,18 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
     }
 
     override suspend fun removeMember(groupID: GroupID, memberID: UserID) {
-        val group = groups[groupID]!!
-        val newMembers = group.members.toMutableList()
+        var group = groups[groupID]!!
+        val newMembers = group.members.toMutableSet()
         newMembers.remove(memberID)
-        groups[groupID] = group.copy(members = newMembers.toSet())
+        println("$_userID, $group, $newMembers")
+        group = group.copy(members = newMembers)
+        groupsPerUser[memberID]?.remove(groupID)
+        for (groupMap in groupsPerUser.values) {
+            if (groupMap.containsKey(groupID)) {
+                groupMap[groupID] = group
+            }
+        }
+        println("removed $memberID from $groupID: $newMembers")
         notifyUpdateListeners()
     }
 

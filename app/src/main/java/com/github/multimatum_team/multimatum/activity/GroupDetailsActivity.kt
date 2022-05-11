@@ -128,9 +128,14 @@ class GroupDetailsActivity : AppCompatActivity() {
         groupMembersView.layoutManager = LinearLayoutManager(this)
 
         groupViewModel.getGroups().observe(this) { groups ->
-            group = groups[groupID]!!
-            adapter.setGroup(group)
-            updateView()
+            when (groups[groupID]) {
+                null -> finish()
+                else -> {
+                    group = groups[groupID]!!
+                    adapter.setGroup(group)
+                    updateView()
+                }
+            }
         }
     }
 

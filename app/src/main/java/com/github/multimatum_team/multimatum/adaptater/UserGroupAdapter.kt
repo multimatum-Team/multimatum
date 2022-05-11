@@ -27,7 +27,7 @@ class UserGroupAdapter(
 
 
     fun setGroups(groups: Map<GroupID, UserGroup>) {
-        dataSource = groups.values.toList()
+        dataSource = groups.values.toList().sortedBy { group -> group.name }
         notifyDataSetChanged()
     }
 
