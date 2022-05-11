@@ -43,7 +43,6 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -135,8 +134,7 @@ class MainSettingsActivityTest {
                 eq(NOTIF_ENABLED_PREF_KEY),
                 any()
             )
-        )
-            .thenReturn(true)
+        ).thenReturn(true)
         `when`(mockSharedPreferences.getBoolean(eq(DARK_MODE_PREF_KEY), any()))
             .thenReturn(false)
         val applicationContext = ApplicationProvider.getApplicationContext<Context>()
@@ -144,24 +142,18 @@ class MainSettingsActivityTest {
         val activityScenario: ActivityScenario<MainSettingsActivity> =
             ActivityScenario.launch(intent)
         `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
-        `when`(mockEditor.apply()).then { /* do nothing */ }
-        `when`(mockEditor.putBoolean(any(), any())).then { /* do nothing */ }
-        var sensitivity = -1
-        var wasWritten: Boolean
-        `when`(mockEditor.putInt(eq(PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY), any()))
-            .then {
-                wasWritten = true
-                assertEquals(sensitivity, it.getArgument(1))
-                mockEditor
-            }
         activityScenario.use {
-            for (currSensitivity in (0..10).toList().shuffled()) {
-                sensitivity = currSensitivity
-                wasWritten = false
+            for (sensitivity in (1..10).toList().shuffled(Random(seed = 415L))) {
+                var writtenValue = -1
+                `when`(mockEditor.putInt(eq(PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY), any()))
+                    .then {
+                        writtenValue = it.getArgument(1)
+                        mockEditor
+                    }
                 onView(withId(R.id.main_settings_procrastination_detector_sensibility_slider))
                     .perform(setSliderValueAction(sensitivity))
                     .check(matches(hasValue(sensitivity)))
-                assertTrue(wasWritten)
+                assertEquals(sensitivity, writtenValue)
             }
         }
     }
@@ -199,8 +191,7 @@ class MainSettingsActivityTest {
                 eq(NOTIF_ENABLED_PREF_KEY),
                 any()
             )
-        )
-            .thenReturn(initNotifEnabled)
+        ).thenReturn(initNotifEnabled)
         `when`(mockSharedPreferences.getBoolean(eq(DARK_MODE_PREF_KEY), any()))
             .thenReturn(initDarkModeEnabled)
         val mockEditor: SharedPreferences.Editor = mock()
