@@ -16,6 +16,9 @@ import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import kotlinx.coroutines.runBlocking
 
+/**
+ * A RecyclerView adapter to bridge the group member list and the group view model.
+ */
 class GroupMemberAdapter(
     private val context: Context,
     private val userRepository: UserRepository,
@@ -25,6 +28,9 @@ class GroupMemberAdapter(
     private var dataSource: MutableList<UserInfo> = mutableListOf()
     private lateinit var group: UserGroup
 
+    /**
+     * Update the group associated to the adapter.
+     */
     fun setGroup(group: UserGroup) {
         this.group = group
         dataSource =
@@ -33,6 +39,9 @@ class GroupMemberAdapter(
         notifyDataSetChanged()
     }
 
+    /**
+     * Create view holding the user information, using the right layout.
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemberItemViewHolder {
         val view = LayoutInflater
             .from(parent.context)
@@ -40,6 +49,9 @@ class GroupMemberAdapter(
         return MemberItemViewHolder(view)
     }
 
+    /**
+     * Prompt the group owner for confirmation when pressing a member name.
+     */
     private fun showConfirmMemberRemovalDialog(memberInfo: UserInfo, position: Int) {
         AlertDialog.Builder(context)
             .setMessage(
@@ -67,6 +79,9 @@ class GroupMemberAdapter(
             .show()
     }
 
+    /**
+     * Show the user an error when they are the owner of the group and try to remove themselves.
+     */
     private fun showAttemptToRemoveOwnerErrorDialog() {
         AlertDialog.Builder(context)
             .setMessage(
@@ -75,6 +90,9 @@ class GroupMemberAdapter(
             .show()
     }
 
+    /**
+     * Bind view holder with the right data and click action.
+     */
     override fun onBindViewHolder(holder: MemberItemViewHolder, position: Int) {
         val memberInfo = dataSource[position]
         holder.groupMemberName.text = memberInfo.name
@@ -91,10 +109,16 @@ class GroupMemberAdapter(
         }
     }
 
+    /**
+     * Return the number of members in the group.
+     */
     override fun getItemCount(): Int {
         return dataSource.size
     }
 
+    /**
+     * A class to hold the member information view.
+     */
     class MemberItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val groupMemberName: TextView = itemView.findViewById(R.id.group_member_name)
     }

@@ -33,6 +33,8 @@ import javax.inject.Inject
 /**
  * Classes used when you select a group in `GroupsActivity`, displaying its details, namely
  * group name, owner and members.
+ * From this activity, you can invite people, delete the group if you own it, or leave it otherwise.
+ * Owners can also edit the group name.
  */
 @AndroidEntryPoint
 class GroupDetailsActivity : AppCompatActivity() {
@@ -77,6 +79,9 @@ class GroupDetailsActivity : AppCompatActivity() {
         initLeaveButton()
     }
 
+    /**
+     * Update view when remove data changed.
+     */
     private fun updateView() {
         groupNameView.focusable = if (currentUserIsGroupOwner()) {
             View.FOCUSABLE_AUTO
@@ -95,9 +100,15 @@ class GroupDetailsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Returns whether the group we are seeing is owned by the authenticated user.
+     */
     private fun currentUserIsGroupOwner(): Boolean =
         group.owner == authViewModel.getUser().value!!.id
 
+    /**
+     * Setup the text input
+     */
     private fun initTextInput() {
         // Adding a listener to handle the "DONE" key pressed.
         groupNameView.setOnIMEActionDone(this) { newName ->
@@ -105,6 +116,10 @@ class GroupDetailsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Initialize group member view, setting its adapter and observing the group repository when
+     * remote data changes.
+     */
     private fun initGroupMemberView() {
         val adapter =
             GroupMemberAdapter(this, userRepository, authViewModel, groupViewModel)
@@ -119,6 +134,9 @@ class GroupDetailsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Initialize groupDeleteOrLeaveButton with the right text and leave the group when clicked.
+     */
     private fun initLeaveButton() {
         groupDeleteOrLeaveButton.text = getString(R.string.group_leave)
         groupDeleteOrLeaveButton.setOnClickListener {
@@ -143,6 +161,10 @@ class GroupDetailsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Initialize groupDeleteOrLeaveButton with the right text and make it delete the group when
+     * clicked.
+     */
     private fun initDeleteButton() {
         groupDeleteOrLeaveButton.text = getString(R.string.group_delete)
         groupDeleteOrLeaveButton.setOnClickListener {
@@ -164,6 +186,9 @@ class GroupDetailsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Intercept touch event to hide keyboard when clicking in the void.
+     */
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
         hideKeyboardWhenClickingInTheVoid(event)
         return super.dispatchTouchEvent(event)
