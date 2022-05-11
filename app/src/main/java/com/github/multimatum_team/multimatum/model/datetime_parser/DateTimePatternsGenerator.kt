@@ -1,7 +1,11 @@
 package com.github.multimatum_team.multimatum.model.datetime_parser
 
+import com.github.multimatum_team.multimatum.LogUtil
 import java.time.*
 import java.time.temporal.TemporalAdjusters
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * Contains all the patterns that the parser should recognize
@@ -53,6 +57,14 @@ import java.time.temporal.TemporalAdjusters
 class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate) {
 
     /**
+     * Indicates that a property is a pattern
+     *
+     * Property should be of type Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedTime>
+     */
+    @Target(AnnotationTarget.PROPERTY)
+    private annotation class PatternPair
+
+    /**
      * @return a function that takes a token and returns it if it contains the provided string,
      * null o.w.
      */
@@ -95,6 +107,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
 
     // Patterns
 
+    @PatternPair
     private val `15h` =
         listOf(
             Token::asHour24,
@@ -103,6 +116,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             timeFor(hour = args.getInt(0), 0)
         }
 
+    @PatternPair
     private val `15h00` =
         listOf(
             Token::asHour24,
@@ -112,6 +126,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             timeFor(hour = args.getInt(0), minute = args.getInt(2))
         }
 
+    @PatternPair
     private val `3am` =
         listOf(
             Token::asHour12,
@@ -120,6 +135,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             timeFor(hour = args.getInt(0), minute = 0)
         }
 
+    @PatternPair
     private val `3pm` =
         listOf(
             Token::asHour12,
@@ -128,6 +144,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             timeFor(hour = args.getInt(0) + 12, minute = 0)
         }
 
+    @PatternPair
     private val `1-01-2000` =
         listOf(
             Token::asPossibleDayOfMonthIndex,
@@ -139,6 +156,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             dateForIfExists(year = args.getInt(4), month = args.getMonth(2), day = args.getInt(0))
         }
 
+    @PatternPair
     private val `2000-1-1` =
         listOf(
             Token::asPossibleYear,
@@ -150,6 +168,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             dateForIfExists(day = args.getInt(4), month = args.getMonth(2), year = args.getInt(0))
         }
 
+    @PatternPair
     private val `1_01_2000` =
         listOf(
             Token::asPossibleDayOfMonthIndex,
@@ -159,6 +178,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             dateForIfExists(day = args.getInt(0), month = args.getMonth(1), year = args.getInt(2))
         }
 
+    @PatternPair
     private val monday =
         listOf(
             Token::asDayOfWeek
@@ -167,6 +187,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             dateForNextDayMatching(requestedDayOfWeek)
         }
 
+    @PatternPair
     private val monday_15 =
         listOf(
             Token::asDayOfWeek,
@@ -183,6 +204,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             }
         }
 
+    @PatternPair
     private val midday =
         listOf(
             tokenMatchingOneOf("noon", "midday")
@@ -190,6 +212,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             timeFor(12, 0)
         }
 
+    @PatternPair
     private val midnight =
         listOf(
             tokenMatchingOneOf("midnight")
@@ -198,20 +221,14 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
         }
 
     val patterns: List<PatternMatchCase> =
-        listOf(
-            `15h`,
-            `15h00`,
-            `3am`,
-            `3pm`,
-            `1-01-2000`,
-            `2000-1-1`,
-            `1_01_2000`,
-            monday,
-            monday_15,
-            midday,
-            midnight
-        ).map { (pattern, extractionFunc) ->
-            PatternMatchCase(pattern, extractionFunc)
-        }
+        @Suppress("UNCHECKED_CAST")
+        this::class.memberProperties
+            .filter { it.findAnnotation<PatternPair>() != null }
+            .map {
+                it.getter.isAccessible = true
+                val (pattern, extractionFunc) = it.getter.call(this) as Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo>
+                it.getter.isAccessible = false
+                PatternMatchCase(pattern, extractionFunc)
+            }
 
 }
