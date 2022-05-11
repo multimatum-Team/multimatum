@@ -14,6 +14,8 @@ import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.GroupOwned
+import com.github.multimatum_team.multimatum.model.UserOwned
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
@@ -34,30 +36,33 @@ Class which is used to show the deadline in a clear list.
 Based on the tutorial:
 https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
  */
+enum class FilterState{
+    /**
+     * state to filter deadlines in groups
+     */
+    GROUPS,
+
+    /**
+     * state to filter deadlines not in groups
+     */
+    MINE,
+
+    /**
+     * don't filter deadlines
+     */
+
+    ALL
+}
+
 class DeadlineAdapter(
     private val context: Context,
-    private val deadlineListViewModel: DeadlineListViewModel
+    private val deadlineListViewModel: DeadlineListViewModel, var state: FilterState = FilterState.ALL
 ) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline
         const val URGENT_THRESHOLD_DAYS = 5
         const val PRESSING_THRESHOLD_DAYS = 10
 
-
-        private fun sortDeadline(deadlines: Map<DeadlineID, Deadline>): List<Pair<DeadlineID, Deadline>> {
-            val partition = DeadlineState.values().associate { state ->
-                Pair<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>>(state, mutableListOf())
-            }.toMap()
-            for ((id, deadline) in deadlines.entries) {
-                partition[deadline.state]!!.add(Pair(id, deadline))
-            }
-
-            val result: MutableList<Pair<DeadlineID, Deadline>> = mutableListOf()
-            for (state in DeadlineState.values()) {
-                result.addAll(partition[state]!!.sortedBy { it.second.dateTime })
-            }
-            return result
-        }
     }
 
     var clockService: ClockService =
@@ -73,6 +78,40 @@ class DeadlineAdapter(
     fun setDeadlines(deadlines: Map<DeadlineID, Deadline>) {
         dataSource = sortDeadline(deadlines)
         notifyDataSetChanged()
+    }
+
+    private fun filterByGroup(deadlines: MutableList<Pair<DeadlineID, Deadline>>):
+            MutableList<Pair<DeadlineID, Deadline>>{
+        return deadlines.filter { (_, deadline) -> deadline.owner is GroupOwned}.toMutableList()
+    }
+
+    private fun filterByMine(deadlines: MutableList<Pair<DeadlineID, Deadline>>):
+            MutableList<Pair<DeadlineID, Deadline>>{
+        return deadlines.filter { (_, deadline) -> deadline.owner is UserOwned}.toMutableList()
+    }
+
+
+
+    private fun sortDeadline(deadlines: Map<DeadlineID, Deadline>): List<Pair<DeadlineID, Deadline>> {
+        val partition = DeadlineState.values().associate { state ->
+            Pair<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>>(state, mutableListOf())
+        }.toMap()
+        for ((id, deadline) in deadlines.entries) {
+            partition[deadline.state]!!.add(Pair(id, deadline))
+        }
+
+        var result: MutableList<Pair<DeadlineID, Deadline>> = mutableListOf()
+        for (state in DeadlineState.values()) {
+            result.addAll(partition[state]!!.sortedBy { it.second.dateTime })
+        }
+
+        if(state == FilterState.GROUPS){
+            result = filterByGroup(result)
+        }else if(state == FilterState.MINE){
+            result = filterByMine(result)
+        }
+
+        return result
     }
 
     override fun getCount(): Int {

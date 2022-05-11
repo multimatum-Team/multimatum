@@ -11,9 +11,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
+import com.github.multimatum_team.multimatum.adaptater.FilterState
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.GroupOwned
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
@@ -46,7 +48,8 @@ class DeadlineAdapterTest {
             Deadline("Number 1", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 13, 0)),
             Deadline("Number 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 12, 0)),
             Deadline("Number 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 1, 10, 0)),
-            Deadline("Number 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 11, 0)),
+            Deadline("Number 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 11, 0),
+                owner = GroupOwned("grouped")),
         )
     }
 
@@ -260,6 +263,45 @@ class DeadlineAdapterTest {
     }
 
     @Test
+    fun `GetView should display correctly element 0 when filtering by groups`(){
+        adapter.state = FilterState.GROUPS
+        adapter.setDeadlines(deadlinesMap)
+
+        val parent = ListView(context)
+        val listItemView = adapter.getView(0, null, parent)
+
+        Assert.assertEquals(
+            "Number 4",
+            listItemView.findViewById<TextView>(R.id.deadline_list_title).text)
+    }
+
+    fun `GetView should display correctly element 0 when filtering by mine`(){
+        adapter.state = FilterState.MINE
+        adapter.setDeadlines(deadlinesMap)
+
+        val parent = ListView(context)
+        var listItemView = adapter.getView(0, null, parent)
+
+        Assert.assertEquals(
+            "Number 3",
+            listItemView.findViewById<TextView>(R.id.deadline_list_title).text
+        )
+
+        listItemView = adapter.getView(1, null, parent)
+
+        Assert.assertEquals(
+            "Number 2",
+            listItemView.findViewById<TextView>(R.id.deadline_list_title).text
+        )
+
+        listItemView = adapter.getView(2, null, parent)
+        Assert.assertEquals(
+            "Number 1",
+            listItemView.findViewById<TextView>(R.id.deadline_list_title).text
+        )
+    }
+
+    @Test
     fun `The button in the item change the state of the deadline`() {
         val parent = ListView(context)
         val listItemView: View = adapter.getView(0, null, parent)
@@ -292,6 +334,7 @@ class DeadlineAdapterTest {
         )
 
     }
+
 
     @Module
     @InstallIn(SingletonComponent::class)

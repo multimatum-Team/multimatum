@@ -6,16 +6,17 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ListView
+import android.widget.*
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
+import com.github.multimatum_team.multimatum.adaptater.FilterState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
@@ -38,6 +39,8 @@ class MainActivity : AppCompatActivity() {
 
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
+    val filters = listOf("All", "Mine", "Groups")
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,13 +48,51 @@ class MainActivity : AppCompatActivity() {
         Firebase.initialize(this)
         setContentView(R.layout.activity_main)
 
+        //access listview for deadline
         val listView = findViewById<ListView>(R.id.deadlineListView)
+        val listViewAdapter = DeadlineAdapter(this, deadlineListViewModel)
 
-        val adapter = DeadlineAdapter(this, deadlineListViewModel)
-
-        listView.adapter = adapter
+        //set up observer on deadline list
+        listView.adapter = listViewAdapter
         deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
-            adapter.setDeadlines(deadlines)
+            listViewAdapter.setDeadlines(deadlines)
+        }
+
+        //access the spinner
+        val spin = findViewById<Spinner>(R.id.filter)
+        if (spin != null) {
+            val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,
+                filters)
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spin.adapter = spinnerAdapter
+        }
+
+        spin.onItemSelectedListener = object :
+        AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                when (position){
+                    0 -> listViewAdapter.state = FilterState.ALL
+                    1 -> listViewAdapter.state = FilterState.MINE
+                    2 -> listViewAdapter.state = FilterState.GROUPS
+                }
+                listView.adapter = listViewAdapter
+                listViewAdapter.setDeadlines(deadlineListViewModel.getDeadlines().value!!)
+            /*
+                Toast.makeText(this@MainActivity,
+                    getString(R.string.selected_item) + " " +
+                            "" +
+                            filters[position], Toast.LENGTH_SHORT).show()
+                            */
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
         }
 
         //create notification channel
@@ -59,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set when you maintain your finger on an item of the list, launch the detail activity
         listView.setOnItemLongClickListener { _, _, position, _ ->
-            val (id, _) = adapter.getItem(position)
+            val (id, _) = listViewAdapter.getItem(position)
             val detailIntent = DeadlineDetailsActivity.newIntent(this, id)
             startActivity(detailIntent)
             // Last line necessary to use this function

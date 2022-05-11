@@ -58,4 +58,5 @@
     <string name="write_description_here">Write description here</string>
     <string name="no_alarm_planned">No Alarm Planned</string>
     <string name="alarm_X_before">Alarm %s before</string>
+    <string name="selected_item">Selected item:</string>
 </resources>

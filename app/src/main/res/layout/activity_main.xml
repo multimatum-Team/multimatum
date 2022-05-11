@@ -99,4 +99,17 @@
         app:layout_constraintTop_toBottomOf="@+id/goToCalendarButton"
         app:layout_constraintVertical_bias="0.917" />
 
+    <Spinner
+        android:id="@+id/filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown"
+        android:theme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_constraintBottom_toTopOf="@+id/deadlineListView"
+        app:layout_constraintEnd_toStartOf="@+id/main_go_to_add_deadline"
+        app:layout_constraintHorizontal_bias="0.561"
+        app:layout_constraintStart_toEndOf="@+id/goToCalendarButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.651" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
