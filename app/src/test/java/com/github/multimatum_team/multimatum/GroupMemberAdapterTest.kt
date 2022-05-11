@@ -17,6 +17,8 @@ import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockGroupRepository
 import com.github.multimatum_team.multimatum.util.MockUserRepository
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
+import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -54,6 +56,10 @@ class GroupMemberAdapterTest {
     @Inject
     lateinit var userRepository: UserRepository
 
+    lateinit var authViewModel: AuthViewModel
+
+    lateinit var groupViewModel: GroupViewModel
+
     private lateinit var adapter: GroupMemberAdapter
     private lateinit var context: Application
     private lateinit var groupMap: Map<GroupID, UserGroup>
@@ -64,7 +70,9 @@ class GroupMemberAdapterTest {
         Intents.init()
         hiltRule.inject()
         context = ApplicationProvider.getApplicationContext()
-        adapter = GroupMemberAdapter(context, userRepository)
+        authViewModel = AuthViewModel(authRepository, userRepository)
+        groupViewModel = GroupViewModel(authRepository, groupRepository)
+        adapter = GroupMemberAdapter(context, userRepository, authViewModel, groupViewModel)
         groupMap = groups.associateBy { it.id }
         adapter.setGroup(
             UserGroup(

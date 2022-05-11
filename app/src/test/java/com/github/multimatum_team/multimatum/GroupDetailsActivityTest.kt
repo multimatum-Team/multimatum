@@ -87,7 +87,7 @@ class GroupDetailsActivityTest {
                 .check(matches(withText("SDP")))
                 .check(matches(isFocusable()))
             onView(withId(R.id.group_details_owner)).check(matches(withText("Owner: Joseph")))
-            onView(withId(R.id.group_details_delete_button)).check(matches(isEnabled()))
+            onView(withId(R.id.group_details_delete_or_leave_button)).check(matches(withText("Delete")))
         }
     }
 
@@ -127,7 +127,7 @@ class GroupDetailsActivityTest {
                 .check(matches(withText("MIT")))
                 .check(matches(isNotFocusable()))
             onView(withId(R.id.group_details_owner)).check(matches(withText("Owner: Louis")))
-            onView(withId(R.id.group_details_delete_button)).check(matches(isNotEnabled()))
+            onView(withId(R.id.group_details_delete_or_leave_button)).check(matches(withText("Leave")))
         }
     }
 
