@@ -6,8 +6,10 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.content.ContentValues
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -20,6 +22,7 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.GroupOwned
+import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractionResult
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
@@ -89,13 +92,14 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         updateDisplayedDateAndTime()
-        KeyboardVisibilityEvent.setEventListener(this, object : KeyboardVisibilityEventListener {
-            override fun onVisibilityChanged(isOpen: Boolean) {
-                if (!isOpen) {
-                    updateDisplayedInfoAfterTitleChange()
-                }
+        textTitle.setOnKeyListener { _, keyCode, keyEvent ->
+            if (keyEvent.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                updateDisplayedInfoAfterTitleChange()
+                return@setOnKeyListener true
             }
-        })
+            return@setOnKeyListener false
+        }
+
         initializePlacesAutocomplete()
 
         // Update the groups owned by the user to be able to select them
@@ -116,6 +120,12 @@ class AddDeadlineActivity : AppCompatActivity() {
      */
     private fun updateDisplayedInfoAfterTitleChange() {
         val dateTimeExtractionResult = dateTimeExtractor.parse(textTitle.text.toString())
+        if(dateTimeExtractionResult.date != null || dateTimeExtractionResult.time!=null){
+            launchParsingValidationAlert(dateTimeExtractionResult)
+        }
+    }
+
+    private fun applyParsing(dateTimeExtractionResult: DateTimeExtractionResult){
         dateTimeExtractionResult.date?.also { foundDate ->
             selectedDate = selectedDate
                 .withYear(foundDate.year)
@@ -129,6 +139,19 @@ class AddDeadlineActivity : AppCompatActivity() {
         }
         updateDisplayedDateAndTime()
         textTitle.text = dateTimeExtractionResult.text
+    }
+    private fun launchParsingValidationAlert(res: DateTimeExtractionResult){
+        val alertBuilder = AlertDialog.Builder(this)
+        var message = "title: " + res.text
+        if(res.date!= null) (message + "\ndate: " + res.date.toString()).also { message = it }
+        if(res.time!= null) (message + "\ntime: " + res.time.toString()).also { message = it }
+        alertBuilder.setCancelable(true).setTitle(R.string.parsing_validation_title)
+            .setMessage(message)
+        alertBuilder.setNegativeButton("Cancel",
+            DialogInterface.OnClickListener { dialogInterface, _ -> dialogInterface.cancel() })
+        alertBuilder.setPositiveButton("OK",
+            DialogInterface.OnClickListener { _, _ -> applyParsing(res) })
+        alertBuilder.show()
     }
 
     private fun updateDisplayedDateAndTime() {

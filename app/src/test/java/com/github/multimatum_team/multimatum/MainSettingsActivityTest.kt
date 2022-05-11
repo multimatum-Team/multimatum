@@ -4,18 +4,23 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.hardware.SensorManager
+import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.MainSettingsActivity
 import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.DARK_MODE_PREF_KEY
 import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.NOTIF_ENABLED_PREF_KEY
+import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.AuthRepository
@@ -24,6 +29,7 @@ import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.util.MockAuthRepository
 import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
 import com.github.multimatum_team.multimatum.util.MockGroupRepository
+import com.google.android.material.slider.Slider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +39,8 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.Description
+import org.hamcrest.Matcher
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -46,6 +54,7 @@ import org.mockito.kotlin.mock
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @UninstallModules(DependenciesProvider::class, FirebaseRepositoryModule::class)
 @HiltAndroidTest
@@ -116,6 +125,58 @@ class MainSettingsActivityTest {
         )
     }
 
+    // inspired from https://www.androidbugfix.com/2021/09/androidx-how-to-test-slider-in-ui-tests.html
+    @Test
+    fun value_selected_on_slider_is_written_to_preferences() {
+        val mockEditor: SharedPreferences.Editor = mock()
+        `when`(
+            mockSharedPreferences.getBoolean(
+                eq(NOTIF_ENABLED_PREF_KEY),
+                any()
+            )
+        ).thenReturn(true)
+        `when`(mockSharedPreferences.getBoolean(eq(DARK_MODE_PREF_KEY), any()))
+            .thenReturn(false)
+        val applicationContext = ApplicationProvider.getApplicationContext<Context>()
+        val intent = Intent(applicationContext, MainSettingsActivity::class.java)
+        val activityScenario: ActivityScenario<MainSettingsActivity> =
+            ActivityScenario.launch(intent)
+        `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
+        activityScenario.use {
+            for (sensitivity in (1..10).toList().shuffled(Random(seed = 415L))) {
+                var writtenValue = -1
+                `when`(mockEditor.putInt(eq(PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY), any()))
+                    .then {
+                        writtenValue = it.getArgument(1)
+                        mockEditor
+                    }
+                onView(withId(R.id.main_settings_procrastination_detector_sensibility_slider))
+                    .perform(setSliderValueAction(sensitivity))
+                    .check(matches(hasValue(sensitivity)))
+                assertEquals(sensitivity, writtenValue)
+            }
+        }
+    }
+
+    private fun setSliderValueAction(value: Int) = object : ViewAction {
+        override fun getConstraints(): Matcher<View> = isAssignableFrom(Slider::class.java)
+        override fun getDescription(): String = "Set Slider value to $value"
+        override fun perform(uiController: UiController?, view: View?) {
+            (view as Slider).value = value.toFloat()
+        }
+    }
+
+    private fun hasValue(expectedValue: Int) =
+        object : BoundedMatcher<View?, Slider>(Slider::class.java) {
+            override fun describeTo(description: Description) {
+                description.appendText("expected: $expectedValue")
+            }
+
+            override fun matchesSafely(slider: Slider?): Boolean {
+                return slider?.value == expectedValue.toFloat()
+            }
+        }
+
     // The parameters are the initial state of the buttons, the button whose state will be changed
     // and the expected final states of the buttons
     // The method checks that settings values are correctly written to SharedPreferences and
@@ -130,8 +191,7 @@ class MainSettingsActivityTest {
                 eq(NOTIF_ENABLED_PREF_KEY),
                 any()
             )
-        )
-            .thenReturn(initNotifEnabled)
+        ).thenReturn(initNotifEnabled)
         `when`(mockSharedPreferences.getBoolean(eq(DARK_MODE_PREF_KEY), any()))
             .thenReturn(initDarkModeEnabled)
         val mockEditor: SharedPreferences.Editor = mock()
@@ -209,6 +269,6 @@ class MainSettingsActivityTest {
     }
 
     companion object {
-        val mockSharedPreferences: SharedPreferences = mock()
+        private val mockSharedPreferences: SharedPreferences = mock()
     }
 }

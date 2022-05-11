@@ -1,8 +1,11 @@
 package com.github.multimatum_team.multimatum
 
+
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.provider.Settings.System.getString
+import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.size
@@ -12,6 +15,7 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -42,6 +46,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowDatePickerDialog
 import org.robolectric.shadows.ShadowTimePickerDialog
@@ -129,17 +134,26 @@ class AddDeadlineTest {
             ShadowToast.getTextOfLatestToast(),
             CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created))
         )
+    }
 
-
+    fun `parsing validation pop-up`(){
+        onView(withId(R.id.add_deadline_select_title))
+            .perform(ViewActions.replaceText("foo 5pm")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+        val dialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog())
+        //check if dialog is shown
+        assertEquals(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title), dialog.title)
+        //dismiss dialog
+        onView(withText(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title))).inRoot(isDialog()).check(matches(isDisplayed())).perform(pressBack())
+        //checkdialog is closed
+        assert(!ShadowAlertDialog.getLatestAlertDialog().isShowing)
     }
 
     @Test
-    fun `The button Add should add a deadline given a title, a date and a time`() {
+    fun `The button should add a deadline given a title, a date and a time`() {
 
-        // Select Title
+        // Select Title and press enter
         onView(withId(R.id.add_deadline_select_title))
-            .perform(replaceText("Test 1"))
-        Espresso.closeSoftKeyboard()
+            .perform(ViewActions.replaceText("Test 1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
 
         // Select Date
         onView(withId(R.id.add_deadline_select_date))
