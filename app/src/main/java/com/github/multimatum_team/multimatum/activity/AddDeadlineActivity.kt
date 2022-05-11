@@ -5,11 +5,8 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
-import android.content.ContentValues
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -24,20 +21,15 @@ import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.google.android.gms.common.api.Status
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.mapbox.search.result.SearchResult
+import com.mapbox.search.ui.view.SearchBottomSheetView
 import dagger.hilt.android.AndroidEntryPoint
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
-import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-
 
 /**
  *  Activity who create a deadline using a DatePickerDialog and a TimePickerDialog
@@ -87,7 +79,8 @@ class AddDeadlineActivity : AppCompatActivity() {
                 }
             }
         })
-        initializePlacesAutocomplete()
+        // Initialize the location search view
+        initializeLocationSearchView(savedInstanceState)
     }
 
     /**
@@ -117,38 +110,45 @@ class AddDeadlineActivity : AppCompatActivity() {
     }
 
     /**
-     * Setup the PlacesAutocompleteClient used to select a location for a deadline
+     * Initialize the location search view with the chosen parameters
      */
-    private fun initializePlacesAutocomplete() {
-        Places.initialize(applicationContext, getString(R.string.places_key))
-        // Must be commented for now
-        /*
-        Places.createClient(this)
-        */
-        initializeAutocompleteFragment()
+    private fun initializeLocationSearchView(savedInstanceState: Bundle?) {
+        val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
+        val locationTextView = findViewById<TextView>(R.id.coordinates)
+
+        searchBottomSheetView.initializeSearch(
+            savedInstanceState,
+            SearchBottomSheetView.Configuration()
+        )
+        // Hide the search bar at the beginning
+        searchBottomSheetView.hide()
+
+        // Add a listener for an eventual place selection
+        searchBottomSheetView.addOnHistoryClickListener { result ->
+            // We get only the name for now, the coordinates can also be extracted here.
+            locationTextView.text = result.name
+            searchBottomSheetView.hide()
+        }
+        // Add a listener for an eventual place selection in the history
+        searchBottomSheetView.addOnSearchResultClickListener { result, _ ->
+            locationTextView.text = result.name
+            searchBottomSheetView.hide()
+            updateLocationTextAndHideBar(locationTextView, searchBottomSheetView, result)
+        }
+        searchBottomSheetView.isHideableByDrag = true
     }
 
     /**
-     * Setup the AutocompleteSupportFragment with all its parameters
+     * Helper function to update the location text view on
+     * the "AddDeadlineActivity" main screen
      */
-    private fun initializeAutocompleteFragment() {
-        val autocompleteFragment =
-            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
-
-        autocompleteFragment
-            .setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME)) //Returned fields
-            .setCountries(listOf("CH")) // Default startup country
-
-        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            override fun onPlaceSelected(place: Place) {
-                // TODO: Define here what we do with the returned place
-                Log.i(ContentValues.TAG, "Place: ${place.name}, ${place.id}")
-            }
-
-            override fun onError(status: Status) {
-                Log.e(ContentValues.TAG, "An error occurred: $status")
-            }
-        })
+    private fun updateLocationTextAndHideBar(
+        locationTextView: TextView,
+        searchBottomSheetView: SearchBottomSheetView,
+        result: SearchResult
+    ) {
+        locationTextView.text = result.name
+        searchBottomSheetView.hide()
     }
 
     /**
@@ -261,6 +261,16 @@ class AddDeadlineActivity : AppCompatActivity() {
             }
         }
     }
+
+    /**
+     *  Go to SearchLocationActivity, which allows the user to select a location
+     *  for a deadline.
+     */
+    fun searchLocation(view: View) {
+        val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
+        searchBottomSheetView.expand()
+    }
+
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -271,6 +281,7 @@ class AddDeadlineActivity : AppCompatActivity() {
                 pdfTextView.text = path.substring(lastSlashIndex + 1, path.length)
             }
         }
+
     fun selectPDF(view: View) {
         PDFUtil.selectPdfIntent() {
             startForResult.launch(it)

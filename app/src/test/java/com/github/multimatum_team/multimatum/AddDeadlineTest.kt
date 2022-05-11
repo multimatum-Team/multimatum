@@ -10,6 +10,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -139,6 +140,13 @@ class AddDeadlineTest {
             CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created))
         )
 
+    }
+
+    @Test
+    fun `The button should open the location search bar`() {
+        // Clicking on the location search button
+        onView(withId(R.id.search_location)).perform(ViewActions.click())
+        onView(withId(R.id.search_location)).check(ViewAssertions.matches(isDisplayed()))
     }
 
     // TODO: This test was removed because I replaced the startIntent to the MainActivity with a
