@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum.model.datetime_parser
 
-import com.github.multimatum_team.multimatum.LogUtil
 import java.time.*
 import java.time.temporal.TemporalAdjusters
 import kotlin.reflect.full.findAnnotation
@@ -220,15 +219,20 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             timeFor(0, 0)
         }
 
+    // all the patterns, i.e. all the properties marked with @PatternPair
     val patterns: List<PatternMatchCase> =
         @Suppress("UNCHECKED_CAST")
+        /* Cannot check the type parameters in cast
+         * This may cause a crash when this class is instantiated if @PatternPair is used
+         * on something else than the type given in its documentation */
         this::class.memberProperties
             .filter { it.findAnnotation<PatternPair>() != null }
             .map {
                 it.getter.isAccessible = true
-                val (pattern, extractionFunc) = it.getter.call(this) as Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo>
+                val (pattern, extractionFunc) = it.getter.call(this)
+                        as Pair<List<(Token) -> Any?>, (List<Any?>) -> ExtractedInfo>
                 it.getter.isAccessible = false
-                PatternMatchCase(pattern, extractionFunc)
+                PatternMatchCase(pattern, extractionFunc, it.name)
             }
 
 }
