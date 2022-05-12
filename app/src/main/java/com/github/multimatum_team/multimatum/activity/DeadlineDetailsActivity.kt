@@ -338,8 +338,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                 findViewById<ImageButton>(R.id.deadline_details_activity_modify)
             // If the group of the deadline is not owned by the user,
             // they can't modify it
-            modifyButton.isClickable = false
-            modifyButton.isVisible = false
+            modifyButton.isClickable = groupViewModel.getOwnedGroups().values.contains(groupDeadline)
+            modifyButton.isVisible = groupViewModel.getOwnedGroups().values.contains(groupDeadline)
 
             getString(R.string.in_the_group_X, groupDeadline.name)
         }
