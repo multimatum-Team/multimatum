@@ -84,8 +84,8 @@ class AddDeadlineTest {
         val application = getApplication(appContext)
         MapboxSearchSdk.initialize(
             application = application,
-            accessToken = appContext.getString(R.string.mapbox_access_token),
-            locationEngine = LocationEngineProvider.getBestLocationEngine(appContext)
+            accessToken = "pk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNHdvaHYwZ21nM2JtdW42MWY0cTRyIn0.T61NTFU2NdeqmCu1CdO9mg",
+            locationEngine = LocationEngineProvider.getBestLocationEngine(application)
         )
     }
 
