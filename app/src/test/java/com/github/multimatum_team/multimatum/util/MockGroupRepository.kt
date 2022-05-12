@@ -54,15 +54,33 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
 
     override suspend fun delete(id: GroupID) {
         groups.remove(id)
+        notifyUpdateListeners()
     }
 
     override suspend fun rename(id: GroupID, newName: String) {
         require(groups.containsKey(id))
         groups[id] = groups[id]!!.copy(name = newName)
+        notifyUpdateListeners()
     }
 
     override suspend fun invite(id: GroupID, email: String) {
         throw UnsupportedOperationException("group invites are not supported")
+    }
+
+    override suspend fun removeMember(groupID: GroupID, memberID: UserID) {
+        var group = groups[groupID]!!
+        val newMembers = group.members.toMutableSet()
+        newMembers.remove(memberID)
+        println("$_userID, $group, $newMembers")
+        group = group.copy(members = newMembers)
+        groupsPerUser[memberID]?.remove(groupID)
+        for (groupMap in groupsPerUser.values) {
+            if (groupMap.containsKey(groupID)) {
+                groupMap[groupID] = group
+            }
+        }
+        println("removed $memberID from $groupID: $newMembers")
+        notifyUpdateListeners()
     }
 
     override fun onUpdate(callback: (Map<GroupID, UserGroup>) -> Unit) {

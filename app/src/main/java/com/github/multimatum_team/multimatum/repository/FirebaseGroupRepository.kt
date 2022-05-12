@@ -3,7 +3,9 @@ package com.github.multimatum_team.multimatum.repository
 import android.util.Log
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
+import com.github.multimatum_team.multimatum.model.UserID
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -113,6 +115,18 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
      */
     override suspend fun invite(id: GroupID, email: String) {
         throw NotImplementedError("FirebaseGroupRepository.invite is not implemented")
+    }
+
+    /**
+     * Kick a user from a group.
+     * @param groupID the group from which to kick the user
+     * @param memberID the ID of the group member to kick
+     */
+    override suspend fun removeMember(groupID: GroupID, memberID: UserID) {
+        groupsRef
+            .document(groupID)
+            .update("members", FieldValue.arrayRemove(memberID))
+            .await()
     }
 
     /**
