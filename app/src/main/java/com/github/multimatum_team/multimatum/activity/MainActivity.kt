@@ -18,9 +18,9 @@ import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.adaptater.FilterState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
-import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.hudomju.swipe.SwipeToDismissTouchListener
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private val groupViewModel: GroupViewModel by viewModels()
-    private val userViewModel: UserViewModel by viewModels()
+    private val userViewModel: AuthViewModel by viewModels()
 
     private var filters = mutableListOf("All", "Mine")
 
