@@ -50,8 +50,8 @@ object PDFUtil {
         }
     }
 
-    private fun getUniqueInt() {
-        (Int.MIN_VALUE..Int.MAX_VALUE).random()
+    private fun getUniqueInt(): String {
+        return (Int.MIN_VALUE..Int.MAX_VALUE).random().toString()
     }
 
     /**

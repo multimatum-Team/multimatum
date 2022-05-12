@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
     }
-    
+
     private fun onDismissOverride(view: ListViewAdapter?, position: Int, lv:ListView, viewModel: DeadlineListViewModel){
         val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
         val (idToDelete, deadline) = adapter.getItem(position)
