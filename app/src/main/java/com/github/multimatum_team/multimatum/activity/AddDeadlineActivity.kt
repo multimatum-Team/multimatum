@@ -26,6 +26,9 @@ import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractionResult
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
+import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.FirebasePdfRepository
+import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
@@ -36,6 +39,8 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,11 +58,16 @@ class AddDeadlineActivity : AppCompatActivity() {
     @Inject
     lateinit var clockService: ClockService
 
+    @Inject
+    lateinit var firebasePdfRepository: PdfRepository
+
+    @Inject
+    lateinit var firebaseStorage: FirebaseStorage
+
     private lateinit var selectedDate: LocalDateTime
 
     private val dateTimeExtractor = DateTimeExtractor { clockService.now().toLocalDate() }
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
-    private lateinit var storageRef: StorageReference
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
     private lateinit var pdfTextView: TextView
@@ -80,7 +90,10 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        storageRef = FirebaseStorage.getInstance().reference
+
+        Firebase.initialize(this)
+        firebaseStorage = FirebaseStorage.getInstance()
+        firebasePdfRepository = FirebasePdfRepository(firebaseStorage)
 
         setContentView(R.layout.activity_add_deadline)
         textTitle = findViewById(R.id.add_deadline_select_title)
@@ -283,7 +296,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             //loading bar
             progressBar.visibility = View.VISIBLE
             // Start upload
-            PDFUtil.uploadPdfToFirebase(pdfData, storageRef, this) { ref ->
+            firebasePdfRepository.uploadPdf(pdfData, this){ ref ->
                 // Hide loading bar
                 progressBar.visibility = View.GONE;
 

@@ -22,14 +22,10 @@ import com.github.multimatum_team.multimatum.activity.*
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.UserGroup
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
-import com.github.multimatum_team.multimatum.repository.UserRepository
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockGroupRepository
-import com.github.multimatum_team.multimatum.util.MockUserRepository
+import com.github.multimatum_team.multimatum.repository.*
+import com.github.multimatum_team.multimatum.util.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,6 +44,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.robolectric.shadow.api.Shadow.extract
 import org.robolectric.shadows.ShadowApplication
@@ -252,6 +249,11 @@ class MainActivityTest {
 
         @Singleton
         @Provides
+        fun providePdfRepository(): PdfRepository =
+            MockPdfRepository()
+
+        @Singleton
+        @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
 
@@ -260,6 +262,17 @@ class MainActivityTest {
         fun provideUserRepository(): UserRepository =
             MockUserRepository(listOf())
     }
+
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestFirebaseModule {
+        @Singleton
+        @Provides
+        fun provideFirebaseStorage(): FirebaseStorage =
+            Mockito.mock(FirebaseStorage::class.java)
+    }
+
 
     companion object {
         val mockSharedPreferences: SharedPreferences = mock()

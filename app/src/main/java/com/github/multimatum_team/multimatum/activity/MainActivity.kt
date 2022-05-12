@@ -20,6 +20,8 @@ import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.FirebasePdfRepository
+import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.firebase.ktx.Firebase
@@ -40,6 +42,13 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
+    @Inject
+    lateinit var pdfRepository: PdfRepository
+
+    @Inject
+    lateinit var firebaseStorage: FirebaseStorage
+
+
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -47,6 +56,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Firebase.initialize(this)
+        firebaseStorage = FirebaseStorage.getInstance()
+        pdfRepository = FirebasePdfRepository(firebaseStorage)
+
         setContentView(R.layout.activity_main)
 
         val listView = findViewById<ListView>(R.id.deadlineListView)
@@ -106,8 +118,7 @@ class MainActivity : AppCompatActivity() {
         val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
         val (idToDelete, deadline) = adapter.getItem(position)
         if (deadline.pdfPath != "") {
-            FirebaseStorage.getInstance().reference.child(deadline.pdfPath).delete()
-                .addOnFailureListener { LogUtil.debugLog("PDF has failed to be deleted") }
+            pdfRepository.delete(deadline.pdfPath)
         }
         viewModel.deleteDeadline(idToDelete) {
             DeadlineNotification.deleteNotification(it, this@MainActivity)

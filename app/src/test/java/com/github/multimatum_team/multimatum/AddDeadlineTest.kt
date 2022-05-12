@@ -4,7 +4,8 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.provider.Settings.System.getString
+import android.content.Context
+import android.net.Uri
 import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
@@ -22,12 +23,12 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.AddDeadlineActivity
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
-import com.github.multimatum_team.multimatum.repository.UserRepository
+import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,6 +45,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
+import org.mockito.kotlin.doNothing
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlertDialog
@@ -229,6 +232,20 @@ class AddDeadlineTest {
         @Provides
         fun provideUserRepository(): UserRepository =
             MockUserRepository(listOf())
+
+        @Singleton
+        @Provides
+        fun providePdfRepository(): PdfRepository =
+            MockPdfRepository()
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestFirebaseModule {
+        @Singleton
+        @Provides
+        fun provideFirebaseStorage(): FirebaseStorage =
+            Mockito.mock(FirebaseStorage::class.java)
     }
 
     @Module

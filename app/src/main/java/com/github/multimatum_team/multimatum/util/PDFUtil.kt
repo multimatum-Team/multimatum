@@ -23,34 +23,9 @@ object PDFUtil {
     }
 
     /**
-     * Upload a pdf file
+     * generate a unique ID randomize over Int range
      */
-    fun uploadPdfToFirebase(
-        data: Uri,
-        storageRef: StorageReference,
-        context: Context,
-        callback: (String) -> Unit
-    ) {
-        if (data != Uri.EMPTY) {
-            val ref =
-                storageRef.child(
-                    FirebaseAuth.getInstance().uid + "/upload" + getUniqueInt() + getFileNameFromUri(
-                        data
-                    )
-                )
-            ref.putFile(data).addOnSuccessListener {
-                callback(ref.path)
-            }.addOnFailureListener {
-                val failureDialog =
-                    AlertDialog.Builder(context).setTitle("pdf upload failed").show()
-                callback("")
-            }
-        } else {
-            callback("")
-        }
-    }
-
-    private fun getUniqueInt(): String {
+    fun getUniqueInt(): String {
         return (Int.MIN_VALUE..Int.MAX_VALUE).random().toString()
     }
 

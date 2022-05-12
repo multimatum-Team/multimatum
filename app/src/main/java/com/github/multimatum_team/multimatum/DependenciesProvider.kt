@@ -10,6 +10,8 @@ import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.service.SystemClockService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -54,6 +56,11 @@ object FirebaseModule {
     @Provides
     fun provideFirebaseFirestore(): FirebaseFirestore =
         FirebaseFirestore.getInstance()
+
+    @Singleton
+    @Provides
+    fun provideFirebaseStorage(): FirebaseStorage =
+        FirebaseStorage.getInstance()
 }
 
 @Module
@@ -74,4 +81,8 @@ abstract class FirebaseRepositoryModule {
     @Singleton
     @Binds
     abstract fun provideUserRepository(impl: FirebaseUserRepository): UserRepository
+
+    @Singleton
+    @Binds
+    abstract fun providePdfRepository(impl: FirebasePdfRepository): PdfRepository
 }
