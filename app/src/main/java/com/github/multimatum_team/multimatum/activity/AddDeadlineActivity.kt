@@ -149,28 +149,17 @@ class AddDeadlineActivity : AppCompatActivity() {
         searchBottomSheetView.hide()
 
         // Add a listener for an eventual place selection
-        searchBottomSheetView.addOnHistoryClickListener { result ->
+        searchBottomSheetView.addOnHistoryClickListener { history_record ->
             // We get only the name for now, the coordinates can also be extracted here.
-            updateLocationTextAndHideBar(locationTextView, searchBottomSheetView, result)
+            locationTextView.text = history_record.name
+            searchBottomSheetView.hide()
         }
         // Add a listener for an eventual place selection in the history
         searchBottomSheetView.addOnSearchResultClickListener { result, _ ->
-            updateLocationTextAndHideBar(locationTextView, searchBottomSheetView, result)
+            locationTextView.text = result.name
+            searchBottomSheetView.hide()
         }
         searchBottomSheetView.isHideableByDrag = true
-    }
-
-    /**
-     * Helper function to update the location text view on
-     * the "AddDeadlineActivity" main screen
-     */
-    private fun updateLocationTextAndHideBar(
-        locationTextView: TextView,
-        searchBottomSheetView: SearchBottomSheetView,
-        result: SearchResult
-    ) {
-        locationTextView.text = result.name
-        searchBottomSheetView.hide()
     }
 
     /**
