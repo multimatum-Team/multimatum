@@ -3,19 +3,20 @@ package com.github.multimatum_team.multimatum.activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ListView
+import android.widget.Spinner
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
-import com.github.multimatum_team.multimatum.adaptater.FilterState
+import com.github.multimatum_team.multimatum.adaptater.DeadlineFilterAdapter
+import com.github.multimatum_team.multimatum.adaptater.NoFilter
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
@@ -42,9 +43,6 @@ class MainActivity : AppCompatActivity() {
     private val groupViewModel: GroupViewModel by viewModels()
     private val userViewModel: AuthViewModel by viewModels()
 
-    private var filters = mutableListOf("All", "Mine")
-
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,7 +51,8 @@ class MainActivity : AppCompatActivity() {
 
         //access listview for deadline
         val listView = findViewById<ListView>(R.id.deadlineListView)
-        val listViewAdapter = DeadlineAdapter(this, deadlineListViewModel, userGroupViewModel = groupViewModel)
+        val listViewAdapter =
+            DeadlineAdapter(this, deadlineListViewModel)
 
         //set up observer on deadline list
         listView.adapter = listViewAdapter
@@ -61,48 +60,27 @@ class MainActivity : AppCompatActivity() {
             listViewAdapter.setDeadlines(deadlines)
         }
 
-        groupViewModel.getGroups().observe(this){ groups ->
-            filters.addAll(groups.values.filter {
-                    group -> group.members.contains(userViewModel.getUser().value!!.id) }.map {
-                    group -> group.name })
-            filters = filters.distinct() as MutableList<String>
-        }
-
         //access the spinner
-        val spin = findViewById<Spinner>(R.id.filter)
-        if (spin != null) {
-            val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,
-                filters)
-            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spin.adapter = spinnerAdapter
-        }
-
-        spin.onItemSelectedListener = object :
-        AdapterView.OnItemSelectedListener{
+        val filterSpinner = findViewById<Spinner>(R.id.filter)
+        val filterAdapter = DeadlineFilterAdapter(this)
+        filterSpinner.adapter = filterAdapter
+        filterSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
                 id: Long
-            ) {
-                when (position){
-                    0 -> listViewAdapter.state = FilterState.ALL
-                    1 -> listViewAdapter.state = FilterState.MINE
-                    else -> listViewAdapter.state = FilterState.GROUPS
-                }
-                listView.adapter = listViewAdapter
-                listViewAdapter.setDeadlines(deadlineListViewModel.getDeadlines().value!!, filter = filters[position])
-            /*
-                Toast.makeText(this@MainActivity,
-                    getString(R.string.selected_item) + " " +
-                            "" +
-                            filters[position], Toast.LENGTH_SHORT).show()
-                            */
-            }
+            ) =
+                listViewAdapter.setFilter(filterAdapter.getItem(position))
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
+                listViewAdapter.setFilter(NoFilter)
             }
+        }
+
+        groupViewModel.getGroups().observe(this) { groups ->
+            val currentUserID = userViewModel.getUser().value!!.id
+            filterAdapter.setGroups(groups.values.filter { it.members.contains(currentUserID) })
         }
 
         //create notification channel
@@ -216,7 +194,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun goToGroups(view: View){
+    fun goToGroups(view: View) {
         val intent = Intent(this, GroupsActivity::class.java)
         startActivity(intent)
     }
