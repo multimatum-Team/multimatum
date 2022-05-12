@@ -6,7 +6,6 @@ check_android_task:
     ARCH: x86
     CC_TEST_REPORTER_ID: ENCRYPTED[!9d31041ab9d058eef913d04a47448a5673cdc9c9159c9bc7c1494b97634da6070be106cf39248fc7a1e0f55698d234fb!]
     GOOGLE_SERVICES_JSON: ENCRYPTED[dec8e093854b265d047f4bab46c261a2fd0567cf493ddc6ec88d25e6e6287674fccf162e9f02ea6b08c17d13ccb99d16]
-    GRADLE_PROPERTIES: ENCRYPTED[!52a0ef38a47fe68bed29fcfb6ea777d11ec342331be41288b6b447f5de0b4a70138488569b7235f636cd0087cedcb3c6!]
   container:
     image: reactivecircus/android-emulator-$API_LEVEL:latest
     kvm: true
@@ -18,7 +17,6 @@ check_android_task:
     $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -no-boot-anim -camera-back none
   set_auth_tokens_script: |
     echo $GOOGLE_SERVICES_JSON > app/google-services.json
-    echo $GRADLE_PROPERTIES > gradle.properties
   build_script: |
     chmod +x gradlew
     ./gradlew assembleDebugAndroidTest
