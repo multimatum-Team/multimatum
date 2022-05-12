@@ -12,6 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ServiceTestRule
 import com.github.multimatum_team.multimatum.DependenciesProvider
 import com.github.multimatum_team.multimatum.R
+import com.github.multimatum_team.multimatum.activity.MainSettingsActivity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +29,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -56,6 +58,12 @@ class ProcrastinationDetectorServiceTest {
     fun init() {
         Intents.init()
         hiltRule.inject()
+        `when`(
+            mockSharedPreferences.getInt(
+                eq(MainSettingsActivity.PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY),
+                any()
+            )
+        ).thenReturn(PROCRASTINATION_DETECTOR_SENSITIVITY_FOR_TESTS)
     }
 
     @After
@@ -293,7 +301,7 @@ class ProcrastinationDetectorServiceTest {
         controller.destroy()
     }
 
-    data class EventToSimulate(val x: Float, val y: Float, val z: Float, val timestamp: Long)
+    private data class EventToSimulate(val x: Float, val y: Float, val z: Float, val timestamp: Long)
 
     /**
      * WARNING this method does not perform any assertion
@@ -347,6 +355,8 @@ class ProcrastinationDetectorServiceTest {
         private val mockSharedPreferences: SharedPreferences = mock()
         private const val TINY_CHANGE = 1e-5.toFloat()
         private const val FAKE_TOAST_TEXT = "<fake_toast_text>"
+        private const val PROCRASTINATION_DETECTOR_SENSITIVITY_FOR_TESTS =
+            ProcrastinationDetectorService.MAX_SENSITIVITY - 2
     }
 
     @Module

@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,15 +8,15 @@ import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
 import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
-class UserViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+class AuthViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    userRepository: UserRepository
 ) : ViewModel() {
     private val _user: MutableLiveData<User> = MutableLiveData()
 
@@ -29,6 +28,9 @@ class UserViewModel @Inject constructor(
 
         authRepository.onUpdate { newUser ->
             LogUtil.debugLog("update auth: $newUser")
+            if (newUser is SignedInUser) {
+                viewModelScope.launch { userRepository.setInfo(newUser.info) }
+            }
             _user.value = newUser
         }
     }

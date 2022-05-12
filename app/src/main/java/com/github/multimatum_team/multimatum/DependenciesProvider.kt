@@ -8,6 +8,7 @@ import android.hardware.SensorManager
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.service.SystemClockService
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Binds
 import dagger.Module
@@ -46,6 +47,11 @@ object ClockModule {
 object FirebaseModule {
     @Singleton
     @Provides
+    fun provideFirebaseAuth(): FirebaseAuth =
+        FirebaseAuth.getInstance()
+
+    @Singleton
+    @Provides
     fun provideFirebaseFirestore(): FirebaseFirestore =
         FirebaseFirestore.getInstance()
 }
@@ -64,4 +70,8 @@ abstract class FirebaseRepositoryModule {
     @Singleton
     @Binds
     abstract fun provideAuthRepository(impl: FirebaseAuthRepository): AuthRepository
+
+    @Singleton
+    @Binds
+    abstract fun provideUserRepository(impl: FirebaseUserRepository): UserRepository
 }
