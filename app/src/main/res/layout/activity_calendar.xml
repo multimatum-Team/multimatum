@@ -21,7 +21,6 @@
         android:background="@drawable/circle_button"
         style="@style/Widget.MaterialComponents.Button.Icon"
         app:icon="@drawable/ic_add_deadline"
-        android:onClick="addNewDeadlineCalendar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

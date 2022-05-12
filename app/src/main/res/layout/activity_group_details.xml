@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.DeadlineDetailsActivity">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/group_details_name"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:hint="@string/group_details_group_name_hint"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textSize="@dimen/group_details_group_name_font_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.527"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/group_details_owner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textSize="@dimen/group_details_user_name_font_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/group_details_name"
+        app:layout_constraintTop_toBottomOf="@+id/group_details_name" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/group_details_members"
+        android:layout_width="320dp"
+        android:layout_height="460dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="@+id/group_details_name"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/group_details_name"
+        app:layout_constraintTop_toBottomOf="@+id/group_details_owner" />
+
+    <Button
+        android:id="@+id/group_details_invite_button"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="@string/group_invite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/group_details_members"
+        app:layout_constraintTop_toBottomOf="@+id/group_details_members"
+        app:layout_constraintVertical_bias="0.847" />
+
+    <Button
+        android:id="@+id/group_details_delete_or_leave_button"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/group_details_members"
+        app:layout_constraintTop_toBottomOf="@+id/group_details_members"
+        app:layout_constraintVertical_bias="0.847" />
+</androidx.constraintlayout.widget.ConstraintLayout>
