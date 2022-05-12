@@ -7,10 +7,8 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
-import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
-import com.github.multimatum_team.multimatum.model.User
-import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalStateException
 
@@ -21,7 +19,7 @@ import java.lang.IllegalStateException
  */
 @AndroidEntryPoint
 class ProfileActivity : AppCompatActivity() {
-    private val userViewModel: UserViewModel by viewModels()
+    private val userViewModel: AuthViewModel by viewModels()
 
     private lateinit var loginMessage: TextView
     private lateinit var logOutButton: Button

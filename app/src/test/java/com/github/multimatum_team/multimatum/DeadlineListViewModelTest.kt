@@ -2,7 +2,6 @@ package com.github.multimatum_team.multimatum
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.Deadline
@@ -11,10 +10,8 @@ import com.github.multimatum_team.multimatum.model.UserID
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockGroupRepository
-import com.github.multimatum_team.multimatum.util.getOrAwaitValue
+import com.github.multimatum_team.multimatum.repository.UserRepository
+import com.github.multimatum_team.multimatum.util.*
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import dagger.Module
 import dagger.Provides
@@ -28,7 +25,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -214,5 +210,10 @@ class DeadlineListViewModelTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 }
