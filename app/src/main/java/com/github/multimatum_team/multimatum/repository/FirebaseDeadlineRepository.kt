@@ -95,12 +95,13 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
             .toLocalDateTime()
         val description = deadlineSnapshot["description"] as String
         val ownerMap = deadlineSnapshot["owner"] as Map<String, String>
+        val pdfPath = deadlineSnapshot["pdfPath"] as String
         val owner = when (ownerMap["type"]) {
             "user" -> UserOwned
             "group" -> GroupOwned(ownerMap["id"] as String)
             else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
         }
-        return Deadline(title, state, date, description, owner)
+        return Deadline(title, state, date, description, owner, pdfPath = pdfPath)
     }
 
     /**

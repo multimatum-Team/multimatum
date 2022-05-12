@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum.activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -14,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
@@ -21,6 +24,7 @@ import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
+import com.google.firebase.storage.FirebaseStorage
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -84,7 +88,10 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
                     val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
-                    val (idToDelete, _) = adapter.getItem(position)
+                    val (idToDelete, deadline) = adapter.getItem(position)
+                    if(deadline.pdfPath!=""){
+                        FirebaseStorage.getInstance().reference.child(deadline.pdfPath).delete().addOnSuccessListener{ LogUtil.debugLog("PDF has been deleted") }.addOnFailureListener{LogUtil.debugLog("PDF has failed to be deleted") }
+                    }
                     viewModel.deleteDeadline(idToDelete) {
                         DeadlineNotification.deleteNotification(it, this@MainActivity)
                     }
