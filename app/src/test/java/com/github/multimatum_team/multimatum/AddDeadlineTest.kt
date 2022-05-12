@@ -4,9 +4,11 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
@@ -27,9 +29,12 @@ import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
+import com.mapbox.android.core.location.LocationEngineProvider
+import com.mapbox.search.MapboxSearchSdk
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -75,6 +80,13 @@ class AddDeadlineTest {
     fun setUp() {
         Intents.init()
         hiltRule.inject()
+        val appContext = ApplicationProvider.getApplicationContext<Context>()
+        val application = getApplication(appContext)
+        MapboxSearchSdk.initialize(
+            application = application,
+            accessToken = appContext.getString(R.string.mapbox_access_token),
+            locationEngine = LocationEngineProvider.getBestLocationEngine(appContext)
+        )
     }
 
     @After
