@@ -87,7 +87,8 @@ class AddDeadlineActivity : AppCompatActivity() {
         }
 
         // Initialize the location search view
-        initializeLocationSearchView(savedInstanceState)
+        // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
+        //initializeLocationSearchView(savedInstanceState)
     }
 
     /**
@@ -138,6 +139,8 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Initialize the location search view with the chosen parameters
      */
+    /*
+    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
     private fun initializeLocationSearchView(savedInstanceState: Bundle?) {
         val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
         val locationTextView = findViewById<TextView>(R.id.coordinates)
@@ -164,6 +167,7 @@ class AddDeadlineActivity : AppCompatActivity() {
         searchBottomSheetView.visibility = View.GONE
         searchBottomSheetView.isClickable = false
     }
+    */
 
     /**
      * Setup a DatePickerDialog that will select a date for the deadline and show it
@@ -281,10 +285,13 @@ class AddDeadlineActivity : AppCompatActivity() {
      *  for a deadline.
      */
     fun searchLocation(view: View) {
+        /*
+        // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
         val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
         searchBottomSheetView.visibility = View.VISIBLE
         searchBottomSheetView.isClickable = true
         searchBottomSheetView.expand()
+        */
     }
 
     private val startForResult =

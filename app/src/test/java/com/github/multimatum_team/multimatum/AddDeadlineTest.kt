@@ -4,9 +4,12 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
+import android.os.Looper.getMainLooper
 import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
@@ -28,9 +31,12 @@ import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
+import com.mapbox.android.core.location.LocationEngineProvider
+import com.mapbox.search.MapboxSearchSdk
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -43,7 +49,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
+import org.junit.runner.Description
 import org.junit.runner.RunWith
+import org.junit.runners.model.Statement
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlertDialog
@@ -66,7 +75,23 @@ class AddDeadlineTest {
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
+    /*
+    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
     @get:Rule(order = 1)
+    val jsp = TestRule { _, _ ->
+        val appContext = ApplicationProvider.getApplicationContext<Context>()
+        val application = getApplication(appContext)
+        shadowOf(getMainLooper()).idle()
+        MapboxSearchSdk.initialize(
+            application = application,
+            accessToken = appContext.getString(R.string.mapbox_access_token),
+            locationEngine = LocationEngineProvider.getBestLocationEngine(application)
+        )
+        null
+    }
+    */
+
+    @get:Rule(order = 2)
     val activityRule = ActivityScenarioRule(AddDeadlineActivity::class.java)
 
     @Inject
@@ -81,17 +106,6 @@ class AddDeadlineTest {
     @After
     fun teardown() {
         Intents.release()
-    }
-
-    // TODO: These tests were temp. removed because the inflate exceptions
-    //  that these tests throw cannot be solved by three members of the team.
-    //  Probably due to the xml layout.
-    /*
-    @Test
-    fun `The button should open the location search bar`() {
-        // Clicking on the location search button
-        onView(withId(R.id.search_location)).perform(ViewActions.click())
-        onView(withId(R.id.search_location)).check(ViewAssertions.matches(isDisplayed()))
     }
 
     @Test
@@ -175,7 +189,15 @@ class AddDeadlineTest {
         )
 
     }
-     */
+    /*
+    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
+    @Test
+    fun `The button should open the location search bar`() {
+        // Clicking on the location search button
+        onView(withId(R.id.search_location)).perform(ViewActions.click())
+        onView(withId(R.id.search_location)).check(ViewAssertions.matches(isDisplayed()))
+    }
+    */
 
     // TODO: This test was removed because I replaced the startIntent to the MainActivity with a
     //  call to finish() which cannot be tested
