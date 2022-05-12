@@ -325,6 +325,14 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             timeFor(0, 0)
         }
 
+    @PatternPair
+    private val tomorrow =
+        listOf(
+            tokenMatchingOneOf("tomorrow")
+        ) to { _: List<Any?> ->
+            ExtractedDate(currentDateProvider().plusDays(1))
+        }
+
     // all the patterns, i.e. all the properties marked with @PatternPair
     val patterns: List<PatternMatchCase> =
         @Suppress("UNCHECKED_CAST")
