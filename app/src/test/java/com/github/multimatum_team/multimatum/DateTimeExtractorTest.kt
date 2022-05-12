@@ -202,4 +202,24 @@ class DateTimeExtractorTest {
         assertFound(expText, expTime = LocalTime.MIDNIGHT)(actualRes)
     }
 
+    @Test
+    fun tomorrow_is_parsed_correctly(){
+        val str = "Due homework tomorrow"
+        val expText = "Due homework"
+        val currentDate = LocalDate.of(2020, 4, 4)
+        val expectedDate = LocalDate.of(2020, 4, 5)
+        val extractor = DateTimeExtractor { currentDate }
+        assertFound(expText, expDate = expectedDate)(extractor.parse(str))
+    }
+
+    @Test
+    fun may_3rd_is_parsed_correctly(){
+        val str = "Report May 3rd"
+        val expText = "Report"
+        val currDate = LocalDate.of(2021, Month.MARCH, 17)
+        val expectedDate = LocalDate.of(2021, Month.MAY, 3)
+        val extractor = DateTimeExtractor { currDate }
+        assertFound(expText, expDate = expectedDate)(extractor.parse(str))
+    }
+
 }

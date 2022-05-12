@@ -89,10 +89,10 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
 
         fun compareTo(other: PossiblyInvalidDate): Int {
             val (otherDay, otherMonth, otherYear) = other
-            val compDay = day.compareTo(otherDay)
+            fun compDay() = day.compareTo(otherDay)
             fun compMonth() = month.compareTo(otherMonth)
             fun compYear() = year.compareTo(otherYear)
-            return sequenceOf(compDay, compMonth(), compYear())
+            return sequenceOf(compYear(), compMonth(), compDay())
                 .firstOrNull { it != 0 } ?: 0
         }
 
@@ -119,12 +119,14 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
     private fun dateForIfExistsInferringYear(month: Month, day: Int): ExtractedDate? {
         // dates may not be valid, so do not use LocalDate
         val currDate = currentDateProvider()
-        val requiredDayThisYear = PossiblyInvalidDate(currDate.year, month, day)
+        val requiredDayThisYear =
+            PossiblyInvalidDate(year = currDate.year, month = month, day = day)
         val targetDate =
-            if (requiredDayThisYear >= currDate) requiredDayThisYear else PossiblyInvalidDate(
-                currDate.year + 1,
-                month,
-                day
+            if (requiredDayThisYear >= currDate) requiredDayThisYear
+            else PossiblyInvalidDate(
+                day = day,
+                month = month,
+                year = currDate.year + 1
             )
         return dateForIfExists(
             year = targetDate.year,
