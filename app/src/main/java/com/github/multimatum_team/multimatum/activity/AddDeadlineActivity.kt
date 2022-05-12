@@ -283,7 +283,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             //loading bar
             progressBar.visibility = View.VISIBLE
             // Start upload
-            PDFUtil.uploadPdfToFirebase(pdfData, storageRef, this, clockService.now().nano) { ref ->
+            PDFUtil.uploadPdfToFirebase(pdfData, storageRef, this) { ref ->
                 // Hide loading bar
                 progressBar.visibility = View.GONE;
 

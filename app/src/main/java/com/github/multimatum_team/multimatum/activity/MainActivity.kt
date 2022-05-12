@@ -87,16 +87,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
-                    val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
-                    val (idToDelete, deadline) = adapter.getItem(position)
-                    if (deadline.pdfPath != "") {
-                        FirebaseStorage.getInstance().reference.child(deadline.pdfPath).delete()
-                            .addOnFailureListener { LogUtil.debugLog("PDF has failed to be deleted") }
-                    }
-                    viewModel.deleteDeadline(idToDelete) {
-                        DeadlineNotification.deleteNotification(it, this@MainActivity)
-                    }
-                    adapter.setDeadlines(viewModel.getDeadlines().value!!)
+                    onDismissOverride(view, position, lv, viewModel)
                 }
             })
         // Set it on the ListView
@@ -110,9 +101,22 @@ class MainActivity : AppCompatActivity() {
                 }
             }
     }
+    
+    private fun onDismissOverride(view: ListViewAdapter?, position: Int, lv:ListView, viewModel: DeadlineListViewModel){
+        val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
+        val (idToDelete, deadline) = adapter.getItem(position)
+        if (deadline.pdfPath != "") {
+            FirebaseStorage.getInstance().reference.child(deadline.pdfPath).delete()
+                .addOnFailureListener { LogUtil.debugLog("PDF has failed to be deleted") }
+        }
+        viewModel.deleteDeadline(idToDelete) {
+            DeadlineNotification.deleteNotification(it, this@MainActivity)
+        }
+        adapter.setDeadlines(viewModel.getDeadlines().value!!)
+    }
 
-    /*
-    Helper function to restore the last theme preference at startup
+    /**
+     * Helper function to restore the last theme preference at startup
      */
     private fun setCurrentTheme() {
         val isNightMode =
