@@ -163,14 +163,14 @@ class AddDeadlineTest {
         )
 
     }
-
+    /*
     @Test
     fun `The button should open the location search bar`() {
         // Clicking on the location search button
         onView(withId(R.id.search_location)).perform(ViewActions.click())
         onView(withId(R.id.search_location)).check(ViewAssertions.matches(isDisplayed()))
     }
-
+    */
     // TODO: This test was removed because I replaced the startIntent to the MainActivity with a
     //  call to finish() which cannot be tested
     /*
