@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -160,6 +161,8 @@ class AddDeadlineActivity : AppCompatActivity() {
             searchBottomSheetView.hide()
         }
         searchBottomSheetView.isHideableByDrag = true
+        searchBottomSheetView.visibility = View.GONE
+        searchBottomSheetView.isClickable = false
     }
 
     /**
@@ -279,6 +282,8 @@ class AddDeadlineActivity : AppCompatActivity() {
      */
     fun searchLocation(view: View) {
         val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
+        searchBottomSheetView.visibility = View.VISIBLE
+        searchBottomSheetView.isClickable = true
         searchBottomSheetView.expand()
     }
 
