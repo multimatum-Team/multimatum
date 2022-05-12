@@ -44,9 +44,6 @@ sealed class Token {
 
     open fun asDayOfWeek(): DayOfWeek? = null
 
-    open fun asDateSeparator(): Token? = null
-    open fun asTimeSeparator(): Token? = null
-
     fun strWithWhitespaceIfNeeded(): String =
         if (followedByWhitespace) "$str "
         else str
@@ -59,8 +56,6 @@ sealed class Token {
 data class AlphabeticToken(override val str: String) : Token() {
     override fun asDayOfWeek(): DayOfWeek? =
         DayOfWeek.values().find { it.name equalsIgnoreCase str }
-
-    override fun asTimeSeparator(): Token? = if (str == "h") this else null
 
     override fun asMonth(): Month? =
         Month.values().find {
@@ -98,12 +93,7 @@ data class SymbolToken(override val str: String) : Token() {
         require(str.length == 1)
     }
 
-    private val dateSeparators = listOf('.', '/', '-')
-
     val charValue: Char get() = str[0]
-
-    override fun asDateSeparator(): Token? = if (dateSeparators.contains(charValue)) this else null
-    override fun asTimeSeparator(): Token? = if (charValue == ':') this else null
 }
 
 /**

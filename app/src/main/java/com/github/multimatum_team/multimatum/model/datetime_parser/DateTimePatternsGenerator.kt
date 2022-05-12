@@ -82,6 +82,28 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
         ExtractedTime(LocalTime.of(hour, minute))
 
     /**
+     * To be used instead of LocalDate when the date may be invalid (e.g. 29.02.2021)
+     */
+    private data class PossiblyInvalidDate(val day: Int, val month: Month, val year: Int) :
+        Comparable<LocalDate> {
+
+        fun compareTo(other: PossiblyInvalidDate): Int {
+            val (otherDay, otherMonth, otherYear) = other
+            val compDay = day.compareTo(otherDay)
+            fun compMonth() = month.compareTo(otherMonth)
+            fun compYear() = year.compareTo(otherYear)
+            return sequenceOf(compDay, compMonth(), compYear())
+                .firstOrNull { it != 0 } ?: 0
+        }
+
+        override fun compareTo(other: LocalDate): Int {
+            val otherAsPossiblyInvalidDate =
+                PossiblyInvalidDate(day = other.dayOfMonth, month = other.month, year = other.year)
+            return compareTo(otherAsPossiblyInvalidDate)
+        }
+    }
+
+    /**
      * @return an instance of LocalDate if the given date is valid, null o.w.
      */
     private fun localDateForIfExists(year: Int, month: Month, day: Int): LocalDate? {
@@ -94,6 +116,23 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
     private fun dateForIfExists(year: Int, month: Month, day: Int): ExtractedDate? =
         localDateForIfExists(year, month, day)?.let(::ExtractedDate)
 
+    private fun dateForIfExistsInferringYear(month: Month, day: Int): ExtractedDate? {
+        // dates may not be valid, so do not use LocalDate
+        val currDate = currentDateProvider()
+        val requiredDayThisYear = PossiblyInvalidDate(currDate.year, month, day)
+        val targetDate =
+            if (requiredDayThisYear >= currDate) requiredDayThisYear else PossiblyInvalidDate(
+                currDate.year + 1,
+                month,
+                day
+            )
+        return dateForIfExists(
+            year = targetDate.year,
+            month = targetDate.month,
+            day = targetDate.day
+        )
+    }
+
     /**
      * @return the next date (after the current one) matching the given day of week
      * (e.g. for expressions like "next monday")
@@ -103,6 +142,11 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
         val nextMatchingDay = currDate.with(TemporalAdjusters.next(requestedDayOfWeek))
         return ExtractedDate(nextMatchingDay)
     }
+
+    private val timeSeparator = tokenMatchingOneOf("h", ":")
+    private val dateSeparator = tokenMatchingOneOf(".", "/", "-")
+    private val am = tokenMatchingOneOf("am")
+    private val pm = tokenMatchingOneOf("pm")
 
     // Patterns
 
@@ -119,7 +163,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
     private val `15h00` =
         listOf(
             Token::asHour24,
-            Token::asTimeSeparator,
+            timeSeparator,
             Token::asMinute
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0), minute = args.getInt(2))
@@ -129,7 +173,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
     private val `3am` =
         listOf(
             Token::asHour12,
-            tokenMatchingOneOf("am")
+            am
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0), minute = 0)
         }
@@ -138,18 +182,40 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
     private val `3pm` =
         listOf(
             Token::asHour12,
-            tokenMatchingOneOf("pm")
+            pm
         ) to { args: List<Any?> ->
             timeFor(hour = args.getInt(0) + 12, minute = 0)
+        }
+
+    @PatternPair
+    private val `3h00am` =
+        listOf(
+            Token::asHour12,
+            timeSeparator,
+            Token::asMinute,
+            am
+        ) to { args: List<Any?> ->
+            timeFor(hour = args.getInt(0), minute = args.getInt(2))
+        }
+
+    @PatternPair
+    private val `3h00pm` =
+        listOf(
+            Token::asHour12,
+            timeSeparator,
+            Token::asMinute,
+            pm
+        ) to { args: List<Any?> ->
+            timeFor(hour = args.getInt(0) + 12, minute = args.getInt(2))
         }
 
     @PatternPair
     private val `1-01-2000` =
         listOf(
             Token::asPossibleDayOfMonthIndex,
-            Token::asDateSeparator,
+            dateSeparator,
             Token::asMonth,
-            Token::asDateSeparator,
+            dateSeparator,
             Token::asPossibleYear
         ) to { args: List<Any?> ->
             dateForIfExists(year = args.getInt(4), month = args.getMonth(2), day = args.getInt(0))
@@ -159,9 +225,9 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
     private val `2000-1-1` =
         listOf(
             Token::asPossibleYear,
-            Token::asDateSeparator,
+            dateSeparator,
             Token::asMonth,
-            Token::asDateSeparator,
+            dateSeparator,
             Token::asPossibleDayOfMonthIndex
         ) to { args: List<Any?> ->
             dateForIfExists(day = args.getInt(4), month = args.getMonth(2), year = args.getInt(0))
@@ -175,6 +241,46 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
             Token::asPossibleYear
         ) to { args: List<Any?> ->
             dateForIfExists(day = args.getInt(0), month = args.getMonth(1), year = args.getInt(2))
+        }
+
+    @PatternPair
+    private val `2000_1_1` =
+        listOf(
+            Token::asPossibleYear,
+            Token::asMonth,
+            Token::asPossibleDayOfMonthIndex
+        ) to { args: List<Any?> ->
+            dateForIfExists(year = args.getInt(0), month = args.getMonth(1), day = args.getInt(2))
+        }
+
+    @PatternPair
+    private val `1-January` =
+        listOf(
+            Token::asPossibleDayOfMonthIndex,
+            dateSeparator,
+            Token::asMonth
+        ) to { args: List<Any?> ->
+            dateForIfExistsInferringYear(day = args.getInt(0), month = args.getMonth(2))
+        }
+
+    @PatternPair
+    private val January_1 =
+        listOf(
+            Token::asMonth,
+            dateSeparator,
+            Token::asPossibleDayOfMonthIndex
+        ) to { args: List<Any?> ->
+            dateForIfExistsInferringYear(month = args.getMonth(0), day = args.getInt(2))
+        }
+
+    @PatternPair
+    private val January_1st =
+        listOf(
+            Token::asMonth,
+            Token::asPossibleDayOfMonthIndex,
+            tokenMatchingOneOf("st", "nd", "rd", "th")
+        ) to { args: List<Any?> ->
+            dateForIfExistsInferringYear(month = args.getMonth(0), day = args.getInt(1))
         }
 
     @PatternPair
