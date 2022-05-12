@@ -10,30 +10,54 @@ import android.widget.CheckedTextView
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.*
 
+/**
+ * A filter allowing the user to view only a subset of their deadlines.
+ */
 sealed interface DeadlineFilter {
+    /**
+     * Returns whether the filter lets the deadline go through, and be displayed on the deadline
+     * list.
+     */
     fun matches(deadline: Deadline): Boolean
 }
 
+/**
+ * No filter is applied (default)
+ */
 object NoFilter : DeadlineFilter {
     override fun matches(deadline: Deadline): Boolean = true
 }
 
+/**
+ * Only show personal deadlines (owned by the user).
+ */
 object UserFilter : DeadlineFilter {
     override fun matches(deadline: Deadline): Boolean =
         deadline.owner == UserOwned
 }
 
+/**
+ * Match deadlines belonging to a given group.
+ * @param groupID the ID of the group of which we want to show the deadlines
+ * @param groupName the name of the group, to be shown in the filter selection
+ */
 data class GroupFilter(val groupID: GroupID, val groupName: String) : DeadlineFilter {
     override fun matches(deadline: Deadline): Boolean =
         deadline.owner == GroupOwned(groupID)
 }
 
+/**
+ * An adapter to show the various filters that the user can apply on their deadlines.
+ */
 class DeadlineFilterAdapter(context: Context) : BaseAdapter() {
     private val filters: MutableList<DeadlineFilter> = mutableListOf(NoFilter)
 
     private val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
+    /**
+     * Update the filter with a new list of groups.
+     */
     fun setGroups(groups: List<UserGroup>) {
         filters.clear()
         filters.add(NoFilter)

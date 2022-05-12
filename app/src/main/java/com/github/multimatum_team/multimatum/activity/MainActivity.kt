@@ -79,8 +79,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         groupViewModel.getGroups().observe(this) { groups ->
-            val currentUserID = userViewModel.getUser().value!!.id
-            filterAdapter.setGroups(groups.values.filter { it.members.contains(currentUserID) })
+            filterAdapter.setGroups(groups.values.toList())
         }
 
         //create notification channel

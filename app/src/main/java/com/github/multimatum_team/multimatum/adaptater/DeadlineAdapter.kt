@@ -29,29 +29,6 @@ interface ClockServiceEntryPoint {
     fun provideClockService(): ClockService
 }
 
-/**
-Class which is used to show the deadline in a clear list.
-Based on the tutorial:
-https://www.raywenderlich.com/155-android-listview-tutorial-with-kotlin
- */
-enum class FilterState {
-    /**
-     * state to filter deadlines in groups
-     */
-    GROUPS,
-
-    /**
-     * state to filter deadlines not in groups
-     */
-    MINE,
-
-    /**
-     * don't filter deadlines
-     */
-
-    ALL
-}
-
 class DeadlineAdapter(
     private val context: Context,
     private val deadlineListViewModel: DeadlineListViewModel
@@ -89,8 +66,10 @@ class DeadlineAdapter(
 
     private fun sortAndFilterDeadline() {
         val partition = DeadlineState.values()
-            .associateWith<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>> { _ -> mutableListOf() }
-            .toMap()
+            .associateWith<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>> {
+                mutableListOf()
+            }.toMap()
+
         for ((id, deadline) in deadlines) {
             if (filter.matches(deadline)) {
                 partition[deadline.state]!!.add(Pair(id, deadline))
