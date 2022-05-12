@@ -266,7 +266,7 @@ class DateTimePatternsGenerator(private val currentDateProvider: () -> LocalDate
         }
 
     @PatternPair
-    private val January_1 =
+    private val `January-1` =
         listOf(
             Token::asMonth,
             dateSeparator,
