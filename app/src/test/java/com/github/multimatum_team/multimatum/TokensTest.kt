@@ -1,15 +1,13 @@
 package com.github.multimatum_team.multimatum
 
 import com.github.multimatum_team.multimatum.model.datetime_parser.*
-import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
-import java.lang.IllegalArgumentException
+import org.junit.Test
 
 class TokensTest {
-
     @Test
-    fun string_is_tokenized_correctly(){
+    fun string_is_tokenized_correctly() {
         val str = "abcd1234 !/xyz. 987"
         val exp = listOf(
             AlphabeticToken("abcd"),
@@ -26,7 +24,7 @@ class TokensTest {
     }
 
     @Test
-    fun deadline_title_including_date_and_time_is_tokenized_correctly(){
+    fun deadline_title_including_date_and_time_is_tokenized_correctly() {
         val title = "Aqua-poney monday 15 at 11am"
         val exp = listOf(
             AlphabeticToken("Aqua"),
@@ -46,40 +44,40 @@ class TokensTest {
     }
 
     @Test
-    fun numericToken_gives_correct_numeric_value(){
+    fun numericToken_gives_correct_numeric_value() {
         val inputsOutputs = listOf(
             "123" to 123,
             "0" to 0,
             "47" to 47
         )
-        for ((input, output) in inputsOutputs){
+        for ((input, output) in inputsOutputs) {
             assertEquals(output, NumericToken(input).numericValue)
         }
     }
 
-    @Test fun symbolToken_gives_correct_char_value(){
+    @Test
+    fun symbolToken_gives_correct_char_value() {
         val inputsOutputs = listOf(
             "!" to '!',
             "*" to '*',
             "@" to '@'
         )
-        for ((input, output) in inputsOutputs){
+        for ((input, output) in inputsOutputs) {
             assertEquals(output, SymbolToken(input).charValue)
         }
     }
 
     @Test
-    fun numericToken_throws_on_non_numeric_input(){
-        assertThrows(IllegalArgumentException::class.java){
+    fun numericToken_throws_on_non_numeric_input() {
+        assertThrows(IllegalArgumentException::class.java) {
             NumericToken("123a4")
         }
     }
 
     @Test
-    fun symbolToken_throws_on_input_with_length_different_of_1(){
-        assertThrows(IllegalArgumentException::class.java){
+    fun symbolToken_throws_on_input_with_length_different_of_1() {
+        assertThrows(IllegalArgumentException::class.java) {
             SymbolToken("[!]")
         }
     }
-
 }

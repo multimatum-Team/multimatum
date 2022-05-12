@@ -8,20 +8,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
+import kotlinx.coroutines.runBlocking
 
-class UserGroupAdapter(context: Context,
-    private val groupViewModel: GroupViewModel
-): BaseAdapter() {
+class UserGroupAdapter(
+    context: Context,
+    private val groupViewModel: GroupViewModel,
+    private val userRepository: UserRepository
+) : BaseAdapter() {
     private var dataSource: List<UserGroup> = listOf()
     private val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
 
-    fun setGroups(groups: Map<GroupID, UserGroup>){
+    fun setGroups(groups: Map<GroupID, UserGroup>) {
         dataSource = groups.values.toList()
         notifyDataSetChanged()
     }
@@ -92,7 +97,8 @@ class UserGroupAdapter(context: Context,
         titleView.setTypeface(null, Typeface.BOLD)
 
         //show the owner
-        subtitleView.text = "own by: " + group.owner
+        val ownerName = runBlocking { userRepository.fetch(group.owner).name }
+        subtitleView.text = "Owner: $ownerName"
         subtitleView.setTypeface(null, Typeface.ITALIC)
 
         return rowView

@@ -37,7 +37,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun `18h_is_parsed_correctly`(){
+    fun `18h_is_parsed_correctly`() {
         val str = "Geography 18h"
         val expText = "Geography"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -187,7 +187,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun midday_is_parsed_correctly(){
+    fun midday_is_parsed_correctly() {
         val str = "Lunch at noon"
         val expText = "Lunch"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -195,7 +195,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun midnight_is_parsed_correctly(){
+    fun midnight_is_parsed_correctly() {
         val str = "Due work at midnight"
         val expText = "Due work"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)

@@ -1,8 +1,10 @@
 package com.github.multimatum_team.multimatum
 
+
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
 import androidx.test.espresso.Espresso
@@ -10,7 +12,11 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.pressBack
+import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -18,11 +24,9 @@ import com.github.multimatum_team.multimatum.activity.AddDeadlineActivity
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.service.ClockService
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockClockService
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockGroupRepository
+import com.github.multimatum_team.multimatum.util.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,6 +44,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowDatePickerDialog
 import org.robolectric.shadows.ShadowTimePickerDialog
@@ -91,12 +96,30 @@ class AddDeadlineTest {
     }
 
     @Test
+    fun `parsing validation pop-up`() {
+        onView(withId(R.id.add_deadline_select_title))
+            .perform(ViewActions.replaceText("foo 5pm")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+        val dialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog())
+        //check if dialog is shown
+        assertEquals(
+            RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title),
+            dialog.title
+        )
+        //dismiss dialog
+        onView(withText(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title))).inRoot(
+            isDialog()
+        ).check(matches(isDisplayed())).perform(pressBack())
+        //checkdialog is closed
+        assert(!ShadowAlertDialog.getLatestAlertDialog().isShowing)
+    }
+
+    @Test
     fun `The button should add a deadline given a title, a date and a time`() {
 
-        // Select Title
+        // Select Title and press enter
         onView(withId(R.id.add_deadline_select_title))
-            .perform(ViewActions.replaceText("Test 1"))
-        Espresso.closeSoftKeyboard()
+            .perform(ViewActions.replaceText("Test 1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+
 
         // Select Date
         onView(withId(R.id.add_deadline_select_date))
@@ -200,6 +223,11 @@ class AddDeadlineTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 
     @Module

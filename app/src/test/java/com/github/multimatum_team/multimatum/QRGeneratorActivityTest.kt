@@ -65,15 +65,18 @@ class QRGeneratorActivityTest {
 
     @Test
     fun qRDisplayTest() {
-        val data = Deadline("Appeller Robert", DeadlineState.TODO, LocalDateTime.now()
-            .plusDays(1))
+        val data = Deadline(
+            "Appeller Robert", DeadlineState.TODO, LocalDateTime.now()
+                .plusDays(1)
+        )
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             QRGeneratorActivity::class.java
         ).putExtra(EXTRA_TEXT, Gson().toJson(data))
         val scenario = ActivityScenario.launch<QRGeneratorActivity>(intent)
         scenario.use {
-            Espresso.onView(ViewMatchers.withId(R.id.QRGenerated)).check(matches(withQRCode(Gson().toJson(data))))
+            Espresso.onView(ViewMatchers.withId(R.id.QRGenerated))
+                .check(matches(withQRCode(Gson().toJson(data))))
         }
     }
 

@@ -4,8 +4,10 @@ import android.util.Log
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
+import com.github.multimatum_team.multimatum.model.UserID
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -14,8 +16,9 @@ import javax.inject.Inject
  * Concrete implementation for the AuthRepository.
  * Acts as a wrapper around the Firebase authentication library.
  */
-class FirebaseAuthRepository @Inject constructor() : AuthRepository() {
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+class FirebaseAuthRepository @Inject constructor(
+    private val auth: FirebaseAuth
+) : AuthRepository() {
 
     /**
      * We guarantee that an user is always logged in at any point of the application.
@@ -47,7 +50,7 @@ class FirebaseAuthRepository @Inject constructor() : AuthRepository() {
         if (firebaseUser.isAnonymous) {
             AnonymousUser(firebaseUser.uid)
         } else {
-            SignedInUser(firebaseUser.uid, firebaseUser.email!!)
+            SignedInUser(firebaseUser.uid, firebaseUser.displayName!!, firebaseUser.email!!)
         }
 
     /**
