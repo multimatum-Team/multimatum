@@ -103,7 +103,7 @@ class GroupDetailsActivityTest {
 
     @Test
     fun `Given a group owned by the current user, all widget have the right properties`() {
-        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
+        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val"))
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
         val intent =
@@ -120,7 +120,7 @@ class GroupDetailsActivityTest {
 
     @Test
     fun `Given a group owned by the current user, they can rename the group`() = runTest {
-        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
+        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val"))
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
         val intent =
@@ -140,7 +140,7 @@ class GroupDetailsActivityTest {
 
     @Test
     fun `Given a group owned by the current user, the leave button has the right behavior`() = runTest {
-        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
+        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val"))
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
         val intent =
@@ -165,7 +165,7 @@ class GroupDetailsActivityTest {
 
     @Test
     fun `Given a group which the the current user does not own, all widget have the right properties`() {
-        // UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
+        // UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val"))
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
         val intent =
@@ -182,7 +182,7 @@ class GroupDetailsActivityTest {
 
     @Test
     fun `Given a group which the the current user does not own, the leave button has the right behavior`() = runTest {
-        // UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Léo", "Val"))
+        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val"))
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
         val intent =
@@ -230,13 +230,13 @@ class GroupDetailsActivityTest {
                         "0",
                         "SDP",
                         "Joseph",
-                        setOf("Joseph", "Louis", "Florian", "Léo", "Val")
+                        setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")
                     ),
                     UserGroup(
                         "1",
                         "MIT",
                         "Louis",
-                        setOf("Joseph", "Louis", "Florian", "Léo", "Val")
+                        setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")
                     ),
                     UserGroup(
                         "2",
@@ -266,6 +266,7 @@ class GroupDetailsActivityTest {
                     UserInfo(id = "Joseph", name = "Joseph"),
                     UserInfo(id = "Louis", name = "Louis"),
                     UserInfo(id = "Florian", name = "Florian"),
+                    UserInfo(id = "Lenny", name = "Lenny"),
                     UserInfo(id = "Léo", name = "Léo"),
                     UserInfo(id = "Val", name = "Val"),
                 )

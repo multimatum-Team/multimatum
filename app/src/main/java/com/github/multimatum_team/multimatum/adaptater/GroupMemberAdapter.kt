@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.adaptater
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -30,6 +31,7 @@ class GroupMemberAdapter(
     /**
      * Update the group associated to the adapter.
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun setGroup(group: UserGroup) {
         this.group = group
         dataSource =
@@ -56,12 +58,12 @@ class GroupMemberAdapter(
             context.getString(R.string.group_member_removal_confirmation_dialog, memberInfo.name)
         AlertDialog.Builder(context)
             .setMessage(message)
-            .setPositiveButton(context.getString(R.string.group_member_confirm_removal)) { dialog, which ->
+            .setPositiveButton(context.getString(R.string.group_member_confirm_removal)) { _, _ ->
                 groupViewModel.removeMember(group.id, memberInfo.id)
                 dataSource.removeAt(position)
                 notifyItemRemoved(position)
             }
-            .setNegativeButton(context.getString(R.string.group_member_cancel_removal)) { dialog, which ->
+            .setNegativeButton(context.getString(R.string.group_member_cancel_removal)) { _, _ ->
                 notifyItemRemoved(position + 1)
                 notifyItemRangeChanged(
                     position,

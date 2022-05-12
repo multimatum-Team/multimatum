@@ -37,8 +37,8 @@ import javax.inject.Singleton
 class GroupAdapterTest {
     companion object {
         private val groups: List<UserGroup> = listOf(
-            UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
-            UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
+            UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")),
+            UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")),
             UserGroup("2", "JDR", "Florian", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
             UserGroup("3", "Quantic", "Léo", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
         )
@@ -167,6 +167,7 @@ class GroupAdapterTest {
                     UserInfo(id = "Joseph", name = "Joseph"),
                     UserInfo(id = "Louis", name = "Louis"),
                     UserInfo(id = "Florian", name = "Florian"),
+                    UserInfo(id = "Lenny", name = "Lenny"),
                     UserInfo(id = "Léo", name = "Léo"),
                     UserInfo(id = "Val", name = "Val"),
                 )

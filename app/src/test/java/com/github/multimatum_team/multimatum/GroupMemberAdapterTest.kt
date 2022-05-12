@@ -37,10 +37,10 @@ import javax.inject.Singleton
 class GroupMemberAdapterTest {
     companion object {
         private val groups: List<UserGroup> = listOf(
-            UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
-            UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
-            UserGroup("2", "JDR", "Florian", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
-            UserGroup("3", "Quantic", "Léo", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
+            UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")),
+            UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")),
+            UserGroup("2", "JDR", "Florian", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")),
+            UserGroup("3", "Quantic", "Léo", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")),
         )
     }
 
@@ -79,7 +79,7 @@ class GroupMemberAdapterTest {
                 "0",
                 "SDP",
                 "Joseph",
-                setOf("Joseph", "Louis", "Florian", "Léo", "Val")
+                setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")
             )
         )
         (authRepository as MockAuthRepository).logIn(
@@ -98,7 +98,7 @@ class GroupMemberAdapterTest {
 
     @Test
     fun `Get count should give correct count`() {
-        Assert.assertEquals(5, adapter.itemCount)
+        Assert.assertEquals(6, adapter.itemCount)
     }
 
     @Module
@@ -118,13 +118,13 @@ class GroupMemberAdapterTest {
                         "0",
                         "SDP",
                         "Joseph",
-                        setOf("Joseph", "Louis", "Florian", "Léo", "Val")
+                        setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")
                     ),
                     UserGroup(
                         "1",
                         "MIT",
                         "Louis",
-                        setOf("Joseph", "Louis", "Florian", "Léo", "Val")
+                        setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")
                     ),
                     UserGroup(
                         "2",
@@ -154,6 +154,7 @@ class GroupMemberAdapterTest {
                     UserInfo(id = "Joseph", name = "Joseph"),
                     UserInfo(id = "Louis", name = "Louis"),
                     UserInfo(id = "Florian", name = "Florian"),
+                    UserInfo(id = "Lenny", name = "Lenny"),
                     UserInfo(id = "Léo", name = "Léo"),
                     UserInfo(id = "Val", name = "Val"),
                 )

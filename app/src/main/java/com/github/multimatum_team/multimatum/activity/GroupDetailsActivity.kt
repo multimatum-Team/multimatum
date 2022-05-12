@@ -147,22 +147,16 @@ class GroupDetailsActivity : AppCompatActivity() {
         groupDeleteOrLeaveButton.setOnClickListener {
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.group_leave_confirmation_dialog))
-                .setPositiveButton(getString(R.string.group_leave_confirm),
-                    DialogInterface.OnClickListener { dialog, which ->
-                        dialog.dismiss()
-                        groupViewModel.removeMember(
-                            groupID,
-                            authViewModel.getUser().value!!.id
-                        )
-                        finish()
-                        return@OnClickListener
-                    })
-                .setNegativeButton(getString(R.string.group_leave_cancel),
-                    DialogInterface.OnClickListener { dialog, which ->
-                        dialog.dismiss()
-                        return@OnClickListener
-                    })
-                .show()
+                .setPositiveButton(getString(R.string.group_leave_confirm)) { dialog, _ ->
+                    dialog.dismiss()
+                    groupViewModel.removeMember(
+                        groupID,
+                        authViewModel.getUser().value!!.id
+                    )
+                    finish()
+                }.setNegativeButton(getString(R.string.group_leave_cancel)) { dialog, _ ->
+                    dialog.dismiss()
+                }.show()
         }
     }
 
@@ -175,19 +169,13 @@ class GroupDetailsActivity : AppCompatActivity() {
         groupDeleteOrLeaveButton.setOnClickListener {
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.group_delete_confirmation_dialog))
-                .setPositiveButton(getString(R.string.group_delete_dialog_confirm),
-                    DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(getString(R.string.group_delete_dialog_confirm)) { dialog, _ ->
                         dialog.dismiss()
                         groupViewModel.deleteGroup(groupID)
                         finish()
-                        return@OnClickListener
-                    })
-                .setNegativeButton(getString(R.string.group_delete_dialog_cancel),
-                    DialogInterface.OnClickListener { dialog, which ->
+                }.setNegativeButton(getString(R.string.group_delete_dialog_cancel)) { dialog, _ ->
                         dialog.dismiss()
-                        return@OnClickListener
-                    })
-                .show()
+                }.show()
         }
     }
 

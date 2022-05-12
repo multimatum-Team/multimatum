@@ -2,7 +2,6 @@ package com.github.multimatum_team.multimatum
 
 import android.view.KeyEvent
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
@@ -61,7 +60,7 @@ class CalendarActivityTest {
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase"))
-            .perform(ViewActions.pressImeActionButton())
+            .perform(pressImeActionButton())
         Espresso.onView(ViewMatchers.withId(R.id.calendar_add_deadline_button))
             .perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))

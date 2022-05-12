@@ -62,7 +62,7 @@ class CalendarActivity : AppCompatActivity() {
     private fun initTextInput() {
         deadlineTitleInputView.setOnIMEActionDone(this) { deadlineTitle ->
             val deadline = Deadline(deadlineTitle, DeadlineState.TODO, selectedDate)
-            viewModel.addDeadline(deadline) {}
+            viewModel.addDeadline(deadline)
             // Reset the text input for future use
             deadlineTitleInputView.setText("")
         }
