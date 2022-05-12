@@ -11,7 +11,8 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
-import com.github.multimatum_team.multimatum.adaptater.FilterState
+import com.github.multimatum_team.multimatum.adaptater.GroupFilter
+import com.github.multimatum_team.multimatum.adaptater.UserFilter
 import com.github.multimatum_team.multimatum.model.*
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineID
@@ -90,7 +91,7 @@ class DeadlineAdapterTest {
             authRepository,
             groupRepository
         )
-        adapter = DeadlineAdapter(context!!, viewModel, userGroupViewModel = groupViewModel)
+        adapter = DeadlineAdapter(context!!, viewModel)
         deadlinesMap = viewModel.getDeadlines().value!!
         adapter.setDeadlines(deadlinesMap)
     }
@@ -269,8 +270,8 @@ class DeadlineAdapterTest {
 
     @Test
     fun `GetView should display correctly element 0 when filtering by groups`(){
-        adapter.state = FilterState.GROUPS
-        adapter.setDeadlines(deadlinesMap, "SDP")
+        adapter.setFilter(GroupFilter("0", "SDP"))
+        adapter.setDeadlines(deadlinesMap)
 
         val parent = ListView(context)
         val listItemView = adapter.getView(0, null, parent)
@@ -282,7 +283,7 @@ class DeadlineAdapterTest {
 
     @Test
     fun `GetView should display correctly element 0 when filtering by mine`(){
-        adapter.state = FilterState.MINE
+        adapter.setFilter(UserFilter)
         adapter.setDeadlines(deadlinesMap)
 
         val parent = ListView(context)
