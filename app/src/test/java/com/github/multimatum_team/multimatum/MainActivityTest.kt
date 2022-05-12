@@ -141,7 +141,7 @@ class MainActivityTest {
 
     @Test
     fun goToGroupsTest() {
-        onView(withId(R.id.groupButton)).perform(click())
+        onView(withId(R.id.groupButton)).check(matches(isDisplayed())).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(GroupsActivity::class.java.name),
