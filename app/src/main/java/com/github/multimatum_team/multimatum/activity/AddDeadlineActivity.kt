@@ -45,6 +45,19 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class AddDeadlineActivity : AppCompatActivity() {
+
+    companion object {
+        // Memorisation of which checkBox is selected for the notifications
+        private val notificationSelected = booleanArrayOf(false, false, false, false)
+        private val nameNotifications = arrayOf("1 hour", "5 hours", "1 day", "3 days")
+        private val checkBoxIdTime = mapOf(
+            "1 hour" to Duration.ofHours(1).toMillis(),
+            "5 hours" to Duration.ofHours(5).toMillis(),
+            "1 day" to Duration.ofDays(1).toMillis(),
+            "3 days" to Duration.ofDays(3).toMillis()
+        )
+    }
+
     @Inject
     lateinit var clockService: ClockService
 
@@ -59,22 +72,11 @@ class AddDeadlineActivity : AppCompatActivity() {
     private lateinit var textTitle: TextView
     private lateinit var textDescription: TextView
 
-    // Memorisation of which checkBox is selected for the notifications
-    private val notificationSelected = booleanArrayOf(false, false, false, false)
-    private val nameNotifications = arrayOf("1 hour", "5 hours", "1 day", "3 days")
 
     // Memorisation of which group is selected for the deadline
     private var groupSelected = 0
     private var nameGroups = arrayOf("No group")
     private var idGroups = arrayOf<GroupID>()
-
-    private val checkBoxIdTime = mapOf(
-        "1 hour" to Duration.ofHours(1).toMillis(),
-        "5 hours" to Duration.ofHours(5).toMillis(),
-        "1 day" to Duration.ofDays(1).toMillis(),
-        "3 days" to Duration.ofDays(3).toMillis()
-    )
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,8 +101,6 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         initializePlacesAutocomplete()
 
-        // Update the groups owned by the user to be able to select them
-        // in the Dialog
         setGroupObserver()
 
     }
@@ -262,7 +262,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     fun selectNotifications(view: View) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
-        // Set the title
         alertDialogBuilder.setTitle("Notify Me:")
 
         // Set the checkbox, their name in the dialog and what happen when checked
@@ -287,7 +286,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     fun selectGroups(view: View) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
-        // Set the title of the Dialog
         alertDialogBuilder.setTitle("Select Group:")
 
         // Set the options, their names in the dialog and what happen when selected
@@ -323,7 +321,6 @@ class AddDeadlineActivity : AppCompatActivity() {
             // Reset the text input for future use
             textTitle.text = ""
 
-            // Add the deadline
             deadlineListViewModel.addDeadline(deadline) {
                 DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
                 finish()

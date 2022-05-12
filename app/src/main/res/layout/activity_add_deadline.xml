@@ -175,7 +175,7 @@
 
         <Button
             android:id="@+id/add_deadline_select_group"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="49dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/circle_button"
