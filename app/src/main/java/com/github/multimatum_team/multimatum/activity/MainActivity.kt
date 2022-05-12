@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
 
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private val groupViewModel: GroupViewModel by viewModels()
-    private val userViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,35 +50,23 @@ class MainActivity : AppCompatActivity() {
 
         //access listview for deadline
         val listView = findViewById<ListView>(R.id.deadlineListView)
-        val listViewAdapter =
-            DeadlineAdapter(this, deadlineListViewModel)
+        val listViewAdapter = DeadlineAdapter(this, deadlineListViewModel)
 
         //set up observer on deadline list
         listView.adapter = listViewAdapter
-        deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
-            listViewAdapter.setDeadlines(deadlines)
-        }
+        deadlineListViewModel.getDeadlines().observe(this, listViewAdapter::setDeadlines)
 
         //access the spinner
         val filterSpinner = findViewById<Spinner>(R.id.filter)
         val filterAdapter = DeadlineFilterAdapter(this)
+        groupViewModel.getGroups().observe(this, filterAdapter::setGroups)
         filterSpinner.adapter = filterAdapter
         filterSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) =
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
                 listViewAdapter.setFilter(filterAdapter.getItem(position))
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
+            override fun onNothingSelected(parent: AdapterView<*>?) =
                 listViewAdapter.setFilter(NoFilter)
-            }
-        }
-
-        groupViewModel.getGroups().observe(this) { groups ->
-            filterAdapter.setGroups(groups.values.toList())
         }
 
         //create notification channel

@@ -58,11 +58,11 @@ class DeadlineFilterAdapter(context: Context) : BaseAdapter() {
     /**
      * Update the filter with a new list of groups.
      */
-    fun setGroups(groups: List<UserGroup>) {
+    fun setGroups(groups: Map<GroupID, UserGroup>) {
         filters.clear()
         filters.add(NoFilter)
         filters.add(UserFilter)
-        for (group in groups.sortedBy(UserGroup::name)) {
+        for (group in groups.values.toList().sortedBy(UserGroup::name)) {
             filters.add(GroupFilter(group.id, group.name))
         }
         notifyDataSetChanged()
