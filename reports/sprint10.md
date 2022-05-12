@@ -13,6 +13,15 @@ add in the Calendar view the possibility to see in when all the deadline are.
 
 ### Joseph
 
+This sprint I continued working on the groups feature, by adding a group details activity to enable
+users to interact with groups (rename/delete/leave the groups, kick users, ...). Before doing this,
+I needed to setup a new repository that stores public user information in Firebase (only their
+names for now), because Firebase only lets us access user information when being logged in, while
+I needed to show usernames of group members. I also helped Louis a little bit to finish the group
+filter on the main view. My time estimates were quite accurate and it was satisfying to see the
+group feature coming all together. Next week I will continue and possibly finish the groups, by
+implementing group invites.
+
 ### Lenny
 
 ### Léo
@@ -48,3 +57,8 @@ choose on Friday what I will be doing, once we have a clear view of what
 remains to do after this sprint.
 
 ### Overall team
+
+This week we achieved most of what we planned for this sprint, which was a lot of work. Except Léo
+who had troubles with testing, we are starting to be more productive. Next week we can hope to
+finish all of our app's core features and start fine-tuning our app's UI and UX, for it to be nice
+looking for the final presentation.
