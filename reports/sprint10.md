@@ -16,6 +16,17 @@ add in the Calendar view the possibility to see in when all the deadline are.
 ### Lenny
 
 ### Léo
+This week I worked on a new feature that enables the user to select a location 
+when creating a new deadline. The Mapbox API has been used, and provide the user 
+an interface to enter a location, and the user will then have the choice between 
+the found locations. When selected, the location name is displayed on the add 
+deadline screen. In the future, the coordinates will be extracted and stored on Firebase.
+Everything worked fine on the emulator, but I encountered an "Inflating Excepetion" 
+in the tests that I was notable to solve, even with a help. So I had no choice but
+to add my work as a comment for this PR until solved. It was not possible to do 
+a "light" PR because if there is code about the location search bar in the project,
+the Inflate Excpetion occurs during the tests (even without new tests). Next week, 
+I will work on this issue and if possible, store and process the extracted coordinates.
 
 ### Louis
 This week I had 2 task, make a filter on the main activity and create an activity to add group. For the filter I had to use spinner, so I read a lot of documentation on it. THen Joseph and Lenny made a remark. At the begining I could filter if deadlines were mine or in a group, they suggested the possiblity to filter by individual group. It was a nice idea but it took me a lot of time to implements this way, so I didn't do the activity for group. I'll do it next week while helping Leo on the geolocalisation.
