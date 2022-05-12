@@ -67,6 +67,13 @@ abstract class GroupRepository {
     abstract suspend fun invite(id: GroupID, email: String)
 
     /**
+     * Kick a user from a group.
+     * @param groupID the group from which to kick the user
+     * @param memberID the ID of the group member to kick
+     */
+    abstract suspend fun removeMember(groupID: GroupID, memberID: UserID)
+
+    /**
      * Add listener for database updates.
      * @param callback the callback to run when the groups of the current user changes.
      */

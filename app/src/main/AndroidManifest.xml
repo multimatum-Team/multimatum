@@ -37,6 +37,9 @@
             android:name=".activity.DeadlineDetailsActivity"
             android:exported="false" />
         <activity
+            android:name=".activity.GroupDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.CalendarActivity"
             android:exported="false" />
         <activity
