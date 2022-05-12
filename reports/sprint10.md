@@ -2,6 +2,14 @@ Sprint 10 summary
 ================
 
 ### Florian
+This week I have added the possibility to select a group when you want to 
+add a deadline if the user is the owner of it and made some modifications
+in DeadlineDetailsActivity to show in wich group the deadline is and allow 
+only the owner of the group of the deadline to modifiy it.
+This was more complicated than expected but I have succeeded to do it in 8 
+hours. I plan to modify the system of notification to add modularity and
+add in the Calendar view the possibility to see in when all the deadline are.
+
 
 ### Joseph
 
