@@ -84,12 +84,15 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_add_deadline)
         textTitle = findViewById(R.id.add_deadline_select_title)
+        // Reset the text input
+        textTitle.text = ""
+
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
         pdfTextView = findViewById(R.id.selectedPdf)
         progressBar = findViewById(R.id.progressBar)
-            progressBar.visibility = View.INVISIBLE
-            progressBar.isIndeterminate=true
+        progressBar.visibility = View.INVISIBLE
+        progressBar.isIndeterminate = true
 
 
 
@@ -277,16 +280,14 @@ class AddDeadlineActivity : AppCompatActivity() {
         if (titleDeadline == "") {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
-            // Reset the text input for future use
-            textTitle.text = ""
             //loading bar
             progressBar.visibility = View.VISIBLE
-            //start upload
-            uploadPdfToFirebase(pdfData) { ref ->
-                //hide loading bar
+            // Start upload
+            PDFUtil.uploadPdfToFirebase(pdfData, storageRef, this, clockService.now().nano) { ref ->
+                // Hide loading bar
                 progressBar.visibility = View.GONE;
 
-                // create the deadline
+                // Create the deadline
                 val deadline = Deadline(
                     titleDeadline,
                     DeadlineState.TODO,
@@ -294,14 +295,14 @@ class AddDeadlineActivity : AppCompatActivity() {
                     textDescription.text.toString(),
                     pdfPath = ref
                 )
-                //get notification setting
+                // Get notification setting
                 val notificationsTimes = retrieveNotificationsTimes()
 
-                //send toast
+                // Send toast
                 Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT)
                     .show()
 
-                //add the deadline and finish the activity
+                // Add the deadline and finish the activity
                 deadlineListViewModel.addDeadline(deadline) {
                     DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
                     finish()
@@ -311,14 +312,12 @@ class AddDeadlineActivity : AppCompatActivity() {
         }
     }
 
-    //code to be executed when a pdf has been chosen
+    // Code to be executed when a pdf has been chosen
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 pdfData = result.data!!.data!!
-                val path: String = pdfData.toString()
-                val lastSlashIndex = path.lastIndexOf("/")
-                pdfTextView.text = path.substring(lastSlashIndex + 1, path.length)
+                pdfTextView.text = PDFUtil.getFileNameFromUri(pdfData)
             }
         }
 
@@ -328,24 +327,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     fun selectPDF(view: View) {
         PDFUtil.selectPdfIntent() {
             startForResult.launch(it)
-        }
-    }
-
-    /**
-     * upload a pdf file
-     */
-    private fun uploadPdfToFirebase(data: Uri, callback: (String) -> Unit) {
-        if (data != Uri.EMPTY) {
-            val ref =
-                storageRef.child(FirebaseAuth.getInstance().uid + "/upload" + clockService.now() + ".pdf")
-            ref.putFile(data).addOnSuccessListener {
-                callback(ref.path)
-            }.addOnFailureListener {
-                val failureDialog = AlertDialog.Builder(this).setTitle("pdf upload failed").show()
-                callback("")
-            }
-        } else {
-            callback("")
         }
     }
 

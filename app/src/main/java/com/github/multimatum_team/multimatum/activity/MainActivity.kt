@@ -89,8 +89,9 @@ class MainActivity : AppCompatActivity() {
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
                     val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
                     val (idToDelete, deadline) = adapter.getItem(position)
-                    if(deadline.pdfPath!=""){
-                        FirebaseStorage.getInstance().reference.child(deadline.pdfPath).delete().addOnSuccessListener{ LogUtil.debugLog("PDF has been deleted") }.addOnFailureListener{LogUtil.debugLog("PDF has failed to be deleted") }
+                    if (deadline.pdfPath != "") {
+                        FirebaseStorage.getInstance().reference.child(deadline.pdfPath).delete()
+                            .addOnFailureListener { LogUtil.debugLog("PDF has failed to be deleted") }
                     }
                     viewModel.deleteDeadline(idToDelete) {
                         DeadlineNotification.deleteNotification(it, this@MainActivity)
@@ -172,7 +173,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun goToGroups(view: View){
+    fun goToGroups(view: View) {
         val intent = Intent(this, GroupsActivity::class.java)
         startActivity(intent)
     }
