@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,10 +20,13 @@ import com.github.multimatum_team.multimatum.model.UserOwned
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
+import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import java.lang.IllegalArgumentException
 import java.time.temporal.ChronoUnit
 
 @EntryPoint
@@ -56,7 +60,8 @@ enum class FilterState{
 
 class DeadlineAdapter(
     private val context: Context,
-    private val deadlineListViewModel: DeadlineListViewModel, var state: FilterState = FilterState.ALL
+    private val deadlineListViewModel: DeadlineListViewModel, var state: FilterState = FilterState.ALL,
+    private val userGroupViewModel: GroupViewModel
 ) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline
@@ -64,6 +69,8 @@ class DeadlineAdapter(
         const val PRESSING_THRESHOLD_DAYS = 10
 
     }
+
+
 
     var clockService: ClockService =
         EntryPointAccessors
@@ -75,14 +82,17 @@ class DeadlineAdapter(
     private val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    fun setDeadlines(deadlines: Map<DeadlineID, Deadline>) {
-        dataSource = sortDeadline(deadlines)
+    fun setDeadlines(deadlines: Map<DeadlineID, Deadline>, filter: String = "") {
+        dataSource = sortDeadline(deadlines, filter)
         notifyDataSetChanged()
     }
 
-    private fun filterByGroup(deadlines: MutableList<Pair<DeadlineID, Deadline>>):
+    private fun filterByGroup(deadlines: MutableList<Pair<DeadlineID, Deadline>>, filter: String):
             MutableList<Pair<DeadlineID, Deadline>>{
-        return deadlines.filter { (_, deadline) -> deadline.owner is GroupOwned}.toMutableList()
+        if (filter.isBlank() or filter.isEmpty()) throw IllegalArgumentException()
+        val result = deadlines.filter { (_, deadline) -> deadline.owner is GroupOwned && userGroupViewModel.getGroup(deadline.owner.groupID).name == filter}.toMutableList()
+        Log.d("filter : ", filter)
+        return result
     }
 
     private fun filterByMine(deadlines: MutableList<Pair<DeadlineID, Deadline>>):
@@ -92,7 +102,7 @@ class DeadlineAdapter(
 
 
 
-    private fun sortDeadline(deadlines: Map<DeadlineID, Deadline>): List<Pair<DeadlineID, Deadline>> {
+    private fun sortDeadline(deadlines: Map<DeadlineID, Deadline>, filter: String = ""): List<Pair<DeadlineID, Deadline>> {
         val partition = DeadlineState.values().associate { state ->
             Pair<DeadlineState, MutableList<Pair<DeadlineID, Deadline>>>(state, mutableListOf())
         }.toMap()
@@ -106,7 +116,7 @@ class DeadlineAdapter(
         }
 
         if(state == FilterState.GROUPS){
-            result = filterByGroup(result)
+            result = filterByGroup(result, filter)
         }else if(state == FilterState.MINE){
             result = filterByMine(result)
         }

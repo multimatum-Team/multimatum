@@ -13,13 +13,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.adaptater.FilterState
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
+import com.github.multimatum_team.multimatum.viewmodel.UserViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.hudomju.swipe.SwipeToDismissTouchListener
@@ -38,8 +39,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var sharedPreferences: SharedPreferences
 
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
+    private val groupViewModel: GroupViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
 
-    val filters = listOf("All", "Mine", "Groups")
+    private var filters = mutableListOf("All", "Mine")
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,12 +53,19 @@ class MainActivity : AppCompatActivity() {
 
         //access listview for deadline
         val listView = findViewById<ListView>(R.id.deadlineListView)
-        val listViewAdapter = DeadlineAdapter(this, deadlineListViewModel)
+        val listViewAdapter = DeadlineAdapter(this, deadlineListViewModel, userGroupViewModel = groupViewModel)
 
         //set up observer on deadline list
         listView.adapter = listViewAdapter
         deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
             listViewAdapter.setDeadlines(deadlines)
+        }
+
+        groupViewModel.getGroups().observe(this){ groups ->
+            filters.addAll(groups.values.filter {
+                    group -> group.members.contains(userViewModel.getUser().value!!.id) }.map {
+                    group -> group.name })
+            filters = filters.distinct() as MutableList<String>
         }
 
         //access the spinner
@@ -78,10 +88,10 @@ class MainActivity : AppCompatActivity() {
                 when (position){
                     0 -> listViewAdapter.state = FilterState.ALL
                     1 -> listViewAdapter.state = FilterState.MINE
-                    2 -> listViewAdapter.state = FilterState.GROUPS
+                    else -> listViewAdapter.state = FilterState.GROUPS
                 }
                 listView.adapter = listViewAdapter
-                listViewAdapter.setDeadlines(deadlineListViewModel.getDeadlines().value!!)
+                listViewAdapter.setDeadlines(deadlineListViewModel.getDeadlines().value!!, filter = filters[position])
             /*
                 Toast.makeText(this@MainActivity,
                     getString(R.string.selected_item) + " " +
