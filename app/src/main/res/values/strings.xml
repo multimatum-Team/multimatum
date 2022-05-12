@@ -14,6 +14,7 @@
     <string name="main_settings_enable_notif_button">Enable notifications</string>
     <string name="main_settings_procrastination_fighter_section_title">Procrastination fighter</string>
     <string name="main_settings_enable_procrastination_fighter_button">Notify me when I am procrastinating</string>
+    <string name="main_settings_procrastination_fighter_sensitivity">Sensitivity</string>
     <string name="main_open_settings_but_content_descr">Settings button</string>
     <string name="isAlreadyDue">Is already Due</string>
     <string name="done">Done</string>

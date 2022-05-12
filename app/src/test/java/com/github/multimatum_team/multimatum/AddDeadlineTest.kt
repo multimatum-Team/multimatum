@@ -25,11 +25,9 @@ import com.github.multimatum_team.multimatum.activity.AddDeadlineActivity
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
+import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.service.ClockService
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockClockService
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockGroupRepository
+import com.github.multimatum_team.multimatum.util.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -99,14 +97,19 @@ class AddDeadlineTest {
     }
 
     @Test
-    fun `parsing validation pop-up`(){
+    fun `parsing validation pop-up`() {
         onView(withId(R.id.add_deadline_select_title))
             .perform(ViewActions.replaceText("foo 5pm")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
         val dialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog())
         //check if dialog is shown
-        assertEquals(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title), dialog.title)
+        assertEquals(
+            RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title),
+            dialog.title
+        )
         //dismiss dialog
-        onView(withText(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title))).inRoot(isDialog()).check(matches(isDisplayed())).perform(pressBack())
+        onView(withText(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title))).inRoot(
+            isDialog()
+        ).check(matches(isDisplayed())).perform(pressBack())
         //checkdialog is closed
         assert(!ShadowAlertDialog.getLatestAlertDialog().isShowing)
     }
@@ -221,6 +224,11 @@ class AddDeadlineTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 
     @Module

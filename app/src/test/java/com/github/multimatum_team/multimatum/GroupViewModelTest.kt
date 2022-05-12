@@ -1,17 +1,14 @@
 package com.github.multimatum_team.multimatum
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockGroupRepository
-import com.github.multimatum_team.multimatum.util.getOrAwaitValue
+import com.github.multimatum_team.multimatum.repository.UserRepository
+import com.github.multimatum_team.multimatum.util.*
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import dagger.Module
 import dagger.Provides
@@ -176,5 +173,10 @@ class GroupViewModelTest {
         @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
+
+        @Singleton
+        @Provides
+        fun provideUserRepository(): UserRepository =
+            MockUserRepository(listOf())
     }
 }

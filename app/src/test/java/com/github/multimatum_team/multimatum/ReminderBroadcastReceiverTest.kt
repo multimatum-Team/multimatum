@@ -34,7 +34,6 @@ import org.robolectric.shadows.ShadowNotificationManager
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
 class ReminderBroadcastReceiverTest {
-
     private lateinit var context: Context
 
     @get:Rule
@@ -82,11 +81,11 @@ class ReminderBroadcastReceiverTest {
         fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
 
         @Provides
-        fun provideSensorManager(@ApplicationContext context: Context): SensorManager = DependenciesProvider.provideSensorManager(context)
+        fun provideSensorManager(@ApplicationContext context: Context): SensorManager =
+            DependenciesProvider.provideSensorManager(context)
     }
 
     companion object {
         private val mockSharedPreferences: SharedPreferences = mock()
     }
-
 }

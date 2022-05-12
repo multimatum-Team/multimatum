@@ -6,12 +6,15 @@ import android.content.ContentValues
 import android.content.DialogInterface
 import android.graphics.Color
 import android.net.Uri
+
 import android.os.Bundle
 import android.service.autofill.FillResponse
 import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.view.KeyEvent
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -41,6 +44,8 @@ import com.google.firebase.storage.UploadTask
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOError
 import java.io.IOException
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
