@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.os.Looper.getMainLooper
 import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
@@ -47,7 +48,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
+import org.junit.runner.Description
 import org.junit.runner.RunWith
+import org.junit.runners.model.Statement
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlertDialog
@@ -68,9 +72,22 @@ import javax.inject.Singleton
 class AddDeadlineTest {
 
     @get:Rule(order = 0)
-    var hiltRule = HiltAndroidRule(this)
+    var hiltRule = HiltAndroidRule(descriptionthis)
 
     @get:Rule(order = 1)
+    val jsp = TestRule { _, _ ->
+        val appContext = ApplicationProvider.getApplicationContext<Context>()
+        val application = getApplication(appContext)
+        shadowOf(getMainLooper()).idle()
+        MapboxSearchSdk.initialize(
+            application = application,
+            accessToken = appContext.getString(R.string.mapbox_access_token),
+            locationEngine = LocationEngineProvider.getBestLocationEngine(application)
+        )
+        null
+    }
+
+    @get:Rule(order = 2)
     val activityRule = ActivityScenarioRule(AddDeadlineActivity::class.java)
 
     @Inject
@@ -80,20 +97,13 @@ class AddDeadlineTest {
     fun setUp() {
         Intents.init()
         hiltRule.inject()
-        val appContext = ApplicationProvider.getApplicationContext<Context>()
-        val application = getApplication(appContext)
-        MapboxSearchSdk.initialize(
-            application = application,
-            accessToken = "pk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNHdvaHYwZ21nM2JtdW42MWY0cTRyIn0.T61NTFU2NdeqmCu1CdO9mg",
-            locationEngine = LocationEngineProvider.getBestLocationEngine(application)
-        )
     }
 
     @After
     fun teardown() {
         Intents.release()
     }
-
+    /*
     @Test
     fun `The button should send a Toast if there is no title for the deadline`() {
         onView(withId(R.id.add_deadline_select_title))
@@ -175,7 +185,7 @@ class AddDeadlineTest {
         )
 
     }
-    /*
+
     @Test
     fun `The button should open the location search bar`() {
         // Clicking on the location search button
