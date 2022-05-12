@@ -1,16 +1,17 @@
 package com.github.multimatum_team.multimatum.activity
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.app.DatePickerDialog
+import android.app.*
 import android.app.DatePickerDialog.OnDateSetListener
-import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.DialogInterface
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.service.autofill.FillResponse
 import android.util.Log
-import android.view.KeyEvent
-import android.view.View
+import android.view.*
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -23,17 +24,23 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractionResult
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
 import com.github.multimatum_team.multimatum.service.ClockService
+import com.github.multimatum_team.multimatum.service.SystemClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader
 import com.google.android.gms.common.api.Status
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import dagger.hilt.android.AndroidEntryPoint
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import java.io.IOError
+import java.io.IOException
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -52,12 +59,15 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     private val dateTimeExtractor = DateTimeExtractor { clockService.now().toLocalDate() }
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
+    private lateinit var storageRef: StorageReference
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
     private lateinit var editText: TextView
     private lateinit var pdfTextView: TextView
     private lateinit var textTitle: TextView
     private lateinit var textDescription: TextView
+
+    private var pdfData = Uri.EMPTY
 
     // Memorisation of which checkBox is selected for the notifications
     private val notificationSelected = booleanArrayOf(false, false, false, false)
@@ -72,6 +82,8 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        storageRef=FirebaseStorage.getInstance().reference
+
         setContentView(R.layout.activity_add_deadline)
         textTitle = findViewById(R.id.add_deadline_select_title)
         textDate = findViewById(R.id.add_deadline_text_date)
@@ -261,41 +273,59 @@ class AddDeadlineActivity : AppCompatActivity() {
         if (titleDeadline == "") {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
-            // Add the deadline
-            val deadline = Deadline(
-                titleDeadline,
-                DeadlineState.TODO,
-                selectedDate,
-                textDescription.text.toString()
-            )
-
-            val notificationsTimes = retrieveNotificationsTimes()
-
-            Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
-
             // Reset the text input for future use
             textTitle.text = ""
+            uploadPdfToFirebase(pdfData) { pdfPath ->
+                // Add the deadline
+                val deadline = Deadline(
+                    titleDeadline,
+                    DeadlineState.TODO,
+                    selectedDate,
+                    textDescription.text.toString(),
+                    pdfPath = pdfPath
+                )
 
-            deadlineListViewModel.addDeadline(deadline) {
-                DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
-                finish()
+                val notificationsTimes = retrieveNotificationsTimes()
+
+                Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
+
+                deadlineListViewModel.addDeadline(deadline) {
+                    DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
+                    finish()
+                }
             }
+
         }
     }
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result?.data!!
-                val pdfUri = intent.data!!
-                val path: String = pdfUri.toString()
+                pdfData = result.data!!.data!!
+                val path: String = pdfData.toString()
                 val lastSlashIndex = path.lastIndexOf("/")
                 pdfTextView.text = path.substring(lastSlashIndex + 1, path.length)
             }
         }
+
     fun selectPDF(view: View) {
         PDFUtil.selectPdfIntent() {
             startForResult.launch(it)
         }
+    }
+
+    private fun uploadPdfToFirebase(data: Uri, callback: (String) -> Unit) {
+        if (data != Uri.EMPTY) {
+            val ref = storageRef.child("upload" + clockService.now() + ".pdf")
+            ref.putFile(data).addOnSuccessListener {
+                callback(ref.path)
+            }.addOnFailureListener {
+                var failureDialog = AlertDialog.Builder(this).setTitle("pdf upload failed").show()
+                callback("")
+            }
+        } else {
+            callback("")
+        }
+
     }
 
     // Recuperate the information on which notification must be set before returning it in an array

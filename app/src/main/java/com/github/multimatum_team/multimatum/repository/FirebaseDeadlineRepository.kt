@@ -77,7 +77,8 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
             "owner" to when (deadline.owner) {
                 is UserOwned -> hashMapOf("type" to "user", "id" to _user.id)
                 is GroupOwned -> hashMapOf("type" to "group", "id" to deadline.owner.groupID)
-            }
+            },
+            "pdfPath" to deadline.pdfPath
         )
 
     /**
