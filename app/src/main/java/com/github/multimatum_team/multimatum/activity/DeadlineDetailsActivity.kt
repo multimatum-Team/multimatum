@@ -302,19 +302,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             val description = deadline.description
             val group = deadline.owner
 
-
-            val groupDeadline = groupViewModel.getGroup((group as GroupOwned).groupID)
-            val modifyButton =
-                findViewById<ImageButton>(R.id.deadline_details_activity_modify)
-            // If the group of the deadline is not owned by the user,
-            // they can't modify it
-            modifyButton.isClickable =
-                !(groupViewModel.getOwnedGroups().values.contains(groupDeadline))
-            modifyButton.isVisible =
-                !(groupViewModel.getOwnedGroups().values.contains(groupDeadline))
-
-            val groupText = getGroupText(group)
-
             // Update the information of the notification
             val notifications = DeadlineNotification.listDeadlineNotification(id, this)
             for (id in checkBoxIdTime.keys) {
@@ -330,18 +317,30 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             descriptionView.text = SpannableStringBuilder(description)
             doneButton.isChecked = (state == DeadlineState.DONE)
             updateDetail()
-            findViewById<TextView>(R.id.deadline_details_activity_group).text = groupText
+            findViewById<TextView>(R.id.deadline_details_activity_group).text =
+                getGroupTextAndSetModifyButton(group)
 
             // Set the View to be unmodifiable at the start and remove displacement of the texts
             normalSetup()
         }
     }
 
-    private fun getGroupText(group: DeadlineOwner): String {
+    /**
+     * Function that recuperate the name of the group of the deadline, if any,
+     * and hide the modify button if the user is not the owner of the group
+     */
+    private fun getGroupTextAndSetModifyButton(group: DeadlineOwner): String {
         return if (group is UserOwned) {
             getString(R.string.not_in_any_group)
         } else {
             val groupDeadline = groupViewModel.getGroup((group as GroupOwned).groupID)
+            val modifyButton =
+                findViewById<ImageButton>(R.id.deadline_details_activity_modify)
+            // If the group of the deadline is not owned by the user,
+            // they can't modify it
+            modifyButton.isClickable = false
+            modifyButton.isVisible = false
+
             getString(R.string.in_the_group_X, groupDeadline.name)
         }
     }
