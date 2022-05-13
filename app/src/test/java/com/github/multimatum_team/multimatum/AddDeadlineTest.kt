@@ -4,20 +4,17 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
-import android.os.Looper.getMainLooper
 import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
-import androidx.test.core.app.ApplicationProvider
+import androidx.core.view.size
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.action.ViewActions.pressBack
 import androidx.test.espresso.action.ViewActions.pressKey
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.RootMatchers.isDialog
@@ -25,15 +22,13 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.AddDeadlineActivity
+import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
-import com.mapbox.android.core.location.LocationEngineProvider
-import com.mapbox.search.MapboxSearchSdk
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -46,10 +41,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
-import org.junit.runner.Description
 import org.junit.runner.RunWith
-import org.junit.runners.model.Statement
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlertDialog
@@ -94,6 +86,9 @@ class AddDeadlineTest {
     @Inject
     lateinit var deadlineRepository: DeadlineRepository
 
+    @Inject
+    lateinit var groupRepository: GroupRepository
+
     @Before
     fun setUp() {
         Intents.init()
@@ -106,12 +101,12 @@ class AddDeadlineTest {
     }
 
     @Test
-    fun `The button should send a Toast if there is no title for the deadline`() {
+    fun `The button Add should send a Toast if there is no title for the deadline`() {
         onView(withId(R.id.add_deadline_select_title))
-            .perform(ViewActions.replaceText(""))
+            .perform(replaceText(""))
         Espresso.closeSoftKeyboard()
 
-        onView(withId(R.id.add_deadline_button)).perform(ViewActions.click())
+        onView(withId(R.id.add_deadline_button)).perform(click())
         MatcherAssert.assertThat(
             ShadowToast.getTextOfLatestToast(),
             CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.enter_a_title))
@@ -119,20 +114,55 @@ class AddDeadlineTest {
     }
 
     @Test
+    fun `The Button Select Group should show only owned group`() {
+        onView(withId(R.id.add_deadline_select_group))
+            .perform(click())
+
+        val dialog = ShadowAlertDialog.getLatestAlertDialog()
+        assertEquals(
+            "No group",
+            (dialog.listView.adapter.getView(0, null, null) as TextView).text
+        )
+        assertEquals(
+            "Group 2",
+            (dialog.listView.adapter.getView(1, null, null) as TextView).text
+        )
+        assertEquals(2, dialog.listView.size)
+
+        dialog.listView.performItemClick(
+            dialog.listView.adapter
+                .getView(1, null, null), 1, 0
+        )
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+
+        // Select Title
+        onView(withId(R.id.add_deadline_select_title))
+            .perform(replaceText("Test Group 2"))
+        Espresso.closeSoftKeyboard()
+
+        // Check if Toast correctly appear
+        onView(withId(R.id.add_deadline_button)).perform(click())
+        MatcherAssert.assertThat(
+            ShadowToast.getTextOfLatestToast(),
+            CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created))
+        )
+    }
+
     fun `parsing validation pop-up`() {
         onView(withId(R.id.add_deadline_select_title))
-            .perform(ViewActions.replaceText("foo 5pm")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+            .perform(replaceText("foo 5pm")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
         val dialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog())
-        //check if dialog is shown
+        // check if dialog is shown
         assertEquals(
             RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title),
             dialog.title
         )
-        //dismiss dialog
+        // dismiss dialog
         onView(withText(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.parsing_validation_title))).inRoot(
             isDialog()
         ).check(matches(isDisplayed())).perform(pressBack())
-        //checkdialog is closed
+        // check dialog is closed
         assert(!ShadowAlertDialog.getLatestAlertDialog().isShowing)
     }
 
@@ -141,12 +171,11 @@ class AddDeadlineTest {
 
         // Select Title and press enter
         onView(withId(R.id.add_deadline_select_title))
-            .perform(ViewActions.replaceText("Test 1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
-
+            .perform(replaceText("Test 1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
 
         // Select Date
         onView(withId(R.id.add_deadline_select_date))
-            .perform(ViewActions.click())
+            .perform(click())
         val dateDialog = ShadowDatePickerDialog.getLatestDialog() as DatePickerDialog
         dateDialog.updateDate(2013, 10, 23)
         dateDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).performClick()
@@ -156,7 +185,7 @@ class AddDeadlineTest {
 
         // Select Time
         onView(withId(R.id.add_deadline_select_time))
-            .perform(ViewActions.click())
+            .perform(click())
         val timeDialog = ShadowTimePickerDialog.getLatestDialog() as TimePickerDialog
         timeDialog.updateTime(10, 10)
         timeDialog.getButton(TimePickerDialog.BUTTON_POSITIVE).performClick()
@@ -166,11 +195,11 @@ class AddDeadlineTest {
 
         // Select Description
         onView(withId(R.id.add_deadline_select_description))
-            .perform(ViewActions.replaceText("This is a test, do not panic."))
+            .perform(replaceText("This is a test, do not panic."))
         Espresso.closeSoftKeyboard()
 
         // Select Notifications
-        onView(withId(R.id.add_deadline_select_notification)).perform(ViewActions.click())
+        onView(withId(R.id.add_deadline_select_notification)).perform(click())
         val dialog = ShadowAlertDialog.getLatestAlertDialog()
         dialog.listView.performItemClick(dialog.listView.adapter.getView(0, null, null), 0, 0)
         dialog.listView.performItemClick(dialog.listView.adapter.getView(1, null, null), 1, 0)
@@ -179,7 +208,7 @@ class AddDeadlineTest {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
 
         // Check if Toast correctly appear
-        onView(withId(R.id.add_deadline_button)).perform(ViewActions.click())
+        onView(withId(R.id.add_deadline_button)).perform(click())
         MatcherAssert.assertThat(
             ShadowToast.getTextOfLatestToast(),
             CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created))
@@ -249,7 +278,12 @@ class AddDeadlineTest {
         @Singleton
         @Provides
         fun provideGroupRepository(): GroupRepository =
-            MockGroupRepository(listOf())
+            MockGroupRepository(
+                listOf(
+                    UserGroup("0", "Group 1", "1"),
+                    UserGroup("1", "Group 2", "0")
+                )
+            )
 
         @Singleton
         @Provides

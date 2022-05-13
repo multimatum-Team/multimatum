@@ -10,19 +10,22 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.github.multimatum_team.multimatum.R
-import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.model.DeadlineOwner
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.GroupOwned
+import com.github.multimatum_team.multimatum.model.UserOwned
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.LocalDateTime
@@ -45,6 +48,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     lateinit var id: DeadlineID
     private var editMode: Boolean = true
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
+    private val groupViewModel: GroupViewModel by viewModels()
 
     private lateinit var titleView: EditText
     private lateinit var dateView: TextView
@@ -74,11 +78,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Recuperate the id of the deadline
         id = intent.getStringExtra(EXTRA_ID) as DeadlineID
 
-        // As the viewModel doesn't recuperate immediately the deadlines,
+        // As the deadlineListviewModel doesn't recuperate immediately the deadlines,
         // we need an update the moment they are fetched
         setDeadlineObserver()
 
-        // Setup the CheckBox to be checked if done
+        // Setup the CheckBox Done to be checked if done
         doneButton.setOnCheckedChangeListener { _, isChecked ->
             state = if (isChecked) DeadlineState.DONE else DeadlineState.TODO
             updateDetail()
@@ -105,7 +109,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // This display a DatePickerDialog and afterward a TimePickerDialog to modify the date
+    /**
+     * This display a DatePickerDialog and afterward a TimePickerDialog to modify the date
+     */
     fun changeDateAndTime(view: View) {
         val dateSetListener =
             DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
@@ -127,7 +133,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         datePickerDialog.show()
     }
 
-    // Setup a TimePickerDialog that will select a time for the deadline, show it and update the details
+    /**
+     * Setup a TimePickerDialog that will select a time for the deadline, show it and update the details
+     */
     private fun selectTime() {
         // Set what will happen when a time is selected
         val timeSetListener =
@@ -154,11 +162,12 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     }
 
-    // Edit the notification preferences with an AlertDialog
+    /**
+     * Edit the notification preferences with an AlertDialog
+     */
     fun updateNotifications(view: View) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
-        // Set the title
         alertDialogBuilder.setTitle("Notify Me:")
 
         // Set the checkbox, their name in the dialog and what happen when checked
@@ -178,7 +187,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         alertDialogBuilder.show()
     }
 
-    // Function that put the activity to the Edit Mode or to the Uneditable Mode
+    /**
+     * Function that put the activity to the Edit Mode or to the Uneditable Mode
+     */
     fun goToEditOrNormalMode(view: View) {
         // Put the title, the date, the done button and the notification text to the edit mode or not
         editTitle(editMode)
@@ -204,10 +215,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         editMode = editMode.not()
     }
 
-    private fun retrieveNotificationsTimes(): List<Long> =
-        (checkBoxIdTime.filter { checkBox -> notificationSelected[nameCheckBox.indexOf(checkBox.key)] }).values.toList()
-
-    // Shift the titleView to a modify state or to a uneditable state
+    /**
+     * Shift the titleView to a modify state or to a uneditable state
+     */
     private fun editTitle(edit: Boolean) {
         titleView.isEnabled = edit
         titleView.setBackgroundResource(
@@ -216,13 +226,16 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         )
     }
 
-    // Modify the deadline in the database when you quit the edition mode
+    /**
+     * Modify the deadline in the database when you quit the edition mode
+     */
     private fun updateDeadlineAfterEditionModeExit() {
         if (!editMode) {
             val newDeadline = deadlineListViewModel.getDeadline(id).copy(
                 title = titleView.text.toString(),
                 state = state,
-                dateTime = dateTime
+                dateTime = dateTime,
+                description = descriptionView.text.toString()
             )
             deadlineListViewModel.modifyDeadline(
                 id,
@@ -233,8 +246,10 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             }
         }
     }
-    
-    // Shift the dateView to a modify state or to a uneditable state
+
+    /**
+     * Shift the dateView to a modify state or to a uneditable state
+     */
     private fun editDate(edit: Boolean) {
         dateView.isClickable = edit
         dateView.setBackgroundResource(
@@ -243,13 +258,17 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         )
     }
 
-    // Shift the doneView to a modify state or to a uneditable state
+    /**
+     * Shift the doneView to a modify state or to a uneditable state
+     */
     private fun editDone(edit: Boolean) {
         doneButton.isClickable = edit
         doneButton.visibility = if (edit) View.VISIBLE else View.GONE
     }
 
-    // Shift the notificationView to a modify state or to a uneditable state
+    /**
+     * Shift the notificationView to a modify state or to a uneditable state
+     */
     private fun editNotification(edit: Boolean) {
         notificationView.isClickable = edit
         notificationView.setBackgroundResource(
@@ -258,7 +277,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         )
     }
 
-    // Shift the descriptionView to a modify state or to a uneditable state
+    /**
+     * Shift the descriptionView to a modify state or to a uneditable state
+     */
     private fun editDescription(edit: Boolean) {
         descriptionView.isEnabled = edit
         descriptionView.setBackgroundResource(
@@ -267,8 +288,10 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         )
     }
 
-    // This function setup the observer to update the information shown when the
-    // deadline are updated
+    /**
+     * This function setup the observer to update the information shown when the
+     * deadline are updated
+     */
     private fun setDeadlineObserver() {
         deadlineListViewModel.getDeadlines().observe(this) { deadlines ->
             // Recuperate the data from the deadline
@@ -277,6 +300,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             state = deadline.state
             val title = deadline.title
             val description = deadline.description
+            val group = deadline.owner
+
+            // As the groupViewModel doesn't recuperate immediately the deadlines,
+            // we need an update the moment they are fetched
+            setGroupObserver(group)
 
             // Update the information of the notification
             val notifications = DeadlineNotification.listDeadlineNotification(id, this)
@@ -293,13 +321,50 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             descriptionView.text = SpannableStringBuilder(description)
             doneButton.isChecked = (state == DeadlineState.DONE)
             updateDetail()
+            findViewById<TextView>(R.id.deadline_details_activity_group).text =
+                getGroupTextAndSetModifyButton(group)
 
             // Set the View to be unmodifiable at the start and remove displacement of the texts
             normalSetup()
         }
     }
 
-    // Give the text that must be shown in function on how many notifications were selected
+    /**
+     * This function setup the observer to update the information shown for the group
+     * when the group is fetched or updated. This need to be called after the deadline
+     * is fetched to recuperate the information of the group of the deadline
+     */
+    private fun setGroupObserver(group: DeadlineOwner) {
+        groupViewModel.getGroups().observe(this) {
+            findViewById<TextView>(R.id.deadline_details_activity_group).text =
+                getGroupTextAndSetModifyButton(group)
+        }
+    }
+
+    /**
+     * Function that recuperate the name of the group of the deadline, if any,
+     * and hide the modify button if the user is not the owner of the group
+     */
+    private fun getGroupTextAndSetModifyButton(group: DeadlineOwner): String {
+        return if (group is UserOwned) {
+            getString(R.string.not_in_any_group)
+        } else {
+            val groupDeadline = groupViewModel.getGroup((group as GroupOwned).groupID)
+            val modifyButton =
+                findViewById<ImageButton>(R.id.deadline_details_activity_modify)
+            // If the group of the deadline is not owned by the user,
+            // they can't modify it
+            modifyButton.isClickable =
+                groupViewModel.getOwnedGroups().values.contains(groupDeadline)
+            modifyButton.isVisible = groupViewModel.getOwnedGroups().values.contains(groupDeadline)
+
+            getString(R.string.in_the_group_X, groupDeadline.name)
+        }
+    }
+
+    /**
+     * Give the text that must be shown in function on how many notifications were selected
+     */
     private fun textNotification(): String {
         val notifications =
             nameCheckBox.filter { t -> notificationSelected[nameCheckBox.indexOf(t)] }
@@ -314,7 +379,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         )
     }
 
-    // Update the information shown in the TextView detailView
+    /**
+     * Update the information shown in the TextView detailView
+     */
     private fun updateDetail() {
         val actualDate = clockService.now()
         when {
@@ -341,7 +408,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         }
     }
 
-    // Change the color of the date and title views according to the theme
+    /**
+     * Change the color of the date and title views according to the theme
+     */
     private fun adaptToCurrentTheme() {
         val isNightMode = sharedPreferences.getBoolean(
             MainSettingsActivity.DARK_MODE_PREF_KEY,
@@ -357,7 +426,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         }
     }
 
-    // Assure the everything is unmodifiable and fix arrangement
+    /**
+     * Assure the everything is unmodifiable and fix arrangement
+     */
     private fun normalSetup() {
         editTitle(true)
         editTitle(false)

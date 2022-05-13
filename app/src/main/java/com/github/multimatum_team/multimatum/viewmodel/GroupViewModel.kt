@@ -23,7 +23,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class GroupViewModel @Inject constructor(
-    authRepository: AuthRepository,
+    private val authRepository: AuthRepository,
     private val groupRepository: GroupRepository
 ) : ViewModel() {
     private val _groups: MutableLiveData<Map<GroupID, UserGroup>> = MutableLiveData()
@@ -69,6 +69,12 @@ class GroupViewModel @Inject constructor(
      */
     fun getGroups(): LiveData<Map<GroupID, UserGroup>> =
         _groups
+
+    /**
+     * Get all owned groups.
+     */
+    fun getOwnedGroups(): Map<GroupID, UserGroup> =
+        _groups.value!!.filterValues { group -> (group.owner == authRepository.getUser().id) }
 
     /**
      * Get a single group from its ID.

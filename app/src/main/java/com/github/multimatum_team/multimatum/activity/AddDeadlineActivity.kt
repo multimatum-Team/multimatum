@@ -5,26 +5,22 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
-import android.content.ContentValues
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
+import com.github.multimatum_team.multimatum.model.GroupID
+import com.github.multimatum_team.multimatum.model.GroupOwned
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractionResult
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
 import com.github.multimatum_team.multimatum.repository.FirebasePdfRepository
@@ -33,9 +29,7 @@ import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.mapbox.search.result.SearchResult
-import com.mapbox.search.ui.view.SearchBottomSheetView
-import com.google.android.gms.common.api.Status
+import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.google.firebase.storage.FirebaseStorage
@@ -50,6 +44,19 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class AddDeadlineActivity : AppCompatActivity() {
+
+    companion object {
+        // Memorisation of which checkBox is selected for the notifications
+        private val notificationSelected = booleanArrayOf(false, false, false, false)
+        private val nameNotifications = arrayOf("1 hour", "5 hours", "1 day", "3 days")
+        private val checkBoxIdTime = mapOf(
+            "1 hour" to Duration.ofHours(1).toMillis(),
+            "5 hours" to Duration.ofHours(5).toMillis(),
+            "1 day" to Duration.ofDays(1).toMillis(),
+            "3 days" to Duration.ofDays(3).toMillis()
+        )
+    }
+
     @Inject
     lateinit var clockService: ClockService
 
@@ -60,6 +67,7 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     private val dateTimeExtractor = DateTimeExtractor { clockService.now().toLocalDate() }
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
+    private val groupViewModel: GroupViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
     private lateinit var pdfTextView: TextView
@@ -69,16 +77,11 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     private var pdfData = Uri.EMPTY
 
-    // Memorisation of which checkBox is selected for the notifications
-    private val notificationSelected = booleanArrayOf(false, false, false, false)
-    private val nameCheckBox = arrayOf("1 hour", "5 hours", "1 day", "3 days")
-    private val checkBoxIdTime = mapOf(
-        "1 hour" to Duration.ofHours(1).toMillis(),
-        "5 hours" to Duration.ofHours(5).toMillis(),
-        "1 day" to Duration.ofDays(1).toMillis(),
-        "3 days" to Duration.ofDays(3).toMillis()
-    )
 
+    // Memorisation of which group is selected for the deadline
+    private var groupSelected = 0
+    private var nameGroups = arrayOf("No group")
+    private var idGroups = arrayOf<GroupID>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,20 +90,17 @@ class AddDeadlineActivity : AppCompatActivity() {
         firebasePdfRepository = FirebasePdfRepository(FirebaseStorage.getInstance())
 
         setContentView(R.layout.activity_add_deadline)
-        textTitle = findViewById(R.id.add_deadline_select_title)
-        // Reset the text input
-        textTitle.text = ""
 
+        // Recuperate all the necessary Views
+        textTitle = findViewById(R.id.add_deadline_select_title)
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
         pdfTextView = findViewById(R.id.selectedPdf)
         progressBar = findViewById(R.id.progressBar)
         progressBar.visibility = View.INVISIBLE
         progressBar.isIndeterminate = true
-
-
-
         textDescription = findViewById(R.id.add_deadline_select_description)
+
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         updateDisplayedDateAndTime()
         textTitle.setOnKeyListener { _, keyCode, keyEvent ->
@@ -114,6 +114,24 @@ class AddDeadlineActivity : AppCompatActivity() {
         // Initialize the location search view
         // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
         //initializeLocationSearchView(savedInstanceState)
+
+        setGroupObserver()
+
+    }
+
+    /**
+     *  Update the groups owned by the user to be able to select them
+     *  in the Dialog
+     */
+    private fun setGroupObserver() {
+        groupViewModel.getGroups().observe(this) {
+            nameGroups = arrayOf("No group")
+            idGroups = arrayOf()
+            groupViewModel.getOwnedGroups().map { (id, group) ->
+                nameGroups = nameGroups.plus(group.name)
+                idGroups = idGroups.plus(id)
+            }
+        }
     }
 
     /**
@@ -150,10 +168,12 @@ class AddDeadlineActivity : AppCompatActivity() {
         if (res.time != null) (message + "\ntime: " + res.time.toString()).also { message = it }
         alertBuilder.setCancelable(true).setTitle(R.string.parsing_validation_title)
             .setMessage(message)
-        alertBuilder.setNegativeButton("Cancel",
-            DialogInterface.OnClickListener { dialogInterface, _ -> dialogInterface.cancel() })
-        alertBuilder.setPositiveButton("OK",
-            DialogInterface.OnClickListener { _, _ -> applyParsing(res) })
+        alertBuilder.setNegativeButton(
+            "Cancel"
+        ) { dialogInterface, _ -> dialogInterface.cancel() }
+        alertBuilder.setPositiveButton(
+            "OK"
+        ) { _, _ -> applyParsing(res) }
         alertBuilder.show()
     }
 
@@ -254,12 +274,11 @@ class AddDeadlineActivity : AppCompatActivity() {
     fun selectNotifications(view: View) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
-        // Set the title
-        alertDialogBuilder.setTitle("Notify Me:")
+        alertDialogBuilder.setTitle(getString(R.string.notify_me))
 
         // Set the checkbox, their name in the dialog and what happen when checked
         alertDialogBuilder.setMultiChoiceItems(
-            nameCheckBox.map { s ->
+            nameNotifications.map { s ->
                 getString(R.string.notify_before, s)
             }.toTypedArray(),
             notificationSelected
@@ -274,31 +293,46 @@ class AddDeadlineActivity : AppCompatActivity() {
     }
 
     /**
+     * Setup an AlertDialog that will select the group of the deadline
+     */
+    fun selectGroups(view: View) {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+
+        alertDialogBuilder.setTitle("Select Group:")
+
+        // Set the options, their names in the dialog and what happen when selected
+        alertDialogBuilder.setSingleChoiceItems(
+            nameGroups,
+            groupSelected
+        ) { _, which ->
+            groupSelected = which
+        }
+
+        // Set the name of the done button
+        alertDialogBuilder.setPositiveButton(getString(R.string.done), null)
+        alertDialogBuilder.create()
+        alertDialogBuilder.show()
+
+    }
+
+    /**
      *  Add a deadline based on the data recuperated on the other TextViews
      */
     fun addDeadline(view: View) {
-        // Getting the entered text
-        val titleDeadline = textTitle.text.toString()
 
         // Check if the title is not empty
-        if (titleDeadline == "") {
+        if (textTitle.text.toString() == "") {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
             //loading bar
             progressBar.visibility = View.VISIBLE
             // Start upload
-            firebasePdfRepository.uploadPdf(pdfData, this){ ref ->
+            firebasePdfRepository.uploadPdf(pdfData, this) { ref ->
                 // Hide loading bar
-                progressBar.visibility = View.GONE;
+                progressBar.visibility = View.GONE
 
                 // Create the deadline
-                val deadline = Deadline(
-                    titleDeadline,
-                    DeadlineState.TODO,
-                    selectedDate,
-                    textDescription.text.toString(),
-                    pdfPath = ref
-                )
+                val deadline = recuperateDeadlineFromInputText(ref)
                 // Get notification setting
                 val notificationsTimes = retrieveNotificationsTimes()
 
@@ -306,13 +340,14 @@ class AddDeadlineActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT)
                     .show()
 
-                // Add the deadline and finish the activity
+                // Reset the text input for future use
+                textTitle.text = ""
+
                 deadlineListViewModel.addDeadline(deadline) {
                     DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
                     finish()
                 }
             }
-
         }
     }
 
@@ -330,6 +365,33 @@ class AddDeadlineActivity : AppCompatActivity() {
         */
     }
 
+    /**
+     * Recuperate the deadline from all the text input in the activity
+     * WARNING: the textTile must not be empty
+     */
+    private fun recuperateDeadlineFromInputText(ref: String): Deadline {
+        // Putting the deadline in the corresponding group or
+        // in none if no group selected
+        if (groupSelected == 0) {
+            return Deadline(
+                textTitle.text.toString(),
+                DeadlineState.TODO,
+                selectedDate,
+                textDescription.text.toString(),
+                pdfPath = ref
+            )
+        } else {
+            return Deadline(
+                textTitle.text.toString(),
+                DeadlineState.TODO,
+                selectedDate,
+                textDescription.text.toString(),
+                GroupOwned(idGroups[groupSelected - 1]),
+                pdfPath = ref
+            )
+        }
+    }
+
     // Code to be executed when a pdf has been chosen
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -339,11 +401,12 @@ class AddDeadlineActivity : AppCompatActivity() {
             }
         }
 
+
     /**
      * Launch pdf selection menu
      */
     fun selectPDF(view: View) {
-        PDFUtil.selectPdfIntent() {
+        PDFUtil.selectPdfIntent {
             startForResult.launch(it)
         }
     }
@@ -352,7 +415,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     private fun retrieveNotificationsTimes(): ArrayList<Long> {
         val res = ArrayList<Long>()
         for (i in 0 until checkBoxIdTime.count()) {
-            if (notificationSelected[i]) res.add(checkBoxIdTime[nameCheckBox[i]]!!)
+            if (notificationSelected[i]) res.add(checkBoxIdTime[nameNotifications[i]]!!)
         }
         return res
     }

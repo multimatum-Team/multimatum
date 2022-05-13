@@ -72,17 +72,6 @@
         tools:ignore="TouchTargetSizeCheck"
         tools:text="notification" />
 
-    <TextView
-        android:id="@+id/deadline_details_activity_done_or_due"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal|end"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_description"
-        tools:text="details" />
-
     <Button
         android:id="@+id/QRCodeButton"
         style="@style/Widget.MaterialComponents.Button.Icon"
@@ -96,7 +85,6 @@
         app:icon="@drawable/ic_qr_generator"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
@@ -104,9 +92,10 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
         android:onClick="goToEditOrNormalMode"
-        app:layout_constraintEnd_toEndOf="@+id/deadline_details_activity_done_or_due"
-        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due"
+        app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
         app:srcCompat="@android:drawable/ic_menu_manage"
         tools:ignore="ContentDescription,SpeakableTextPresentCheck,ImageContrastCheck" />
 
@@ -119,6 +108,36 @@
         android:text="@string/done"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/deadline_details_activity_modify"
-        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_done_or_due" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout4"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_description">
+
+        <TextView
+            android:id="@+id/deadline_details_activity_group"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="group" />
+
+        <TextView
+            android:id="@+id/deadline_details_activity_done_or_due"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|end"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="details" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

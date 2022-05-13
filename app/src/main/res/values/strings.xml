@@ -1,6 +1,5 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">multimatum</string>
-    <string name="log_in_text">Log in</string>
     <string name="qr_code_scanner_button_text">Scanner</string>
     <string name="calendar_deadline_input_text">Enter new deadline…</string>
     <string name="calender_add_new_deadline_button_text">Add</string>
@@ -18,24 +17,16 @@
     <string name="main_open_settings_but_content_descr">Settings button</string>
     <string name="isAlreadyDue">Is already Due</string>
     <string name="done">Done</string>
-    <string name="DueTheX">Due the %1s</string>
     <string name="DueTheXatX">Due the %1s at %1s</string>
     <string name="DueInXDays">Due in %1s Days</string>
     <string name="DueInXHours">Due in %1s Hours</string>
     <string name="missing_sensor_msg">"%1s (disabled: missing sensor on device)"</string>
     <string name="stop_procrastinating_msg">"Hey! Why is this phone moving? You should be working!"</string>
-    <string name="TriggerNotif">Trigger Notif</string>
-    <string name="add_notification_title">Notify me :</string>
-    <string name="saveNotifSetting">Save Notification Setting</string>
-    <string name="notification_saved">Notifications Saved</string>
-    <string name="notification">Notifications :</string>
+    <string name="notify_me">Notify me :</string>
     <string name="notify_before">%1s before</string>
     <string name="link_pdf_to_deadline_title">Link pdf:</string>
     <string name="pick_pdf">Select a PDF</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="you_re_logged_in_as">You\'re logged in as %1s</string>
-    <string name="email">Email</string>
     <string name="logout">LOGOUT</string>
     <string name="procrastination_fighter_enable_msg">Procrastination fighter is enabled</string>
     <string name="procrastination_fighter_disabled_msg">Procrastination fighter is disabled</string>
@@ -54,13 +45,16 @@
     <string name="notification_shared_preference">com.github.multimatum_team.multimatum.notifications</string>
     <string name="not_done">Not Done</string>
     <string name="groups">Groups</string>
-    <string name="mapbox_access_token">pk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNHdvaHYwZ21nM2JtdW42MWY0cTRyIn0.T61NTFU2NdeqmCu1CdO9mg</string>
+    <string name="mapbox_access_token" tools:ignore="Typos">pk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNHdvaHYwZ21nM2JtdW42MWY0cTRyIn0.T61NTFU2NdeqmCu1CdO9mg</string>
     <string name="search_location">Search location</string>
     <string name="location_default_msg">No location selected</string>
     <string name="select_notifications">Select Notifications</string>
     <string name="write_description_here">Write description here</string>
     <string name="no_alarm_planned">No Alarm Planned</string>
     <string name="alarm_X_before">Alarm %s before</string>
+    <string name="not_in_any_group">Not in any group</string>
+    <string name="in_the_group_X">In the group: %s</string>
+    <string name="select_group">Select Group</string>
     <string name="selected_item">Selected item:</string>
     <string name="group_owner">Owner: %s</string>
     <string name="group_invite">Invite</string>
