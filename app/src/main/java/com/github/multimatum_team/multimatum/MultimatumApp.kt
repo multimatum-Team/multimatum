@@ -10,6 +10,8 @@ import com.github.multimatum_team.multimatum.LogUtil.debugLog
 import com.github.multimatum_team.multimatum.LogUtil.logFunctionCall
 import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService
+import com.mapbox.android.core.location.LocationEngineProvider
+import com.mapbox.search.MapboxSearchSdk
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -26,6 +28,7 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
         logFunctionCall()
         super.onCreate()
         registerActivityLifecycleCallbacks(this)
+        initializeMapboxSearch()
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
@@ -64,6 +67,14 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
 
     override fun onActivityDestroyed(activity: Activity) {
         logFunctionCall("destroyed ${activity.localClassName}")
+    }
+
+    private fun initializeMapboxSearch() {
+        MapboxSearchSdk.initialize(
+            application = this,
+            accessToken = getString(R.string.mapbox_access_token),
+            locationEngine = LocationEngineProvider.getBestLocationEngine(this)
+        )
     }
 
     private fun startProcrastinationDetectorIfNeeded() {

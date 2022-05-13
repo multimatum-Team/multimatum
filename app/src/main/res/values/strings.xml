@@ -54,7 +54,9 @@
     <string name="notification_shared_preference">com.github.multimatum_team.multimatum.notifications</string>
     <string name="not_done">Not Done</string>
     <string name="groups">Groups</string>
-    <string name="places_key">AIzaSyCXC2DH6UC_dvvFsLRMxDOhouJSp4GIwzk</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNHdvaHYwZ21nM2JtdW42MWY0cTRyIn0.T61NTFU2NdeqmCu1CdO9mg</string>
+    <string name="search_location">Search location</string>
+    <string name="location_default_msg">No location selected</string>
     <string name="select_notifications">Select Notifications</string>
     <string name="write_description_here">Write description here</string>
     <string name="no_alarm_planned">No Alarm Planned</string>
