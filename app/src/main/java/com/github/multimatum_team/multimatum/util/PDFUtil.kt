@@ -23,13 +23,6 @@ object PDFUtil {
     }
 
     /**
-     * generate a unique ID randomize over Int range
-     */
-    fun getUniqueInt(): String {
-        return (Int.MIN_VALUE..Int.MAX_VALUE).random().toString()
-    }
-
-    /**
      * Retrieve name of a pdf from it's Uri
      */
     fun getFileNameFromUri(pdfData: Uri): String {

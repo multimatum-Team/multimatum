@@ -22,7 +22,7 @@ class FirebasePdfRepository @Inject constructor(database: FirebaseStorage) : Pdf
         if (data != Uri.EMPTY) {
             val ref =
                 storageReference.child(
-                    FirebaseAuth.getInstance().uid + "/upload" + PDFUtil.getUniqueInt() + PDFUtil.getFileNameFromUri(
+                    FirebaseAuth.getInstance().uid + "/upload" + (Int.MIN_VALUE..Int.MAX_VALUE).random().toString() + PDFUtil.getFileNameFromUri(
                         data
                     )
                 )

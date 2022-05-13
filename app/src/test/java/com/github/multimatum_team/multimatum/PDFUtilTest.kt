@@ -16,10 +16,4 @@ class PDFUtilTest {
             assertEquals(Intent.ACTION_GET_CONTENT, it.action)
         }
     }
-
-    @Test
-    fun testUidGenerator(){
-        val uid = PDFUtil.getUniqueInt()
-        assert(uid< Int.MAX_VALUE.toString())
-    }
 }
