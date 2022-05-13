@@ -5,23 +5,17 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
-import android.content.ContentValues
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -35,10 +29,7 @@ import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.mapbox.search.result.SearchResult
-import com.mapbox.search.ui.view.SearchBottomSheetView
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
-import com.google.android.gms.common.api.Status
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.google.firebase.storage.FirebaseStorage
@@ -283,7 +274,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     fun selectNotifications(view: View) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
-        alertDialogBuilder.setTitle("Notify Me:")
+        alertDialogBuilder.setTitle(getString(R.string.notify_me))
 
         // Set the checkbox, their name in the dialog and what happen when checked
         alertDialogBuilder.setMultiChoiceItems(
@@ -336,9 +327,9 @@ class AddDeadlineActivity : AppCompatActivity() {
             //loading bar
             progressBar.visibility = View.VISIBLE
             // Start upload
-            firebasePdfRepository.uploadPdf(pdfData, this){ ref ->
+            firebasePdfRepository.uploadPdf(pdfData, this) { ref ->
                 // Hide loading bar
-                progressBar.visibility = View.GONE;
+                progressBar.visibility = View.GONE
 
                 // Create the deadline
                 val deadline = recuperateDeadlineFromInputText(ref)

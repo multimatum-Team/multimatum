@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout3"
         android:layout_width="411dp"
-        android:layout_height="550dp"
+        android:layout_height="600dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -200,10 +200,11 @@
             android:id="@+id/constraintLayout4"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/add_deadline_button"
+            android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_notification">
+            app:layout_constraintTop_toBottomOf="@+id/add_deadline_select_group">
 
             <Button
                 android:id="@+id/search_location"
@@ -223,8 +224,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/location_default_msg"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.15"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.15"
                 app:layout_constraintStart_toEndOf="@+id/search_location"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
