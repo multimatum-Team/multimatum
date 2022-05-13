@@ -61,9 +61,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     @Inject
     lateinit var firebasePdfRepository: PdfRepository
 
-    @Inject
-    lateinit var firebaseStorage: FirebaseStorage
-
     private lateinit var selectedDate: LocalDateTime
 
     private val dateTimeExtractor = DateTimeExtractor { clockService.now().toLocalDate() }
@@ -92,8 +89,7 @@ class AddDeadlineActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Firebase.initialize(this)
-        firebaseStorage = FirebaseStorage.getInstance()
-        firebasePdfRepository = FirebasePdfRepository(firebaseStorage)
+        firebasePdfRepository = FirebasePdfRepository(FirebaseStorage.getInstance())
 
         setContentView(R.layout.activity_add_deadline)
         textTitle = findViewById(R.id.add_deadline_select_title)

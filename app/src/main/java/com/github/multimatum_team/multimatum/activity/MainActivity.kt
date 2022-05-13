@@ -45,8 +45,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var pdfRepository: PdfRepository
 
-    @Inject
-    lateinit var firebaseStorage: FirebaseStorage
 
 
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
@@ -56,8 +54,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Firebase.initialize(this)
-        firebaseStorage = FirebaseStorage.getInstance()
-        pdfRepository = FirebasePdfRepository(firebaseStorage)
+        pdfRepository = FirebasePdfRepository(FirebaseStorage.getInstance())
 
         setContentView(R.layout.activity_main)
 

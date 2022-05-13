@@ -9,6 +9,7 @@ import com.github.multimatum_team.multimatum.util.MockFirebaseAuth
 import com.github.multimatum_team.multimatum.util.MockFirebaseFirestore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +25,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -101,10 +103,14 @@ class FirebaseUserRepositoryTest {
                     UserInfo("5", "Joseph"),
                 )
             ).database
-
         @Singleton
         @Provides
         fun provideFirebaseAuth(): FirebaseAuth =
             MockFirebaseAuth().auth
+
+        @Singleton
+        @Provides
+        fun provideFirebaseStorage(): FirebaseStorage =
+            mock(FirebaseStorage::class.java)
     }
 }

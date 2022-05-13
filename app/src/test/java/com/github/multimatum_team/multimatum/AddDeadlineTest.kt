@@ -241,15 +241,6 @@ class AddDeadlineTest {
 
     @Module
     @InstallIn(SingletonComponent::class)
-    object TestFirebaseModule {
-        @Singleton
-        @Provides
-        fun provideFirebaseStorage(): FirebaseStorage =
-            Mockito.mock(FirebaseStorage::class.java)
-    }
-
-    @Module
-    @InstallIn(SingletonComponent::class)
     object TestClockModule {
         @Provides
         fun provideClockService(): ClockService =
