@@ -23,6 +23,7 @@ group feature coming all together. Next week I will continue and possibly finish
 implementing group invites.
 
 ### Lenny
+This week I started by adding a validation pop-up on the dateTime parsing when we add a deadline. Then I worked on uploading the pdf on firebase when a new deadline is added with a linked pdf. I did spend a good amount of time on understanding how dependencies providers worked to implement testing of this feature. Next week, I'll finish to implement the pdf feature.
 
 ### Léo
 This week I worked on a new feature that enables the user to select a location 
