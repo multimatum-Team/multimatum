@@ -1,11 +1,7 @@
 package com.github.multimatum_team.multimatum.util
 
-import com.github.multimatum_team.multimatum.model.AnonymousUser
-import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.UserID
 import com.github.multimatum_team.multimatum.model.UserInfo
-import com.github.multimatum_team.multimatum.repository.DeadlineID
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.UserRepository
 
 /**

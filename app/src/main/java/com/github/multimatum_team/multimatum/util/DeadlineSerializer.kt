@@ -23,6 +23,7 @@ internal class DeadlineSerializer : JsonSerializer<Deadline> {
         obj.addProperty("state", deadline.state.name)
         obj.addProperty("dateTime", formatter.format(deadline.dateTime))
         obj.addProperty("description", deadline.description)
+        obj.addProperty("pdfPath", deadline.pdfPath)
         return obj
     }
 

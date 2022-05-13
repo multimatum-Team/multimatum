@@ -21,7 +21,8 @@ data class DeadlineData(
     val state: DeadlineState,
     val dateTime: LocalDateTime,
     val description: String,
-    val ownerData: DeadlineOwnerData
+    val ownerData: DeadlineOwnerData,
+    val pdfPath: String
 )
 
 class MockFirebaseFirestore(
@@ -227,6 +228,7 @@ class MockFirebaseFirestore(
                 )
             }
         )
+        `when`(snapshot.get("pdfPath")).thenReturn(deadlineData.pdfPath)
         return snapshot
     }
 
@@ -276,6 +278,7 @@ class MockFirebaseFirestore(
                 )
             }
         )
+        `when`(snapshot.get("pdfPath")).thenReturn(deadlineData.pdfPath)
         return snapshot
     }
 
@@ -297,7 +300,8 @@ class MockFirebaseFirestore(
             "group" -> GroupOwnedData(ownerMap["id"] as GroupID)
             else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
         }
-        val deadlineData = DeadlineData(title, state, date, description, ownerData)
+        val pdfPath = serializedDeadline["pdfPath"] as String
+        val deadlineData = DeadlineData(title, state, date, description, ownerData, pdfPath)
         deadlines[newID] = deadlineData
         return generateDeadlineDocument(newID, deadlineData)
     }
