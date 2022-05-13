@@ -4,4 +4,6 @@
     <dimen name="main_settings_button_font_size">14sp</dimen>
     <dimen name="main_settings_activity_title_font_size">48sp</dimen>
     <dimen name="main_settings_toggle_font_size">20sp</dimen>
+    <dimen name="group_details_group_name_font_size">32sp</dimen>
+    <dimen name="group_details_user_name_font_size">20sp</dimen>
 </resources>

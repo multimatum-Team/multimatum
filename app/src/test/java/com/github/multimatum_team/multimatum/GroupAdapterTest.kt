@@ -31,8 +31,8 @@ import javax.inject.Singleton
 class GroupAdapterTest {
     companion object {
         private val groups: List<UserGroup> = listOf(
-            UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
-            UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
+            UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")),
+            UserGroup("1", "MIT", "Louis", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val")),
             UserGroup("2", "JDR", "Florian", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
             UserGroup("3", "Quantic", "Léo", setOf("Joseph", "Louis", "Florian", "Léo", "Val")),
         )
@@ -90,10 +90,10 @@ class GroupAdapterTest {
 
     @Test
     fun `GetItem should give the correct group`() {
-        Assert.assertEquals(adapter.getItem(0), groupMap.entries.toList()[0].value)
+        Assert.assertEquals(adapter.getItem(0), groupMap.entries.toList()[2].value)
         Assert.assertEquals(adapter.getItem(1), groupMap.entries.toList()[1].value)
-        Assert.assertEquals(adapter.getItem(2), groupMap.entries.toList()[2].value)
-        Assert.assertEquals(adapter.getItem(3), groupMap.entries.toList()[3].value)
+        Assert.assertEquals(adapter.getItem(2), groupMap.entries.toList()[3].value)
+        Assert.assertEquals(adapter.getItem(3), groupMap.entries.toList()[0].value)
     }
 
     @Test
@@ -156,17 +156,15 @@ class GroupAdapterTest {
         @Singleton
         @Provides
         fun provideUserRepository(): UserRepository =
-            MockUserRepository(listOf(
-                UserInfo(id = "Joseph", name = "Joseph"),
-                UserInfo(id = "Louis", name = "Louis"),
-                UserInfo(id = "Florian", name = "Florian"),
-                UserInfo(id = "Léo", name = "Léo"),
-                UserInfo(id = "Val", name = "Val"),
-            ))
-
-        @Singleton
-        @Provides
-        fun providePdfRepository(): PdfRepository =
-            MockPdfRepository()
+            MockUserRepository(
+                listOf(
+                    UserInfo(id = "Joseph", name = "Joseph"),
+                    UserInfo(id = "Louis", name = "Louis"),
+                    UserInfo(id = "Florian", name = "Florian"),
+                    UserInfo(id = "Lenny", name = "Lenny"),
+                    UserInfo(id = "Léo", name = "Léo"),
+                    UserInfo(id = "Val", name = "Val"),
+                )
+            )
     }
 }

@@ -100,6 +100,19 @@ class FirebaseGroupRepositoryTest {
         )
     }
 
+    /* Untestable even with mocking
+    @Test
+    fun `Removing a group member removes it from the database`() = runTest {
+        repository.removeMember("0", "2")
+        assertEquals(
+            mapOf(
+                "0" to UserGroup("0", "Group 1", "0", setOf("0", "1"))
+            ),
+            repository.fetch("0")
+        )
+    }
+    */
+
     @Test
     fun `Creating a group notifies the owner`() = runTest {
         var notified = false

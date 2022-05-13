@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
+import com.github.multimatum_team.multimatum.model.UserID
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -104,11 +105,14 @@ class GroupViewModel @Inject constructor(
      * @pram id the ID of the group to rename
      * @param newName the new name of the group
      */
-    fun renameGroup(id: GroupID, newName: String) =
-        viewModelScope.launch {
-            groupRepository.rename(id, newName)
-            LogUtil.debugLog("renaming group with id $id to $newName")
-        }
+    fun renameGroup(id: GroupID, newName: String) = viewModelScope.launch {
+        groupRepository.rename(id, newName)
+        LogUtil.debugLog("renaming group with id $id to $newName")
+    }
+
+    fun removeMember(groupID: GroupID, memberID: UserID) = viewModelScope.launch {
+        groupRepository.removeMember(groupID, memberID)
+    }
 
     /**
      * Invite an user to join a group given from its ID.
