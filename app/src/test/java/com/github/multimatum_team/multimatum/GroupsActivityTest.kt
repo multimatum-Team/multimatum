@@ -12,12 +12,10 @@ import com.github.multimatum_team.multimatum.activity.GroupsActivity
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserInfo
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
-import com.github.multimatum_team.multimatum.repository.UserRepository
+import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,6 +30,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -164,5 +163,10 @@ class GroupsActivityTest {
                     UserInfo(id = "Val", name = "Val"),
                 )
             )
+
+        @Singleton
+        @Provides
+        fun providePdfRepository(): PdfRepository =
+            MockPdfRepository()
     }
 }

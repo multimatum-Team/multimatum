@@ -13,6 +13,7 @@ import com.github.multimatum_team.multimatum.model.*
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.util.*
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +23,7 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.junit.*
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -166,5 +168,10 @@ class GroupAdapterTest {
                     UserInfo(id = "Val", name = "Val"),
                 )
             )
+
+        @Singleton
+        @Provides
+        fun providePdfRepository(): PdfRepository =
+            MockPdfRepository()
     }
 }
