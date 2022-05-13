@@ -27,6 +27,15 @@ class GroupsActivity : AppCompatActivity() {
 
         val adapter = UserGroupAdapter(this, groupViewModel, userRepository)
 
+        // Set when you maintain your finger on an item of the list, launch the detail activity
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val group = adapter.getItem(position)
+            val detailIntent = GroupDetailsActivity.newIntent(this, group.id)
+            startActivity(detailIntent)
+            // Last line necessary to use this function
+            true
+        }
+
         listView.adapter = adapter
         groupViewModel.getGroups().observe(this){groups ->
             adapter.setGroups(groups)

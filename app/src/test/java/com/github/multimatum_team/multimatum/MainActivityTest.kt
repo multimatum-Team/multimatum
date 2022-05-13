@@ -22,14 +22,8 @@ import com.github.multimatum_team.multimatum.activity.*
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.UserGroup
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
-import com.github.multimatum_team.multimatum.repository.UserRepository
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockGroupRepository
-import com.github.multimatum_team.multimatum.util.MockUserRepository
+import com.github.multimatum_team.multimatum.repository.*
+import com.github.multimatum_team.multimatum.util.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -141,7 +135,7 @@ class MainActivityTest {
 
     @Test
     fun goToGroupsTest() {
-        onView(withId(R.id.groupButton)).perform(click())
+        onView(withId(R.id.groupButton)).check(matches(isDisplayed())).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(GroupsActivity::class.java.name),
@@ -252,6 +246,11 @@ class MainActivityTest {
 
         @Singleton
         @Provides
+        fun providePdfRepository(): PdfRepository =
+            MockPdfRepository()
+
+        @Singleton
+        @Provides
         fun provideAuthRepository(): AuthRepository =
             MockAuthRepository()
 
@@ -260,6 +259,7 @@ class MainActivityTest {
         fun provideUserRepository(): UserRepository =
             MockUserRepository(listOf())
     }
+
 
     companion object {
         val mockSharedPreferences: SharedPreferences = mock()

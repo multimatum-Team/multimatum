@@ -6,16 +6,22 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.content.ContentValues
+import android.content.DialogInterface
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
@@ -23,22 +29,24 @@ import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.GroupOwned
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractionResult
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
+import com.github.multimatum_team.multimatum.repository.FirebasePdfRepository
+import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
+import com.mapbox.search.result.SearchResult
+import com.mapbox.search.ui.view.SearchBottomSheetView
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.android.gms.common.api.Status
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
+import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-
 
 /**
  *  Activity who create a deadline using a DatePickerDialog and a TimePickerDialog
@@ -61,6 +69,9 @@ class AddDeadlineActivity : AppCompatActivity() {
     @Inject
     lateinit var clockService: ClockService
 
+    @Inject
+    lateinit var firebasePdfRepository: PdfRepository
+
     private lateinit var selectedDate: LocalDateTime
 
     private val dateTimeExtractor = DateTimeExtractor { clockService.now().toLocalDate() }
@@ -71,6 +82,9 @@ class AddDeadlineActivity : AppCompatActivity() {
     private lateinit var pdfTextView: TextView
     private lateinit var textTitle: TextView
     private lateinit var textDescription: TextView
+    private lateinit var progressBar: ProgressBar
+
+    private var pdfData = Uri.EMPTY
 
 
     // Memorisation of which group is selected for the deadline
@@ -80,6 +94,10 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Firebase.initialize(this)
+        firebasePdfRepository = FirebasePdfRepository(FirebaseStorage.getInstance())
+
         setContentView(R.layout.activity_add_deadline)
 
         // Recuperate all the necessary Views
@@ -87,6 +105,9 @@ class AddDeadlineActivity : AppCompatActivity() {
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
         pdfTextView = findViewById(R.id.selectedPdf)
+        progressBar = findViewById(R.id.progressBar)
+        progressBar.visibility = View.INVISIBLE
+        progressBar.isIndeterminate = true
         textDescription = findViewById(R.id.add_deadline_select_description)
 
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
@@ -99,7 +120,9 @@ class AddDeadlineActivity : AppCompatActivity() {
             return@setOnKeyListener false
         }
 
-        initializePlacesAutocomplete()
+        // Initialize the location search view
+        // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
+        //initializeLocationSearchView(savedInstanceState)
 
         setGroupObserver()
 
@@ -169,39 +192,37 @@ class AddDeadlineActivity : AppCompatActivity() {
     }
 
     /**
-     * Setup the PlacesAutocompleteClient used to select a location for a deadline
+     * Initialize the location search view with the chosen parameters
      */
-    private fun initializePlacesAutocomplete() {
-        Places.initialize(applicationContext, getString(R.string.places_key))
-        // Must be commented for now
-        /*
-        Places.createClient(this)
-        */
-        initializeAutocompleteFragment()
+    /*
+    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
+    private fun initializeLocationSearchView(savedInstanceState: Bundle?) {
+        val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
+        val locationTextView = findViewById<TextView>(R.id.coordinates)
+
+        searchBottomSheetView.initializeSearch(
+            savedInstanceState,
+            SearchBottomSheetView.Configuration()
+        )
+        // Hide the search bar at the beginning
+        searchBottomSheetView.hide()
+
+        // Add a listener for an eventual place selection
+        searchBottomSheetView.addOnHistoryClickListener { history_record ->
+            // We get only the name for now, the coordinates can also be extracted here.
+            locationTextView.text = history_record.name
+            searchBottomSheetView.hide()
+        }
+        // Add a listener for an eventual place selection in the history
+        searchBottomSheetView.addOnSearchResultClickListener { result, _ ->
+            locationTextView.text = result.name
+            searchBottomSheetView.hide()
+        }
+        searchBottomSheetView.isHideableByDrag = true
+        searchBottomSheetView.visibility = View.GONE
+        searchBottomSheetView.isClickable = false
     }
-
-    /**
-     * Setup the AutocompleteSupportFragment with all its parameters
-     */
-    private fun initializeAutocompleteFragment() {
-        val autocompleteFragment =
-            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
-
-        autocompleteFragment
-            .setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME)) //Returned fields
-            .setCountries(listOf("CH")) // Default startup country
-
-        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            override fun onPlaceSelected(place: Place) {
-                // TODO: Define here what we do with the returned place
-                Log.i(ContentValues.TAG, "Place: ${place.name}, ${place.id}")
-            }
-
-            override fun onError(status: Status) {
-                Log.e(ContentValues.TAG, "An error occurred: $status")
-            }
-        })
-    }
+    */
 
     /**
      * Setup a DatePickerDialog that will select a date for the deadline and show it
@@ -312,28 +333,52 @@ class AddDeadlineActivity : AppCompatActivity() {
         if (textTitle.text.toString() == "") {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
-            val deadline = recuperateDeadlineFromInputText()
+            //loading bar
+            progressBar.visibility = View.VISIBLE
+            // Start upload
+            firebasePdfRepository.uploadPdf(pdfData, this){ ref ->
+                // Hide loading bar
+                progressBar.visibility = View.GONE;
 
-            val notificationsTimes = retrieveNotificationsTimes()
+                // Create the deadline
+                val deadline = recuperateDeadlineFromInputText(ref)
+                // Get notification setting
+                val notificationsTimes = retrieveNotificationsTimes()
 
-            Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
+                // Send toast
+                Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT)
+                    .show()
 
-            // Reset the text input for future use
-            textTitle.text = ""
+                // Reset the text input for future use
+                textTitle.text = ""
 
-            deadlineListViewModel.addDeadline(deadline) {
-                DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
-                finish()
+                deadlineListViewModel.addDeadline(deadline) {
+                    DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
+                    finish()
+                }
             }
         }
+    }
+
+    /**
+     *  Go to SearchLocationActivity, which allows the user to select a location
+     *  for a deadline.
+     */
+    fun searchLocation(view: View) {
+        /*
+        // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
+        val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
+        searchBottomSheetView.visibility = View.VISIBLE
+        searchBottomSheetView.isClickable = true
+        searchBottomSheetView.expand()
+        */
     }
 
     /**
      * Recuperate the deadline from all the text input in the activity
      * WARNING: the textTile must not be empty
      */
-
-    private fun recuperateDeadlineFromInputText(): Deadline {
+    private fun recuperateDeadlineFromInputText(ref: String): Deadline {
         // Putting the deadline in the corresponding group or
         // in none if no group selected
         if (groupSelected == 0) {
@@ -341,7 +386,8 @@ class AddDeadlineActivity : AppCompatActivity() {
                 textTitle.text.toString(),
                 DeadlineState.TODO,
                 selectedDate,
-                textDescription.text.toString()
+                textDescription.text.toString(),
+                pdfPath = ref
             )
         } else {
             return Deadline(
@@ -349,22 +395,25 @@ class AddDeadlineActivity : AppCompatActivity() {
                 DeadlineState.TODO,
                 selectedDate,
                 textDescription.text.toString(),
-                GroupOwned(idGroups[groupSelected - 1])
+                GroupOwned(idGroups[groupSelected - 1]),
+                pdfPath = ref
             )
         }
     }
 
+    // Code to be executed when a pdf has been chosen
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result.data!!
-                val pdfUri = intent.data!!
-                val path: String = pdfUri.toString()
-                val lastSlashIndex = path.lastIndexOf("/")
-                pdfTextView.text = path.substring(lastSlashIndex + 1, path.length)
+                pdfData = result.data!!.data!!
+                pdfTextView.text = PDFUtil.getFileNameFromUri(pdfData)
             }
         }
 
+
+    /**
+     * Launch pdf selection menu
+     */
     fun selectPDF(view: View) {
         PDFUtil.selectPdfIntent {
             startForResult.launch(it)

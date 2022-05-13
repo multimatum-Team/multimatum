@@ -61,7 +61,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-auth:21.0.3'
     implementation 'com.firebaseui:firebase-ui-auth:8.0.1'
-    implementation 'com.google.android.libraries.places:places:2.6.0'
+    implementation 'com.mapbox.search:mapbox-search-android-ui:1.0.0-beta.29'
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
     implementation 'com.google.android.gms:play-services-base:18.0.1'
     implementation 'com.google.firebase:firebase-inappmessaging:20.1.2'
@@ -76,6 +76,7 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.4.1"
     implementation 'com.hudomju:swipe-to-dismiss-undo:1.0'
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC2'
+    implementation 'com.google.firebase:firebase-storage:19.1.1'
     kapt 'com.google.dagger:hilt-android-compiler:2.41'
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt 'androidx.lifecycle:lifecycle-compiler:2.4.1'
@@ -120,6 +121,10 @@ dependencies {
     testImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
     testImplementation 'org.mockito:mockito-core:4.4.0'
     testImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.20"
+
+    // Worksheet
+    implementation 'org.jetbrains.kotlin:kotlin-script-runtime:1.6.20'
 }
 
 tasks.withType(Test) {

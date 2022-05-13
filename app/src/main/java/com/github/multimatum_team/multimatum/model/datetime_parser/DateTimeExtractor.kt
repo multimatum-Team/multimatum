@@ -10,8 +10,11 @@ import java.time.LocalTime
  */
 data class PatternMatchCase(
     val pattern: List<(Token) -> Any?>,
-    val extractionFunc: (List<Any?>) -> ExtractedInfo?
-)
+    val extractionFunc: (List<Any?>) -> ExtractedInfo?,
+    val name: String
+){
+    override fun toString(): String = name
+}
 
 /**
  * Contains the info extracted by parsing
