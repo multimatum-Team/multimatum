@@ -11,7 +11,6 @@ import com.github.multimatum_team.multimatum.service.SystemClockService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

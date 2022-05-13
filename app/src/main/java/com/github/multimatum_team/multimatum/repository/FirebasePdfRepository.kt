@@ -6,9 +6,7 @@ import android.net.Uri
 import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import javax.inject.Inject
 
 class FirebasePdfRepository @Inject constructor(database: FirebaseStorage) : PdfRepository() {
@@ -22,7 +20,8 @@ class FirebasePdfRepository @Inject constructor(database: FirebaseStorage) : Pdf
         if (data != Uri.EMPTY) {
             val ref =
                 storageReference.child(
-                    FirebaseAuth.getInstance().uid + "/upload" + (Int.MIN_VALUE..Int.MAX_VALUE).random().toString() + PDFUtil.getFileNameFromUri(
+                    FirebaseAuth.getInstance().uid + "/upload" + (Int.MIN_VALUE..Int.MAX_VALUE).random()
+                        .toString() + PDFUtil.getFileNameFromUri(
                         data
                     )
                 )
@@ -38,7 +37,7 @@ class FirebasePdfRepository @Inject constructor(database: FirebaseStorage) : Pdf
         }
     }
 
-    override fun delete(path: String){
+    override fun delete(path: String) {
         storageReference.child(path).delete()
             .addOnFailureListener { LogUtil.debugLog("PDF has failed to be deleted") }
     }

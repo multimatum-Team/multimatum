@@ -6,7 +6,6 @@ import com.github.multimatum_team.multimatum.util.PDFUtil
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.reflect.typeOf
 
 @RunWith(AndroidJUnit4::class)
 class PDFUtilTest {

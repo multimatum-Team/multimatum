@@ -1,9 +1,7 @@
 package com.github.multimatum_team.multimatum
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserInfo
-import com.github.multimatum_team.multimatum.repository.FirebaseGroupRepository
 import com.github.multimatum_team.multimatum.repository.FirebaseUserRepository
 import com.github.multimatum_team.multimatum.util.MockFirebaseAuth
 import com.github.multimatum_team.multimatum.util.MockFirebaseFirestore
@@ -20,7 +18,6 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
