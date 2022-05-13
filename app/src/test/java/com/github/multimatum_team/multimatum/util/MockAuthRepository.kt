@@ -1,12 +1,9 @@
 package com.github.multimatum_team.multimatum.util
 
 import com.github.multimatum_team.multimatum.model.AnonymousUser
-import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
 import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineID
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 
 /**
  * Defines a dummy AuthRepository that works locally by generating unique anonymous users.

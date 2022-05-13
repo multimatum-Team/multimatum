@@ -6,6 +6,7 @@ import com.github.multimatum_team.multimatum.repository.FirebaseDeadlineReposito
 import com.github.multimatum_team.multimatum.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +22,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -60,7 +62,8 @@ class FirebaseDeadlineRepositoryTest {
                 DeadlineState.DONE,
                 LocalDateTime.of(2022, 3, 20, 0, 0),
                 "Deadline 2 description",
-                UserOwned
+                UserOwned,
+                "foo/pdf2"
             ),
             repository.fetch("1")
         )
@@ -75,14 +78,16 @@ class FirebaseDeadlineRepositoryTest {
                     DeadlineState.DONE,
                     LocalDateTime.of(2022, 3, 20, 0, 0),
                     "Deadline 2 description",
-                    UserOwned
+                    UserOwned,
+                    "foo/pdf2"
                 ),
                 "2" to Deadline(
                     "Deadline 3",
                     DeadlineState.TODO,
                     LocalDateTime.of(2022, 4, 15, 0, 0),
                     "Deadline 3 description",
-                    GroupOwned("0")
+                    GroupOwned("0"),
+                    "foo/pdf3"
                 )
             ),
             repository.fetchAll()
@@ -98,7 +103,8 @@ class FirebaseDeadlineRepositoryTest {
                     DeadlineState.DONE,
                     LocalDateTime.of(2022, 3, 20, 0, 0),
                     "Deadline 2 description",
-                    UserOwned
+                    UserOwned,
+                    "foo/pdf2"
                 )
             ),
             repository.fetchFromOwner(UserOwned)
@@ -114,7 +120,8 @@ class FirebaseDeadlineRepositoryTest {
                     DeadlineState.TODO,
                     LocalDateTime.of(2022, 4, 15, 0, 0),
                     "Deadline 3 description",
-                    GroupOwned("0")
+                    GroupOwned("0"),
+                    "foo/pdf3"
                 )
             ),
             repository.fetchFromOwner(GroupOwned("0"))
@@ -129,7 +136,8 @@ class FirebaseDeadlineRepositoryTest {
                 DeadlineState.TODO,
                 LocalDateTime.of(2022, 5, 15, 0, 0),
                 "Deadline 4 description",
-                UserOwned
+                UserOwned,
+                "foo/pdf4"
             )
         )
         assertEquals(
@@ -139,21 +147,24 @@ class FirebaseDeadlineRepositoryTest {
                     DeadlineState.DONE,
                     LocalDateTime.of(2022, 3, 20, 0, 0),
                     "Deadline 2 description",
-                    UserOwned
+                    UserOwned,
+                    "foo/pdf2"
                 ),
                 "2" to Deadline(
                     "Deadline 3",
                     DeadlineState.TODO,
                     LocalDateTime.of(2022, 4, 15, 0, 0),
                     "Deadline 3 description",
-                    GroupOwned("0")
+                    GroupOwned("0"),
+                    "foo/pdf3"
                 ),
                 "3" to Deadline(
                     "Deadline 4",
                     DeadlineState.TODO,
                     LocalDateTime.of(2022, 5, 15, 0, 0),
                     "Deadline 4 description",
-                    UserOwned
+                    UserOwned,
+                    "foo/pdf4"
                 )
             ),
             repository.fetchAll()
@@ -170,7 +181,8 @@ class FirebaseDeadlineRepositoryTest {
                     DeadlineState.TODO,
                     LocalDateTime.of(2022, 4, 15, 0, 0),
                     "Deadline 3 description",
-                    GroupOwned("0")
+                    GroupOwned("0"),
+                    "foo/pdf3"
                 )
             ),
             repository.fetchAll()
@@ -187,7 +199,8 @@ class FirebaseDeadlineRepositoryTest {
                 DeadlineState.TODO,
                 LocalDateTime.of(2022, 5, 15, 0, 0),
                 "Deadline 4 description",
-                UserOwned
+                UserOwned,
+                "foo/pdf4"
             )
         )
         assertTrue(notified)
@@ -206,21 +219,24 @@ class FirebaseDeadlineRepositoryTest {
                         DeadlineState.DONE,
                         LocalDateTime.of(2022, 3, 17, 0, 0),
                         "Deadline 1 description",
-                        UserOwnedData("1")
+                        UserOwnedData("1"),
+                        "foo/pdf1"
                     ),
                     DeadlineData(
                         "Deadline 2",
                         DeadlineState.DONE,
                         LocalDateTime.of(2022, 3, 20, 0, 0),
                         "Deadline 2 description",
-                        UserOwnedData("0")
+                        UserOwnedData("0"),
+                        "foo/pdf2"
                     ),
                     DeadlineData(
                         "Deadline 3",
                         DeadlineState.TODO,
                         LocalDateTime.of(2022, 4, 15, 0, 0),
                         "Deadline 3 description",
-                        GroupOwnedData("0")
+                        GroupOwnedData("0"),
+                        "foo/pdf3"
                     )
                 ),
                 groups = listOf(
@@ -239,5 +255,10 @@ class FirebaseDeadlineRepositoryTest {
         @Provides
         fun provideFirebaseAuth(): FirebaseAuth =
             MockFirebaseAuth().auth
+
+        @Singleton
+        @Provides
+        fun provideFirebaseStorage(): FirebaseStorage =
+            Mockito.mock(FirebaseStorage::class.java)
     }
 }

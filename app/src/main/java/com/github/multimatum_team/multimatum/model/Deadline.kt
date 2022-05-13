@@ -53,7 +53,8 @@ data class Deadline(
     val state: DeadlineState,
     val dateTime: LocalDateTime,
     val description: String = "",
-    val owner: DeadlineOwner = UserOwned
+    val owner: DeadlineOwner = UserOwned,
+    val pdfPath: String = ""
 ) {
     init {
         if (title.isEmpty()) {

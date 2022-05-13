@@ -19,10 +19,7 @@ import com.github.multimatum_team.multimatum.activity.DeadlineDetailsActivity
 import com.github.multimatum_team.multimatum.activity.QRGeneratorActivity
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
-import com.github.multimatum_team.multimatum.repository.UserRepository
+import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
 import dagger.Module
@@ -308,5 +305,10 @@ class DeadlineDetailsTest {
         @Provides
         fun provideUserRepository(): UserRepository =
             MockUserRepository(listOf())
+
+        @Singleton
+        @Provides
+        fun providePdfRepository(): PdfRepository =
+            MockPdfRepository()
     }
 }

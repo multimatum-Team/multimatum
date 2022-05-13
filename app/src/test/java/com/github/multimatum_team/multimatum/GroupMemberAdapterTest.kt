@@ -9,14 +9,8 @@ import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserInfo
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
-import com.github.multimatum_team.multimatum.repository.UserRepository
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockGroupRepository
-import com.github.multimatum_team.multimatum.util.MockUserRepository
+import com.github.multimatum_team.multimatum.repository.*
+import com.github.multimatum_team.multimatum.util.*
 import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import dagger.Module
@@ -159,5 +153,10 @@ class GroupMemberAdapterTest {
                     UserInfo(id = "Val", name = "Val"),
                 )
             )
+
+        @Singleton
+        @Provides
+        fun providePdfRepository(): PdfRepository =
+            MockPdfRepository()
     }
 }

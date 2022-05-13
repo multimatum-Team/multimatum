@@ -30,6 +30,7 @@ internal class DeadlineDeserializer : JsonDeserializer<Deadline> {
             DateTimeFormatter.ofPattern("d::MM::uuuu HH::mm::ss").withLocale(Locale.ENGLISH)
         )
         val description = obj.get("description").asString
-        return Deadline(title, state, dateTime, description)
+        val pdfPath = obj.get("pdfPath").asString
+        return Deadline(title, state, dateTime, description, pdfPath = pdfPath)
     }
 }

@@ -7,21 +7,27 @@ import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.DialogInterface
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractionResult
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
+import com.github.multimatum_team.multimatum.repository.FirebasePdfRepository
+import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
@@ -31,9 +37,10 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
+import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.AndroidEntryPoint
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -48,16 +55,21 @@ class AddDeadlineActivity : AppCompatActivity() {
     @Inject
     lateinit var clockService: ClockService
 
+    @Inject
+    lateinit var firebasePdfRepository: PdfRepository
+
     private lateinit var selectedDate: LocalDateTime
 
     private val dateTimeExtractor = DateTimeExtractor { clockService.now().toLocalDate() }
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private lateinit var textDate: TextView
     private lateinit var textTime: TextView
-    private lateinit var editText: TextView
     private lateinit var pdfTextView: TextView
     private lateinit var textTitle: TextView
     private lateinit var textDescription: TextView
+    private lateinit var progressBar: ProgressBar
+
+    private var pdfData = Uri.EMPTY
 
     // Memorisation of which checkBox is selected for the notifications
     private val notificationSelected = booleanArrayOf(false, false, false, false)
@@ -72,11 +84,23 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Firebase.initialize(this)
+        firebasePdfRepository = FirebasePdfRepository(FirebaseStorage.getInstance())
+
         setContentView(R.layout.activity_add_deadline)
         textTitle = findViewById(R.id.add_deadline_select_title)
+        // Reset the text input
+        textTitle.text = ""
+
         textDate = findViewById(R.id.add_deadline_text_date)
         textTime = findViewById(R.id.add_deadline_text_time)
         pdfTextView = findViewById(R.id.selectedPdf)
+        progressBar = findViewById(R.id.progressBar)
+        progressBar.visibility = View.INVISIBLE
+        progressBar.isIndeterminate = true
+
+
 
         textDescription = findViewById(R.id.add_deadline_select_description)
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
@@ -98,12 +122,12 @@ class AddDeadlineActivity : AppCompatActivity() {
      */
     private fun updateDisplayedInfoAfterTitleChange() {
         val dateTimeExtractionResult = dateTimeExtractor.parse(textTitle.text.toString())
-        if(dateTimeExtractionResult.date != null || dateTimeExtractionResult.time!=null){
+        if (dateTimeExtractionResult.date != null || dateTimeExtractionResult.time != null) {
             launchParsingValidationAlert(dateTimeExtractionResult)
         }
     }
 
-    private fun applyParsing(dateTimeExtractionResult: DateTimeExtractionResult){
+    private fun applyParsing(dateTimeExtractionResult: DateTimeExtractionResult) {
         dateTimeExtractionResult.date?.also { foundDate ->
             selectedDate = selectedDate
                 .withYear(foundDate.year)
@@ -118,11 +142,12 @@ class AddDeadlineActivity : AppCompatActivity() {
         updateDisplayedDateAndTime()
         textTitle.text = dateTimeExtractionResult.text
     }
-    private fun launchParsingValidationAlert(res: DateTimeExtractionResult){
+
+    private fun launchParsingValidationAlert(res: DateTimeExtractionResult) {
         val alertBuilder = AlertDialog.Builder(this)
         var message = "title: " + res.text
-        if(res.date!= null) (message + "\ndate: " + res.date.toString()).also { message = it }
-        if(res.time!= null) (message + "\ntime: " + res.time.toString()).also { message = it }
+        if (res.date != null) (message + "\ndate: " + res.date.toString()).also { message = it }
+        if (res.time != null) (message + "\ntime: " + res.time.toString()).also { message = it }
         alertBuilder.setCancelable(true).setTitle(R.string.parsing_validation_title)
             .setMessage(message)
         alertBuilder.setNegativeButton("Cancel",
@@ -261,37 +286,50 @@ class AddDeadlineActivity : AppCompatActivity() {
         if (titleDeadline == "") {
             Toast.makeText(this, getString(R.string.enter_a_title), Toast.LENGTH_SHORT).show()
         } else {
-            // Add the deadline
-            val deadline = Deadline(
-                titleDeadline,
-                DeadlineState.TODO,
-                selectedDate,
-                textDescription.text.toString()
-            )
+            //loading bar
+            progressBar.visibility = View.VISIBLE
+            // Start upload
+            firebasePdfRepository.uploadPdf(pdfData, this){ ref ->
+                // Hide loading bar
+                progressBar.visibility = View.GONE;
 
-            val notificationsTimes = retrieveNotificationsTimes()
+                // Create the deadline
+                val deadline = Deadline(
+                    titleDeadline,
+                    DeadlineState.TODO,
+                    selectedDate,
+                    textDescription.text.toString(),
+                    pdfPath = ref
+                )
+                // Get notification setting
+                val notificationsTimes = retrieveNotificationsTimes()
 
-            Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT).show()
+                // Send toast
+                Toast.makeText(this, getString(R.string.deadline_created), Toast.LENGTH_SHORT)
+                    .show()
 
-            // Reset the text input for future use
-            textTitle.text = ""
-
-            deadlineListViewModel.addDeadline(deadline) {
-                DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
-                finish()
+                // Add the deadline and finish the activity
+                deadlineListViewModel.addDeadline(deadline) {
+                    DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
+                    finish()
+                }
             }
+
         }
     }
+
+    // Code to be executed when a pdf has been chosen
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result?.data!!
-                val pdfUri = intent.data!!
-                val path: String = pdfUri.toString()
-                val lastSlashIndex = path.lastIndexOf("/")
-                pdfTextView.text = path.substring(lastSlashIndex + 1, path.length)
+                pdfData = result.data!!.data!!
+                pdfTextView.text = PDFUtil.getFileNameFromUri(pdfData)
             }
         }
+
+    /**
+     * Launch pdf selection menu
+     */
     fun selectPDF(view: View) {
         PDFUtil.selectPdfIntent() {
             startForResult.launch(it)

@@ -18,12 +18,14 @@ import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.adaptater.DeadlineFilterAdapter
 import com.github.multimatum_team.multimatum.adaptater.NoFilter
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
+import com.github.multimatum_team.multimatum.repository.FirebasePdfRepository
+import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
-import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
+import com.google.firebase.storage.FirebaseStorage
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,6 +41,11 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
+    @Inject
+    lateinit var pdfRepository: PdfRepository
+
+
+
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private val groupViewModel: GroupViewModel by viewModels()
 
@@ -46,6 +53,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Firebase.initialize(this)
+        pdfRepository = FirebasePdfRepository(FirebaseStorage.getInstance())
+
         setContentView(R.layout.activity_main)
 
         //access listview for deadline
@@ -98,12 +107,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onDismiss(view: ListViewAdapter?, position: Int) {
-                    val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
-                    val (idToDelete, _) = adapter.getItem(position)
-                    viewModel.deleteDeadline(idToDelete) {
-                        DeadlineNotification.deleteNotification(it, this@MainActivity)
-                    }
-                    adapter.setDeadlines(viewModel.getDeadlines().value!!)
+                    onDismissOverride(view, position, lv, viewModel)
                 }
             })
         // Set it on the ListView
@@ -118,8 +122,20 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    /*
-    Helper function to restore the last theme preference at startup
+    private fun onDismissOverride(view: ListViewAdapter?, position: Int, lv:ListView, viewModel: DeadlineListViewModel){
+        val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
+        val (idToDelete, deadline) = adapter.getItem(position)
+        if (deadline.pdfPath != "") {
+            pdfRepository.delete(deadline.pdfPath)
+        }
+        viewModel.deleteDeadline(idToDelete) {
+            DeadlineNotification.deleteNotification(it, this@MainActivity)
+        }
+        adapter.setDeadlines(viewModel.getDeadlines().value!!)
+    }
+
+    /**
+     * Helper function to restore the last theme preference at startup
      */
     private fun setCurrentTheme() {
         val isNightMode =

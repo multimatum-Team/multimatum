@@ -23,14 +23,8 @@ import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Compa
 import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
-import com.github.multimatum_team.multimatum.repository.UserRepository
-import com.github.multimatum_team.multimatum.util.MockAuthRepository
-import com.github.multimatum_team.multimatum.util.MockDeadlineRepository
-import com.github.multimatum_team.multimatum.util.MockGroupRepository
-import com.github.multimatum_team.multimatum.util.MockUserRepository
+import com.github.multimatum_team.multimatum.repository.*
+import com.github.multimatum_team.multimatum.util.*
 import com.google.android.material.slider.Slider
 import dagger.Module
 import dagger.Provides
@@ -273,6 +267,11 @@ class MainSettingsActivityTest {
         @Provides
         fun provideUserRepository(): UserRepository =
             MockUserRepository(listOf())
+
+        @Singleton
+        @Provides
+        fun providePdfRepository(): PdfRepository =
+            MockPdfRepository()
     }
 
     companion object {
