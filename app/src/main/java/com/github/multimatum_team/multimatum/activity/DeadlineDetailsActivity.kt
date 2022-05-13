@@ -78,7 +78,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         // Recuperate the id of the deadline
         id = intent.getStringExtra(EXTRA_ID) as DeadlineID
 
-        // As the viewModel doesn't recuperate immediately the deadlines,
+        // As the deadlineListviewModel doesn't recuperate immediately the deadlines,
         // we need an update the moment they are fetched
         setDeadlineObserver()
 
@@ -302,6 +302,10 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             val description = deadline.description
             val group = deadline.owner
 
+            // As the groupViewModel doesn't recuperate immediately the deadlines,
+            // we need an update the moment they are fetched
+            setGroupObserver(group)
+
             // Update the information of the notification
             val notifications = DeadlineNotification.listDeadlineNotification(id, this)
             for (id in checkBoxIdTime.keys) {
@@ -322,6 +326,18 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
             // Set the View to be unmodifiable at the start and remove displacement of the texts
             normalSetup()
+        }
+    }
+
+    /**
+     * This function setup the observer to update the information shown for the group
+     * when the group is fetched or updated. This need to be called after the deadline
+     * is fetched to recuperate the information of the group of the deadline
+     */
+    private fun setGroupObserver(group: DeadlineOwner){
+        groupViewModel.getGroups().observe(this){
+            findViewById<TextView>(R.id.deadline_details_activity_group).text =
+                getGroupTextAndSetModifyButton(group)
         }
     }
 
