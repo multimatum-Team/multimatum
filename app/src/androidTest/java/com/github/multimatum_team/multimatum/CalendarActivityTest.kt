@@ -91,7 +91,15 @@ class CalendarActivityTest {
         @Singleton
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
-            MockDeadlineRepository(listOf(Deadline("Test1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 0, 0))))
+            MockDeadlineRepository(
+                listOf(
+                    Deadline(
+                        "Test1",
+                        DeadlineState.TODO,
+                        LocalDateTime.of(2022, 3, 12, 0, 0)
+                    )
+                )
+            )
 
         @Singleton
         @Provides

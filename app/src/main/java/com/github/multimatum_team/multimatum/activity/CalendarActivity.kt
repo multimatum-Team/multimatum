@@ -62,9 +62,18 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
             // with the 3 override functions
             .setCallback(this)
 
+        updateColorText()
         setDotForEveryDeadline()
         initTextInput()
         initAddButton()
+    }
+
+    private fun updateColorText(){
+        calendarView.setMonthTitleColor(getColor(R.color.deadline_details_title))
+            .setPrimaryTextColor(getColor(R.color.deadline_details_title))
+            .setSecondaryTextColor(getColor(R.color.gray_variation_text))
+            .setSelectionColor(getColor(R.color.deadline_details_title))
+            .setSelectedTextColor(getColor(R.color.deadline_item_background))
     }
 
     private fun transformCalendarToLocalDateTime(calendar: Calendar): LocalDateTime {
