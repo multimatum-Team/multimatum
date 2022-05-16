@@ -9,6 +9,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.multimatum_team.multimatum.activity.CalendarActivity
 import com.github.multimatum_team.multimatum.repository.*
+import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
 import dagger.Module
 import dagger.Provides
@@ -21,9 +22,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDateTime
 import javax.inject.Singleton
 
-@UninstallModules(FirebaseRepositoryModule::class)
+@UninstallModules(FirebaseRepositoryModule::class, ClockModule::class)
 @HiltAndroidTest
 class CalendarActivityTest {
     @get:Rule
@@ -108,5 +110,13 @@ class CalendarActivityTest {
         @Provides
         fun providePdfRepository(): PdfRepository =
             MockPdfRepository()
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestClockModule {
+        @Provides
+        fun provideClockService(): ClockService =
+            MockClockService(LocalDateTime.of(2022, 3, 12, 0, 0))
     }
 }

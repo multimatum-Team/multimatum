@@ -6,13 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".activity.CalendarActivity">
 
-    <CalendarView
-        android:id="@+id/calendar_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="299dp" />
-
     <Button
         android:id="@+id/calendar_add_deadline_button"
         android:layout_width="wrap_content"
@@ -27,6 +20,15 @@
         app:layout_constraintStart_toStartOf="@+id/calendar_view"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976" />
+
+    <com.events.calendar.views.EventsCalendar
+        android:id="@+id/calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="299dp"/>
+
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutCalendar"
