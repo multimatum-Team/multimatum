@@ -2,7 +2,6 @@ package com.github.multimatum_team.multimatum.activity
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.MotionEvent
 import android.widget.Button
 import androidx.activity.viewModels
@@ -19,29 +18,18 @@ import com.github.multimatum_team.multimatum.util.setOnIMEActionDone
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
 
-    override fun onDayLongPressed(selectedDate: Calendar?) {
-    }
-    override fun onMonthChanged(monthStartDate: Calendar?) {
-    }
-    override fun onDaySelected(selectedDate: Calendar?) {
-        dateSelected = transformCalendarToLocalDateTime(selectedDate!!)
-    }
-
     @Inject
     lateinit var clockService: ClockService
 
     private val viewModel: DeadlineListViewModel by viewModels()
     private lateinit var dateSelected: LocalDateTime
-
 
     private lateinit var calendarView: EventsCalendar
     private lateinit var deadlineTitleInputView: TextInputEditText
@@ -56,27 +44,25 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
         deadlineTitleInputView = findViewById(R.id.textInputEditCalendar)
         addDeadlineButton = findViewById(R.id.calendar_add_deadline_button)
 
-        val start = Calendar.getInstance()
+        // Allow the calendar to go only a month before the actual date and
+        // with no end after it
+        val start = transformLocalDateTimeToCalendar(clockService.now())
         start.add(Calendar.MONTH, -1)
-        val end = Calendar.getInstance()
+        val end = transformLocalDateTimeToCalendar(clockService.now())
         end.add(Calendar.MONTH, EventsCalendarUtil.DEFAULT_NO_OF_MONTHS / 2)
 
-        calendarView.setSelectionMode(calendarView.SINGLE_SELECTION) //set mode of Calendar
+        // Setup of the calendar
+        calendarView.setSelectionMode(calendarView.SINGLE_SELECTION)
             .setToday(transformLocalDateTimeToCalendar(dateSelected))
-            .setMonthRange(
-                start,
-                end
-            ) //set starting month [start: Calendar] and ending month [end: Calendar]
-            .setWeekStartDay(
-                Calendar.SUNDAY,
-                false
-            ) //set start day of the week as you wish [startday: Int, doReset: Boolean]
-            .setCurrentSelectedDate(transformLocalDateTimeToCalendar(dateSelected)) //set current date and scrolls the calendar to the corresponding month of the selected date [today: Calendar]
+            .setMonthRange(start, end) //set starting month and ending month
+            .setWeekStartDay(Calendar.MONDAY, false)
+            .setCurrentSelectedDate(transformLocalDateTimeToCalendar(dateSelected))
             .setEventDotColor(Color.RED)
+            // allow to choose what happen when a date is selected and more
+            // with the 3 override functions
             .setCallback(this)
 
         setDotForEveryDeadline()
-
         initTextInput()
         initAddButton()
     }
@@ -95,6 +81,10 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
         return calendar
     }
 
+    /**
+     * This function set the calendar view to show a dot on a date
+     * if there is a deadline who will be due at this date
+     */
     private fun setDotForEveryDeadline() {
         viewModel.getDeadlines().observe(this) { deadlines ->
             for (deadline in deadlines.values) {
@@ -103,7 +93,6 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
             calendarView.build()
         }
     }
-
 
     /**
      * This function allows the user to add a new deadline directly, using the "ENTER" key (more intuitive).
@@ -119,6 +108,10 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
 
     private fun initAddButton() {
         addDeadlineButton.setOnClickListener {
+            val deadline =
+                Deadline(deadlineTitleInputView.text.toString(), DeadlineState.TODO, dateSelected)
+            viewModel.addDeadline(deadline)
+            deadlineTitleInputView.setText("")
             deadlineTitleInputView.hideKeyboard(this)
         }
     }
@@ -126,5 +119,11 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
         hideKeyboardWhenClickingInTheVoid(event)
         return super.dispatchTouchEvent(event)
+    }
+
+    override fun onDayLongPressed(selectedDate: Calendar?) {}
+    override fun onMonthChanged(monthStartDate: Calendar?) {}
+    override fun onDaySelected(selectedDate: Calendar?) {
+        dateSelected = transformCalendarToLocalDateTime(selectedDate!!)
     }
 }
