@@ -307,10 +307,10 @@ class AddDeadlineActivity : AppCompatActivity() {
             .withOnStepDataRequested { baseDataPos ->
                 if (baseDataPos == 0) {
                     // Allow to go no further than 23 hours before
-                    (1 until 24).toList().map { i -> i.toString() }
+                    (1 until 24).toList().map(Int::toString)
                 } else {
                     // Allow to go no further than 30 days before for the notifications
-                    (1 until 31).toList().map { i -> i.toString() }
+                    (1 until 31).toList().map(Int::toString)
                 }
 
             }.withDialogListener(object : OnStepPickListener {
@@ -462,11 +462,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     }
 
     // Recuperate the information on which notification must be set before returning it in an array
-    private fun retrieveNotificationsTimes(): ArrayList<Long> {
-        val res = ArrayList<Long>()
-        for (i in 0 until timeNotifications.count()) {
-            if (notificationSelected[i]) res.add(timeNotifications[i])
-        }
-        return res
+    private fun retrieveNotificationsTimes(): List<Long> {
+        return timeNotifications.filterIndexed{ idx, _ -> notificationSelected[idx] }
     }
 }

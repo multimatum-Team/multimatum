@@ -256,7 +256,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             } else {
                 val listNotifications: List<Long> =
                     timeNotifications.toList()
-                        .filter { i -> notificationSelected[timeNotifications.indexOf(i)] }
+                        .filterIndexed { idx, _ -> notificationSelected[idx] }
                 DeadlineNotification.editNotification(id, newDeadline, listNotifications, this)
             }
         }
@@ -345,9 +345,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     // If there are more notifications than the default ones, the function
     // add them on the arrays to be able to show them in the Dialog.
     private fun setNotifications(notifications: List<Long>) {
-        for (time in notifications) {
+        for ((idx, time) in notifications.withIndex()) {
             if (timeNotifications.contains(time)) {
-                notificationSelected[timeNotifications.indexOf(time)] = true
+                notificationSelected[idx] = true
             } else {
                 notificationSelected = notificationSelected.plus(true)
                 timeNotifications = timeNotifications.plus(time)
@@ -398,7 +398,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
      */
     private fun textNotification(): String {
         val notifications =
-            nameNotifications.filter { t -> notificationSelected[nameNotifications.indexOf(t)] }
+            nameNotifications.filterIndexed { idx, _ -> notificationSelected[idx] }
         if (notifications.isEmpty()) return getString(R.string.no_alarm_planned)
         if (notifications.size > 4) return getString(R.string.multiple_alarms_planned)
         return getString(
