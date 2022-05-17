@@ -72,4 +72,5 @@
     <string name="group_delete_dialog_cancel">Cancel</string>
     <string name="group_delete_confirmation_dialog">Are you sure you want to delete this group?</string>
     <string name="parsing_validation_title">Your title can be parse to :</string>
+    <string name="multiple_alarms_planned">Multiple Alarms Planned</string>
 </resources>
