@@ -2,10 +2,14 @@ package com.github.multimatum_team.multimatum
 
 import android.app.AlertDialog
 import android.arch.core.executor.testing.InstantTaskExecutorRule
+import android.content.ClipboardManager
+import android.net.Uri
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -27,7 +31,7 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.equalTo
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -126,29 +130,30 @@ class GroupDetailsActivityTest {
     }
 
     @Test
-    fun `Given a group owned by the current user, the leave button has the right behavior`() = runTest {
-        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val"))
-        (authRepository as MockAuthRepository).logIn(joseph)
-        groupRepository.setUserID(joseph.id)
-        val intent =
-            GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
-        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
-        scenario.use {
-            onView(withId(R.id.group_details_delete_or_leave_button))
-                .perform(ViewActions.click())
-            ShadowAlertDialog.getShownDialogs()
-            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
-                .getButton(AlertDialog.BUTTON_NEGATIVE)
-                .performClick()
+    fun `Given a group owned by the current user, the leave button has the right behavior`() =
+        runTest {
+            // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val"))
+            (authRepository as MockAuthRepository).logIn(joseph)
+            groupRepository.setUserID(joseph.id)
+            val intent =
+                GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
+            val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+            scenario.use {
+                onView(withId(R.id.group_details_delete_or_leave_button))
+                    .perform(click())
+                ShadowAlertDialog.getShownDialogs()
+                (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                    .getButton(AlertDialog.BUTTON_NEGATIVE)
+                    .performClick()
 
-            onView(withId(R.id.group_details_delete_or_leave_button))
-                .perform(ViewActions.click())
-            ShadowAlertDialog.getShownDialogs()
-            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
-                .getButton(AlertDialog.BUTTON_POSITIVE)
-                .performClick()
+                onView(withId(R.id.group_details_delete_or_leave_button))
+                    .perform(click())
+                ShadowAlertDialog.getShownDialogs()
+                (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                    .getButton(AlertDialog.BUTTON_POSITIVE)
+                    .performClick()
+            }
         }
-    }
 
     @Test
     fun `Given a group which the the current user does not own, all widget have the right properties`() {
@@ -168,27 +173,52 @@ class GroupDetailsActivityTest {
     }
 
     @Test
-    fun `Given a group which the the current user does not own, the leave button has the right behavior`() = runTest {
-        // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val"))
+    fun `Given a group which the the current user does not own, the leave button has the right behavior`() =
+        runTest {
+            // UserGroup("0", "SDP", "Joseph", setOf("Joseph", "Louis", "Florian", "Lenny", "Léo", "Val"))
+            (authRepository as MockAuthRepository).logIn(joseph)
+            groupRepository.setUserID(joseph.id)
+            val intent =
+                GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
+            val scenario = ActivityScenario.launch<GroupDetailsActivity>(intent)
+            scenario.use {
+                onView(withId(R.id.group_details_delete_or_leave_button))
+                    .perform(click())
+                ShadowAlertDialog.getShownDialogs()
+                (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                    .getButton(AlertDialog.BUTTON_NEGATIVE)
+                    .performClick()
+
+                onView(withId(R.id.group_details_delete_or_leave_button))
+                    .perform(click())
+                ShadowAlertDialog.getShownDialogs()
+                (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                    .getButton(AlertDialog.BUTTON_POSITIVE)
+                    .performClick()
+            }
+        }
+
+    @Test
+    fun `Clicking invite button copies invite link to clipboard`() = runTest {
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
+        val inviteLink = groupRepository.generateInviteLink("1")
         val intent =
             GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
-        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        val scenario = ActivityScenario.launch<GroupDetailsActivity>(intent)
         scenario.use {
-            onView(withId(R.id.group_details_delete_or_leave_button))
-                .perform(ViewActions.click())
-            ShadowAlertDialog.getShownDialogs()
-            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
-                .getButton(AlertDialog.BUTTON_NEGATIVE)
-                .performClick()
-
-            onView(withId(R.id.group_details_delete_or_leave_button))
-                .perform(ViewActions.click())
-            ShadowAlertDialog.getShownDialogs()
-            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
-                .getButton(AlertDialog.BUTTON_POSITIVE)
-                .performClick()
+            onView(withId(R.id.group_details_invite_button))
+                .perform(click())
+            val clipboard =
+                getSystemService(
+                    ApplicationProvider.getApplicationContext(),
+                    ClipboardManager::class.java
+                )!!
+            assertThat(
+                "Clipboard contains invite link",
+                Uri.parse(clipboard.primaryClip?.getItemAt(0)?.text.toString()),
+                equalTo(inviteLink)
+            )
         }
     }
 

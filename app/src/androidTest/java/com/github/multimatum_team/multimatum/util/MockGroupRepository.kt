@@ -1,6 +1,6 @@
 package com.github.multimatum_team.multimatum.util
 
-import com.github.multimatum_team.multimatum.model.AnonymousUser
+import android.net.Uri
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserID
@@ -17,11 +17,7 @@ import com.github.multimatum_team.multimatum.repository.GroupRepository
 class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() {
     private var counter: Int = 0
 
-    private val groupsPerUser: MutableMap<UserID, MutableMap<GroupID, UserGroup>> =
-        mutableMapOf()
-
-    private val groups: MutableMap<GroupID, UserGroup>
-        get() = groupsPerUser.getOrPut(_userID) { mutableMapOf() }
+    private val groups: MutableMap<GroupID, UserGroup> = mutableMapOf()
 
     private val updateListeners: MutableMap<UserID, MutableList<(Map<GroupID, UserGroup>) -> Unit>> =
         mutableMapOf()
@@ -30,11 +26,7 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
         for (group in initialContents) {
             val newID = counter.toString()
             counter++
-            for (memberID in group.members) {
-                groupsPerUser
-                    .getOrPut(memberID) { mutableMapOf() }
-                    .put(newID, group.copy(id = newID))
-            }
+            groups[newID] = group.copy(id = newID)
         }
         setUserID("0")
     }
@@ -42,7 +34,11 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
     private fun notifyUpdateListeners() =
         updateListeners[_userID]?.forEach { it(groups) }
 
-    override suspend fun fetchAll(): Map<GroupID, UserGroup> = groups
+    override suspend fun fetch(id: GroupID): UserGroup? =
+        groups[id]
+
+    override suspend fun fetchAll(): Map<GroupID, UserGroup> =
+        groups.filterValues { group -> group.members.contains(_userID) }
 
     override suspend fun create(name: String): GroupID {
         val id = counter.toString()
@@ -63,8 +59,29 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
         notifyUpdateListeners()
     }
 
-    override suspend fun invite(id: GroupID, email: String) {
-        throw UnsupportedOperationException("group invites are not supported")
+    override suspend fun generateInviteLink(id: GroupID): Uri {
+        val group = fetch(id)!!
+        val inviteLink = Uri.Builder()
+            .scheme("https")
+            .authority("multimatum.page.link")
+            .appendQueryParameter("id", group.id)
+            .build()
+        return Uri.Builder()
+            .scheme("https")
+            .authority("multimatum.page.link")
+            .appendQueryParameter("sd", "Click this link to accept the invite")
+            .appendQueryParameter("st", "Join group ${group.name}")
+            .appendQueryParameter("apn", "com.github.multimatum_team.multimatum")
+            .appendQueryParameter("link", inviteLink.toString())
+            .build()
+    }
+
+    override suspend fun addMember(groupID: GroupID, memberID: UserID) {
+        val group = groups[groupID]!!
+        val newMembers = group.members.toMutableList()
+        newMembers.add(memberID)
+        groups[groupID] = group.copy(members = newMembers.toSet())
+        notifyUpdateListeners()
     }
 
     override suspend fun removeMember(groupID: GroupID, memberID: UserID) {
