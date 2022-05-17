@@ -74,29 +74,22 @@ class GroupInviteActivity : AppCompatActivity() {
     }
 
     private fun initSignInRequirementMessage() {
-        println("initSignInRequirementMessage")
         inviteMessageView.text = getString(R.string.group_invite_message_must_be_signed_in)
     }
 
     private fun initInvalidLink() {
-        println("initInvalidLink")
         inviteMessageView.text = getString(R.string.group_invite_message_invalid)
     }
 
     private fun initValidLink(groupID: GroupID) {
-        println("initValidLink")
         groupViewModel.fetchNewGroup(groupID) { group ->
             if (group == null) {
-                println("group == null")
                 inviteMessageView.text = getString(R.string.group_invite_message_invalid)
             } else {
-                println("group != null")
                 if (group.members.contains(currentUser.id)) {
-                    println(getString(R.string.group_invite_message_already_member_of_this_group))
                     inviteMessageView.text =
                         getString(R.string.group_invite_message_already_member_of_this_group)
                 } else {
-                    println(getString(R.string.group_invite_message_you_have_been_invited_to_join))
                     inviteMessageView.text =
                         getString(R.string.group_invite_message_you_have_been_invited_to_join)
                     groupNameView.text = group.name
