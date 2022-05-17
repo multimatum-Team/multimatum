@@ -9,6 +9,7 @@ import com.github.multimatum_team.multimatum.model.UserID
 import com.google.firebase.dynamiclinks.ktx.androidParameters
 import com.google.firebase.dynamiclinks.ktx.dynamicLink
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
+import com.google.firebase.dynamiclinks.ktx.socialMetaTagParameters
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -115,20 +116,42 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
     }
 
     /**
-     * Invite an user to join a group.
-     * @param id the ID of the grop to which we want to invite the user
-     * @param email the email of the user to invite
+     * Generate an invite link to join a group.
+     * @param id the ID of the group to which we want to invite users
      */
-    override suspend fun invite(id: GroupID, email: String) {
+    override suspend fun generateInviteLink(id: GroupID): Uri {
+        val group = fetch(id)
+        val inviteLink = Uri.Builder()
+            .scheme("https")
+            .authority("multimatum.page.link")
+            .appendQueryParameter("id", group.id)
+            .build()
+
         val dynamicLink = Firebase.dynamicLinks.dynamicLink {
-            link = Uri.parse("https://multimatum.page.link/")
+            link = inviteLink
             domainUriPrefix = "https://multimatum.page.link"
-            // Open links with this app on Android
             androidParameters { }
+            socialMetaTagParameters {
+                title = "Join group ${group.name}"
+                description = "Click this link to accept the invite"
+            }
         }
 
         val dynamicLinkUri = dynamicLink.uri
         LogUtil.debugLog(dynamicLinkUri.toString())
+        return dynamicLinkUri
+    }
+
+    /**
+     * Add a user to a group.
+     * @param groupID the group to which to add the user
+     * @param memberID the ID of the new group member
+     */
+    override suspend fun addMember(groupID: GroupID, memberID: UserID) {
+        groupsRef
+            .document(groupID)
+            .update("members", FieldValue.arrayUnion(memberID))
+            .await()
     }
 
     /**

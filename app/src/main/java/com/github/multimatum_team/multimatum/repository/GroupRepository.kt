@@ -1,6 +1,8 @@
 package com.github.multimatum_team.multimatum.repository
 
+import android.net.Uri
 import com.github.multimatum_team.multimatum.model.GroupID
+import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserID
 
@@ -60,11 +62,17 @@ abstract class GroupRepository {
     abstract suspend fun rename(id: GroupID, newName: String)
 
     /**
-     * Invite an user to a group.
-     * @param id the ID of the group to which we want to invite the new user
-     * @param email the email of the user to invite
+     * Generate an invite link to join a group given by its ID
+     * @param id the ID of the group for which to generate the invite link
      */
-    abstract suspend fun invite(id: GroupID, email: String)
+    abstract suspend fun generateInviteLink(id: GroupID): Uri
+
+    /**
+     * Add a user from a group.
+     * @param groupID the group to which to add the user
+     * @param memberID the ID of the new group member
+     */
+    abstract suspend fun addMember(groupID: GroupID, memberID: UserID)
 
     /**
      * Kick a user from a group.
