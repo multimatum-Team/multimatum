@@ -62,8 +62,6 @@ class CalendarActivityTest {
             .perform(click())
             .perform(typeText("deadlineTestCase"))
             .perform(pressImeActionButton())
-        Espresso.onView(ViewMatchers.withId(R.id.calendar_add_deadline_button))
-            .perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .check(ViewAssertions.matches(ViewMatchers.isClickable()))
     }
