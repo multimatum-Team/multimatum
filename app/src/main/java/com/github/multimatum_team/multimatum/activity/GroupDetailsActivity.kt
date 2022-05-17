@@ -1,16 +1,14 @@
 package com.github.multimatum_team.multimatum.activity
 
 import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -76,6 +74,7 @@ class GroupDetailsActivity : AppCompatActivity() {
         // Initialize UI widgets
         initTextInput()
         initGroupMemberView()
+        initInviteButton()
         initLeaveButton()
     }
 
@@ -140,6 +139,24 @@ class GroupDetailsActivity : AppCompatActivity() {
     }
 
     /**
+     * Generate invite link for the current group and store it in a clipboard.
+     */
+    private fun initInviteButton() {
+        groupInviteButton.setOnClickListener {
+            groupViewModel.generateInviteLink(groupID) { inviteLink ->
+                val clipboard: ClipboardManager =
+                    getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                val clip =
+                    ClipData.newPlainText("Invite link to ${groupNameView.text}", inviteLink.toString())
+                clipboard.setPrimaryClip(clip)
+                Toast
+                    .makeText(this, "Copied invite link to clipboard", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
+    /**
      * Initialize groupDeleteOrLeaveButton with the right text and leave the group when clicked.
      */
     private fun initLeaveButton() {
@@ -170,11 +187,11 @@ class GroupDetailsActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.group_delete_confirmation_dialog))
                 .setPositiveButton(getString(R.string.group_delete_dialog_confirm)) { dialog, _ ->
-                        dialog.dismiss()
-                        groupViewModel.deleteGroup(groupID)
-                        finish()
+                    dialog.dismiss()
+                    groupViewModel.deleteGroup(groupID)
+                    finish()
                 }.setNegativeButton(getString(R.string.group_delete_dialog_cancel)) { dialog, _ ->
-                        dialog.dismiss()
+                    dialog.dismiss()
                 }.show()
         }
     }
