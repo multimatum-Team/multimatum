@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -83,6 +84,14 @@ class GroupViewModel @Inject constructor(
         _groups.value!![id]!!
 
     /**
+     * Ask the repository to fetch a group which the current user is possibly not a member of.
+     */
+    fun fetchNewGroup(id: GroupID, callback: (UserGroup?) -> Unit) =
+        viewModelScope.launch {
+            callback(groupRepository.fetch(id))
+        }
+
+    /**
      * Add a new group to the repository.
      * @param name the name of the new group to create
      * @param callback what to do when the group creation is complete
@@ -116,18 +125,20 @@ class GroupViewModel @Inject constructor(
         LogUtil.debugLog("renaming group with id $id to $newName")
     }
 
+    fun addMember(groupID: GroupID, memberID: UserID) = viewModelScope.launch {
+        groupRepository.addMember(groupID, memberID)
+    }
+
     fun removeMember(groupID: GroupID, memberID: UserID) = viewModelScope.launch {
         groupRepository.removeMember(groupID, memberID)
     }
 
     /**
-     * Invite an user to join a group given from its ID.
-     * @param id the ID of the group to which we want to invite the user
-     * @param email the email of the user to invite
+     * Generate invite link to join a group given from its ID.
+     * @param id the ID of the group to which we want to invite users
      */
-    fun inviteUser(id: GroupID, email: String) =
+    fun generateInviteLink(id: GroupID, callback: (Uri) -> Unit) =
         viewModelScope.launch {
-            groupRepository.invite(id, email)
-            LogUtil.debugLog("inviting user with email $email to group with id $id")
+            callback(groupRepository.generateInviteLink(id))
         }
 }
