@@ -53,7 +53,7 @@
             android:exported="false"
             android:parentActivityName=".activity.MainSettingsActivity" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".activity.ProfileActivity"
             android:exported="false"
             android:parentActivityName=".activity.MainSettingsActivity" />
         <activity
