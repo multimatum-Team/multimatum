@@ -32,7 +32,13 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
     }
 
     private fun notifyUpdateListeners() =
-        updateListeners[_userID]?.forEach { it(groups) }
+        updateListeners[_userID]?.forEach {
+            it(groups.filterValues { group ->
+                group.members.contains(
+                    _userID
+                )
+            })
+        }
 
     override suspend fun fetch(id: GroupID): UserGroup =
         groups[id]!!
