@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -20,6 +21,7 @@ import com.github.multimatum_team.multimatum.model.*
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
+import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,12 +31,10 @@ import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import org.robolectric.shadows.ShadowAlertDialog
+import java.time.Duration
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -284,6 +284,58 @@ class DeadlineDetailsTest {
             onView(withId(R.id.deadline_details_activity_group)).check(matches(withText("In the group: Group 2")))
             onView(withId(R.id.deadline_details_activity_modify)).check(matches(not(isDisplayed())))
         }
+    }
+
+    @Test
+    fun `a deadline with already defined notification should show them`() {
+        // Setup 5 notifications
+        DeadlineNotification.editNotification(
+            "0",
+            Deadline("Test 1", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 0, 0)),
+            listOf(
+                Duration.ofHours(2).toMillis(),
+                Duration.ofHours(3).toMillis(),
+                Duration.ofHours(4).toMillis(),
+                Duration.ofDays(2).toMillis(),
+                Duration.ofDays(4).toMillis()
+            ),
+            ApplicationProvider.getApplicationContext()
+        )
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            // Check that no alarm is planned
+            onView(withId(R.id.deadline_details_activity_notifications)).check(matches(withText("Multiple Alarms Planned")))
+
+            // Go in Modify Mode
+            onView(withId(R.id.deadline_details_activity_modify)).perform(click())
+
+            // Add a notification and check the displayed information
+            onView(withId(R.id.deadline_details_activity_notifications)).perform(click())
+            val dialog = ShadowAlertDialog.getLatestAlertDialog()
+            Assert.assertEquals(
+                "2 hours before",
+                (dialog.listView.adapter.getView(4, null, null) as TextView).text
+            )
+            Assert.assertEquals(
+                "3 hours before",
+                (dialog.listView.adapter.getView(5, null, null) as TextView).text
+            )
+            Assert.assertEquals(
+                "4 hours before",
+                (dialog.listView.adapter.getView(6, null, null) as TextView).text
+            )
+            Assert.assertEquals(
+                "2 days before",
+                (dialog.listView.adapter.getView(7, null, null) as TextView).text
+            )
+            Assert.assertEquals(
+                "4 days before",
+                (dialog.listView.adapter.getView(8, null, null) as TextView).text
+            )
+        }
+
     }
 
 

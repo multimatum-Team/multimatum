@@ -31,8 +31,6 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -321,8 +319,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             val notifications = DeadlineNotification.listDeadlineNotification(id, this)
             setNotifications(notifications)
 
-
-
             notificationView.text = textNotification()
 
             // Update the data shown
@@ -399,13 +395,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         val notifications =
             nameNotifications.filter { t -> notificationSelected[nameNotifications.indexOf(t)] }
         if (notifications.isEmpty()) return getString(R.string.no_alarm_planned)
+        if (notifications.size > 4) return getString(R.string.multiple_alarms_planned)
         return getString(
             R.string.alarm_X_before, when (notifications.size) {
                 1 -> notifications[0]
                 2 -> notifications[0] + " and " + notifications[1]
                 3 -> notifications[0] + ", " + notifications[1] + " and " + notifications[2]
-                4 -> notifications[0] + ", " + notifications[1] + ", " + notifications[2] + " and " + notifications[3]
-                else -> getString(R.string.multiple_alarms_planned)
+                else -> notifications[0] + ", " + notifications[1] + ", " + notifications[2] + " and " + notifications[3]
             }
         )
     }
