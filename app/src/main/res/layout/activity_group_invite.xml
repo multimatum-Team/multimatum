@@ -6,57 +6,53 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/invite_deny"
+        android:id="@+id/group_invite_deny"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="140dp"
-        android:text="Deny"
+        android:text="@string/group_invite_deny"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/invite_accept"
-        app:layout_constraintTop_toBottomOf="@+id/invite_group_name"
+        app:layout_constraintStart_toEndOf="@+id/group_invite_accept"
+        app:layout_constraintTop_toBottomOf="@+id/group_invite_name"
         app:layout_constraintVertical_bias="0.254" />
 
     <Button
-        android:id="@+id/invite_accept"
+        android:id="@+id/group_invite_accept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="140dp"
-        android:text="Accept"
+        android:text="@string/group_invite_accept"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/invite_deny"
+        app:layout_constraintEnd_toStartOf="@+id/group_invite_deny"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/invite_group_name"
+        app:layout_constraintTop_toBottomOf="@+id/group_invite_name"
         app:layout_constraintVertical_bias="0.258" />
 
     <TextView
-        android:id="@+id/invite_author"
+        android:id="@+id/group_invite_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/invite_group_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/invite_group_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="432dp"
-        android:text="TextView"
+        android:layout_marginBottom="608dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.518"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="invisible" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/invite_button_barrier"
+    <TextView
+        android:id="@+id/group_invite_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:barrierDirection="top"
-        tools:layout_editor_absoluteY="731dp" />
+        app:layout_constraintBottom_toTopOf="@+id/group_invite_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.816" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
