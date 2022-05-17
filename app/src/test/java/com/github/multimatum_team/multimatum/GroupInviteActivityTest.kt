@@ -167,7 +167,6 @@ class GroupInviteActivityTest {
             val deepLink = Uri.Builder()
                 .scheme("https")
                 .authority("multimatum.page.link")
-                .appendQueryParameter("id", "1234")
                 .build()
             val inviteLink = Uri.Builder()
                 .scheme("https")
