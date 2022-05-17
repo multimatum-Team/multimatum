@@ -50,6 +50,10 @@ class GroupInviteActivity : AppCompatActivity() {
         acceptButton.visibility = View.INVISIBLE
         denyButton.visibility = View.INVISIBLE
 
+        initView()
+    }
+
+    private fun initView() {
         when (val user = authViewModel.getUser().value) {
             is SignedInUser -> {
                 currentUser = user
