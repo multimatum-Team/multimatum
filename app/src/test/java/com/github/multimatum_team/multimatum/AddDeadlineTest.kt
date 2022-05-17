@@ -4,8 +4,10 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.widget.NumberPicker
 import android.widget.TextView
 import androidx.core.view.size
 import androidx.test.espresso.Espresso
@@ -26,6 +28,7 @@ import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
+import com.hamsa.twosteppickerdialog.TwoStepPickerDialog
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,6 +51,7 @@ import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowDatePickerDialog
 import org.robolectric.shadows.ShadowTimePickerDialog
 import org.robolectric.shadows.ShadowToast
+import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -213,6 +217,18 @@ class AddDeadlineTest {
             ShadowToast.getTextOfLatestToast(),
             CoreMatchers.equalTo(RuntimeEnvironment.getApplication().applicationContext.getString(R.string.deadline_created))
         )
+
+    }
+
+    @Test
+    fun `You can add custom Alarm`() {
+        // Select Notifications
+        onView(withId(R.id.add_deadline_select_notification)).perform(click())
+        val dialog = ShadowAlertDialog.getLatestAlertDialog()
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).performClick()
+        sleep(1)
+        val dialog2 = ShadowAlertDialog.getLatestAlertDialog()
+        dialog2.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
 
     }
     /*
