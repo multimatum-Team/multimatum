@@ -253,6 +253,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             )
             if (state == DeadlineState.DONE) {
                 DeadlineNotification.deleteNotification(id, this)
+            } else {
+                val listNotifications: List<Long> =
+                    timeNotifications.toList()
+                        .filter { i -> notificationSelected[timeNotifications.indexOf(i)] }
+                DeadlineNotification.editNotification(id, newDeadline, listNotifications, this)
             }
         }
     }
@@ -340,13 +345,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     // If there are more notifications than the default ones, the function
     // add them on the arrays to be able to show them in the Dialog.
     private fun setNotifications(notifications: List<Long>) {
-        for (time in notifications){
-            if (timeNotifications.contains(time)){
+        for (time in notifications) {
+            if (timeNotifications.contains(time)) {
                 notificationSelected[timeNotifications.indexOf(time)] = true
             } else {
                 notificationSelected = notificationSelected.plus(true)
                 timeNotifications = timeNotifications.plus(time)
-                nameNotifications = if(time > Duration.ofHours(24).toMillis()){
+                nameNotifications = if (time > Duration.ofHours(24).toMillis()) {
                     nameNotifications.plus(time.milliseconds.inWholeDays.toString() + " days")
                 } else {
                     nameNotifications.plus(time.milliseconds.inWholeHours.toString() + " hours")

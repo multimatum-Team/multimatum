@@ -287,11 +287,59 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         // Set the name of the done button
         alertDialogBuilder.setPositiveButton(getString(R.string.done), null)
-        alertDialogBuilder.setNeutralButton("Add Custom Notification"){_, _ ->
+        alertDialogBuilder.setNeutralButton("Add Custom Notification") { _, _ ->
+            // If the user want others time for notifications, launch another dialog
             addNotifications(view)
         }
         alertDialogBuilder.create()
         alertDialogBuilder.show()
+    }
+
+    /**
+     * Setup an AlertDialog that will allow the user to add custom Dialog
+     */
+    private fun addNotifications(view: View) {
+        TwoStepPickerDialog.Builder(this)
+            .withBaseData(mutableListOf("hours before", "days before"))
+            .withBaseOnLeft(false)
+            .withInitialBaseSelected(0)
+            .withInitialStepSelected(0)
+            .withOnStepDataRequested { baseDataPos ->
+                if (baseDataPos == 0) {
+                    // Allow to go no further than 23 hours before
+                    (1 until 24).toList().map { i -> i.toString() }
+                } else {
+                    // Allow to go no further than 30 days before for the notifications
+                    (1 until 31).toList().map { i -> i.toString() }
+                }
+
+            }.withDialogListener(object : OnStepPickListener {
+                override fun onStepPicked(step: Int, pos: Int) {
+                    timeNotifications =
+                        timeNotifications.plus(
+                            if (pos == 0) Duration.ofHours((pos + 1).toLong()).toMillis()
+                            else Duration.ofDays((pos + 1).toLong()).toMillis()
+                        )
+                    nameNotifications =
+                        nameNotifications.plus(
+                            (pos + 1).toString()
+                                    + if (step == 0) " hours" else " days"
+                        )
+                    notificationSelected = notificationSelected.plus(true)
+
+                    // Go back to the selection of notifications
+                    selectNotifications(view)
+                }
+
+                override fun onDismissed() {
+                    // Go back to the selection of notifications
+                    selectNotifications(view)
+                }
+            })
+            .withOkButton("Done")
+            .withCancelButton("Cancel")
+            .build()
+            .show()
     }
 
     /**
@@ -316,45 +364,6 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     }
 
-    /**
-     * Setup an AlertDialog that will allow the user to add custom Dialog
-     */
-    private fun addNotifications(view: View) {
-        val twoStepPickerDialog = TwoStepPickerDialog.Builder(this)
-        twoStepPickerDialog.withBaseData(mutableListOf("hours before", "days before"))
-            .withOkButton("Done").withCancelButton("Cancel")
-            .withBaseOnLeft(false)
-            .withInitialBaseSelected(0)
-            .withInitialStepSelected(0)
-            .withOnStepDataRequested { baseDataPos ->
-                if (baseDataPos == 0){
-                    (1 until 24).toList().map { i -> i.toString() }
-                } else {
-                    (1 until 30).toList().map { i -> i.toString() }
-                }
-
-            }.withDialogListener(object : OnStepPickListener {
-                override fun onStepPicked(step: Int, pos: Int) {
-                    if (step == 0){
-                        nameNotifications = nameNotifications.plus( (pos+1).toString() + " hours")
-                        timeNotifications = timeNotifications.plus(Duration.ofHours((pos+1).toLong()).toMillis())
-                    } else {
-                        nameNotifications = nameNotifications.plus( (pos+1).toString() + " days")
-                        timeNotifications = timeNotifications.plus(Duration.ofDays((pos+1).toLong()).toMillis())
-                    }
-                    notificationSelected = notificationSelected.plus(true)
-
-                    selectNotifications(view)
-                }
-
-                override fun onDismissed() {
-                    selectNotifications(view)
-                }
-            }).build()
-            .show()
-
-
-    }
 
     /**
      *  Add a deadline based on the data recuperated on the other TextViews

@@ -4,10 +4,8 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
-import android.widget.NumberPicker
 import android.widget.TextView
 import androidx.core.view.size
 import androidx.test.espresso.Espresso
@@ -28,7 +26,6 @@ import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
-import com.hamsa.twosteppickerdialog.TwoStepPickerDialog
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -222,15 +219,17 @@ class AddDeadlineTest {
 
     @Test
     fun `You can add custom Alarm`() {
-        // Select Notifications
+        // Go to select Notifications
         onView(withId(R.id.add_deadline_select_notification)).perform(click())
         val dialog = ShadowAlertDialog.getLatestAlertDialog()
+        // Go to the customising of deadline
         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).performClick()
+        // Wait a little to let the ShadowAlertDialog to recuperate the dialog
         sleep(1)
         val dialog2 = ShadowAlertDialog.getLatestAlertDialog()
         dialog2.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
-
     }
+
     /*
     // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
     @Test
