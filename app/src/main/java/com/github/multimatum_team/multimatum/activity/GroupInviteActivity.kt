@@ -10,6 +10,7 @@ import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.SignedInUser
+import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
@@ -81,28 +82,36 @@ class GroupInviteActivity : AppCompatActivity() {
         inviteMessageView.text = getString(R.string.group_invite_message_invalid)
     }
 
+    private fun initUserIsAlreadyMember() {
+        inviteMessageView.text =
+            getString(R.string.group_invite_message_already_member_of_this_group)
+    }
+
+    private fun initInvitationPrompt(group: UserGroup) {
+        inviteMessageView.text =
+            getString(R.string.group_invite_message_you_have_been_invited_to_join)
+        groupNameView.text = group.name
+        groupNameView.visibility = View.VISIBLE
+        acceptButton.visibility = View.VISIBLE
+        denyButton.visibility = View.VISIBLE
+        acceptButton.setOnClickListener {
+            groupViewModel.addMember(group.id, currentUser.id)
+            val intent = GroupDetailsActivity.newIntent(this, group.id)
+            startActivity(intent)
+            finish()
+        }
+        denyButton.setOnClickListener { finish() }
+    }
+
     private fun initValidLink(groupID: GroupID) {
         groupViewModel.fetchNewGroup(groupID) { group ->
             if (group == null) {
                 inviteMessageView.text = getString(R.string.group_invite_message_invalid)
             } else {
                 if (group.members.contains(currentUser.id)) {
-                    inviteMessageView.text =
-                        getString(R.string.group_invite_message_already_member_of_this_group)
+                    initUserIsAlreadyMember()
                 } else {
-                    inviteMessageView.text =
-                        getString(R.string.group_invite_message_you_have_been_invited_to_join)
-                    groupNameView.text = group.name
-                    groupNameView.visibility = View.VISIBLE
-                    acceptButton.visibility = View.VISIBLE
-                    denyButton.visibility = View.VISIBLE
-                    acceptButton.setOnClickListener {
-                        groupViewModel.addMember(groupID, currentUser.id)
-                        val intent = GroupDetailsActivity.newIntent(this, groupID)
-                        startActivity(intent)
-                        finish()
-                    }
-                    denyButton.setOnClickListener { finish() }
+                    initInvitationPrompt(group)
                 }
             }
         }
