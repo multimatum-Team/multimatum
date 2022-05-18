@@ -38,8 +38,10 @@ import java.time.LocalDateTime
 import java.time.Month
 import javax.inject.Singleton
 
+// alias to distinguish it from Kotlin Result<T>
 typealias LibResult = com.google.zxing.Result
 
+// Robolectric suffix is used to distinguish this test case from the one in androidTests
 @UninstallModules(CodeScannerModule::class, FirebaseRepositoryModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -61,7 +63,7 @@ class QRCodeReaderActivityTestRobolectric {
 
     @Test
     fun `basic config test`() {
-        launchActivity()
+        launchQRCodeReaderActivity()
         verify(mockCodeScanner).scanMode = ScanMode.SINGLE
         verify(mockCodeScanner).camera = CodeScanner.CAMERA_BACK
         verify(mockCodeScanner).isFlashEnabled = false
@@ -74,7 +76,7 @@ class QRCodeReaderActivityTestRobolectric {
             decodeCallbackAsAny = invoc.getArgument(0)
             null
         }
-        launchActivity()
+        launchQRCodeReaderActivity()
         assertNotNull(decodeCallbackAsAny)
         assertTrue(decodeCallbackAsAny is DecodeCallback)
         val decodeCallback = decodeCallbackAsAny as DecodeCallback
@@ -93,7 +95,7 @@ class QRCodeReaderActivityTestRobolectric {
             decodeCallbackAsAny = invoc.getArgument(0)
             null
         }
-        launchActivity()
+        launchQRCodeReaderActivity()
         assertNotNull(decodeCallbackAsAny)
         assertTrue(decodeCallbackAsAny is DecodeCallback)
         val decodeCallback = decodeCallbackAsAny as DecodeCallback
@@ -113,7 +115,7 @@ class QRCodeReaderActivityTestRobolectric {
             errorCallbackAsAny = invoc.getArgument(0)
             null
         }
-        launchActivity()
+        launchQRCodeReaderActivity()
         val exceptionMsg = "[text exception message]"
         assertNotNull(errorCallbackAsAny)
         assertTrue(errorCallbackAsAny is ErrorCallback)
@@ -129,7 +131,7 @@ class QRCodeReaderActivityTestRobolectric {
             wasCalled = true
             null
         }
-        launchActivity { invokeNonPublicMethodOnActivity("onResume", it) }
+        launchQRCodeReaderActivity { invokeNonPublicMethodOnActivity("onResume", it) }
         assertTrue(wasCalled)
     }
 
@@ -140,10 +142,11 @@ class QRCodeReaderActivityTestRobolectric {
             wasCalled = true
             null
         }
-        launchActivity { invokeNonPublicMethodOnActivity("onPause", it) }
+        launchQRCodeReaderActivity { invokeNonPublicMethodOnActivity("onPause", it) }
         assertTrue(wasCalled)
     }
 
+    // invokes the method with the given name, on the given activity, regardless of its visibility
     private fun invokeNonPublicMethodOnActivity(
         methodName: String,
         activity: QRCodeReaderActivity
@@ -161,7 +164,8 @@ class QRCodeReaderActivityTestRobolectric {
         )
     }
 
-    private fun launchActivity(action: (QRCodeReaderActivity) -> Unit = {}) {
+    // launches the activity and executes the specified action inside the `use` block
+    private fun launchQRCodeReaderActivity(action: (QRCodeReaderActivity) -> Unit = {}) {
         val applicationContext = ApplicationProvider.getApplicationContext<Context>()
         val intent = Intent(applicationContext, QRCodeReaderActivity::class.java)
         val activityScenario: ActivityScenario<QRCodeReaderActivity> =

@@ -89,6 +89,12 @@ abstract class FirebaseRepositoryModule {
     abstract fun providePdfRepository(impl: FirebasePdfRepository): PdfRepository
 }
 
+/**
+ * Produces a CodeScanner using the provided function
+ *
+ * This class allows mocking users of CodeScanner while allowing them to parametrize
+ * the CodeScanner with their own Context and CodeScannerView
+ */
 data class CodeScannerProducer(val produce: (Context, CodeScannerView) -> CodeScanner)
 
 @Module
