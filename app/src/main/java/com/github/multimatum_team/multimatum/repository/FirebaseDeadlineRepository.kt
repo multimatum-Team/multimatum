@@ -78,7 +78,9 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
                 is UserOwned -> hashMapOf("type" to "user", "id" to _user.id)
                 is GroupOwned -> hashMapOf("type" to "group", "id" to deadline.owner.groupID)
             },
-            "pdfPath" to deadline.pdfPath
+            "pdfPath" to deadline.pdfPath,
+            "locationName" to deadline.locationName,
+            "location" to deadline.location
         )
 
     /**
@@ -101,7 +103,18 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
             else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
         }
         val pdfPath = deadlineSnapshot["pdfPath"] as String
-        return Deadline(title, state, date, description, owner, pdfPath = pdfPath)
+        val locationName = deadlineSnapshot["locationName"] as String?
+        val location = deadlineSnapshot["location"] as GeoPoint?
+        return Deadline(
+            title,
+            state,
+            date,
+            description,
+            owner,
+            pdfPath = pdfPath,
+            locationName = locationName,
+            location = location
+        )
     }
 
     /**

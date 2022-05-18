@@ -30,9 +30,11 @@ import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.google.firebase.storage.FirebaseStorage
+import com.mapbox.search.ui.view.SearchBottomSheetView
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.LocalDateTime
@@ -83,6 +85,10 @@ class AddDeadlineActivity : AppCompatActivity() {
     private var nameGroups = arrayOf("No group")
     private var idGroups = arrayOf<GroupID>()
 
+    // Memorisation of the selected location
+    private var locationName: String? = null
+    private var location: GeoPoint? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -113,10 +119,9 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         // Initialize the location search view
         // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
-        //initializeLocationSearchView(savedInstanceState)
+        initializeLocationSearchView(savedInstanceState)
 
         setGroupObserver()
-
     }
 
     /**
@@ -185,7 +190,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Initialize the location search view with the chosen parameters
      */
-    /*
     // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
     private fun initializeLocationSearchView(savedInstanceState: Bundle?) {
         val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
@@ -193,27 +197,36 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         searchBottomSheetView.initializeSearch(
             savedInstanceState,
-            SearchBottomSheetView.Configuration()
+            SearchBottomSheetView.Configuration(hotCategories = listOf(), favoriteTemplates = listOf())
         )
         // Hide the search bar at the beginning
         searchBottomSheetView.hide()
 
         // Add a listener for an eventual place selection
-        searchBottomSheetView.addOnHistoryClickListener { history_record ->
+        searchBottomSheetView.addOnHistoryClickListener { historyRecord ->
             // We get only the name for now, the coordinates can also be extracted here.
-            locationTextView.text = history_record.name
+            locationName = historyRecord.name
+            location = GeoPoint(
+                historyRecord.coordinate!!.latitude(),
+                historyRecord.coordinate!!.longitude()
+            )
+            locationTextView.text = locationName
             searchBottomSheetView.hide()
         }
         // Add a listener for an eventual place selection in the history
         searchBottomSheetView.addOnSearchResultClickListener { result, _ ->
-            locationTextView.text = result.name
+            locationName = result.name
+            location = GeoPoint(
+                result.coordinate!!.latitude(),
+                result.coordinate!!.longitude()
+            )
+            locationTextView.text = locationName
             searchBottomSheetView.hide()
         }
         searchBottomSheetView.isHideableByDrag = true
         searchBottomSheetView.visibility = View.GONE
         searchBottomSheetView.isClickable = false
     }
-    */
 
     /**
      * Setup a DatePickerDialog that will select a date for the deadline and show it
@@ -356,13 +369,11 @@ class AddDeadlineActivity : AppCompatActivity() {
      *  for a deadline.
      */
     fun searchLocation(view: View) {
-        /*
         // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
         val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
         searchBottomSheetView.visibility = View.VISIBLE
         searchBottomSheetView.isClickable = true
         searchBottomSheetView.expand()
-        */
     }
 
     /**
@@ -378,7 +389,9 @@ class AddDeadlineActivity : AppCompatActivity() {
                 DeadlineState.TODO,
                 selectedDate,
                 textDescription.text.toString(),
-                pdfPath = ref
+                pdfPath = ref,
+                locationName = locationName,
+                location = location
             )
         } else {
             return Deadline(
@@ -387,7 +400,9 @@ class AddDeadlineActivity : AppCompatActivity() {
                 selectedDate,
                 textDescription.text.toString(),
                 GroupOwned(idGroups[groupSelected - 1]),
-                pdfPath = ref
+                pdfPath = ref,
+                locationName = locationName,
+                location = location
             )
         }
     }
