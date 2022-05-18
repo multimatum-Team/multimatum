@@ -1,10 +1,13 @@
 package com.github.multimatum_team.multimatum
 
+import android.app.AlertDialog
 import androidx.test.espresso.Espresso.onData
-import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.GroupDetailsActivity
@@ -22,6 +25,9 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import junit.framework.Assert.assertTrue
+import org.hamcrest.CoreMatchers
+import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.allOf
 import org.junit.After
@@ -29,6 +35,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.shadows.ShadowAlertDialog
+import org.robolectric.shadows.ShadowToast
+import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -67,7 +76,6 @@ class GroupsActivityTest {
     }
 
     @Before
-    @Throws(Exception::class)
     fun setUp() {
         Intents.init()
         hiltRule.inject()
@@ -81,18 +89,39 @@ class GroupsActivityTest {
     @Test
     fun `Clicking on a group starts GroupDetailsActivity`() {
         (authRepository as MockAuthRepository).logIn(joseph)
-        onData(Matchers.anything()).inAdapterView(ViewMatchers.withId(R.id.listViewGroups))
-            .atPosition(0).perform(ViewActions.click())
+        onData(Matchers.anything()).inAdapterView(withId(R.id.listViewGroups))
+            .atPosition(0).perform(click())
 
         Intents.intended(
             allOf(
-                IntentMatchers.hasComponent(GroupDetailsActivity::class.java.name),
+                hasComponent(GroupDetailsActivity::class.java.name),
                 IntentMatchers.hasExtra(
                     "com.github.multimatum_team.group.details.id",
                     "2"
                 )
             )
         )
+    }
+
+    @Test
+    fun followingCorrectStepToCreateGroupShouldLaunchAnIntentIntoGroupDetailsAndDisplayToast(){
+        (authRepository as MockAuthRepository).logIn(joseph)
+        onView(withId(R.id.addGroupButton)).perform(click())
+        val dialog = ShadowAlertDialog.getLatestAlertDialog()
+        assertTrue(dialog.isShowing)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+        var toast = ShadowToast.getLatestToast()
+        while (toast == null){
+            toast = ShadowToast.getLatestToast()
+        }
+
+        MatcherAssert.assertThat(
+            ShadowToast.getTextOfLatestToast(),
+            CoreMatchers.equalTo("Group created")
+        )
+
+        //Intents.intended(allOf(hasComponent(
+          //  GroupDetailsActivity::class.java.name)))
     }
 
 

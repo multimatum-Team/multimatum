@@ -1,20 +1,20 @@
 package com.github.multimatum_team.multimatum.activity
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
+import android.app.AlertDialog
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.UserGroupAdapter
 import com.github.multimatum_team.multimatum.repository.UserRepository
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -33,11 +33,6 @@ class GroupsActivity : AppCompatActivity() {
 
         val adapter = UserGroupAdapter(this, groupViewModel, userRepository)
 
-        val button = findViewById<FloatingActionButton>(R.id.addGroupButton)
-        button.setOnClickListener{ view ->
-            addGroup(button)
-        }
-
         // Set when you maintain your finger on an item of the list, launch the detail activity
         listView.setOnItemClickListener { _, _, position, _ ->
             val group = adapter.getItem(position)
@@ -53,7 +48,7 @@ class GroupsActivity : AppCompatActivity() {
         }
     }
 
-    private fun addGroup(view: View){
+    fun addGroup(view: View){
         val alertDialogBuilder = AlertDialog.Builder(this)
         alertDialogBuilder.setTitle("Create group")
         alertDialogBuilder.setMessage("Group name :")
@@ -68,22 +63,23 @@ class GroupsActivity : AppCompatActivity() {
         alertDialogBuilder.setView(input)
 
         //add cancel and create button
-        alertDialogBuilder.setCancelable(false)
-        alertDialogBuilder.setPositiveButton("Create", DialogInterface.OnClickListener { dialog, _ ->
-                createGroup(dialog, input)
-            })
-        alertDialogBuilder.setNegativeButton("Cancel", DialogInterface.OnClickListener{
-            dialog, _ -> dialog.cancel()
-        })
-
+        alertDialogBuilder.setPositiveButton("Create") { dialog, _ ->
+            createGroup(dialog, input)
+        }
+        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
         alertDialogBuilder.create()
         alertDialogBuilder.show()
     }
 
     private fun createGroup(dialog: DialogInterface, editText: EditText) {
         groupViewModel.createGroup(editText.text.toString()) { groupID ->
-            GroupDetailsActivity.newIntent(this, groupID)
+            Toast.makeText(this, "Group created", Toast.LENGTH_SHORT).show()
+            Log.d("passBy", "Toast created")
+            intent = GroupDetailsActivity.newIntent(this, groupID)
             startActivity(intent)
         }
+
     }
 }
