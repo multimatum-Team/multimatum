@@ -6,21 +6,23 @@ import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserID
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.dynamiclinks.ktx.androidParameters
 import com.google.firebase.dynamiclinks.ktx.dynamicLink
-import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.dynamiclinks.ktx.socialMetaTagParameters
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 /**
  * Remote Firebase repository for storing user groups.
  */
-class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) : GroupRepository() {
+class FirebaseGroupRepository @Inject constructor(
+    database: FirebaseFirestore,
+    private val dynamicLinks: FirebaseDynamicLinks
+) : GroupRepository() {
     private val groupsRef = database
         .collection("groups")
 
@@ -119,21 +121,24 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
      * Generate an invite link to join a group.
      * @param id the ID of the group to which we want to invite users
      */
-    override suspend fun generateInviteLink(id: GroupID): Uri {
-        val group = fetch(id)
+    override fun generateInviteLink(
+        id: GroupID,
+        linkTitle: String,
+        linkDescription: String
+    ): Uri {
         val inviteLink = Uri.Builder()
             .scheme("https")
             .authority("multimatum.page.link")
-            .appendQueryParameter("id", group.id)
+            .appendQueryParameter("id", id)
             .build()
 
-        val dynamicLink = Firebase.dynamicLinks.dynamicLink {
+        val dynamicLink = dynamicLinks.dynamicLink {
             link = inviteLink
             domainUriPrefix = "https://multimatum.page.link"
             androidParameters { }
             socialMetaTagParameters {
-                title = "Join group ${group.name}"
-                description = "Click this link to accept the invite"
+                title = linkTitle
+                description = linkDescription
             }
         }
 

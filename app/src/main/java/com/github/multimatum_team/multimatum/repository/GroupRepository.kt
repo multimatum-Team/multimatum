@@ -64,7 +64,7 @@ abstract class GroupRepository {
      * Generate an invite link to join a group given by its ID
      * @param id the ID of the group for which to generate the invite link
      */
-    abstract suspend fun generateInviteLink(id: GroupID): Uri
+    abstract fun generateInviteLink(id: GroupID, linkTitle: String, linkDescription: String): Uri
 
     /**
      * Add a user from a group.

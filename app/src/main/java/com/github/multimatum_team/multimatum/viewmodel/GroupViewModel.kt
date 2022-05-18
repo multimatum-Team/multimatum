@@ -1,17 +1,20 @@
 package com.github.multimatum_team.multimatum.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.multimatum_team.multimatum.LogUtil
+import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserID
 import com.github.multimatum_team.multimatum.repository.AuthRepository
 import com.github.multimatum_team.multimatum.repository.GroupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +27,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class GroupViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val authRepository: AuthRepository,
     private val groupRepository: GroupRepository
 ) : ViewModel() {
@@ -139,6 +143,9 @@ class GroupViewModel @Inject constructor(
      */
     fun generateInviteLink(id: GroupID, callback: (Uri) -> Unit) =
         viewModelScope.launch {
-            callback(groupRepository.generateInviteLink(id))
+            val group = groupRepository.fetch(id)
+            val linkTitle = context.getString(R.string.group_invite_link_title, group.name)
+            val linkDescription = context.getString(R.string.group_invite_link_description)
+            callback(groupRepository.generateInviteLink(id, linkTitle, linkDescription))
         }
 }

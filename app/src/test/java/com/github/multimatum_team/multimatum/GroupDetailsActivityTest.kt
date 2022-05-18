@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum
 import android.app.AlertDialog
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.content.ClipboardManager
+import android.content.Context
 import android.net.Uri
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.test.core.app.ActivityScenario
@@ -22,6 +23,7 @@ import com.github.multimatum_team.multimatum.model.UserInfo
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,7 +48,7 @@ import javax.inject.Singleton
 /**
  * Tests for the GroupDetailsActivity class
  */
-@UninstallModules(FirebaseRepositoryModule::class, ClockModule::class)
+@UninstallModules(FirebaseRepositoryModule::class, FirebaseDynamicLinksModule::class, ClockModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
@@ -65,6 +67,8 @@ class GroupDetailsActivityTest {
 
     @Inject
     lateinit var userRepository: UserRepository
+
+    private lateinit var context: Context
 
     companion object {
         private val joseph = SignedInUser(
@@ -85,6 +89,7 @@ class GroupDetailsActivityTest {
     fun setUp() {
         Intents.init()
         hiltRule.inject()
+        context = ApplicationProvider.getApplicationContext()
     }
 
     @After
@@ -98,8 +103,8 @@ class GroupDetailsActivityTest {
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
         val intent =
-            GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
-        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+            GroupDetailsActivity.newIntent(context, "0")
+        val scenario = ActivityScenario.launch<GroupDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.group_details_name))
                 .check(matches(withText("SDP")))
@@ -115,15 +120,15 @@ class GroupDetailsActivityTest {
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
         val intent =
-            GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
-        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+            GroupDetailsActivity.newIntent(context, "0")
+        val scenario = ActivityScenario.launch<GroupDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.group_details_name))
                 .perform(ViewActions.replaceText("Multimatum"))
                 .perform(ViewActions.pressImeActionButton())
             assertThat(
                 "Group name has been updated",
-                groupRepository.fetch("0")?.name,
+                groupRepository.fetch("0").name,
                 equalTo("Multimatum")
             )
         }
@@ -136,8 +141,8 @@ class GroupDetailsActivityTest {
             (authRepository as MockAuthRepository).logIn(joseph)
             groupRepository.setUserID(joseph.id)
             val intent =
-                GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "0")
-            val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+                GroupDetailsActivity.newIntent(context, "0")
+            val scenario = ActivityScenario.launch<GroupDetailsActivity>(intent)
             scenario.use {
                 onView(withId(R.id.group_details_delete_or_leave_button))
                     .perform(click())
@@ -161,8 +166,8 @@ class GroupDetailsActivityTest {
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
         val intent =
-            GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
-        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+            GroupDetailsActivity.newIntent(context, "1")
+        val scenario = ActivityScenario.launch<GroupDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.group_details_name))
                 .check(matches(withText("MIT")))
@@ -179,7 +184,7 @@ class GroupDetailsActivityTest {
             (authRepository as MockAuthRepository).logIn(joseph)
             groupRepository.setUserID(joseph.id)
             val intent =
-                GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
+                GroupDetailsActivity.newIntent(context, "1")
             val scenario = ActivityScenario.launch<GroupDetailsActivity>(intent)
             scenario.use {
                 onView(withId(R.id.group_details_delete_or_leave_button))
@@ -202,13 +207,15 @@ class GroupDetailsActivityTest {
     fun `Clicking invite button copies invite link to clipboard`() = runTest {
         (authRepository as MockAuthRepository).logIn(joseph)
         groupRepository.setUserID(joseph.id)
-        val inviteLink = groupRepository.generateInviteLink("1")
         val intent =
-            GroupDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "1")
+            GroupDetailsActivity.newIntent(context, "1")
         val scenario = ActivityScenario.launch<GroupDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.group_details_invite_button))
                 .perform(click())
+            val linkTitle = context.getString(R.string.group_invite_link_title, "MIT")
+            val linkDescription = context.getString(R.string.group_invite_link_description)
+            val inviteLink = groupRepository.generateInviteLink("1", linkTitle, linkDescription)
             val clipboard =
                 getSystemService(
                     ApplicationProvider.getApplicationContext(),
@@ -293,5 +300,14 @@ class GroupDetailsActivityTest {
         @Provides
         fun providePdfRepository(): PdfRepository =
             MockPdfRepository()
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestDynamicLinksModule {
+        @Singleton
+        @Provides
+        fun providesFirebaseDynamicLinks(): FirebaseDynamicLinks =
+            mockFirebaseDynamicLinks()
     }
 }

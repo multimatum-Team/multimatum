@@ -147,10 +147,10 @@ class GroupDetailsActivity : AppCompatActivity() {
                 val clipboard: ClipboardManager =
                     getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                 val clip =
-                    ClipData.newPlainText("Invite link to ${groupNameView.text}", inviteLink.toString())
+                    ClipData.newPlainText(getString(R.string.group_invite_link_to, group.name), inviteLink.toString())
                 clipboard.setPrimaryClip(clip)
                 Toast
-                    .makeText(this, "Copied invite link to clipboard", Toast.LENGTH_SHORT)
+                    .makeText(this, getString(R.string.group_invite_link_copied_to_clipboard), Toast.LENGTH_SHORT)
                     .show()
             }
         }

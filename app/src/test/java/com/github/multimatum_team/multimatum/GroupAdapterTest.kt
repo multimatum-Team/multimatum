@@ -51,7 +51,7 @@ class GroupAdapterTest {
     lateinit var userRepository: UserRepository
 
     private lateinit var adapter: UserGroupAdapter
-    private var context: Application? = null
+    private lateinit var context: Application
     private lateinit var groupMap: Map<GroupID, UserGroup>
 
     @Before
@@ -62,11 +62,12 @@ class GroupAdapterTest {
         context = ApplicationProvider.getApplicationContext()
         (authRepository as MockAuthRepository).logIn(AnonymousUser("0"))
         val viewModel = GroupViewModel(
+            context,
             authRepository,
             groupRepository
         )
 
-        adapter = UserGroupAdapter(context!!, viewModel, userRepository)
+        adapter = UserGroupAdapter(context, viewModel, userRepository)
         groupMap = groups.associateBy { it.id }
         adapter.setGroups(groupMap)
     }

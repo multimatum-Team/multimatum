@@ -78,4 +78,8 @@
     <string name="group_invite_message_must_be_signed_in">You have been invited to join the group</string>
     <string name="group_invite_message_already_member_of_this_group">You are already a member of this group</string>
     <string name="group_invite_message_invalid">Invite link is invalid, ask for a new one</string>
+    <string name="group_invite_link_title">Join group %s</string>
+    <string name="group_invite_link_description">Click this link to accept the invite</string>
+    <string name="group_invite_link_copied_to_clipboard">Copied invite link to clipboard</string>
+    <string name="group_invite_link_to">Invite link to %s</string>
 </resources>

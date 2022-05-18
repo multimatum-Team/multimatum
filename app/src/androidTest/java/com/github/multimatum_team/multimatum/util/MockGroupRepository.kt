@@ -65,18 +65,21 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
         notifyUpdateListeners()
     }
 
-    override suspend fun generateInviteLink(id: GroupID): Uri {
-        val group = fetch(id)!!
+    override fun generateInviteLink(
+        id: GroupID,
+        linkTitle: String,
+        linkDescription: String
+    ): Uri {
         val inviteLink = Uri.Builder()
             .scheme("https")
             .authority("multimatum.page.link")
-            .appendQueryParameter("id", group.id)
+            .appendQueryParameter("id", id)
             .build()
         return Uri.Builder()
             .scheme("https")
             .authority("multimatum.page.link")
-            .appendQueryParameter("sd", "Click this link to accept the invite")
-            .appendQueryParameter("st", "Join group ${group.name}")
+            .appendQueryParameter("sd", linkDescription)
+            .appendQueryParameter("st", linkTitle)
             .appendQueryParameter("apn", "com.github.multimatum_team.multimatum")
             .appendQueryParameter("link", inviteLink.toString())
             .build()

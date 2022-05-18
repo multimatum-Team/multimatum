@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.test.platform.app.InstrumentationRegistry
@@ -13,6 +14,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.multimatum_team.multimatum.activity.GroupDetailsActivity
 import com.github.multimatum_team.multimatum.activity.GroupInviteActivity
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.SignedInUser
@@ -72,6 +74,8 @@ class GroupInviteActivityTest {
     @Inject
     lateinit var userRepository: UserRepository
 
+    private lateinit var context: Context
+
     companion object {
         private val joseph = SignedInUser(
             "Joseph",
@@ -91,6 +95,7 @@ class GroupInviteActivityTest {
     fun setUp() {
         Intents.init()
         hiltRule.inject()
+        context = ApplicationProvider.getApplicationContext()
     }
 
     @After
@@ -100,9 +105,13 @@ class GroupInviteActivityTest {
 
     private suspend fun groupInviteIntent(groupID: GroupID): Intent {
         val intent =
-            Intent(ApplicationProvider.getApplicationContext(), GroupInviteActivity::class.java)
+            Intent(context, GroupInviteActivity::class.java)
+        val group = groupRepository.fetch(groupID)
+        val linkTitle = context.getString(R.string.group_invite_link_title, group.name)
+        val linkDescription = context.getString(R.string.group_invite_link_description)
+        val inviteLink = groupRepository.generateInviteLink(groupID, linkTitle, linkDescription)
         intent.action = Intent.ACTION_VIEW
-        intent.data = groupRepository.generateInviteLink(groupID)
+        intent.data = inviteLink
         return intent
     }
 
@@ -151,9 +160,8 @@ class GroupInviteActivityTest {
             val intent = groupInviteIntent("0")
             val scenario = ActivityScenario.launch<GroupInviteActivity>(intent)
             scenario.use {
-                val resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
                 val message =
-                    resources.getString(R.string.group_invite_message_already_member_of_this_group)
+                    context.getString(R.string.group_invite_message_already_member_of_this_group)
                 onView(withId(R.id.group_invite_message))
                     .check(matches(withText(message)))
             }
@@ -177,13 +185,12 @@ class GroupInviteActivityTest {
                 .appendQueryParameter("link", deepLink.toString())
                 .build()
             val intent =
-                Intent(ApplicationProvider.getApplicationContext(), GroupInviteActivity::class.java)
+                Intent(context, GroupInviteActivity::class.java)
             intent.action = Intent.ACTION_VIEW
             intent.data = inviteLink
             val scenario = ActivityScenario.launch<GroupInviteActivity>(intent)
             scenario.use {
-                val resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
-                val message = resources.getString(R.string.group_invite_message_invalid)
+                val message = context.getString(R.string.group_invite_message_invalid)
                 onView(withId(R.id.group_invite_message))
                     .check(matches(withText(message)))
             }
@@ -197,8 +204,7 @@ class GroupInviteActivityTest {
             val intent = groupInviteIntent("0")
             val scenario = ActivityScenario.launch<GroupInviteActivity>(intent)
             scenario.use {
-                val resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
-                val message = resources.getString(R.string.group_invite_message_must_be_signed_in)
+                val message = context.getString(R.string.group_invite_message_must_be_signed_in)
                 onView(withId(R.id.group_invite_message))
                     .check(matches(withText(message)))
             }
