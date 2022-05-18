@@ -100,16 +100,10 @@ class AddDeadlineActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_deadline)
 
         // Recuperate all the necessary Views
-        textTitle = findViewById(R.id.add_deadline_select_title)
-        textDate = findViewById(R.id.add_deadline_text_date)
-        textTime = findViewById(R.id.add_deadline_text_time)
-        pdfTextView = findViewById(R.id.selectedPdf)
-        progressBar = findViewById(R.id.progressBar)
+        saveViews()
+
         progressBar.visibility = View.INVISIBLE
         progressBar.isIndeterminate = true
-        textDescription = findViewById(R.id.add_deadline_select_description)
-        searchBottomSheetView = findViewById(R.id.search_view)
-        locationTextView = findViewById(R.id.coordinates)
 
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         updateDisplayedDateAndTime()
@@ -138,6 +132,20 @@ class AddDeadlineActivity : AppCompatActivity() {
                 idGroups = idGroups.plus(id)
             }
         }
+    }
+
+    /**
+     * Saving the views of this activity for future use
+     */
+    private fun saveViews() {
+        textTitle = findViewById(R.id.add_deadline_select_title)
+        textDate = findViewById(R.id.add_deadline_text_date)
+        textTime = findViewById(R.id.add_deadline_text_time)
+        pdfTextView = findViewById(R.id.selectedPdf)
+        progressBar = findViewById(R.id.progressBar)
+        textDescription = findViewById(R.id.add_deadline_select_description)
+        searchBottomSheetView = findViewById(R.id.search_view)
+        locationTextView = findViewById(R.id.coordinates)
     }
 
     /**
@@ -191,7 +199,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Initialize the location search view with the chosen parameters
      */
-    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
     private fun initializeLocationSearchView(savedInstanceState: Bundle?) {
         searchBottomSheetView.initializeSearch(
             savedInstanceState,
@@ -377,7 +384,6 @@ class AddDeadlineActivity : AppCompatActivity() {
      *  for a deadline.
      */
     fun searchLocation(view: View) {
-        // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
         val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
         searchBottomSheetView.visibility = View.VISIBLE
         searchBottomSheetView.isClickable = true
