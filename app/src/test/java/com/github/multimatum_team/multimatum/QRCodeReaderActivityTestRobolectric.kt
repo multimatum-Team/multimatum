@@ -87,7 +87,7 @@ class QRCodeReaderActivityTestRobolectric {
     }
 
     @Test
-    fun `json error scenario`(){
+    fun `json error scenario`() {
         var decodeCallbackAsAny: Any? = null
         whenever(mockCodeScanner.setDecodeCallback(any())).then { invoc ->
             decodeCallbackAsAny = invoc.getArgument(0)
@@ -107,7 +107,7 @@ class QRCodeReaderActivityTestRobolectric {
     }
 
     @Test
-    fun `error callback scenario`(){
+    fun `error callback scenario`() {
         var errorCallbackAsAny: Any? = null
         whenever(mockCodeScanner.setErrorCallback(any())).then { invoc ->
             errorCallbackAsAny = invoc.getArgument(0)
@@ -122,6 +122,38 @@ class QRCodeReaderActivityTestRobolectric {
         assertLastToastWas("Camera initialization error: $exceptionMsg")
     }
 
+    @Test
+    fun `onResume should call startPreview`() {
+        var wasCalled = false
+        whenever(mockCodeScanner.startPreview()).then {
+            wasCalled = true
+            null
+        }
+        launchActivity { invokeNonPublicMethodOnActivity("onResume", it) }
+        assertTrue(wasCalled)
+    }
+
+    @Test
+    fun `onPause should call releaseResources`(){
+        var wasCalled = false
+        whenever(mockCodeScanner.startPreview()).then {
+            wasCalled = true
+            null
+        }
+        launchActivity { invokeNonPublicMethodOnActivity("onPause", it) }
+        assertTrue(wasCalled)
+    }
+
+    private fun invokeNonPublicMethodOnActivity(
+        methodName: String,
+        activity: QRCodeReaderActivity
+    ) {
+        val onResumeMethod =
+            QRCodeReaderActivity::class.java.declaredMethods.find { it.name == methodName }!!
+        onResumeMethod.isAccessible = true
+        onResumeMethod.invoke(activity)
+    }
+
     private fun assertLastToastWas(expectedText: String) {
         MatcherAssert.assertThat(
             ShadowToast.getTextOfLatestToast(),
@@ -129,12 +161,12 @@ class QRCodeReaderActivityTestRobolectric {
         )
     }
 
-    private fun launchActivity() {
+    private fun launchActivity(action: (QRCodeReaderActivity) -> Unit = {}) {
         val applicationContext = ApplicationProvider.getApplicationContext<Context>()
         val intent = Intent(applicationContext, QRCodeReaderActivity::class.java)
         val activityScenario: ActivityScenario<QRCodeReaderActivity> =
             ActivityScenario.launch(intent)
-        activityScenario.use { }
+        activityScenario.use { it.onActivity(action) }
     }
 
     companion object {
