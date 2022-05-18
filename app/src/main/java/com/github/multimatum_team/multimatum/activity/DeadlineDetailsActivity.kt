@@ -63,14 +63,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private var state: DeadlineState = DeadlineState.TODO
 
     // Memorisation of which checkBox is selected for the notifications
-    private var notificationSelected: BooleanArray = booleanArrayOf(false, false, false, false)
-    private var nameNotifications = arrayOf("1 hour", "5 hours", "1 day", "3 days")
-    private var timeNotifications = arrayOf(
-        Duration.ofHours(1).toMillis(),
-        Duration.ofHours(5).toMillis(),
-        Duration.ofDays(1).toMillis(),
-        Duration.ofDays(3).toMillis()
-    )
+    private var notificationSelected: BooleanArray = AddDeadlineActivity.defaultNotificationSelected.toBooleanArray()
+    private var nameNotifications = AddDeadlineActivity.defaultNameNotifications.toTypedArray()
+    private var timeNotifications = AddDeadlineActivity.defaultTimeNotifications.toTypedArray()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

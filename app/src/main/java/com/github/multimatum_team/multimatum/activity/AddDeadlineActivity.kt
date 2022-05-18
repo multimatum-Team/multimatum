@@ -46,6 +46,17 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class AddDeadlineActivity : AppCompatActivity() {
+    companion object {
+        // Default option for the selection of notifications
+        val defaultNotificationSelected = listOf(false, false, false, false)
+        val defaultNameNotifications = listOf("1 hour", "5 hours", "1 day", "3 days")
+        val defaultTimeNotifications = listOf(
+            Duration.ofHours(1).toMillis(),
+            Duration.ofHours(5).toMillis(),
+            Duration.ofDays(1).toMillis(),
+            Duration.ofDays(3).toMillis()
+        )
+    }
 
     @Inject
     lateinit var clockService: ClockService
@@ -68,14 +79,9 @@ class AddDeadlineActivity : AppCompatActivity() {
     private var pdfData = Uri.EMPTY
 
     // Memorisation of which checkBox is selected for the notifications
-    private var notificationSelected = booleanArrayOf(false, false, false, false)
-    private var nameNotifications = arrayOf("1 hour", "5 hours", "1 day", "3 days")
-    private var timeNotifications = arrayOf(
-        Duration.ofHours(1).toMillis(),
-        Duration.ofHours(5).toMillis(),
-        Duration.ofDays(1).toMillis(),
-        Duration.ofDays(3).toMillis()
-    )
+    private var notificationSelected = defaultNotificationSelected.toBooleanArray()
+    private var nameNotifications = defaultNameNotifications.toTypedArray()
+    private var timeNotifications = defaultTimeNotifications.toTypedArray()
 
     // Memorisation of which group is selected for the deadline
     private var groupSelected = 0
@@ -463,6 +469,6 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     // Recuperate the information on which notification must be set before returning it in an array
     private fun retrieveNotificationsTimes(): List<Long> {
-        return timeNotifications.filterIndexed{ idx, _ -> notificationSelected[idx] }
+        return timeNotifications.filterIndexed { idx, _ -> notificationSelected[idx] }
     }
 }
