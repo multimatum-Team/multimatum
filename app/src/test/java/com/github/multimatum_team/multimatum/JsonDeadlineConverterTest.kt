@@ -19,7 +19,7 @@ class JsonDeadlineConverterTest {
             LocalDateTime.of(2022, Month.APRIL, 29, 14, 32)
         )
         assertEquals(
-            """{"title":"Bloup","state":"TODO","dateTime":"29::04::2022 14::32::00","description":"","pdfPath":"","locationName":null,"location":null}""",
+            """{"title":"Bloup","state":"TODO","dateTime":"29::04::2022 14::32::00","description":"","pdfPath":""}""",
             jsonDeadlineConverter.toJson(deadline)
         )
     }

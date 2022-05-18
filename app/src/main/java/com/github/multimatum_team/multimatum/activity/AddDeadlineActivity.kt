@@ -121,10 +121,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             return@setOnKeyListener false
         }
 
-        // Initialize the location search view
-        // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
         initializeLocationSearchView(savedInstanceState)
-
         setGroupObserver()
     }
 
@@ -203,6 +200,19 @@ class AddDeadlineActivity : AppCompatActivity() {
         // Hide the search bar at the beginning
         searchBottomSheetView.hide()
 
+        // Setting up the listeners
+        setLocationSearchViewListeners()
+
+        searchBottomSheetView.isHideableByDrag = true
+        searchBottomSheetView.visibility = View.GONE
+        searchBottomSheetView.isClickable = false
+    }
+
+    /**
+     * Setup the listeners of the location the search view
+     * to handle the user selection
+     */
+    private fun setLocationSearchViewListeners() {
         // Add a listener for an eventual place selection
         searchBottomSheetView.addOnHistoryClickListener { historyRecord ->
             // We get only the name for now, the coordinates can also be extracted here.
@@ -224,16 +234,6 @@ class AddDeadlineActivity : AppCompatActivity() {
             locationTextView.text = locationName
             searchBottomSheetView.hide()
         }
-        setExtraLocationSearchViewParameters()
-    }
-
-    /**
-     * Setup extra configuration parameters of the search view
-     */
-    private fun setExtraLocationSearchViewParameters() {
-        searchBottomSheetView.isHideableByDrag = true
-        searchBottomSheetView.visibility = View.GONE
-        searchBottomSheetView.isClickable = false
     }
 
     /**
