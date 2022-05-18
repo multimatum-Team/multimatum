@@ -105,12 +105,7 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
         val pdfPath = deadlineSnapshot["pdfPath"] as String
         val locationName = deadlineSnapshot["locationName"] as String?
         val location = deadlineSnapshot["location"] as GeoPoint?
-        return Deadline(
-            title,
-            state,
-            date,
-            description,
-            owner,
+        return Deadline(title, state, date, description, owner,
             pdfPath = pdfPath,
             locationName = locationName,
             location = location

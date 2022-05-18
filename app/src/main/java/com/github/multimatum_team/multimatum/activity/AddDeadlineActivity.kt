@@ -76,6 +76,8 @@ class AddDeadlineActivity : AppCompatActivity() {
     private lateinit var textTitle: TextView
     private lateinit var textDescription: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var searchBottomSheetView: SearchBottomSheetView
+    private lateinit var locationTextView: TextView
 
     private var pdfData = Uri.EMPTY
 
@@ -106,6 +108,8 @@ class AddDeadlineActivity : AppCompatActivity() {
         progressBar.visibility = View.INVISIBLE
         progressBar.isIndeterminate = true
         textDescription = findViewById(R.id.add_deadline_select_description)
+        searchBottomSheetView = findViewById(R.id.search_view)
+        locationTextView = findViewById(R.id.coordinates)
 
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         updateDisplayedDateAndTime()
@@ -192,9 +196,6 @@ class AddDeadlineActivity : AppCompatActivity() {
      */
     // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
     private fun initializeLocationSearchView(savedInstanceState: Bundle?) {
-        val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
-        val locationTextView = findViewById<TextView>(R.id.coordinates)
-
         searchBottomSheetView.initializeSearch(
             savedInstanceState,
             SearchBottomSheetView.Configuration(hotCategories = listOf(), favoriteTemplates = listOf())
@@ -223,6 +224,13 @@ class AddDeadlineActivity : AppCompatActivity() {
             locationTextView.text = locationName
             searchBottomSheetView.hide()
         }
+        setExtraLocationSearchViewParameters()
+    }
+
+    /**
+     * Setup extra configuration parameters of the search view
+     */
+    private fun setExtraLocationSearchViewParameters() {
         searchBottomSheetView.isHideableByDrag = true
         searchBottomSheetView.visibility = View.GONE
         searchBottomSheetView.isClickable = false

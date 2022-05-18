@@ -37,11 +37,7 @@ internal class DeadlineDeserializer : JsonDeserializer<Deadline> {
         if (location != null) {
             val latitude = location.get("latitude").asDouble
             val longitude = location.get("longitude").asDouble
-            return Deadline(
-                title,
-                state,
-                dateTime,
-                description,
+            return Deadline(title, state, dateTime, description,
                 pdfPath = pdfPath,
                 locationName = locationName,
                 location = GeoPoint(latitude, longitude)
