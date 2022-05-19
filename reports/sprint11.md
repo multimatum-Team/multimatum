@@ -2,6 +2,12 @@ Sprint 11 summary
 ================
 
 ### Florian
+This week, I was tasked to add custom notifications for the deadline and to show the deadline
+in the calendar view. The two of them were complicated because it needed some libraries that are
+difficult to test and finding a library for allowing the calendar to show the deadline was quite long
+as there exist multiple of them but only a very few who can be coded in kotlin.
+However, I have correctly managed my time and made just 1 hour more than expected.
+Next week, I will make some tests to improve the coverage and maybe also improve the UI.
 
 ### Joseph
 
