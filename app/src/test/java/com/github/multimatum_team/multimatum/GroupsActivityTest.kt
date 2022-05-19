@@ -116,8 +116,8 @@ class GroupsActivityTest {
         MatcherAssert.assertThat(
             ShadowToast.getTextOfLatestToast(),
             CoreMatchers.equalTo("Group created")
-        )*/
-    }
+        )
+    }*/
 
 
     @Module
