@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.util
 
+import android.net.Uri
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserID
@@ -16,11 +17,7 @@ import com.github.multimatum_team.multimatum.repository.GroupRepository
 class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() {
     private var counter: Int = 0
 
-    private val groupsPerUser: MutableMap<UserID, MutableMap<GroupID, UserGroup>> =
-        mutableMapOf()
-
-    private val groups: MutableMap<GroupID, UserGroup>
-        get() = groupsPerUser.getOrPut(_userID) { mutableMapOf() }
+    private val groups: MutableMap<GroupID, UserGroup> = mutableMapOf()
 
     private val updateListeners: MutableMap<UserID, MutableList<(Map<GroupID, UserGroup>) -> Unit>> =
         mutableMapOf()
@@ -29,19 +26,25 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
         for (group in initialContents) {
             val newID = counter.toString()
             counter++
-            for (memberID in group.members) {
-                groupsPerUser
-                    .getOrPut(memberID) { mutableMapOf() }
-                    .put(newID, group.copy(id = newID))
-            }
+            groups[newID] = group.copy(id = newID)
         }
         setUserID("0")
     }
 
     private fun notifyUpdateListeners() =
-        updateListeners[_userID]?.forEach { it(groups) }
+        updateListeners[_userID]?.forEach {
+            it(groups.filterValues { group ->
+                group.members.contains(
+                    _userID
+                )
+            })
+        }
 
-    override suspend fun fetchAll(): Map<GroupID, UserGroup> = groups
+    override suspend fun fetch(id: GroupID): UserGroup =
+        groups[id]!!
+
+    override suspend fun fetchAll(): Map<GroupID, UserGroup> =
+        groups.filterValues { group -> group.members.contains(_userID) }
 
     override suspend fun create(name: String): GroupID {
         val id = counter.toString()
@@ -62,23 +65,39 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
         notifyUpdateListeners()
     }
 
-    override suspend fun invite(id: GroupID, email: String) {
-        throw UnsupportedOperationException("group invites are not supported")
+    override fun generateInviteLink(
+        id: GroupID,
+        linkTitle: String,
+        linkDescription: String
+    ): Uri {
+        val inviteLink = Uri.Builder()
+            .scheme("https")
+            .authority("multimatum.page.link")
+            .appendQueryParameter("id", id)
+            .build()
+        return Uri.Builder()
+            .scheme("https")
+            .authority("multimatum.page.link")
+            .appendQueryParameter("sd", linkDescription)
+            .appendQueryParameter("st", linkTitle)
+            .appendQueryParameter("apn", "com.github.multimatum_team.multimatum")
+            .appendQueryParameter("link", inviteLink.toString())
+            .build()
+    }
+
+    override suspend fun addMember(groupID: GroupID, memberID: UserID) {
+        val group = groups[groupID]!!
+        val newMembers = group.members.toMutableList()
+        newMembers.add(memberID)
+        groups[groupID] = group.copy(members = newMembers.toSet())
+        notifyUpdateListeners()
     }
 
     override suspend fun removeMember(groupID: GroupID, memberID: UserID) {
-        var group = groups[groupID]!!
-        val newMembers = group.members.toMutableSet()
+        val group = groups[groupID]!!
+        val newMembers = group.members.toMutableList()
         newMembers.remove(memberID)
-        println("$_userID, $group, $newMembers")
-        group = group.copy(members = newMembers)
-        groupsPerUser[memberID]?.remove(groupID)
-        for (groupMap in groupsPerUser.values) {
-            if (groupMap.containsKey(groupID)) {
-                groupMap[groupID] = group
-            }
-        }
-        println("removed $memberID from $groupID: $newMembers")
+        groups[groupID] = group.copy(members = newMembers.toSet())
         notifyUpdateListeners()
     }
 

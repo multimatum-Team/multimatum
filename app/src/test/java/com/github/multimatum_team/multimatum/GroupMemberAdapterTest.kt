@@ -65,7 +65,7 @@ class GroupMemberAdapterTest {
         hiltRule.inject()
         context = ApplicationProvider.getApplicationContext()
         authViewModel = AuthViewModel(authRepository, userRepository)
-        groupViewModel = GroupViewModel(authRepository, groupRepository)
+        groupViewModel = GroupViewModel(context, authRepository, groupRepository)
         adapter = GroupMemberAdapter(context, userRepository, authViewModel, groupViewModel)
         groupMap = groups.associateBy { it.id }
         adapter.setGroup(
