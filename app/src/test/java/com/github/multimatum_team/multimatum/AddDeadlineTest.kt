@@ -47,6 +47,7 @@ import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowDatePickerDialog
 import org.robolectric.shadows.ShadowTimePickerDialog
 import org.robolectric.shadows.ShadowToast
+import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -198,6 +199,29 @@ class AddDeadlineTest {
         )
 
     }
+
+    @Test
+    fun `You can add custom Alarm`() {
+        // Go to select Notifications
+        onView(withId(R.id.add_deadline_select_notification)).perform(click())
+        val dialog = ShadowAlertDialog.getLatestAlertDialog()
+        // Go to the customising of deadline
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).performClick()
+        // Wait a little to let the ShadowAlertDialog to recuperate the dialog
+        sleep(1)
+        val dialog2 = ShadowAlertDialog.getLatestAlertDialog()
+        dialog2.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+    }
+
+    /*
+    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
+    @Test
+    fun `The button should open the location search bar`() {
+        // Clicking on the location search button
+        onView(withId(R.id.search_location)).perform(ViewActions.click())
+        onView(withId(R.id.search_location)).check(ViewAssertions.matches(isDisplayed()))
+    }
+    */
 
     // TODO: This test was removed because I replaced the startIntent to the MainActivity with a
     //  call to finish() which cannot be tested
