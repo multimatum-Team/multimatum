@@ -3,10 +3,7 @@ package com.github.multimatum_team.multimatum.repository
 import android.util.Log
 import com.github.multimatum_team.multimatum.model.*
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.*
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
 import java.time.ZoneId
@@ -108,7 +105,8 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
         val pdfPath = deadlineSnapshot["pdfPath"] as String
         val locationName = deadlineSnapshot["locationName"] as String?
         val location = deadlineSnapshot["location"] as GeoPoint?
-        return Deadline(title, state, date, description, owner,
+        return Deadline(
+            title, state, date, description, owner,
             pdfPath = pdfPath,
             locationName = locationName,
             location = location
