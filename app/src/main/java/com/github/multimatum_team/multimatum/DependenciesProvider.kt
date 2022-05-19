@@ -12,6 +12,7 @@ import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.service.SystemClockService
 import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Binds
@@ -63,6 +64,15 @@ object FirebaseModule {
     @Provides
     fun provideFirebaseStorage(): FirebaseStorage =
         FirebaseStorage.getInstance()
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object FirebaseDynamicLinksModule {
+    @Singleton
+    @Provides
+    fun provideFirebaseDynamicLinks(): FirebaseDynamicLinks =
+        FirebaseDynamicLinks.getInstance()
 }
 
 @Module
