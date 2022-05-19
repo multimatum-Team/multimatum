@@ -5,9 +5,12 @@ import android.content.Context.MODE_PRIVATE
 import android.content.Context.SENSOR_SERVICE
 import android.content.SharedPreferences
 import android.hardware.SensorManager
+import com.budiyev.android.codescanner.CodeScanner
+import com.budiyev.android.codescanner.CodeScannerView
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.service.SystemClockService
+import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -84,4 +87,26 @@ abstract class FirebaseRepositoryModule {
     @Singleton
     @Binds
     abstract fun providePdfRepository(impl: FirebasePdfRepository): PdfRepository
+}
+
+/**
+ * Produces a CodeScanner using the provided function
+ *
+ * This class allows mocking users of CodeScanner while allowing them to parametrize
+ * the CodeScanner with their own Context and CodeScannerView
+ */
+data class CodeScannerProducer(val produce: (Context, CodeScannerView) -> CodeScanner)
+
+@Module
+@InstallIn(SingletonComponent::class)
+object CodeScannerModule {
+
+    @Provides
+    fun provideCodeScannerProducer(): CodeScannerProducer =
+        CodeScannerProducer { ctx, view -> CodeScanner(ctx, view) }
+
+    @Provides
+    fun provideJsonDeadlineConverter(): JsonDeadlineConverter =
+        JsonDeadlineConverter()
+
 }

@@ -10,11 +10,13 @@ import com.budiyev.android.codescanner.CodeScannerView
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
+import com.github.multimatum_team.multimatum.CodeScannerProducer
 import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.google.gson.JsonSyntaxException
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * The purpose of this activity is to provide the user an interface to scan QR-Codes.
@@ -24,6 +26,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class QRCodeReaderActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var codeScannerProducer: CodeScannerProducer
+
+    @Inject
+    lateinit var jsonconverter: JsonDeadlineConverter
+
     private lateinit var codeScanner: CodeScanner
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
 
@@ -34,7 +43,7 @@ class QRCodeReaderActivity : AppCompatActivity() {
         setContentView(R.layout.activity_qrcode_reader)
         val scannerView = findViewById<CodeScannerView>(R.id.scanner_view)
 
-        codeScanner = CodeScanner(this, scannerView)
+        codeScanner = codeScannerProducer.produce(this, scannerView)
 
         // Parameters (default values)
         codeScanner.camera = CodeScanner.CAMERA_BACK // or CAMERA_FRONT or specific camera id
@@ -64,7 +73,6 @@ class QRCodeReaderActivity : AppCompatActivity() {
     private fun scanDeadline(scan: String) {
         runOnUiThread {
             try {
-                val jsonconverter = JsonDeadlineConverter()
                 val deadline = jsonconverter.fromJson(scan)
                 deadlineListViewModel.addDeadline(deadline)
                 Toast.makeText(this, "Deadline successfully added", Toast.LENGTH_LONG).show()

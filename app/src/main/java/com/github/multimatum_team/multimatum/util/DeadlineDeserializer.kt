@@ -2,10 +2,8 @@ package com.github.multimatum_team.multimatum.util
 
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
+import com.google.firebase.firestore.GeoPoint
+import com.google.gson.*
 import java.lang.reflect.Type
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -31,6 +29,17 @@ internal class DeadlineDeserializer : JsonDeserializer<Deadline> {
         )
         val description = obj.get("description").asString
         val pdfPath = obj.get("pdfPath").asString
-        return Deadline(title, state, dateTime, description, pdfPath = pdfPath)
+        val locationName = obj.get("locationName")
+        val location = obj.get("location")
+        if (location != null && locationName != null) {
+            val latitude = location.asJsonObject.get("latitude").asDouble
+            val longitude = location.asJsonObject.get("longitude").asDouble
+            return Deadline(title, state, dateTime, description,
+                pdfPath = pdfPath,
+                locationName = locationName.asString,
+                location = GeoPoint(latitude, longitude)
+            )
+        }
+        return Deadline(title, state, dateTime, description, pdfPath = pdfPath, locationName = null, location = null)
     }
 }
