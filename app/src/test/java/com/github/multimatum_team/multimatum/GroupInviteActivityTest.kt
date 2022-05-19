@@ -1,10 +1,9 @@
 package com.github.multimatum_team.multimatum
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -14,7 +13,6 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.multimatum_team.multimatum.activity.GroupDetailsActivity
 import com.github.multimatum_team.multimatum.activity.GroupInviteActivity
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.SignedInUser
@@ -82,12 +80,6 @@ class GroupInviteActivityTest {
             "Joseph",
             "unemail@jsp.com"
         )
-
-        private val louis = SignedInUser(
-            "Louis",
-            "Louis",
-            "louis@mit.edu"
-        )
     }
 
     @Before
@@ -127,7 +119,7 @@ class GroupInviteActivityTest {
                 .perform(click())
             assertThat(
                 "Group contains invited user",
-                groupRepository.fetch("2")?.members,
+                groupRepository.fetch("2").members,
                 hasItem(joseph.id)
             )
         }
@@ -145,7 +137,7 @@ class GroupInviteActivityTest {
                 .perform(click())
             assertThat(
                 "Group contains invited user",
-                groupRepository.fetch("2")?.members,
+                groupRepository.fetch("2").members,
                 not(hasItem(joseph.id))
             )
         }
