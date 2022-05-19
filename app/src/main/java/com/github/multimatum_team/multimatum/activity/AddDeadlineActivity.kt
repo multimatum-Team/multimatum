@@ -98,8 +98,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Firebase.initialize(this)
-
         setContentView(R.layout.activity_add_deadline)
 
         // Recuperate all the necessary Views
