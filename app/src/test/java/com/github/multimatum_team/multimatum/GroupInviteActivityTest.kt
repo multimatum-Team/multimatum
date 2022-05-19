@@ -210,6 +210,22 @@ class GroupInviteActivityTest {
             }
         }
 
+    @Test
+    fun `Launching the activity without link data shows invalid link`() =
+        runTest {
+            val user = authRepository.signOut()
+            groupRepository.setUserID(user.id)
+            val intent =
+                Intent(context, GroupInviteActivity::class.java)
+            intent.action = Intent.ACTION_VIEW
+            val scenario = ActivityScenario.launch<GroupInviteActivity>(intent)
+            scenario.use {
+                val message = context.getString(R.string.group_invite_message_must_be_signed_in)
+                onView(withId(R.id.group_invite_message))
+                    .check(matches(withText(message)))
+            }
+        }
+
     @Module
     @InstallIn(SingletonComponent::class)
     object TestClockModule {
