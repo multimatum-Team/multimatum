@@ -32,6 +32,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
@@ -60,9 +61,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private lateinit var locationView: TextView
 
     // Set them on default value, waiting the fetch of the deadlines
-    private var notificationSelected: BooleanArray = booleanArrayOf(false, false, false, false)
     private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
     private var state: DeadlineState = DeadlineState.TODO
+
+    // Memorisation of which checkBox is selected for the notifications
+    private var notificationSelected: BooleanArray = AddDeadlineActivity.defaultNotificationSelected.toBooleanArray()
+    private var nameNotifications = AddDeadlineActivity.defaultNameNotifications.toTypedArray()
+    private var timeNotifications = AddDeadlineActivity.defaultTimeNotifications.toTypedArray()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -175,7 +180,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         // Set the checkbox, their name in the dialog and what happen when checked
         alertDialogBuilder.setMultiChoiceItems(
-            nameCheckBox.map { s ->
+            nameNotifications.map { s ->
                 getString(R.string.notify_before, s)
             }.toTypedArray(),
             notificationSelected
@@ -246,6 +251,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             )
             if (state == DeadlineState.DONE) {
                 DeadlineNotification.deleteNotification(id, this)
+            } else {
+                val listNotifications: List<Long> =
+                    timeNotifications.toList()
+                        .filterIndexed { idx, _ -> notificationSelected[idx] }
+                DeadlineNotification.editNotification(id, newDeadline, listNotifications, this)
             }
         }
     }
@@ -309,12 +319,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             // we need an update the moment they are fetched
             setGroupObserver(group)
 
-            // Update the information of the notification
             val notifications = DeadlineNotification.listDeadlineNotification(id, this)
-            for (id in checkBoxIdTime.keys) {
-                notificationSelected[nameCheckBox.indexOf(id)] =
-                    notifications.contains(checkBoxIdTime[id])
-            }
+            setNotifications(notifications)
+
             notificationView.text = textNotification()
 
             // Update the data shown
@@ -330,6 +337,25 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
             // Set the View to be unmodifiable at the start and remove displacement of the texts
             normalSetup()
+        }
+    }
+
+    // Set the information of the notifications given by the deadline.
+    // If there are more notifications than the default ones, the function
+    // add them on the arrays to be able to show them in the Dialog.
+    private fun setNotifications(notifications: List<Long>) {
+        for ((idx, time) in notifications.withIndex()) {
+            if (timeNotifications.contains(time)) {
+                notificationSelected[idx] = true
+            } else {
+                notificationSelected = notificationSelected.plus(true)
+                timeNotifications = timeNotifications.plus(time)
+                nameNotifications = if (time > Duration.ofHours(24).toMillis()) {
+                    nameNotifications.plus(time.milliseconds.inWholeDays.toString() + " days")
+                } else {
+                    nameNotifications.plus(time.milliseconds.inWholeHours.toString() + " hours")
+                }
+            }
         }
     }
 
@@ -371,8 +397,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
      */
     private fun textNotification(): String {
         val notifications =
-            nameCheckBox.filter { t -> notificationSelected[nameCheckBox.indexOf(t)] }
+            nameNotifications.filterIndexed { idx, _ -> notificationSelected[idx] }
         if (notifications.isEmpty()) return getString(R.string.no_alarm_planned)
+        if (notifications.size > 4) return getString(R.string.multiple_alarms_planned)
         return getString(
             R.string.alarm_X_before, when (notifications.size) {
                 1 -> notifications[0]
@@ -449,14 +476,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         private const val EXTRA_ID =
             "com.github.multimatum_team.deadline.details.id"
         private const val IS_DEFAULT_DARK_MODE_ENABLED = false
-
-        private val nameCheckBox = arrayOf("1 hour", "5 hours", "1 day", "3 days")
-        private val checkBoxIdTime = mapOf(
-            "1 hour" to Duration.ofHours(1).toMillis(),
-            "5 hours" to Duration.ofHours(5).toMillis(),
-            "1 day" to Duration.ofDays(1).toMillis(),
-            "3 days" to Duration.ofDays(3).toMillis()
-        )
 
         // Launch an Intent to access this activity with a Deadline data
         fun newIntent(context: Context, id: DeadlineID): Intent {
