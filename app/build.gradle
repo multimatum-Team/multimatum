@@ -82,6 +82,7 @@ dependencies {
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt 'androidx.lifecycle:lifecycle-compiler:2.4.1'
     implementation 'com.github.yuriy-budiyev:code-scanner:2.1.0'
+    implementation 'com.github.tizisdeepan:eventscalendar:1.6.1'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.6'
     testImplementation 'androidx.test.ext:junit:1.1.3'
