@@ -10,6 +10,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
@@ -56,6 +57,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private lateinit var doneButton: CheckBox
     private lateinit var notificationView: TextView
     private lateinit var descriptionView: EditText
+    private lateinit var locationView: TextView
 
     // Set them on default value, waiting the fetch of the deadlines
     private var notificationSelected: BooleanArray = booleanArrayOf(false, false, false, false)
@@ -74,6 +76,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         doneButton = findViewById(R.id.deadline_details_activity_set_done)
         notificationView = findViewById(R.id.deadline_details_activity_notifications)
         descriptionView = findViewById(R.id.deadline_details_activity_description)
+        locationView = findViewById(R.id.location_name_text)
 
         // Recuperate the id of the deadline
         id = intent.getStringExtra(EXTRA_ID) as DeadlineID
@@ -318,6 +321,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             dateView.text =
                 getString(R.string.DueTheXatX, dateTime.toLocalDate(), dateTime.toLocalTime())
             titleView.text = SpannableStringBuilder(title)
+            if (deadline.locationName != null) locationView.text = deadline.locationName
             descriptionView.text = SpannableStringBuilder(description)
             doneButton.isChecked = (state == DeadlineState.DONE)
             updateDetail()

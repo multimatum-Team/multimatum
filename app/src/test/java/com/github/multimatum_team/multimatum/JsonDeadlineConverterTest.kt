@@ -3,6 +3,7 @@ package com.github.multimatum_team.multimatum
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
+import com.google.firebase.firestore.GeoPoint
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDateTime
@@ -33,6 +34,19 @@ class JsonDeadlineConverterTest {
         )
         val json = jsonDeadlineConverter.toJson(deadline)
 
+        assertEquals(deadline, jsonDeadlineConverter.fromJson(json))
+    }
+
+    @Test
+    fun `deadline containing location can be converted correctly`() {
+        val deadline = Deadline(
+            "Bloup",
+            DeadlineState.TODO,
+            LocalDateTime.of(2022, Month.APRIL, 29, 14, 32),
+            locationName = "EPFL",
+            location = GeoPoint(46.5191, 6.5668)
+        )
+        val json = jsonDeadlineConverter.toJson(deadline)
         assertEquals(deadline, jsonDeadlineConverter.fromJson(json))
     }
 }

@@ -223,6 +223,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/location_default_msg"
+                android:textAlignment="viewStart"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.15"
@@ -248,19 +249,5 @@
             tools:ignore="TextContrastCheck" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!--
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.mapbox.search.ui.view.SearchBottomSheetView
-            android:id="@+id/search_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="8dp" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
