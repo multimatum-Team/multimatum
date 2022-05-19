@@ -30,7 +30,7 @@ of the (de)serialization activities (they had to be modified to support location
 work on the coverage of the search location activity.
 
 ### Louis
-
+This week I was supposed to work on adding group and fixing a graphic bug i found but I finally only work on the feature. As the last week it was very easy to implement it took me like 2 hours. Then I spent 8 hours on only 1 test, I didn't need more but for some inexplicable reason the tests wasn't working. While this test was very similar to other test we already did with other feature. I tried lot of things changing the code, talk with Floriant that already tests this kinf of feature and other but nothing works so I just dropped it. Next week I'll check that the app works offline.
 ### Valentin
 This week I had to help Léo with the tests of the location feature. I tried
 several solutions, the first one being to force Robolectric to execute the tests
