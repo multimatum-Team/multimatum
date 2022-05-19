@@ -35,7 +35,6 @@ import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
-import com.google.firebase.storage.FirebaseStorage
 import com.mapbox.search.ui.view.SearchBottomSheetView
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
@@ -65,7 +64,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     lateinit var clockService: ClockService
 
     @Inject
-    lateinit var firebasePdfRepository: PdfRepository
+    lateinit var pdfRepository: PdfRepository
 
     private lateinit var selectedDate: LocalDateTime
 
@@ -96,7 +95,6 @@ class AddDeadlineActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Firebase.initialize(this)
-        firebasePdfRepository = FirebasePdfRepository(FirebaseStorage.getInstance())
 
         setContentView(R.layout.activity_add_deadline)
 
@@ -307,7 +305,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             //loading bar
             progressBar.visibility = View.VISIBLE
             // Start upload
-            firebasePdfRepository.uploadPdf(pdfData, this) { ref ->
+            pdfRepository.uploadPdf(pdfData, this) { ref ->
                 // Hide loading bar
                 progressBar.visibility = View.GONE
 

@@ -8,7 +8,6 @@ import android.content.Intent.EXTRA_TEXT
 import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
@@ -23,7 +22,6 @@ import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.GroupOwned
 import com.github.multimatum_team.multimatum.model.UserOwned
 import com.github.multimatum_team.multimatum.repository.DeadlineID
-import com.github.multimatum_team.multimatum.repository.FirebasePdfRepository
 import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
@@ -31,9 +29,6 @@ import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.ktx.initialize
-import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.LocalDateTime
@@ -52,7 +47,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     lateinit var clockService: ClockService
 
     @Inject
-    lateinit var firebasePdfRepository: PdfRepository
+    lateinit var pdfRepository: PdfRepository
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -82,8 +77,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
 
-        Firebase.initialize(this)
-        firebasePdfRepository = FirebasePdfRepository(FirebaseStorage.getInstance())
 
         // Recuperate the necessary TextViews
         titleView = findViewById(R.id.deadline_details_activity_title)
@@ -326,6 +319,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             //display download button if there's a pdf
             if (pdfLink != "") {
                 downloadLinkText.text = PDFUtil.getFileNameFromUri(pdfLink.toUri(), this)
+            } else {
+                downloadLinkText.visibility = View.INVISIBLE
             }
 
             // As the groupViewModel doesn't recuperate immediately the deadlines,
@@ -439,9 +434,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
      * download the pdf from firebaseStorage
      */
     fun downloadPdf(view: View) {
-        firebasePdfRepository.downloadPdf(
+        pdfRepository.downloadPdf(
             pdfLink,
-            PDFUtil.addRdmCharToStr(downloadLinkText.text.toString(), 16)
+            PDFUtil.addRdmCharToStr(downloadLinkText.text.toString())
         ) {
             LogUtil.debugLog(it.path)
             val intent = Intent(Intent.ACTION_VIEW)

@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.OpenableColumns
 import com.github.multimatum_team.multimatum.LogUtil
+import java.util.*
 
 
 object PDFUtil {
@@ -41,9 +42,7 @@ object PDFUtil {
         return fileName
     }
 
-    fun addRdmCharToStr(input: String, numOfChar: Int): String {
-        return List(numOfChar) {
-            (('a'..'z') + ('A'..'Z') + ('0'..'9')).random()
-        }.joinToString("") + input
+    fun addRdmCharToStr(input: String): String {
+        return UUID.randomUUID().toString() + input
     }
 }

@@ -11,7 +11,10 @@ import java.io.File
 import javax.inject.Inject
 
 
-class FirebasePdfRepository @Inject constructor(database: FirebaseStorage) : PdfRepository() {
+class FirebasePdfRepository @Inject constructor(
+    database: FirebaseStorage,
+    private val auth: FirebaseAuth
+) : PdfRepository() {
     private val storageReference = database.reference
 
     override fun uploadPdf(
@@ -22,10 +25,10 @@ class FirebasePdfRepository @Inject constructor(database: FirebaseStorage) : Pdf
         if (data != Uri.EMPTY) {
             val ref =
                 storageReference.child(
-                    FirebaseAuth.getInstance().uid + "/" + PDFUtil.addRdmCharToStr(
+                    auth.uid + "/" + PDFUtil.addRdmCharToStr(
                         PDFUtil.getFileNameFromUri(
                             data, context
-                        ), 16
+                        )
                     )
                 )
             ref.putFile(data).addOnSuccessListener {
