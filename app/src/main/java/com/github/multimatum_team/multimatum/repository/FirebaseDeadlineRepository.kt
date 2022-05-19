@@ -91,10 +91,8 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
         val state = DeadlineState.values()[(deadlineSnapshot["state"] as Long).toInt()]
         val timestamp = deadlineSnapshot["date"] as Timestamp
         val milliseconds = timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
-        val date = Instant
-            .ofEpochMilli(milliseconds)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDateTime()
+        val date =
+            Instant.ofEpochMilli(milliseconds).atZone(ZoneId.systemDefault()).toLocalDateTime()
         val description = deadlineSnapshot["description"] as String
         val ownerMap = deadlineSnapshot["owner"] as Map<String, String>
         val owner = when (ownerMap["type"]) {
