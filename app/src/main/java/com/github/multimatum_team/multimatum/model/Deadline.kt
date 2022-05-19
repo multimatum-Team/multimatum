@@ -1,6 +1,8 @@
 package com.github.multimatum_team.multimatum.model
 
+import com.google.firebase.firestore.GeoPoint
 import java.time.LocalDateTime
+
 /**
  * The state of a deadline.
  *
@@ -45,6 +47,9 @@ data class GroupOwned(val groupID: GroupID) : DeadlineOwner
  * @property dateTime the time at which the work is due
  * @property description some description of the deadline, by default empty
  * @property owner the owner of the deadline
+ * @property pdfPath the path to the PDF resource
+ * @property locationName the name of the location associated with the deadline
+ * @property location the coordinates of the deadline location
  * @constructor Creates a deadline from specified parameters
  * @throws IllegalArgumentException when title is empty or startDate > end
  */
@@ -54,7 +59,9 @@ data class Deadline(
     val dateTime: LocalDateTime,
     val description: String = "",
     val owner: DeadlineOwner = UserOwned,
-    val pdfPath: String = ""
+    val pdfPath: String = "",
+    val locationName: String? = null,
+    val location: GeoPoint? = null
 ) {
     init {
         if (title.isEmpty()) {

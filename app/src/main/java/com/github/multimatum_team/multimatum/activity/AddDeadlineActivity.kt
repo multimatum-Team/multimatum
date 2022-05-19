@@ -5,8 +5,10 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ProgressBar
@@ -30,11 +32,13 @@ import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.google.firebase.storage.FirebaseStorage
 import com.hamsa.twosteppickerdialog.OnStepPickListener
 import com.hamsa.twosteppickerdialog.TwoStepPickerDialog
+import com.mapbox.search.ui.view.SearchBottomSheetView
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.LocalDateTime
@@ -75,6 +79,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     private lateinit var textTitle: TextView
     private lateinit var textDescription: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var locationTextView: TextView
 
     private var pdfData = Uri.EMPTY
 
@@ -88,6 +93,10 @@ class AddDeadlineActivity : AppCompatActivity() {
     private var nameGroups = arrayOf("No group")
     private var idGroups = arrayOf<GroupID>()
 
+    // Memorisation of the selected location
+    private var locationName: String? = null
+    private var location: GeoPoint? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -97,14 +106,10 @@ class AddDeadlineActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_deadline)
 
         // Recuperate all the necessary Views
-        textTitle = findViewById(R.id.add_deadline_select_title)
-        textDate = findViewById(R.id.add_deadline_text_date)
-        textTime = findViewById(R.id.add_deadline_text_time)
-        pdfTextView = findViewById(R.id.selectedPdf)
-        progressBar = findViewById(R.id.progressBar)
+        saveViews()
+
         progressBar.visibility = View.INVISIBLE
         progressBar.isIndeterminate = true
-        textDescription = findViewById(R.id.add_deadline_select_description)
 
         selectedDate = clockService.now().truncatedTo(ChronoUnit.MINUTES)
         updateDisplayedDateAndTime()
@@ -116,12 +121,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             return@setOnKeyListener false
         }
 
-        // Initialize the location search view
-        // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
-        //initializeLocationSearchView(savedInstanceState)
-
         setGroupObserver()
-
     }
 
     /**
@@ -137,6 +137,19 @@ class AddDeadlineActivity : AppCompatActivity() {
                 idGroups = idGroups.plus(id)
             }
         }
+    }
+
+    /**
+     * Saving the views of this activity for future use
+     */
+    private fun saveViews() {
+        textTitle = findViewById(R.id.add_deadline_select_title)
+        textDate = findViewById(R.id.add_deadline_text_date)
+        textTime = findViewById(R.id.add_deadline_text_time)
+        pdfTextView = findViewById(R.id.selectedPdf)
+        progressBar = findViewById(R.id.progressBar)
+        textDescription = findViewById(R.id.add_deadline_select_description)
+        locationTextView = findViewById(R.id.coordinates)
     }
 
     /**
@@ -186,39 +199,6 @@ class AddDeadlineActivity : AppCompatActivity() {
         textDate.text = selectedDate.toLocalDate().toString()
         textTime.text = selectedDate.toLocalTime().toString()
     }
-
-    /**
-     * Initialize the location search view with the chosen parameters
-     */
-    /*
-    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
-    private fun initializeLocationSearchView(savedInstanceState: Bundle?) {
-        val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
-        val locationTextView = findViewById<TextView>(R.id.coordinates)
-
-        searchBottomSheetView.initializeSearch(
-            savedInstanceState,
-            SearchBottomSheetView.Configuration()
-        )
-        // Hide the search bar at the beginning
-        searchBottomSheetView.hide()
-
-        // Add a listener for an eventual place selection
-        searchBottomSheetView.addOnHistoryClickListener { history_record ->
-            // We get only the name for now, the coordinates can also be extracted here.
-            locationTextView.text = history_record.name
-            searchBottomSheetView.hide()
-        }
-        // Add a listener for an eventual place selection in the history
-        searchBottomSheetView.addOnSearchResultClickListener { result, _ ->
-            locationTextView.text = result.name
-            searchBottomSheetView.hide()
-        }
-        searchBottomSheetView.isHideableByDrag = true
-        searchBottomSheetView.visibility = View.GONE
-        searchBottomSheetView.isClickable = false
-    }
-    */
 
     /**
      * Setup a DatePickerDialog that will select a date for the deadline and show it
@@ -412,14 +392,22 @@ class AddDeadlineActivity : AppCompatActivity() {
      *  for a deadline.
      */
     fun searchLocation(view: View) {
-        /*
-        // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
-        val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
-        searchBottomSheetView.visibility = View.VISIBLE
-        searchBottomSheetView.isClickable = true
-        searchBottomSheetView.expand()
-        */
+        val intent = Intent(applicationContext, SearchLocationActivity::class.java)
+        getResult.launch(intent)
     }
+
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                val latitude = it.data?.getDoubleExtra("latitude", 0.0)
+                val longitude = it.data?.getDoubleExtra("longitude", 0.0)
+
+                locationName = it.data?.getStringExtra("name")
+                location = GeoPoint(latitude!!, longitude!!)
+                locationTextView.text = locationName
+            }
+        }
 
     /**
      * Recuperate the deadline from all the text input in the activity
@@ -434,7 +422,9 @@ class AddDeadlineActivity : AppCompatActivity() {
                 DeadlineState.TODO,
                 selectedDate,
                 textDescription.text.toString(),
-                pdfPath = ref
+                pdfPath = ref,
+                locationName = locationName,
+                location = location
             )
         } else {
             return Deadline(
@@ -443,7 +433,9 @@ class AddDeadlineActivity : AppCompatActivity() {
                 selectedDate,
                 textDescription.text.toString(),
                 GroupOwned(idGroups[groupSelected - 1]),
-                pdfPath = ref
+                pdfPath = ref,
+                locationName = locationName,
+                location = location
             )
         }
     }

@@ -22,6 +22,9 @@
         android:theme="@style/Theme.Multimatum"
         tools:ignore="ExtraText">
         <activity
+            android:name=".activity.SearchLocationActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.GroupsActivity"
             android:exported="false" />
         <activity
