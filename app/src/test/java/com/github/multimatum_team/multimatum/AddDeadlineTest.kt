@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum
 
-
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -64,28 +63,7 @@ class AddDeadlineTest {
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
-    @Test
-    fun basicTest() {
-        assertEquals(2 + 2, 4)
-    }
-
-    /*
-    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
     @get:Rule(order = 1)
-    val jsp = TestRule { _, _ ->
-        val appContext = ApplicationProvider.getApplicationContext<Context>()
-        val application = getApplication(appContext)
-        shadowOf(getMainLooper()).idle()
-        MapboxSearchSdk.initialize(
-            application = application,
-            accessToken = appContext.getString(R.string.mapbox_access_token),
-            locationEngine = LocationEngineProvider.getBestLocationEngine(application)
-        )
-        null
-    }
-    */
-    /*
-    @get:Rule(order = 2)
     val activityRule = ActivityScenarioRule(AddDeadlineActivity::class.java)
 
     @Inject
@@ -220,16 +198,6 @@ class AddDeadlineTest {
         )
 
     }
-    */
-    /*
-    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
-    @Test
-    fun `The button should open the location search bar`() {
-        // Clicking on the location search button
-        onView(withId(R.id.search_location)).perform(ViewActions.click())
-        onView(withId(R.id.search_location)).check(ViewAssertions.matches(isDisplayed()))
-    }
-    */
 
     // TODO: This test was removed because I replaced the startIntent to the MainActivity with a
     //  call to finish() which cannot be tested
@@ -254,7 +222,6 @@ class AddDeadlineTest {
     Matcher to recuperate text from TextView based on:
     https://stackoverflow.com/questions/23381459/how-to-get-text-from-textview-using-espresso
      */
-    /*
     private fun getText(matcher: Matcher<View?>?): String? {
         val stringHolder = arrayOf<String?>(null)
         onView(matcher).perform(object : ViewAction {
@@ -273,7 +240,7 @@ class AddDeadlineTest {
         })
         return stringHolder[0]
     }
-    */
+
     @Module
     @InstallIn(SingletonComponent::class)
     object TestRepositoryModule {

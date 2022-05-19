@@ -5,8 +5,10 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ProgressBar
@@ -76,7 +78,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     private lateinit var textTitle: TextView
     private lateinit var textDescription: TextView
     private lateinit var progressBar: ProgressBar
-    private lateinit var searchBottomSheetView: SearchBottomSheetView
     private lateinit var locationTextView: TextView
 
     private var pdfData = Uri.EMPTY
@@ -115,7 +116,6 @@ class AddDeadlineActivity : AppCompatActivity() {
             return@setOnKeyListener false
         }
 
-        initializeLocationSearchView(savedInstanceState)
         setGroupObserver()
     }
 
@@ -144,7 +144,6 @@ class AddDeadlineActivity : AppCompatActivity() {
         pdfTextView = findViewById(R.id.selectedPdf)
         progressBar = findViewById(R.id.progressBar)
         textDescription = findViewById(R.id.add_deadline_select_description)
-        searchBottomSheetView = findViewById(R.id.search_view)
         locationTextView = findViewById(R.id.coordinates)
     }
 
@@ -194,53 +193,6 @@ class AddDeadlineActivity : AppCompatActivity() {
     private fun updateDisplayedDateAndTime() {
         textDate.text = selectedDate.toLocalDate().toString()
         textTime.text = selectedDate.toLocalTime().toString()
-    }
-
-    /**
-     * Initialize the location search view with the chosen parameters
-     */
-    private fun initializeLocationSearchView(savedInstanceState: Bundle?) {
-        searchBottomSheetView.initializeSearch(
-            savedInstanceState,
-            SearchBottomSheetView.Configuration(hotCategories = listOf(), favoriteTemplates = listOf())
-        )
-        // Hide the search bar at the beginning
-        searchBottomSheetView.hide()
-
-        // Setting up the listeners
-        setLocationSearchViewListeners()
-
-        searchBottomSheetView.isHideableByDrag = true
-        searchBottomSheetView.visibility = View.GONE
-        searchBottomSheetView.isClickable = false
-    }
-
-    /**
-     * Setup the listeners of the location the search view
-     * to handle the user selection
-     */
-    private fun setLocationSearchViewListeners() {
-        // Add a listener for an eventual place selection
-        searchBottomSheetView.addOnHistoryClickListener { historyRecord ->
-            // We get only the name for now, the coordinates can also be extracted here.
-            locationName = historyRecord.name
-            location = GeoPoint(
-                historyRecord.coordinate!!.latitude(),
-                historyRecord.coordinate!!.longitude()
-            )
-            locationTextView.text = locationName
-            searchBottomSheetView.hide()
-        }
-        // Add a listener for an eventual place selection in the history
-        searchBottomSheetView.addOnSearchResultClickListener { result, _ ->
-            locationName = result.name
-            location = GeoPoint(
-                result.coordinate!!.latitude(),
-                result.coordinate!!.longitude()
-            )
-            locationTextView.text = locationName
-            searchBottomSheetView.hide()
-        }
     }
 
     /**
@@ -384,11 +336,22 @@ class AddDeadlineActivity : AppCompatActivity() {
      *  for a deadline.
      */
     fun searchLocation(view: View) {
-        val searchBottomSheetView = findViewById<SearchBottomSheetView>(R.id.search_view)
-        searchBottomSheetView.visibility = View.VISIBLE
-        searchBottomSheetView.isClickable = true
-        searchBottomSheetView.expand()
+        val intent = Intent(applicationContext, SearchLocationActivity::class.java)
+        getResult.launch(intent)
     }
+
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                val latitude = it.data?.getDoubleExtra("latitude", 0.0)
+                val longitude = it.data?.getDoubleExtra("longitude", 0.0)
+
+                locationName = it.data?.getStringExtra("name")
+                location = GeoPoint(latitude!!, longitude!!)
+                locationTextView.text = locationName
+            }
+        }
 
     /**
      * Recuperate the deadline from all the text input in the activity
