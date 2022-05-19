@@ -7,26 +7,6 @@
     tools:context=".activity.DeadlineDetailsActivity">
 
     <EditText
-        android:id="@+id/deadline_details_activity_description"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:ems="15"
-        android:gravity="start|center_horizontal"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine"
-        android:maxLines="8"
-        android:minHeight="48dp"
-        android:paddingEnd="5dp"
-        android:paddingStart="5dp"
-        android:textAlignment="viewStart"
-        android:textColor="@color/deadline_details_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_notifications"
-        tools:hint="description"
-        tools:ignore="LabelFor,TextContrastCheck" />
-
-    <EditText
         android:id="@+id/deadline_details_activity_title"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
@@ -45,6 +25,28 @@
         tools:ignore="LabelFor"
         tools:text="title" />
 
+
+    <EditText
+        android:id="@+id/deadline_details_activity_description"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:ems="15"
+        android:gravity="start|center_horizontal"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:maxLines="8"
+        android:minHeight="48dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:textAlignment="viewStart"
+        android:textColor="@color/deadline_details_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_title"
+        tools:hint="description"
+        tools:ignore="LabelFor,TextContrastCheck" />
+
     <TextView
         android:id="@+id/deadline_details_activity_date"
         android:layout_width="350dp"
@@ -55,7 +57,7 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_title"
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_description"
         tools:text="date" />
 
     <TextView
@@ -72,51 +74,13 @@
         tools:ignore="TouchTargetSizeCheck"
         tools:text="notification" />
 
-    <Button
-        android:id="@+id/QRCodeButton"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:background="@drawable/circle_button"
-        android:onClick="goQRGenerator"
-        android:text="@string/generate_qrcode"
-        android:visibility="visible"
-        app:icon="@drawable/ic_qr_generator"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/deadline_details_activity_modify"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="4dp"
-        android:onClick="goToEditOrNormalMode"
-        app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
-        app:srcCompat="@android:drawable/ic_menu_manage"
-        tools:ignore="ContentDescription,SpeakableTextPresentCheck,ImageContrastCheck" />
-
-    <CheckBox
-        android:id="@+id/deadline_details_activity_set_done"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="12dp"
-        android:text="@string/done"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@+id/deadline_details_activity_modify"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_description">
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_notifications">
 
         <TextView
             android:id="@+id/deadline_details_activity_group"
@@ -139,5 +103,57 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="details" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/QRCodeButton"
+        style="@style/Widget.MaterialComponents.Button.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/circle_button"
+        android:onClick="goQRGenerator"
+        android:text="@string/generate_qrcode"
+        android:visibility="visible"
+        app:icon="@drawable/ic_qr_generator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/deadline_details_activity_modify"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="36dp"
+        android:onClick="goToEditOrNormalMode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/download_pdf"
+        app:srcCompat="@android:drawable/ic_menu_manage"
+        tools:ignore="ContentDescription,SpeakableTextPresentCheck,ImageContrastCheck" />
+
+    <TextView
+        android:id="@+id/download_pdf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="downloadPdf"
+        android:text="@string/download_pdf"
+        android:textColor="@color/link_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+
+
+    <CheckBox
+        android:id="@+id/deadline_details_activity_set_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:text="@string/done"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/deadline_details_activity_modify"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

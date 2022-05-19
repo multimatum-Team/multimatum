@@ -397,7 +397,7 @@ class AddDeadlineActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 pdfData = result.data!!.data!!
-                pdfTextView.text = PDFUtil.getFileNameFromUri(pdfData)
+                pdfTextView.text = PDFUtil.getFileNameFromUri(pdfData, this)
             }
         }
 
