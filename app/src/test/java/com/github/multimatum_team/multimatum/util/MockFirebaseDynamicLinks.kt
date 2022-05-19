@@ -13,12 +13,8 @@ fun mockFirebaseDynamicLinks(): FirebaseDynamicLinks {
     val dynamicLinks = Mockito.mock(FirebaseDynamicLinks::class.java)
     `when`(dynamicLinks.getDynamicLink(any<Intent>())).then {
         val intent = it.getArgument<Intent>(0)
-        var dynamicLink: String? = null
-        var deepLink: String? = null
-        if (intent.data != null) {
-            dynamicLink = intent.data.toString()
-            deepLink = intent.data!!.getQueryParameter("link")!!
-        }
+        val dynamicLink: String? = intent.data?.toString()
+        val deepLink: String? = intent.data?.getQueryParameter("link")!!
         val dynamicLinkData = DynamicLinkData(
             dynamicLink,
             deepLink,
