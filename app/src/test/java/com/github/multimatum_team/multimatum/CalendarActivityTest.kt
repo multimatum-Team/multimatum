@@ -7,8 +7,12 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.CalendarActivity
+import com.github.multimatum_team.multimatum.model.Deadline
+import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.repository.*
+import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
 import dagger.Module
 import dagger.Provides
@@ -21,10 +25,13 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import java.time.LocalDateTime
 import javax.inject.Singleton
 
-@UninstallModules(FirebaseRepositoryModule::class)
+@UninstallModules(FirebaseRepositoryModule::class, ClockModule::class)
 @HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
 class CalendarActivityTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
@@ -54,7 +61,6 @@ class CalendarActivityTest {
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase"))
-            .perform(pressImeActionButton())
         Espresso.onView(ViewMatchers.withId(R.id.calendar_add_deadline_button))
             .perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
@@ -87,7 +93,15 @@ class CalendarActivityTest {
         @Singleton
         @Provides
         fun provideDeadlineRepository(): DeadlineRepository =
-            MockDeadlineRepository(listOf())
+            MockDeadlineRepository(
+                listOf(
+                    Deadline(
+                        "Test1",
+                        DeadlineState.TODO,
+                        LocalDateTime.of(2022, 3, 12, 0, 0)
+                    )
+                )
+            )
 
         @Singleton
         @Provides
@@ -108,5 +122,13 @@ class CalendarActivityTest {
         @Provides
         fun providePdfRepository(): PdfRepository =
             MockPdfRepository()
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestClockModule {
+        @Provides
+        fun provideClockService(): ClockService =
+            MockClockService(LocalDateTime.of(2022, 3, 12, 0, 0))
     }
 }
