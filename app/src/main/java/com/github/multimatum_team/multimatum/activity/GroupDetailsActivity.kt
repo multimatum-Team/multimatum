@@ -39,9 +39,6 @@ class GroupDetailsActivity : AppCompatActivity() {
     lateinit var groupID: GroupID
 
     @Inject
-    lateinit var sharedPreferences: SharedPreferences
-
-    @Inject
     lateinit var userRepository: UserRepository
 
     private val authViewModel: AuthViewModel by viewModels()
