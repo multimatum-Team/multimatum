@@ -1,10 +1,7 @@
 package com.github.multimatum_team.multimatum.util
 
 import com.github.multimatum_team.multimatum.model.Deadline
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonSerializer
+import com.google.gson.*
 import java.lang.reflect.Type
 import java.time.format.DateTimeFormatter
 
@@ -24,6 +21,20 @@ internal class DeadlineSerializer : JsonSerializer<Deadline> {
         obj.addProperty("dateTime", formatter.format(deadline.dateTime))
         obj.addProperty("description", deadline.description)
         obj.addProperty("pdfPath", deadline.pdfPath)
+        if(deadline.locationName != null){
+            obj.addProperty("locationName", deadline.locationName)
+        } else {
+            obj.add("locationName", JsonNull.INSTANCE)
+        }
+
+        if (deadline.location != null) {
+            val location = JsonObject()
+            location.addProperty("latitude", deadline.location.latitude)
+            location.addProperty("longitude", deadline.location.longitude)
+            obj.add("location", location)
+        } else {
+            obj.add("location", JsonNull.INSTANCE)
+        }
         return obj
     }
 
