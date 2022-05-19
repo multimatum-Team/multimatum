@@ -11,6 +11,14 @@ Next week, I will make some tests to improve the coverage and maybe also improve
 
 ### Joseph
 
+I worked on implementing group invites as planned. Most of my time was spent
+on reading Firebase documentation but the implementation turned out to be
+simpler than I expected. I also spotted a bug but it wasn't too hard to fix
+either. My time estimates were quite accurate. Next week I will work on
+refactoring parts of the codebase as indicated by the assistants' code
+quality issue. I will try like everyone else to improve coverage and UX
+to get a nice looking app for the demo.
+
 ### Lenny
 
 ### Léo
