@@ -5,7 +5,9 @@ import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.FirebaseGroupRepository
 import com.github.multimatum_team.multimatum.util.MockFirebaseAuth
 import com.github.multimatum_team.multimatum.util.MockFirebaseFirestore
+import com.github.multimatum_team.multimatum.util.mockFirebaseDynamicLinks
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
@@ -30,10 +32,13 @@ import javax.inject.Singleton
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
-@UninstallModules(FirebaseModule::class)
+@UninstallModules(FirebaseModule::class, FirebaseDynamicLinksModule::class)
 class FirebaseGroupRepositoryTest {
     @Inject
     lateinit var database: FirebaseFirestore
+
+    @Inject
+    lateinit var dynamicLinks: FirebaseDynamicLinks
 
     lateinit var repository: FirebaseGroupRepository
 
@@ -43,7 +48,7 @@ class FirebaseGroupRepositoryTest {
     @Before
     fun setup() {
         hiltRule.inject()
-        repository = FirebaseGroupRepository(database)
+        repository = FirebaseGroupRepository(database, dynamicLinks)
         repository.setUserID("1")
     }
 
@@ -146,5 +151,14 @@ class FirebaseGroupRepositoryTest {
         @Provides
         fun provideFirebaseStorage(): FirebaseStorage =
             Mockito.mock(FirebaseStorage::class.java)
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestDynamicLinksModule {
+        @Singleton
+        @Provides
+        fun providesFirebaseDynamicLinks(): FirebaseDynamicLinks =
+            mockFirebaseDynamicLinks()
     }
 }

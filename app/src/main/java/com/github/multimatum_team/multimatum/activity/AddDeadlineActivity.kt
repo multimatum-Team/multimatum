@@ -8,7 +8,6 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ProgressBar
@@ -38,7 +37,6 @@ import com.google.firebase.ktx.initialize
 import com.google.firebase.storage.FirebaseStorage
 import com.hamsa.twosteppickerdialog.OnStepPickListener
 import com.hamsa.twosteppickerdialog.TwoStepPickerDialog
-import com.mapbox.search.ui.view.SearchBottomSheetView
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.LocalDateTime
@@ -397,8 +395,9 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     private val getResult =
         registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) {
-            if(it.resultCode == Activity.RESULT_OK){
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
                 val latitude = it.data?.getDoubleExtra("latitude", 0.0)
                 val longitude = it.data?.getDoubleExtra("longitude", 0.0)
 

@@ -1,9 +1,15 @@
 package com.github.multimatum_team.multimatum.repository
 
+import android.net.Uri
 import android.util.Log
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserID
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.dynamiclinks.ktx.androidParameters
+import com.google.firebase.dynamiclinks.ktx.dynamicLink
+import com.google.firebase.dynamiclinks.ktx.socialMetaTagParameters
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,7 +19,10 @@ import javax.inject.Inject
 /**
  * Remote Firebase repository for storing user groups.
  */
-class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) : GroupRepository() {
+class FirebaseGroupRepository @Inject constructor(
+    database: FirebaseFirestore,
+    private val dynamicLinks: FirebaseDynamicLinks
+) : GroupRepository() {
     private val groupsRef = database
         .collection("groups")
 
@@ -109,12 +118,45 @@ class FirebaseGroupRepository @Inject constructor(database: FirebaseFirestore) :
     }
 
     /**
-     * Invite an user to join a group.
-     * @param id the ID of the grop to which we want to invite the user
-     * @param email the email of the user to invite
+     * Generate an invite link to join a group.
+     * @param id the ID of the group to which we want to invite users
      */
-    override suspend fun invite(id: GroupID, email: String) {
-        throw NotImplementedError("FirebaseGroupRepository.invite is not implemented")
+    override fun generateInviteLink(
+        id: GroupID,
+        linkTitle: String,
+        linkDescription: String
+    ): Uri {
+        val inviteLink = Uri.Builder()
+            .scheme("https")
+            .authority("multimatum.page.link")
+            .appendQueryParameter("id", id)
+            .build()
+
+        val dynamicLink = dynamicLinks.dynamicLink {
+            link = inviteLink
+            domainUriPrefix = "https://multimatum.page.link"
+            androidParameters { }
+            socialMetaTagParameters {
+                title = linkTitle
+                description = linkDescription
+            }
+        }
+
+        val dynamicLinkUri = dynamicLink.uri
+        LogUtil.debugLog(dynamicLinkUri.toString())
+        return dynamicLinkUri
+    }
+
+    /**
+     * Add a user to a group.
+     * @param groupID the group to which to add the user
+     * @param memberID the ID of the new group member
+     */
+    override suspend fun addMember(groupID: GroupID, memberID: UserID) {
+        groupsRef
+            .document(groupID)
+            .update("members", FieldValue.arrayUnion(memberID))
+            .await()
     }
 
     /**

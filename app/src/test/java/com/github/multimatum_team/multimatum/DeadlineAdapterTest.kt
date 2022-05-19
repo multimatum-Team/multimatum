@@ -14,15 +14,10 @@ import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.adaptater.GroupFilter
 import com.github.multimatum_team.multimatum.adaptater.UserFilter
 import com.github.multimatum_team.multimatum.model.*
-import com.github.multimatum_team.multimatum.repository.AuthRepository
-import com.github.multimatum_team.multimatum.repository.DeadlineID
-import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.GroupRepository
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
-import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,8 +40,10 @@ class DeadlineAdapterTest {
             Deadline("Number 1", DeadlineState.DONE, LocalDateTime.of(2022, 3, 30, 13, 0)),
             Deadline("Number 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 19, 12, 0)),
             Deadline("Number 3", DeadlineState.TODO, LocalDateTime.of(2022, 3, 1, 10, 0)),
-            Deadline("Number 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 11, 0),
-                owner = GroupOwned("0")),
+            Deadline(
+                "Number 4", DeadlineState.TODO, LocalDateTime.of(2022, 3, 12, 11, 0),
+                owner = GroupOwned("0")
+            ),
         )
 
         private val groups: List<UserGroup> = listOf(
@@ -70,7 +67,7 @@ class DeadlineAdapterTest {
     lateinit var deadlineRepository: DeadlineRepository
 
     private lateinit var adapter: DeadlineAdapter
-    private var context: Application? = null
+    private lateinit var context: Application
     private lateinit var deadlinesMap: Map<DeadlineID, Deadline>
 
     @Before
@@ -86,12 +83,7 @@ class DeadlineAdapterTest {
             groupRepository,
             deadlineRepository
         )
-
-        val groupViewModel = GroupViewModel(
-            authRepository,
-            groupRepository
-        )
-        adapter = DeadlineAdapter(context!!, viewModel)
+        adapter = DeadlineAdapter(context, viewModel)
         deadlinesMap = viewModel.getDeadlines().value!!
         adapter.setDeadlines(deadlinesMap)
     }
@@ -269,7 +261,7 @@ class DeadlineAdapterTest {
     }
 
     @Test
-    fun `GetView should display correctly element 0 when filtering by groups`(){
+    fun `GetView should display correctly element 0 when filtering by groups`() {
         adapter.setFilter(GroupFilter("0", "SDP"))
         adapter.setDeadlines(deadlinesMap)
 
@@ -278,11 +270,12 @@ class DeadlineAdapterTest {
 
         Assert.assertEquals(
             "Number 4",
-            listItemView.findViewById<TextView>(R.id.deadline_list_title).text)
+            listItemView.findViewById<TextView>(R.id.deadline_list_title).text
+        )
     }
 
     @Test
-    fun `GetView should display correctly element 0 when filtering by mine`(){
+    fun `GetView should display correctly element 0 when filtering by mine`() {
         adapter.setFilter(UserFilter)
         adapter.setDeadlines(deadlinesMap)
 
