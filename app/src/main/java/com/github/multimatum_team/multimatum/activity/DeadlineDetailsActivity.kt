@@ -321,8 +321,6 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             descriptionView.text = SpannableStringBuilder(description)
             doneButton.isChecked = (state == DeadlineState.DONE)
             updateDetail()
-            findViewById<TextView>(R.id.deadline_details_activity_group).text =
-                getGroupTextAndSetModifyButton(group)
 
             // Set the View to be unmodifiable at the start and remove displacement of the texts
             normalSetup()
