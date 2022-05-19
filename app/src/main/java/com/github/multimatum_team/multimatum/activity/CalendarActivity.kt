@@ -68,7 +68,7 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
         initAddButton()
     }
 
-    private fun updateColorText(){
+    private fun updateColorText() {
         calendarView.setMonthTitleColor(getColor(R.color.deadline_details_title))
             .setPrimaryTextColor(getColor(R.color.deadline_details_title))
             .setSecondaryTextColor(getColor(R.color.gray_variation_text))
