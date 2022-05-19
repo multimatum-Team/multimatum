@@ -1,11 +1,11 @@
 package com.github.multimatum_team.multimatum
 
 import android.app.AlertDialog
-import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView

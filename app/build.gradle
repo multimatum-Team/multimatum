@@ -79,10 +79,12 @@ dependencies {
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC2'
     implementation 'com.google.firebase:firebase-storage:20.0.1'
     implementation 'com.google.firebase:firebase-storage-ktx:20.0.1'
+    implementation 'com.github.aliab:Two-Step-Picker-Dialog:V1.1.0'
     kapt 'com.google.dagger:hilt-android-compiler:2.41'
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt 'androidx.lifecycle:lifecycle-compiler:2.4.1'
     implementation 'com.github.yuriy-budiyev:code-scanner:2.1.0'
+    implementation 'com.github.tizisdeepan:eventscalendar:1.6.1'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.6'
     testImplementation 'androidx.test.ext:junit:1.1.3'

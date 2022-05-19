@@ -36,6 +36,8 @@ import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.google.firebase.storage.FirebaseStorage
+import com.hamsa.twosteppickerdialog.OnStepPickListener
+import com.hamsa.twosteppickerdialog.TwoStepPickerDialog
 import com.mapbox.search.ui.view.SearchBottomSheetView
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
@@ -48,16 +50,15 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class AddDeadlineActivity : AppCompatActivity() {
-
     companion object {
-        // Memorisation of which checkBox is selected for the notifications
-        private val notificationSelected = booleanArrayOf(false, false, false, false)
-        private val nameNotifications = arrayOf("1 hour", "5 hours", "1 day", "3 days")
-        private val checkBoxIdTime = mapOf(
-            "1 hour" to Duration.ofHours(1).toMillis(),
-            "5 hours" to Duration.ofHours(5).toMillis(),
-            "1 day" to Duration.ofDays(1).toMillis(),
-            "3 days" to Duration.ofDays(3).toMillis()
+        // Default option for the selection of notifications
+        val defaultNotificationSelected = listOf(false, false, false, false)
+        val defaultNameNotifications = listOf("1 hour", "5 hours", "1 day", "3 days")
+        val defaultTimeNotifications = listOf(
+            Duration.ofHours(1).toMillis(),
+            Duration.ofHours(5).toMillis(),
+            Duration.ofDays(1).toMillis(),
+            Duration.ofDays(3).toMillis()
         )
     }
 
@@ -82,6 +83,10 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     private var pdfData = Uri.EMPTY
 
+    // Memorisation of which checkBox is selected for the notifications
+    private var notificationSelected = defaultNotificationSelected.toBooleanArray()
+    private var nameNotifications = defaultNameNotifications.toTypedArray()
+    private var timeNotifications = defaultTimeNotifications.toTypedArray()
 
     // Memorisation of which group is selected for the deadline
     private var groupSelected = 0
@@ -268,8 +273,59 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         // Set the name of the done button
         alertDialogBuilder.setPositiveButton(getString(R.string.done), null)
+        alertDialogBuilder.setNeutralButton("Add Custom Notification") { _, _ ->
+            // If the user want others time for notifications, launch another dialog
+            addNotifications(view)
+        }
         alertDialogBuilder.create()
         alertDialogBuilder.show()
+    }
+
+    /**
+     * Setup an AlertDialog that will allow the user to add custom Dialog
+     */
+    private fun addNotifications(view: View) {
+        TwoStepPickerDialog.Builder(this)
+            .withBaseData(mutableListOf("hours before", "days before"))
+            .withBaseOnLeft(false)
+            .withInitialBaseSelected(0)
+            .withInitialStepSelected(0)
+            .withOnStepDataRequested { baseDataPos ->
+                if (baseDataPos == 0) {
+                    // Allow to go no further than 23 hours before
+                    (1 until 24).toList().map(Int::toString)
+                } else {
+                    // Allow to go no further than 30 days before for the notifications
+                    (1 until 31).toList().map(Int::toString)
+                }
+
+            }.withDialogListener(object : OnStepPickListener {
+                override fun onStepPicked(step: Int, pos: Int) {
+                    timeNotifications =
+                        timeNotifications.plus(
+                            if (pos == 0) Duration.ofHours((pos + 1).toLong()).toMillis()
+                            else Duration.ofDays((pos + 1).toLong()).toMillis()
+                        )
+                    nameNotifications =
+                        nameNotifications.plus(
+                            (pos + 1).toString()
+                                    + if (step == 0) " hours" else " days"
+                        )
+                    notificationSelected = notificationSelected.plus(true)
+
+                    // Go back to the selection of notifications
+                    selectNotifications(view)
+                }
+
+                override fun onDismissed() {
+                    // Go back to the selection of notifications
+                    selectNotifications(view)
+                }
+            })
+            .withOkButton("Done")
+            .withCancelButton("Cancel")
+            .build()
+            .show()
     }
 
     /**
@@ -290,10 +346,10 @@ class AddDeadlineActivity : AppCompatActivity() {
 
         // Set the name of the done button
         alertDialogBuilder.setPositiveButton(getString(R.string.done), null)
-        alertDialogBuilder.create()
         alertDialogBuilder.show()
 
     }
+
 
     /**
      *  Add a deadline based on the data recuperated on the other TextViews
@@ -404,11 +460,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     }
 
     // Recuperate the information on which notification must be set before returning it in an array
-    private fun retrieveNotificationsTimes(): ArrayList<Long> {
-        val res = ArrayList<Long>()
-        for (i in 0 until checkBoxIdTime.count()) {
-            if (notificationSelected[i]) res.add(checkBoxIdTime[nameNotifications[i]]!!)
-        }
-        return res
+    private fun retrieveNotificationsTimes(): List<Long> {
+        return timeNotifications.filterIndexed { idx, _ -> notificationSelected[idx] }
     }
 }
