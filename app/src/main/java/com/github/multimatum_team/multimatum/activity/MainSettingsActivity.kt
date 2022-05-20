@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import com.github.multimatum_team.multimatum.LogUtil
-import com.github.multimatum_team.multimatum.ProfileActivity
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
