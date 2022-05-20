@@ -43,6 +43,7 @@
             android:text="@string/calender_add_new_deadline_button_text"
             app:icon="@drawable/ic_add_deadline"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -55,6 +56,7 @@
             android:max="100"
             android:progress="50"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
             app:layout_constraintStart_toEndOf="@+id/add_deadline_button" />
 
         <androidx.constraintlayout.widget.ConstraintLayout

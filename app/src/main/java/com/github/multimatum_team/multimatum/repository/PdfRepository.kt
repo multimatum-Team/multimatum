@@ -2,6 +2,7 @@ package com.github.multimatum_team.multimatum.repository
 
 import android.content.Context
 import android.net.Uri
+import java.io.File
 
 abstract class PdfRepository {
     abstract fun uploadPdf(
@@ -10,4 +11,10 @@ abstract class PdfRepository {
         callback: (String) -> Unit
     )
     abstract fun delete(path: String)
+
+    abstract fun downloadPdf(
+        path: String,
+        title: String,
+        callback: (File) -> Unit
+    )
 }

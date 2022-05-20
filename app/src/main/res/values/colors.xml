@@ -11,4 +11,5 @@
     <color name="group_member_item_background">#FFFFFFFF</color>
     <color name="settings_icons_color">#FF535353</color>
     <color name="gray_variation_text">#FF757575</color>
+    <color name="link_color">#FF0645AD</color>
 </resources>

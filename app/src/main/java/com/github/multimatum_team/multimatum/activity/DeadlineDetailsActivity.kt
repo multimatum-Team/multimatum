@@ -3,28 +3,30 @@ package com.github.multimatum_team.multimatum.activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.Intent.EXTRA_TEXT
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.DeadlineOwner
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.model.GroupOwned
 import com.github.multimatum_team.multimatum.model.UserOwned
 import com.github.multimatum_team.multimatum.repository.DeadlineID
+import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
+import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +35,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
+
 
 /**
  * Classes used when you select a deadline in the list, displaying its details.
@@ -43,6 +46,9 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
     @Inject
     lateinit var clockService: ClockService
+
+    @Inject
+    lateinit var pdfRepository: PdfRepository
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -58,11 +64,13 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private lateinit var doneButton: CheckBox
     private lateinit var notificationView: TextView
     private lateinit var descriptionView: EditText
+    private lateinit var downloadLinkText: TextView
     private lateinit var locationView: TextView
 
     // Set them on default value, waiting the fetch of the deadlines
     private var dateTime: LocalDateTime = LocalDateTime.of(2022, 10, 10, 10, 10)
     private var state: DeadlineState = DeadlineState.TODO
+    private var pdfLink: String = ""
 
     // Memorisation of which checkBox is selected for the notifications
     private var notificationSelected: BooleanArray = AddDeadlineActivity.defaultNotificationSelected.toBooleanArray()
@@ -74,8 +82,10 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deadline_details)
 
+
         // Recuperate the necessary TextViews
         titleView = findViewById(R.id.deadline_details_activity_title)
+        downloadLinkText = findViewById(R.id.download_pdf)
         dateView = findViewById(R.id.deadline_details_activity_date)
         detailView = findViewById(R.id.deadline_details_activity_done_or_due)
         doneButton = findViewById(R.id.deadline_details_activity_set_done)
@@ -311,9 +321,18 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             val deadline = deadlines[id]!!
             dateTime = deadline.dateTime
             state = deadline.state
+            pdfLink = deadline.pdfPath
             val title = deadline.title
             val description = deadline.description
             val group = deadline.owner
+
+            LogUtil.debugLog(pdfLink.toString())
+            //display download button if there's a pdf
+            if (pdfLink != "") {
+                downloadLinkText.text = PDFUtil.getFileNameFromUri(pdfLink.toUri(), this).drop(16)
+            } else {
+                downloadLinkText.visibility = View.INVISIBLE
+            }
 
             // As the groupViewModel doesn't recuperate immediately the deadlines,
             // we need an update the moment they are fetched
@@ -433,6 +452,37 @@ class DeadlineDetailsActivity : AppCompatActivity() {
                         actualDate.until(dateTime, ChronoUnit.DAYS).toString()
                     )
                 }
+            }
+        }
+    }
+
+    /**
+     * download the pdf from firebaseStorage
+     */
+    fun downloadPdf(view: View) {
+        pdfRepository.downloadPdf(
+            pdfLink,
+            downloadLinkText.text.toString()
+        ) {
+            LogUtil.debugLog(it.path)
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            val pdfUri = FileProvider.getUriForFile(
+                this,
+                this.applicationContext.packageName.toString() + ".provider",
+                it
+            )
+            intent.setDataAndType(pdfUri, "application/pdf")
+            val intentChosen = Intent.createChooser(intent, "Open File")
+            try {
+                startActivity(intentChosen)
+            } catch (e: ActivityNotFoundException) {
+                // Instruct the user to install a PDF reader here
+                val alertDialog = AlertDialog.Builder(this).setMessage("No PDF reader available")
+                    .setTitle("Error")
+                    .setNeutralButton("ok") { dialogInterface, _ -> dialogInterface.cancel() }
+                alertDialog.show()
             }
         }
     }

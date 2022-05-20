@@ -24,7 +24,6 @@ import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.GroupOwned
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractionResult
 import com.github.multimatum_team.multimatum.model.datetime_parser.DateTimeExtractor
-import com.github.multimatum_team.multimatum.repository.FirebasePdfRepository
 import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
@@ -32,9 +31,6 @@ import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.firebase.firestore.GeoPoint
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.ktx.initialize
-import com.google.firebase.storage.FirebaseStorage
 import com.hamsa.twosteppickerdialog.OnStepPickListener
 import com.hamsa.twosteppickerdialog.TwoStepPickerDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,7 +60,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     lateinit var clockService: ClockService
 
     @Inject
-    lateinit var firebasePdfRepository: PdfRepository
+    lateinit var pdfRepository: PdfRepository
 
     private lateinit var selectedDate: LocalDateTime
 
@@ -97,9 +93,6 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Firebase.initialize(this)
-        firebasePdfRepository = FirebasePdfRepository(FirebaseStorage.getInstance())
 
         setContentView(R.layout.activity_add_deadline)
 
@@ -361,7 +354,7 @@ class AddDeadlineActivity : AppCompatActivity() {
             //loading bar
             progressBar.visibility = View.VISIBLE
             // Start upload
-            firebasePdfRepository.uploadPdf(pdfData, this) { ref ->
+            pdfRepository.uploadPdf(pdfData, this) { ref ->
                 // Hide loading bar
                 progressBar.visibility = View.GONE
 
@@ -444,7 +437,7 @@ class AddDeadlineActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 pdfData = result.data!!.data!!
-                pdfTextView.text = PDFUtil.getFileNameFromUri(pdfData)
+                pdfTextView.text = PDFUtil.getFileNameFromUri(pdfData, this)
             }
         }
 
