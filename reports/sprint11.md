@@ -20,6 +20,7 @@ quality issue. I will try like everyone else to improve coverage and UX
 to get a nice looking app for the demo.
 
 ### Lenny
+This week, I  completed the pdf feature. There is still not enough test yet, but it shouldnt take too much time. We figured out that openning pdf fails with some pdf reader apps and works with others. We still have to investigate on that. Next week I'll work and coverage, bug fixing and fine tunning.
 
 ### Léo
 This week, I worked on the location feature that gives the user the ability to select a location for a particular deadline and the location name
