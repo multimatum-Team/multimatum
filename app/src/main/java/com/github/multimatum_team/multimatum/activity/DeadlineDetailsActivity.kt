@@ -326,9 +326,10 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             val description = deadline.description
             val group = deadline.owner
 
+            LogUtil.debugLog(pdfLink.toString())
             //display download button if there's a pdf
             if (pdfLink != "") {
-                downloadLinkText.text = PDFUtil.getFileNameFromUri(pdfLink.toUri(), this)
+                downloadLinkText.text = PDFUtil.getFileNameFromUri(pdfLink.toUri(), this).drop(16)
             } else {
                 downloadLinkText.visibility = View.INVISIBLE
             }
@@ -461,7 +462,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     fun downloadPdf(view: View) {
         pdfRepository.downloadPdf(
             pdfLink,
-            PDFUtil.addRdmCharToStr(downloadLinkText.text.toString())
+            downloadLinkText.text.toString()
         ) {
             LogUtil.debugLog(it.path)
             val intent = Intent(Intent.ACTION_VIEW)

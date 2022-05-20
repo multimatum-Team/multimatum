@@ -5,6 +5,7 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.github.multimatum_team.multimatum.LogUtil
 import java.util.*
 
 
@@ -36,12 +37,15 @@ object PDFUtil {
             cursor.close()
         } else {
             val pathStr = pdfData.toString()
-            fileName = pathStr.substring(pathStr.lastIndexOf('/') + 1).drop(16)
+            fileName = pathStr.substring(pathStr.lastIndexOf('/') + 1)
         }
         return fileName
     }
 
     fun addRdmCharToStr(input: String): String {
-        return UUID.randomUUID().toString() + input
+        val rdmString = List(16) {
+            (('a'..'z') + ('A'..'Z') + ('0'..'9')).random()
+        }.joinToString("")
+        return rdmString + input
     }
 }
