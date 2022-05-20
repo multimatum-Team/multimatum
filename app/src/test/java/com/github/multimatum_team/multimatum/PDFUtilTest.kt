@@ -21,9 +21,9 @@ class PDFUtilTest {
     @Test
     fun testStrRandom() {
         val input = "someString"
-        val out1 = PDFUtil.addRdmCharToStr(input)
-        val out2 = PDFUtil.addRdmCharToStr(input)
-        assertEquals(out1.length, input.length+ UUID.randomUUID().toString().length)
+        val out1 = PDFUtil.addRdmCharToStr(input, 16)
+        val out2 = PDFUtil.addRdmCharToStr(input, 16)
+        assertEquals(out1.length, input.length + 16)
         assert(out1 != out2)
     }
 }

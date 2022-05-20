@@ -28,7 +28,7 @@ class FirebasePdfRepository @Inject constructor(
                     auth.uid + "/" + PDFUtil.addRdmCharToStr(
                         PDFUtil.getFileNameFromUri(
                             data, context
-                        )
+                        ), 16
                     )
                 )
             ref.putFile(data).addOnSuccessListener {

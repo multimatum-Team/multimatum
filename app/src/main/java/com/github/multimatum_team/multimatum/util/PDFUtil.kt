@@ -42,8 +42,8 @@ object PDFUtil {
         return fileName
     }
 
-    fun addRdmCharToStr(input: String): String {
-        val rdmString = List(16) {
+    fun addRdmCharToStr(input: String, nbChar: Int): String {
+        val rdmString = List(nbChar) {
             (('a'..'z') + ('A'..'Z') + ('0'..'9')).random()
         }.joinToString("")
         return rdmString + input
