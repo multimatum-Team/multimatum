@@ -5,7 +5,6 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.github.multimatum_team.multimatum.LogUtil
 import java.util.*
 
 

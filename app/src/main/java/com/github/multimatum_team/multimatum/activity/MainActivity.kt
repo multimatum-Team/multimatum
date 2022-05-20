@@ -18,15 +18,12 @@ import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.adaptater.DeadlineFilterAdapter
 import com.github.multimatum_team.multimatum.adaptater.NoFilter
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
-import com.github.multimatum_team.multimatum.repository.FirebasePdfRepository
 import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
-import com.google.firebase.storage.FirebaseStorage
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
