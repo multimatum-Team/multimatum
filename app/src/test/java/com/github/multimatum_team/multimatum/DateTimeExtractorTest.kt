@@ -37,7 +37,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun `18h_is_parsed_correctly`() {
+    fun `18h is parsed correctly`() {
         val str = "Geography 18h"
         val expText = "Geography"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -45,7 +45,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun `10h00_is_parsed_correctly`() {
+    fun `10h00 is parsed correctly`() {
         val str = "Aqua-pony at 10:00"
         val expText = "Aqua-pony"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -53,7 +53,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun am_time_is_parsed_correctly() {
+    fun `am time is parsed correctly`() {
         val str = "Chemistry 2am (report)"
         val expText = "Chemistry (report)"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -61,7 +61,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun pm_time_is_parsed_correctly() {
+    fun `pm time is parsed correctly`() {
         val str = "History dissertation 4pm"
         val expText = "History dissertation"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -69,7 +69,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun second_time_is_ignored() {
+    fun `second time is ignored`() {
         val str = "History dissertation 4pm 5pm"
         val expText = "History dissertation 5pm"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -77,7 +77,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun complete_date_is_parsed_correctly_in_d_m_y_format() {
+    fun `complete date is parsed correctly in d-m-y format`() {
         val str = "Entree en bourse de Multimatum&co 1.08.2022"
         val expText = "Entree en bourse de Multimatum&co"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -85,7 +85,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun complete_date_is_parsed_correctly_in_y_m_d_format() {
+    fun `complete date is parsed correctly in y-m-d format`() {
         val str = "Entree en bourse de Multimatum&co 2022.8.1"
         val expText = "Entree en bourse de Multimatum&co"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -93,7 +93,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun invalid_date_is_ignored() {
+    fun `invalid date is ignored`() {
         // should reject 29.02.2021 (does not exist), but take 5.12.2021 (valid)
         val str = "New version release 29.2.2021.12.5"
         val expText = "New version release 29.2."
@@ -102,7 +102,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun valid_february29_should_be_parsed_correctly() {
+    fun `valid february 29 should be parsed correctly`() {
         val str = "Declaration d'impots 29.2.2024"
         val expText = "Declaration d'impots"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -110,7 +110,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun date_and_time_in_same_string_should_be_parsed_correctly() {
+    fun `date and time in same string should be parsed correctly`() {
         val str = "Rendu devoir 23.8.2020 14:30"
         val expText = "Rendu devoir"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -124,7 +124,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun day_of_week_should_be_parsed_correctly() {
+    fun `day of week should be parsed correctly`() {
         val str = "SDP meeting friday"
         val expText = "SDP meeting"
         val currentDate = LocalDate.of(2022, Month.APRIL, 30)
@@ -135,7 +135,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun day_of_week_with_on_should_be_parsed_correctly() {
+    fun `day of week with on should be parsed correctly`() {
         val str = "SDP meeting on friday"
         val expText = "SDP meeting"
         val currentDate = LocalDate.of(2022, Month.APRIL, 30)
@@ -146,7 +146,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun month_given_by_3_letters_name_is_parsed_correctly() {
+    fun `month given by 3 letters name is parsed correctly`() {
         val str = "Devoir a rendre 15 oct 2019"
         val expText = "Devoir a rendre"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -156,7 +156,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun month_given_by_full_name_is_parsed_correctly() {
+    fun `month given by full name is parsed correctly`() {
         val str = "Something to hand-in 23 jan 2018 in math"
         val expText = "Something to hand-in in math"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -166,7 +166,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun thursday_20_is_parsed_correctly() {
+    fun `thursday 20 is parsed correctly`() {
         val str = "Physics experiment report thursday 20"
         val expText = "Physics experiment report"
         val currentDate = LocalDate.of(2022, Month.JANUARY, 12)
@@ -175,7 +175,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun friday_20_is_rejected_when_the_20th_is_not_a_friday() {
+    fun `friday 20 is rejected when the 20th is not a friday`() {
         /* what happens here is that the extractor tries
          * to match "friday 20", notices that the 20th is not
          * a friday and falls back to parsing only "friday" */
@@ -187,7 +187,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun midday_is_parsed_correctly() {
+    fun `midday is parsed correctly`() {
         val str = "Lunch at noon"
         val expText = "Lunch"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -195,7 +195,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun midnight_is_parsed_correctly() {
+    fun `midnight is parsed correctly`() {
         val str = "Due work at midnight"
         val expText = "Due work"
         val actualRes = DEFAULT_DATE_TIME_EXTRACTOR.parse(str)
@@ -203,7 +203,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun tomorrow_is_parsed_correctly() {
+    fun `tomorrow is parsed correctly`() {
         val str = "Due homework tomorrow"
         val expText = "Due homework"
         val currentDate = LocalDate.of(2020, 4, 4)
@@ -213,7 +213,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun may_3rd_is_parsed_correctly() {
+    fun `may 3rd is parsed correctly`() {
         val str = "Report May 3rd"
         val expText = "Report"
         val currDate = LocalDate.of(2021, Month.MARCH, 17)
@@ -223,7 +223,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun `may-3_is_parsed_correctly`() {
+    fun `may-3 is parsed correctly`() {
         val str = "Report May-3"
         val expText = "Report"
         val currDate = LocalDate.of(2021, Month.MARCH, 17)
@@ -233,7 +233,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun `3dot12_is_parsed_correctly`() {
+    fun `3dot12 is parsed correctly`() {
         val str = "Something to submit 3.14"
         val expText = "Something to submit"
         val currDate = LocalDate.of(2021, Month.JANUARY, 10)
@@ -243,7 +243,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun `12dot3_is_parsed_correctly`() {
+    fun `12dot3 is parsed correctly`() {
         val str = "Something to submit 14.3"
         val expText = "Something to submit"
         val currDate = LocalDate.of(2021, Month.JANUARY, 10)
@@ -253,7 +253,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun `11h45am_is_parsed_correctly`() {
+    fun `11h45am is parsed correctly`() {
         val str = "Apero at 11h45am"
         val expText = "Apero"
         val expectedTime = LocalTime.of(11, 45)
@@ -261,7 +261,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun `7h27pm_is_parsed_correctly`() {
+    fun `7h27pm is parsed correctly`() {
         val str = "Apero at 7h27pm"
         val expText = "Apero"
         val expectedTime = LocalTime.of(19, 27)
@@ -269,7 +269,7 @@ class DateTimeExtractorTest {
     }
 
     @Test
-    fun `2022_2_27_is_parsed_correctly`(){
+    fun `2022 2 27 is parsed correctly`() {
         val str = "ToDo 2022 2 27"
         val expText = "ToDo"
         val expectedDate = LocalDate.of(2022, Month.FEBRUARY, 27)

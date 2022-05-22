@@ -65,7 +65,7 @@ class DeadlineNotificationTest {
      * Test if createNotification channel creates a notification channel with the right parameters
      */
     @Test
-    fun testCreateNotificationChannel() {
+    fun `createNotificationChannel should create a notification channel`() {
         val channel = NotificationChannel(
             "remindersChannel",
             "reminders channel",
@@ -80,7 +80,7 @@ class DeadlineNotificationTest {
     }
 
     @Test
-    fun testAddAndDeleteNotification() {
+    fun `adding and deleting notifications should result in the correct manager state`() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
 
@@ -99,7 +99,7 @@ class DeadlineNotificationTest {
     }
 
     @Test
-    fun testUpdateAndListNotification() {
+    fun `updating and listing notifications should result in the correct manager state`() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val shadowAlarmManager: ShadowAlarmManager = Shadows.shadowOf(alarmManager)
         val id1 = "ADDED_DEADLINE_1"

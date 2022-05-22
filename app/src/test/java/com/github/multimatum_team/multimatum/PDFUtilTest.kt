@@ -12,14 +12,14 @@ import java.util.*
 @RunWith(AndroidJUnit4::class)
 class PDFUtilTest {
     @Test
-    fun testSelectPDF() {
+    fun `selecting a PDF should produce the correct intent`() {
         PDFUtil.selectPdfIntent {
             assertEquals(Intent.ACTION_GET_CONTENT, it.action)
         }
     }
 
     @Test
-    fun testStrRandom() {
+    fun `adding a random char to string should work correctly`() {
         val input = "someString"
         val out1 = PDFUtil.addRdmCharToStr(input, 16)
         val out2 = PDFUtil.addRdmCharToStr(input, 16)

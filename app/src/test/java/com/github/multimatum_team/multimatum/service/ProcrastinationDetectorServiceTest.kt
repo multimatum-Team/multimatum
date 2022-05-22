@@ -72,7 +72,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun service_should_be_registered_as_listener_and_then_unregistered() {
+    fun `service should be registered as listener and then unregistered`() {
         val mockSensor: Sensor = mock()
         var wasRegistered = false
         var wasUnregistered = false
@@ -117,7 +117,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun toast_should_be_displayed_when_sensor_detected_major_change() {
+    fun `toast should be displayed when sensor detected major change`() {
         val mockSensor: Sensor = mock()
         val mockSensorEvent: SensorEvent = mock()
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
@@ -139,7 +139,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun toast_should_be_displayed_when_sensor_detected_major_change_even_after_a_call_to_onAccuracyChanged() {
+    fun `toast should be displayed when sensor detected major change even after a call to onAccuracyChanged`() {
         val mockSensor: Sensor = mock()
         val mockSensorEvent: SensorEvent = mock()
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
@@ -162,7 +162,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun toast_should_not_be_displayed_when_sensor_detected_tiny_change() {
+    fun `toast should not be displayed when sensor detected tiny change`() {
         val mockSensor: Sensor = mock()
         val mockSensorEvent: SensorEvent = mock()
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
@@ -184,7 +184,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun on_bind_should_return_a_binder_that_is_able_to_provide_the_bound_service() {
+    fun `on bind should return a binder that is able to provide the bound service`() {
         val controller = createTestServiceController()
         val service = controller.get()
         val dummyIntent = Intent(applicationContext, javaClass)
@@ -199,7 +199,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun onStartCommand_throws_when_sensor_not_found() {
+    fun `onStartCommand throws when sensor not found`() {
         `when`(mockSensorManager.getDefaultSensor(any())).thenReturn(null)
         var controller: ServiceController<ProcrastinationDetectorService>? = null
         assertThrows(IllegalStateException::class.java) {
@@ -210,7 +210,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun onStartCommand_throws_when_invalid_action() {
+    fun `onStartCommand throws when invalid action`() {
         `when`(mockSensorManager.getDefaultSensor(any())).thenReturn(mock())
         val intent = Intent(applicationContext, ProcrastinationDetectorService::class.java)
         intent.action = "not_a_valid_action"
@@ -226,7 +226,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun toast_should_not_be_displayed_when_another_toast_has_been_displayed_too_recently() {
+    fun `toast should not be displayed when another toast has been displayed too recently`() {
         val mockSensor: Sensor = mock()
         val mockSensorEvent: SensorEvent = mock()
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
@@ -255,7 +255,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun onSensorChanged_throws_on_invalid_array_in_event() {
+    fun `onSensorChanged throws on invalid array in event`() {
         val mockSensor: Sensor = mock()
         `when`(mockSensorManager.getDefaultSensor(eq(ProcrastinationDetectorService.REF_SENSOR))).thenReturn(
             mockSensor
@@ -277,7 +277,7 @@ class ProcrastinationDetectorServiceTest {
     }
 
     @Test
-    fun launch_should_call_startForegroundService_with_start_action() {
+    fun `launch should call startForegroundService with start action`() {
         val mockCaller: Context = mock()
         var actualIntent: Intent? = null
         `when`(mockCaller.startForegroundService(any())).then {
@@ -301,7 +301,12 @@ class ProcrastinationDetectorServiceTest {
         controller.destroy()
     }
 
-    private data class EventToSimulate(val x: Float, val y: Float, val z: Float, val timestamp: Long)
+    private data class EventToSimulate(
+        val x: Float,
+        val y: Float,
+        val z: Float,
+        val timestamp: Long
+    )
 
     /**
      * WARNING this method does not perform any assertion

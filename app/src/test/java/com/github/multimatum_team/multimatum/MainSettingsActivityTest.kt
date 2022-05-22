@@ -75,8 +75,8 @@ class MainSettingsActivityTest {
     }
 
     @Test
-    fun disabling_notifications_on_button_disables_them_in_preferences() {
-        testScenario(
+    fun `disabling notifications on button disables them in preferences`() {
+        twoStatesButtonToSharedPreferencesTestScenario(
             initNotifEnabled = true, initDarkModeEnabled = false,
             clickedButtonId = R.id.main_settings_enable_notif_button,
             expectedFinalNotifEnabled = false, expectedFinalDarkModeEnabled = false
@@ -84,8 +84,8 @@ class MainSettingsActivityTest {
     }
 
     @Test
-    fun enabling_notifications_on_button_enables_them_in_preferences() {
-        testScenario(
+    fun `enabling notifications on button enables them in preferences`() {
+        twoStatesButtonToSharedPreferencesTestScenario(
             initNotifEnabled = false, initDarkModeEnabled = false,
             clickedButtonId = R.id.main_settings_enable_notif_button,
             expectedFinalNotifEnabled = true, expectedFinalDarkModeEnabled = false
@@ -93,7 +93,7 @@ class MainSettingsActivityTest {
     }
 
     @Test
-    fun launchProfileActivityIntent() = runTest {
+    fun `launch profile activity should produce intent`() = runTest {
         (authRepository as MockAuthRepository).signIn("John Doe", "john.doe@example.com")
         val scenario = ActivityScenario.launch(MainSettingsActivity::class.java)
         scenario.use {
@@ -104,8 +104,8 @@ class MainSettingsActivityTest {
     }
 
     @Test
-    fun disabling_dark_mode_on_button_disables_them_in_preferences() {
-        testScenario(
+    fun `disabling dark mode on button disables them in preferences`() {
+        twoStatesButtonToSharedPreferencesTestScenario(
             initNotifEnabled = true, initDarkModeEnabled = true,
             clickedButtonId = R.id.main_settings_dark_mode_button,
             expectedFinalNotifEnabled = true, expectedFinalDarkModeEnabled = false
@@ -113,8 +113,8 @@ class MainSettingsActivityTest {
     }
 
     @Test
-    fun enabling_dark_mode_on_button_enables_them_in_preferences() {
-        testScenario(
+    fun `enabling dark mode on button enables them in preferences`() {
+        twoStatesButtonToSharedPreferencesTestScenario(
             initNotifEnabled = false, initDarkModeEnabled = false,
             clickedButtonId = R.id.main_settings_dark_mode_button,
             expectedFinalNotifEnabled = false, expectedFinalDarkModeEnabled = true
@@ -123,7 +123,7 @@ class MainSettingsActivityTest {
 
     // inspired from https://www.androidbugfix.com/2021/09/androidx-how-to-test-slider-in-ui-tests.html
     @Test
-    fun value_selected_on_slider_is_written_to_preferences() {
+    fun `value selected on slider is written to preferences`() {
         val mockEditor: SharedPreferences.Editor = mock()
         `when`(
             mockSharedPreferences.getBoolean(
@@ -177,7 +177,7 @@ class MainSettingsActivityTest {
     // and the expected final states of the buttons
     // The method checks that settings values are correctly written to SharedPreferences and
     // that the buttons are at the expected position at the end of the scenario
-    private fun testScenario(
+    private fun twoStatesButtonToSharedPreferencesTestScenario(
         initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
         clickedButtonId: Int,
         expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean

@@ -51,13 +51,13 @@ class CalendarActivityTest {
     }
 
     @Test
-    fun textInputFieldCanBeClicked() {
+    fun `text input field should be clickable`() {
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .check(ViewAssertions.matches(ViewMatchers.isClickable()))
     }
 
     @Test
-    fun textInputScreenReleasedAfterAddingDeadlineWithButton() {
+    fun `text input screen should be released after adding deadline with button`() {
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase"))
@@ -68,7 +68,7 @@ class CalendarActivityTest {
     }
 
     @Test
-    fun textInputScreenReleasedAfterAddingDeadlineWithEnterKey() {
+    fun `text input screen should be released after adding deadline with enter key`() {
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase2"))
@@ -78,7 +78,7 @@ class CalendarActivityTest {
     }
 
     @Test
-    fun textInputScreenReleasedAfterAddingDeadlineWithDoneOnSoftKeyboard() {
+    fun `text input screen should be released after adding deadline with done on SoftKeyboard`() {
         Espresso.onView(ViewMatchers.withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase3"))

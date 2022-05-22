@@ -7,7 +7,7 @@ import org.junit.Test
 
 class TokensTest {
     @Test
-    fun string_is_tokenized_correctly() {
+    fun `string is tokenized correctly`() {
         val str = "abcd1234 !/xyz. 987"
         val exp = listOf(
             AlphabeticToken("abcd"),
@@ -24,7 +24,7 @@ class TokensTest {
     }
 
     @Test
-    fun deadline_title_including_date_and_time_is_tokenized_correctly() {
+    fun `deadline title including date and time is tokenized correctly`() {
         val title = "Aqua-poney monday 15 at 11am"
         val exp = listOf(
             AlphabeticToken("Aqua"),
@@ -44,7 +44,7 @@ class TokensTest {
     }
 
     @Test
-    fun numericToken_gives_correct_numeric_value() {
+    fun `numericToken gives correct numeric value`() {
         val inputsOutputs = listOf(
             "123" to 123,
             "0" to 0,
@@ -56,7 +56,7 @@ class TokensTest {
     }
 
     @Test
-    fun symbolToken_gives_correct_char_value() {
+    fun `symbolToken gives correct char value`() {
         val inputsOutputs = listOf(
             "!" to '!',
             "*" to '*',
@@ -68,14 +68,14 @@ class TokensTest {
     }
 
     @Test
-    fun numericToken_throws_on_non_numeric_input() {
+    fun `numericToken throws on non numeric input`() {
         assertThrows(IllegalArgumentException::class.java) {
             NumericToken("123a4")
         }
     }
 
     @Test
-    fun symbolToken_throws_on_input_with_length_different_of_1() {
+    fun `symbolToken throws on input with length different of 1`() {
         assertThrows(IllegalArgumentException::class.java) {
             SymbolToken("[!]")
         }

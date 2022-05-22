@@ -72,7 +72,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToSetting() {
+    fun `clicking on the settings button should open the settings`() {
         onView(withId(R.id.main_open_settings_but)).perform(click())
         Intents.intended(
             allOf(
@@ -83,7 +83,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToDeadlineDetails() {
+    fun `long click on deadline listview should open DeadlineDetailsActivity`() {
         onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
             .perform(longClick())
 
@@ -100,7 +100,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToCalendar() {
+    fun `clicking on the calendar button should open the calendar`() {
         onView(withId(R.id.goToCalendarButton)).perform(click())
         Intents.intended(
             allOf(
@@ -111,7 +111,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToAddDeadlineActivity() {
+    fun `clicking on add deadline button should add a deadline`() {
         onView(withId(R.id.main_go_to_add_deadline)).perform(click())
         Intents.intended(
             allOf(
@@ -122,7 +122,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun buttonOpensQrCodeReader() {
+    fun `clicking on the QR code reader button should open the QR code reader`() {
         grantPermission()
         onView(withId(R.id.goToQrCodeReader)).perform(click())
         Intents.intended(
@@ -134,7 +134,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToGroupsTest() {
+    fun `clicking on the group button should open GroupsActivity`() {
         onView(withId(R.id.groupButton)).check(matches(isDisplayed())).perform(click())
         Intents.intended(
             allOf(
@@ -145,14 +145,14 @@ class MainActivityTest {
     }
 
     @Test
-    fun buttonDoesNotOpenQrCodeReaderIfPermissionNotGranted() {
+    fun `button does not open QR code reader if permission not granted`() {
         onView(withId(R.id.goToQrCodeReader)).perform(click())
         denyPermission()
         onView(withId(R.id.goToQrCodeReader)).check(matches(isDisplayed()))
     }
 
     @Test
-    fun swipeDeadlineTwiceShouldDelete() {
+    fun `swipe deadline twice should delete it`() {
         onData(anything()).inAdapterView(withId(R.id.deadlineListView))
             .atPosition(0).perform(swipeRight())
         onData(anything()).inAdapterView(withId(R.id.deadlineListView))
@@ -161,7 +161,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun swipeDeadlineOnceAndClickUndoShouldUndo() {
+    fun `swipe deadline once and click undo should undo`() {
         onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
             .perform(swipeLeft())
         onData(anything()).inAdapterView(withId(R.id.deadlineListView)).atPosition(0)
