@@ -56,7 +56,7 @@ class ReminderBroadcastReceiverTest {
      * Test if the broadCast receiver launch a notification when "onReceive" is called
      */
     @Test
-    fun testNotificationLaunchOnReceive() {
+    fun `calling onReceive should result in the correct manager state`() {
         Mockito.`when`(
             mockSharedPreferences.getBoolean(
                 eq(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY),

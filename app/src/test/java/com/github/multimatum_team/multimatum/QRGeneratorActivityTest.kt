@@ -32,6 +32,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
+import java.time.Month
 
 
 /**
@@ -53,7 +54,7 @@ class QRGeneratorActivityTest {
     }
 
     @Test
-    fun goToQRTest() {
+    fun `clicking on return button should produce correct intent`() {
         Espresso.onView(ViewMatchers.withId(R.id.returnToMainFromQR)).perform(ViewActions.click())
         Intents.intended(
             Matchers.allOf(
@@ -64,10 +65,9 @@ class QRGeneratorActivityTest {
     }
 
     @Test
-    fun qRDisplayTest() {
+    fun `displayed QR code should be correct`() {
         val data = Deadline(
-            "Appeller Robert", DeadlineState.TODO, LocalDateTime.now()
-                .plusDays(1)
+            "Appeller Robert", DeadlineState.TODO, LocalDateTime.of(2020, Month.JUNE, 2, 14, 27)
         )
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
