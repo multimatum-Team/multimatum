@@ -132,7 +132,16 @@
         tools:ignore="ContentDescription,SpeakableTextPresentCheck,ImageContrastCheck" />
 
 
-
+    <ImageButton
+        android:id="@+id/display_location_on_map"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="36dp"
+        android:onClick="displayLocationOnMap"
+        app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
+        app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_modify"
+        app:srcCompat="@android:drawable/ic_menu_mylocation"
+        tools:ignore="ContentDescription,SpeakableTextPresentCheck,ImageContrastCheck" />
 
     <CheckBox
         android:id="@+id/deadline_details_activity_set_done"
@@ -144,7 +153,6 @@
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/deadline_details_activity_modify"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout5"
@@ -161,7 +169,9 @@
             android:textAlignment="viewStart"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="location" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView

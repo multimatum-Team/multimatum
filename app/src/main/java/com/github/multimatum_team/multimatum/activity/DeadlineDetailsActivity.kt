@@ -233,6 +233,17 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         editMode = editMode.not()
     }
 
+    fun displayLocationOnMap(view: View) {
+        val deadline = deadlineListViewModel.getDeadline(id)
+
+        if (deadline.location != null) {
+            val intent = Intent(this, DisplayLocationActivity::class.java)
+            intent.putExtra("latitude", deadline.location.latitude)
+            intent.putExtra("longitude", deadline.location.longitude)
+            startActivity(intent)
+        }
+    }
+
     /**
      * Shift the titleView to a modify state or to a uneditable state
      */
@@ -347,7 +358,11 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             dateView.text =
                 getString(R.string.DueTheXatX, dateTime.toLocalDate(), dateTime.toLocalTime())
             titleView.text = SpannableStringBuilder(title)
-            if (deadline.locationName != null) locationView.text = deadline.locationName
+            if (deadline.locationName != null){
+                locationView.text = deadline.locationName
+            } else {
+                locationView.text = "No location"
+            }
             descriptionView.text = SpannableStringBuilder(description)
             doneButton.isChecked = (state == DeadlineState.DONE)
             updateDetail()

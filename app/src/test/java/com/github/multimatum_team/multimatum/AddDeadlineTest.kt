@@ -16,11 +16,13 @@ import androidx.test.espresso.action.ViewActions.pressBack
 import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.AddDeadlineActivity
+import com.github.multimatum_team.multimatum.activity.SearchLocationActivity
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
@@ -35,6 +37,7 @@ import dagger.hilt.components.SingletonComponent
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert
+import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -211,6 +214,17 @@ class AddDeadlineTest {
         sleep(1)
         val dialog2 = ShadowAlertDialog.getLatestAlertDialog()
         dialog2.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+    }
+
+    @Test
+    fun `The location selector button correctly opens the location search view`() {
+        onView(withId(R.id.search_location)).perform(click())
+        Intents.intended(
+            Matchers.allOf(
+                IntentMatchers.hasComponent(SearchLocationActivity::class.java.name),
+                IntentMatchers.toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
     }
 
     /*

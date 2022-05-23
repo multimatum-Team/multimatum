@@ -61,5 +61,9 @@ class SearchLocationActivity : AppCompatActivity() {
             setResult(RESULT_OK, resultIntent)
             finish()
         }
+
+        searchBottomSheetView.addOnCategoryClickListener { category ->
+            // TODO: handle category listener
+        }
     }
 }

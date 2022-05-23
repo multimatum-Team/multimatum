@@ -16,12 +16,14 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.activity.DeadlineDetailsActivity
+import com.github.multimatum_team.multimatum.activity.DisplayLocationActivity
 import com.github.multimatum_team.multimatum.activity.QRGeneratorActivity
 import com.github.multimatum_team.multimatum.model.*
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.*
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
+import com.google.firebase.firestore.GeoPoint
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -287,6 +289,22 @@ class DeadlineDetailsTest {
     }
 
     @Test
+    fun `The map is opened on request when a location is provided in the deadline`() {
+        val intent =
+            DeadlineDetailsActivity.newIntent(ApplicationProvider.getApplicationContext(), "6")
+        val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.display_location_on_map)).perform(click())
+            Intents.intended(
+                allOf(
+                    hasComponent(DisplayLocationActivity::class.java.name),
+                    toPackage("com.github.multimatum_team.multimatum")
+                )
+            )
+        }
+    }
+
+    @Test
     fun `a deadline with already defined notification should show them`() {
         // Setup 5 notifications
         DeadlineNotification.editNotification(
@@ -378,6 +396,14 @@ class DeadlineDetailsTest {
                         LocalDateTime.of(2022, 3, 12, 6, 0),
                         "Deadline for testing not owned group",
                         GroupOwned("1")
+                    ),
+                    Deadline(
+                        "Test 7",
+                        DeadlineState.TODO,
+                        LocalDateTime.of(2022, 9, 12, 6, 0),
+                        "Deadline to test the map",
+                        locationName = "EPFL",
+                        location = GeoPoint(46.5191, 6.5668)
                     )
                 )
             )
