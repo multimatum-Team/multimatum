@@ -113,7 +113,7 @@ class SearchLocationActivity : AppCompatActivity() {
 
     /**
      * Constructs the the return intent with the parameters that are
-     * useful for the deadline creation
+     * necessary for the deadline creation
      */
     private fun initializeResultIntent(it: SearchResult) {
         val resultIntent = Intent()
