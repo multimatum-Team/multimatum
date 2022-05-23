@@ -219,24 +219,21 @@ class AddDeadlineTest {
     @Test
     fun `The location selector button correctly opens the location search view`() {
         onView(withId(R.id.search_location)).perform(click())
-        /*Intents.intended(
+        Intents.intended(
             Matchers.allOf(
                 IntentMatchers.hasComponent(SearchLocationActivity::class.java.name),
                 IntentMatchers.toPackage("com.github.multimatum_team.multimatum")
             )
-        )*/
-        assertEquals(2+2, 4)
+        )
     }
 
-    /*
-    // TODO: Temporarily removed until the inflate exception thrown by the SearchView layout is solved
+
     @Test
     fun `The button should open the location search bar`() {
         // Clicking on the location search button
-        onView(withId(R.id.search_location)).perform(ViewActions.click())
-        onView(withId(R.id.search_location)).check(ViewAssertions.matches(isDisplayed()))
+        onView(withId(R.id.search_location)).perform(click())
+        onView(withId(R.id.search_location)).check(matches(isDisplayed()))
     }
-    */
 
     // TODO: This test was removed because I replaced the startIntent to the MainActivity with a
     //  call to finish() which cannot be tested

@@ -296,13 +296,12 @@ class DeadlineDetailsTest {
         val scenario = ActivityScenario.launch<DeadlineDetailsActivity>(intent)
         scenario.use {
             onView(withId(R.id.display_location_on_map)).perform(click())
-            /*Intents.intended(
+            Intents.intended(
                 allOf(
                     hasComponent(DisplayLocationActivity::class.java.name),
                     toPackage("com.github.multimatum_team.multimatum")
                 )
-            )*/
-            assertEquals(2 + 2, 4)
+            )
         }
     }
 
