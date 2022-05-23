@@ -124,7 +124,20 @@ object CodeScannerModule {
 
 }
 
+/**
+ * Produces an AlertDialog builder using the provided function
+ *
+ * This allows mocking users of AlertDialogBuilder while allowing them to
+ * parametrize AlertDialog with their own context
+ */
 data class AlertDialogBuilderProducer(val produce: (Context) -> AlertDialog.Builder)
+
+/**
+ * Produces a GroupViewModel using the provided function
+ *
+ * This allows to choose between the default (production) GroupViwModel or
+ * a provided one (for tests)
+ */
 data class GroupViewModelProducer(val produce: (GroupViewModel) -> GroupViewModel)
 
 @Module

@@ -37,6 +37,7 @@ import org.robolectric.shadows.ShadowToast
 import java.time.LocalDateTime
 import javax.inject.Singleton
 
+// This test case is distinct from GroupsActivityTest because it must uninstall other modules
 @UninstallModules(GroupsActivityModule::class, FirebaseRepositoryModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -63,6 +64,15 @@ class GroupsActivityTest2 {
 
     @Test
     fun `alert dialog is configured correctly and shown in addGroups`() {
+
+        /*
+         * This test works as follows:
+         *  1. values are initialized to null
+         *  2. mocks are configured to set the values when the corresponding functions are called
+         *  3. among these values, the ones that should take a particular value are checked to be
+         *     equal to this particular value
+         *  4. the behavior of the remaining (more complex) values (mainly listeners) is checked
+         */
 
         var title: String? = null
         var msg: String? = null
@@ -143,6 +153,7 @@ class GroupsActivityTest2 {
         posButtonOnClickListener: DialogInterface.OnClickListener?
     ) {
         val testText = "<demo text example>"
+        // simulate writing in editText
         editText.text.clear()
         editText.text.insert(0, testText)
         var readText: String? = null
@@ -152,11 +163,14 @@ class GroupsActivityTest2 {
             callback = it.getArgument(1)
             null
         }
+        // Calling onClick (i.e. clicking) should create a group with the right
+        // arguments (readText and callback)
         posButtonOnClickListener!!.onClick(mock(), DialogInterface.BUTTON_POSITIVE)
         Assert.assertEquals(testText, readText)
 
+        // Check that the given callback displays a toast "Group created"
         Assert.assertNotNull(callback)
-        callback!!.invoke("42-24")
+        callback!!.invoke("42-24")  // any other value than 42-24 would be equally valid
         assertLastToastWas("Group created")
     }
 
@@ -168,6 +182,7 @@ class GroupsActivityTest2 {
     }
 
     private fun checkNegativeButtonListener(negButtonOnClickListener: DialogInterface.OnClickListener?) {
+        // Calling onClick (i.e. clicking) should dismiss the Dialog
         val mockDialog: Dialog = mock()
         var dismissed = false
         whenever(mockDialog.dismiss()).then {
