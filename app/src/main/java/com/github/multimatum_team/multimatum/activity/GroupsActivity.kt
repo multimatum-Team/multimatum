@@ -8,9 +8,10 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.Toast
 import androidx.activity.viewModels
-import android.app.AlertDialog
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.github.multimatum_team.multimatum.AlertDialogBuilderProducer
+import com.github.multimatum_team.multimatum.GroupViewModelProducer
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.UserGroupAdapter
 import com.github.multimatum_team.multimatum.repository.UserRepository
@@ -23,11 +24,20 @@ class GroupsActivity : AppCompatActivity() {
     @Inject
     lateinit var userRepository: UserRepository
 
-    private val groupViewModel: GroupViewModel by viewModels()
+    @Inject
+    lateinit var alertDialogBuilderProducer: AlertDialogBuilderProducer
+
+    @Inject
+    lateinit var groupViewModelProducer: GroupViewModelProducer
+
+    private val defaultGroupViewModel: GroupViewModel by viewModels()
+    private lateinit var groupViewModel: GroupViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_groups)
+
+        groupViewModel = groupViewModelProducer.produce(defaultGroupViewModel)
 
         val listView = findViewById<ListView>(R.id.listViewGroups)
 
@@ -43,13 +53,13 @@ class GroupsActivity : AppCompatActivity() {
         }
 
         listView.adapter = adapter
-        groupViewModel.getGroups().observe(this){groups ->
+        groupViewModel.getGroups().observe(this) { groups ->
             adapter.setGroups(groups)
         }
     }
 
-    fun addGroup(view: View){
-        val alertDialogBuilder = AlertDialog.Builder(this)
+    fun addGroup(view: View) {
+        val alertDialogBuilder = alertDialogBuilderProducer.produce(this)
         alertDialogBuilder.setTitle("Create group")
         alertDialogBuilder.setMessage("Group name :")
 
