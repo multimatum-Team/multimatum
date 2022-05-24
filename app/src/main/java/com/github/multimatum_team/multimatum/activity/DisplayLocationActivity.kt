@@ -44,8 +44,8 @@ class DisplayLocationActivity : AppCompatActivity() {
         latitude = intent.getDoubleExtra("latitude", 0.0)
         longitude = intent.getDoubleExtra("longitude", 0.0)
 
-        mapView?.getMapboxMap()?.also {
-            it.setCamera(
+        mapView?.getMapboxMap()?.apply {
+            setCamera(
                 CameraOptions.Builder()
                     .center(Point.fromLngLat(longitude, latitude))
                     .zoom(DEFAULT_ZOOM)

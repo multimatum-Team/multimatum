@@ -14,7 +14,7 @@ import com.mapbox.search.ui.view.SearchBottomSheetView
 class SearchLocationActivity : AppCompatActivity() {
 
     private lateinit var searchBottomSheetView: SearchBottomSheetView
-    val searchEngine = MapboxSearchSdk.getSearchEngine()
+    private val searchEngine = MapboxSearchSdk.getSearchEngine()
 
     private val searchCallback = object : SearchSelectionCallback, SearchMultipleSelectionCallback {
         override fun onCategoryResult(
