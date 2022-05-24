@@ -67,7 +67,7 @@ class DeadlineNotificationTest {
     @Test
     fun `createNotificationChannel should create a notification channel`() {
         val channel = NotificationChannel(
-            "remindersChannel",
+            ReminderBroadcastReceiver.REMINDER_NOTIFICATION_CHANNEL_ID,
             "reminders channel",
             NotificationManager.IMPORTANCE_DEFAULT
         )

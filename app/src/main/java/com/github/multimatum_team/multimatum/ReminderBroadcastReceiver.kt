@@ -24,6 +24,12 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
     companion object {
         private const val NOTIF_ENABLED_PREF_KEY =
             "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.NotifEnabled"
+
+        const val NOTIFICATION_TITLE_TAG = "title"
+        const val NOTIFICATION_ID_TAG = "description"
+        const val NOTIFICATION_DESCRIPTION_TAG = "id"
+        const val REMINDER_NOTIFICATION_CHANNEL_ID = "remindersChannel"
+
     }
 
     /**
@@ -33,12 +39,12 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
         if (preferences
                 .getBoolean(NOTIF_ENABLED_PREF_KEY, true)
         ) {
-            val channelId = "remindersChannel"
+            val channelId = REMINDER_NOTIFICATION_CHANNEL_ID
 
             //retrieving some parameters for the notification
-            val title = intent!!.getStringExtra("title")
-            val content = intent!!.getStringExtra("description")
-            val notificationId = intent!!.getStringExtra("id")
+            val title = intent!!.getStringExtra(NOTIFICATION_TITLE_TAG)
+            val content = intent!!.getStringExtra(NOTIFICATION_ID_TAG)
+            val notificationId = intent!!.getStringExtra(NOTIFICATION_DESCRIPTION_TAG)
 
 
             val intent2 = Intent(context, MainActivity::class.java)
