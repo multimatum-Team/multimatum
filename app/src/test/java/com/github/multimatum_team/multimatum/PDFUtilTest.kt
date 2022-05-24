@@ -6,8 +6,10 @@ import android.content.Intent
 import android.database.MatrixCursor
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.util.PDFUtil
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -20,13 +22,18 @@ import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 class PDFUtilTest {
-    private lateinit var context: Context
+    private var context: Context = ApplicationProvider.getApplicationContext<Context>()
 
     @Before
-    @Throws(Exception::class)
     fun setUp() {
-        context = ApplicationProvider.getApplicationContext<Context>()
+        Intents.init()
     }
+
+    @After
+    fun teardown() {
+        Intents.release()
+    }
+
 
     @Test
     fun `selecting a PDF should produce the correct intent`() {
