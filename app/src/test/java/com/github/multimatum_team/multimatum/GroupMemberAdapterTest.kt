@@ -1,14 +1,13 @@
 package com.github.multimatum_team.multimatum
 
+import android.app.AlertDialog
 import android.app.Application
+import android.content.DialogInterface
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.adaptater.GroupMemberAdapter
-import com.github.multimatum_team.multimatum.model.GroupID
-import com.github.multimatum_team.multimatum.model.SignedInUser
-import com.github.multimatum_team.multimatum.model.UserGroup
-import com.github.multimatum_team.multimatum.model.UserInfo
+import com.github.multimatum_team.multimatum.model.*
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.util.*
 import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
@@ -21,9 +20,16 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import org.junit.*
+import org.junit.Assert.*
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.jvm.isAccessible
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
@@ -92,7 +98,78 @@ class GroupMemberAdapterTest {
 
     @Test
     fun `Get count should give correct count`() {
-        Assert.assertEquals(6, adapter.itemCount)
+        assertEquals(6, adapter.itemCount)
+    }
+
+    @Test
+    fun `showConfirmMemberRemovalDialog should configure the dialog correctly`(){
+        val mockAlertDialogBuilder: AlertDialog.Builder = mock()
+        var msg: String? = null
+        var posButtonMsg: String? = null
+        var posButtonListener: DialogInterface.OnClickListener? = null
+        var negButtonMsg: String? = null
+        var negButtonListener: DialogInterface.OnClickListener? = null
+        var shown = false
+        whenever(mockAlertDialogBuilder.setMessage(anyString())).then {
+            msg = it.getArgument(0)
+            mockAlertDialogBuilder
+        }
+        whenever(mockAlertDialogBuilder.setPositiveButton(anyString(), any())).then {
+            posButtonMsg = it.getArgument(0)
+            posButtonListener = it.getArgument(1)
+            mockAlertDialogBuilder
+        }
+        whenever(mockAlertDialogBuilder.setNegativeButton(anyString(), any())).then {
+            negButtonMsg = it.getArgument(0)
+            negButtonListener = it.getArgument(1)
+            mockAlertDialogBuilder
+        }
+        whenever(mockAlertDialogBuilder.show()).then {
+            shown = true
+            mock<AlertDialog>()
+        }
+        val idOfUserAverell = "1234"
+        val idOfUserJoe = "1235"
+        val averellUserInfo = UserInfo(idOfUserAverell, "Averell Dalton")
+        val mockUserRepository = MockUserRepository(listOf(
+            averellUserInfo,
+            UserInfo(idOfUserJoe, "Joe Dalton")
+        ))
+        val mockGroupViewModel: GroupViewModel = mock()
+        val groupMemberAdapter = GroupMemberAdapter(context, mockUserRepository, mock(), mockGroupViewModel){ mockAlertDialogBuilder }
+        val group = UserGroup("789", "MultimatumTeam", idOfUserAverell, setOf(idOfUserAverell, idOfUserJoe))
+        groupMemberAdapter.setGroup(group)
+        val funcUnderTest = GroupMemberAdapter::class.declaredFunctions.first { it.name == "showConfirmMemberRemovalDialog" }
+        funcUnderTest.isAccessible = true
+        funcUnderTest.call(groupMemberAdapter, averellUserInfo, 0)
+        funcUnderTest.isAccessible = false
+        assertEquals("Are you sure you want to remove Averell Dalton from the group?\nThis action is irreversible", msg)
+        assertEquals("Remove", posButtonMsg)
+        assertEquals("Cancel", negButtonMsg)
+        assertTrue(shown)
+        assertNotNull(posButtonListener)
+        assertNotNull(negButtonListener)
+
+        checkPosButtonListener(mockGroupViewModel, posButtonListener, group, idOfUserAverell)
+
+    }
+
+    private fun checkPosButtonListener(
+        mockGroupViewModel: GroupViewModel,
+        posButtonListener: DialogInterface.OnClickListener?,
+        group: UserGroup,
+        idOfUserAverell: String
+    ) {
+        var removedGroupId: GroupID? = null
+        var removedUserId: GroupID? = null
+        whenever(mockGroupViewModel.removeMember(any(), any())).then {
+            removedGroupId = it.getArgument(0)
+            removedUserId = it.getArgument(1)
+            null
+        }
+        posButtonListener!!.onClick(mock(), 0)
+        assertEquals(group.id, removedGroupId)
+        assertEquals(idOfUserAverell, removedUserId)
     }
 
     @Module
