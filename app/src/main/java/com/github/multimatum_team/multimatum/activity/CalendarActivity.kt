@@ -1,8 +1,5 @@
 package com.github.multimatum_team.multimatum.activity
 
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MotionEvent
@@ -72,7 +69,7 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
             // with the 3 override functions
             .setCallback(this)
 
-        //set up observer on deadline list
+        // Set up observer on deadline list to show only deadline with the selected date
         listView.adapter = listViewAdapter
         viewModel.getDeadlines().observe(this){ deadlines ->
             val deadlineOfTheSelectedDay = deadlines.filter { deadline ->
@@ -103,6 +100,7 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
             .setPrimaryTextColor(getColor(R.color.deadline_details_title))
             .setSelectionColor(getColor(R.color.deadline_details_title))
             .setSelectedTextColor(getColor(R.color.deadline_item_background))
+        // Update the color shown
         DateText.invalidateColors()
     }
 
