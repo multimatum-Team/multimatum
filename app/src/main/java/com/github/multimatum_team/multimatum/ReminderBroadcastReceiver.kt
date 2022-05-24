@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.core.app.NotificationCompat
 import com.github.multimatum_team.multimatum.activity.MainActivity
+import com.github.multimatum_team.multimatum.activity.MainSettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -22,9 +23,6 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
     lateinit var preferences: SharedPreferences
 
     companion object {
-        private const val NOTIF_ENABLED_PREF_KEY =
-            "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.NotifEnabled"
-
         const val NOTIFICATION_TITLE_TAG = "title"
         const val NOTIFICATION_ID_TAG = "description"
         const val NOTIFICATION_DESCRIPTION_TAG = "id"
@@ -37,7 +35,7 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
      */
     override fun onReceive(context: Context, intent: Intent) {
         if (preferences
-                .getBoolean(NOTIF_ENABLED_PREF_KEY, true)
+                .getBoolean(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY, true)
         ) {
             val channelId = REMINDER_NOTIFICATION_CHANNEL_ID
 
