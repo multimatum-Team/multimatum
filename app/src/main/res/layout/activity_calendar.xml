@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".activity.CalendarActivity">
 
-
-
     <Button
         android:id="@+id/calendar_add_deadline_button"
         style="@style/Widget.MaterialComponents.Button.Icon"

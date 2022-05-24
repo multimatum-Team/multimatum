@@ -48,9 +48,6 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
         deadlineTitleInputView = findViewById(R.id.textInputEditCalendar)
         addDeadlineButton = findViewById(R.id.calendar_add_deadline_button)
 
-        val listView = findViewById<ListView>(R.id.calendar_view_listView)
-        val listViewAdapter = DeadlineAdapter(this, viewModel)
-
         // Allow the calendar to go only a month before the actual date and
         // with no end after it
         val start = transformLocalDateTimeToCalendar(clockService.now())
@@ -69,11 +66,15 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
             // with the 3 override functions
             .setCallback(this)
 
+        val listView = findViewById<ListView>(R.id.calendar_view_listView)
+        val listViewAdapter = DeadlineAdapter(this, viewModel)
+
         // Set up observer on deadline list to show only deadline with the selected date
         listView.adapter = listViewAdapter
-        viewModel.getDeadlines().observe(this){ deadlines ->
+        viewModel.getDeadlines().observe(this) { deadlines ->
             val deadlineOfTheSelectedDay = deadlines.filter { deadline ->
-                deadline.value.dateTime.withHour(0).withMinute(0).equals(dateSelected.withHour(0).withMinute(0))
+                deadline.value.dateTime.withHour(0).withMinute(0)
+                    .equals(dateSelected.withHour(0).withMinute(0))
             }
             listViewAdapter.setDeadlines(deadlineOfTheSelectedDay)
         }
@@ -162,6 +163,7 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
     override fun onMonthChanged(monthStartDate: Calendar?) {}
     override fun onDaySelected(selectedDate: Calendar?) {
         dateSelected = transformCalendarToLocalDateTime(selectedDate!!)
+        // if the deadline are fetched, show the deadlines of the selected day
         val deadlines = viewModel.getDeadlines().value
         if (!deadlines.isNullOrEmpty()) {
             val deadlineOfTheSelectedDay = deadlines.filter { deadline ->

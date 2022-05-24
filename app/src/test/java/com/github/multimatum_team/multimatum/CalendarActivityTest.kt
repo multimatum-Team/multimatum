@@ -61,20 +61,25 @@ class CalendarActivityTest {
     }
 
     @Test
-    fun `we should be able to select a date, show the deadline from this date and go to the details of the deadline`(){
+    fun `we should be able to select a date, show the deadline from this date and go to the details of the deadline`() {
         activityRule.scenario.onActivity { activity ->
+            // Check if no deadline are shown
             Espresso.onView(withId(R.id.calendar_view_listView))
                 .check(matches(withListSize(0)))
+            // Select the day with a deadline
             val selectDate = Calendar.getInstance()
-            selectDate.set(2022,2,13)
+            selectDate.set(2022, 2, 13)
             activity
                 .findViewById<EventsCalendar>(R.id.calendar_view)
                 .setCurrentSelectedDate(selectDate)
 
+            // Check if the deadline is shown
             Espresso.onView(withId(R.id.calendar_view_listView))
                 .check(matches(withListSize(1)))
 
-            Espresso.onData(Matchers.anything()).inAdapterView(withId(R.id.calendar_view_listView)).atPosition(0)
+            // Check if we can go to the details of the deadline
+            Espresso.onData(Matchers.anything()).inAdapterView(withId(R.id.calendar_view_listView))
+                .atPosition(0)
                 .perform(longClick())
 
             Intents.intended(
