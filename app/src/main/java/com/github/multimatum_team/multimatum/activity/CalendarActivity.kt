@@ -4,11 +4,13 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.MotionEvent
 import android.widget.Button
+import android.widget.ListView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.events.calendar.utils.EventsCalendarUtil
 import com.events.calendar.views.EventsCalendar
 import com.github.multimatum_team.multimatum.R
+import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
 import com.github.multimatum_team.multimatum.service.ClockService
@@ -44,6 +46,9 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
         deadlineTitleInputView = findViewById(R.id.textInputEditCalendar)
         addDeadlineButton = findViewById(R.id.calendar_add_deadline_button)
 
+        val listView = findViewById<ListView>(R.id.calendar_view_listView)
+        val listViewAdapter = DeadlineAdapter(this, viewModel)
+
         // Allow the calendar to go only a month before the actual date and
         // with no end after it
         val start = transformLocalDateTimeToCalendar(clockService.now())
@@ -62,6 +67,24 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
             // with the 3 override functions
             .setCallback(this)
 
+        //set up observer on deadline list
+        listView.adapter = listViewAdapter
+        viewModel.getDeadlines().observe(this){ deadlines ->
+            val deadlineOfTheSelectedDay = deadlines.filter { deadline ->
+                deadline.value.dateTime.withHour(0).withMinute(0).equals(dateSelected.withHour(0).withMinute(0))
+            }
+            listViewAdapter.setDeadlines(deadlineOfTheSelectedDay)
+        }
+
+        // Set when you maintain your finger on an item of the list, launch the detail activity
+        listView.setOnItemLongClickListener { _, _, position, _ ->
+            val (id, _) = listViewAdapter.getItem(position)
+            val detailIntent = DeadlineDetailsActivity.newIntent(this, id)
+            startActivity(detailIntent)
+            // Last line necessary to use this function
+            true
+        }
+
         updateColorText()
         setDotForEveryDeadline()
         initTextInput()
@@ -74,6 +97,7 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
             .setSecondaryTextColor(getColor(R.color.gray_variation_text))
             .setSelectionColor(getColor(R.color.deadline_details_title))
             .setSelectedTextColor(getColor(R.color.deadline_item_background))
+            .setWeekHeaderColor(getColor(R.color.deadline_details_title))
     }
 
     private fun transformCalendarToLocalDateTime(calendar: Calendar): LocalDateTime {
@@ -134,5 +158,13 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
     override fun onMonthChanged(monthStartDate: Calendar?) {}
     override fun onDaySelected(selectedDate: Calendar?) {
         dateSelected = transformCalendarToLocalDateTime(selectedDate!!)
+        val deadlines = viewModel.getDeadlines().value
+        if (!deadlines.isNullOrEmpty()) {
+            val deadlineOfTheSelectedDay = deadlines.filter { deadline ->
+                deadline.value.dateTime.toLocalDate().equals(dateSelected.toLocalDate())
+            }
+            val adapter = findViewById<ListView>(R.id.calendar_view_listView).adapter
+            (adapter as DeadlineAdapter).setDeadlines(deadlineOfTheSelectedDay)
+        }
     }
 }
