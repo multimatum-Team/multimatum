@@ -62,6 +62,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:21.0.4'
     implementation 'com.firebaseui:firebase-ui-auth:8.0.1'
     implementation 'com.mapbox.search:mapbox-search-android-ui:1.0.0-beta.29'
+    implementation 'com.mapbox.maps:android:10.5.0'
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
     implementation 'com.google.android.gms:play-services-base:18.0.1'
     implementation 'com.google.firebase:firebase-inappmessaging:20.1.2'
