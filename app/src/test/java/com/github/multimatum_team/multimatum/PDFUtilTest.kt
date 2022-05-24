@@ -17,7 +17,6 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import java.util.*
 
 
 @RunWith(AndroidJUnit4::class)
