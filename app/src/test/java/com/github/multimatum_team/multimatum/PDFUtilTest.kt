@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum
 
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.database.MatrixCursor
@@ -14,14 +13,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 
 
 @RunWith(AndroidJUnit4::class)
 class PDFUtilTest {
-    private var context: Context = ApplicationProvider.getApplicationContext<Context>()
+    private var context: Context = ApplicationProvider.getApplicationContext()
 
     @Before
     fun setUp() {
@@ -61,21 +57,10 @@ class PDFUtilTest {
     fun `getting name from Uri`(){
         val inputUri: Uri = Uri.parse("fooDir1/fooDir2/someFile.pdf")
         val expectedOutput = "someFile.pdf"
-        val cursorColumn: Array<String> = arrayOf<String>("Uri")
+        val cursorColumn: Array<String> = arrayOf("Uri")
         val matrixCursor = MatrixCursor(cursorColumn)
         matrixCursor.addRow(arrayOf("fooDir1/fooDir2/someFile.pdf"))
 
-        val contentResolver : ContentResolver = mock {
-            on {
-                query(
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull()
-                )
-            } doReturn matrixCursor
-        }
 
         val actualOutput = PDFUtil.getFileNameFromUri(inputUri, context)
         assertEquals(expectedOutput, actualOutput)

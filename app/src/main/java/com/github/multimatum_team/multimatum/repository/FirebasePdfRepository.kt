@@ -34,8 +34,8 @@ class FirebasePdfRepository @Inject constructor(
             ref.putFile(data).addOnSuccessListener {
                 callback(ref.path)
             }.addOnFailureListener {
-                val failureDialog =
-                    AlertDialog.Builder(context).setTitle("pdf upload failed").show()
+
+                AlertDialog.Builder(context).setTitle("pdf upload failed").show()
                 callback("")
             }
         } else {

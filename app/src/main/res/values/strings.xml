@@ -28,8 +28,6 @@
     <string name="pick_pdf">Select a PDF</string>
     <string name="you_re_logged_in_as">You\'re logged in as %1s</string>
     <string name="logout">LOGOUT</string>
-    <string name="procrastination_fighter_enable_msg">Procrastination fighter is enabled</string>
-    <string name="procrastination_fighter_disabled_msg">Procrastination fighter is disabled</string>
     <string name="procrastination_fighter_permanent_notif_title">Procrastination detector</string>
     <string name="procrastination_fighter_permanent_notif_content_text">Procrastination is bad…</string>
     <string name="deleted">Deleted</string>
@@ -55,7 +53,6 @@
     <string name="not_in_any_group">Not in any group</string>
     <string name="in_the_group_X">In the group: %s</string>
     <string name="select_group">Select Group</string>
-    <string name="selected_item">Selected item:</string>
     <string name="group_owner">Owner: %s</string>
     <string name="group_invite">Invite</string>
     <string name="group_details_group_name_hint">Group name</string>
@@ -85,5 +82,4 @@
     <string name="group_invite_link_copied_to_clipboard">Copied invite link to clipboard</string>
     <string name="group_invite_link_to">Invite link to %s</string>
     <string name="multiple_alarms_planned">Multiple Alarms Planned</string>
-    <string name="no_associated_location">No associated location</string>
 </resources>

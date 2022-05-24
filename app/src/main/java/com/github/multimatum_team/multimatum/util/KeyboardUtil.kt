@@ -17,7 +17,7 @@ import com.google.android.material.textfield.TextInputEditText
  * @param callback the callback to run when the button is pressed, providing the text input value
  */
 fun EditText.setOnIMEActionDone(activity: Activity, callback: (String) -> Unit) {
-    setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, _ ->
+    setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             callback(text.toString())
             val focus = activity.currentFocus
