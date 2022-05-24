@@ -1,16 +1,19 @@
 package com.github.multimatum_team.multimatum
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Context.SENSOR_SERVICE
 import android.content.SharedPreferences
 import android.hardware.SensorManager
+import androidx.lifecycle.ViewModel
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.CodeScannerView
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.service.SystemClockService
 import com.github.multimatum_team.multimatum.util.JsonDeadlineConverter
+import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.firestore.FirebaseFirestore
@@ -118,5 +121,35 @@ object CodeScannerModule {
     @Provides
     fun provideJsonDeadlineConverter(): JsonDeadlineConverter =
         JsonDeadlineConverter()
+
+}
+
+/**
+ * Produces an AlertDialog builder using the provided function
+ *
+ * This allows mocking users of AlertDialogBuilder while allowing them to
+ * parametrize AlertDialog with their own context
+ */
+data class AlertDialogBuilderProducer(val produce: (Context) -> AlertDialog.Builder)
+
+/**
+ * Produces a GroupViewModel using the provided function
+ *
+ * This allows to choose between the default (production) GroupViwModel or
+ * a provided one (for tests)
+ */
+data class GroupViewModelProducer(val produce: (GroupViewModel) -> GroupViewModel)
+
+@Module
+@InstallIn(SingletonComponent::class)
+object GroupsActivityModule {
+
+    @Provides
+    fun provideAlertDialogBuilderProducer(): AlertDialogBuilderProducer =
+        AlertDialogBuilderProducer { ctx -> AlertDialog.Builder(ctx) }
+
+    @Provides
+    fun provideGroupViewModelProducer(): GroupViewModelProducer =
+        GroupViewModelProducer { normalViewModel -> normalViewModel }
 
 }
