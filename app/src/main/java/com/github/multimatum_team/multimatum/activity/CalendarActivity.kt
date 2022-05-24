@@ -1,5 +1,8 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MotionEvent
@@ -8,6 +11,7 @@ import android.widget.ListView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.events.calendar.utils.EventsCalendarUtil
+import com.events.calendar.views.DateText
 import com.events.calendar.views.EventsCalendar
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
@@ -36,6 +40,7 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
     private lateinit var calendarView: EventsCalendar
     private lateinit var deadlineTitleInputView: TextInputEditText
     private lateinit var addDeadlineButton: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,11 +98,12 @@ class CalendarActivity : AppCompatActivity(), EventsCalendar.Callback {
 
     private fun updateColorText() {
         calendarView.setMonthTitleColor(getColor(R.color.deadline_details_title))
-            .setPrimaryTextColor(getColor(R.color.deadline_details_title))
+            .setWeekHeaderColor(getColor(R.color.deadline_details_title))
             .setSecondaryTextColor(getColor(R.color.gray_variation_text))
+            .setPrimaryTextColor(getColor(R.color.deadline_details_title))
             .setSelectionColor(getColor(R.color.deadline_details_title))
             .setSelectedTextColor(getColor(R.color.deadline_item_background))
-            .setWeekHeaderColor(getColor(R.color.deadline_details_title))
+        DateText.invalidateColors()
     }
 
     private fun transformCalendarToLocalDateTime(calendar: Calendar): LocalDateTime {
