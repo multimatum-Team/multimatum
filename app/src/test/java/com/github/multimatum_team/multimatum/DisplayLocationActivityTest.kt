@@ -63,8 +63,10 @@ class DisplayLocationActivityTest {
         val mockPointAnnotationManager: PointAnnotationManager = mock()
 
         var cameraOptions: CameraOptions? = null
-        var pointAnnotationManagerCreated = false
+        var pointAnnotationManagerHasBeenCreated = false
 
+        // Setup the mocks to set the variables with the values they are given as arguments
+        // and to return other mocks when needed
         whenever(mockMapView.getMapboxMap()).thenReturn(mockMapBoxMap)
         whenever(mockMapBoxMap.loadStyleUri(anyString(), any<Style.OnStyleLoaded>())).then {
             val onStyleLoaded: Style.OnStyleLoaded = it.getArgument(1)
@@ -80,7 +82,7 @@ class DisplayLocationActivityTest {
             mockPointAnnotationManager
         )
         whenever(mockPointAnnotationManager.create(any<PointAnnotationOptions>())).then {
-            pointAnnotationManagerCreated = true
+            pointAnnotationManagerHasBeenCreated = true
             mock<PointAnnotation>()
         }
 
@@ -89,13 +91,11 @@ class DisplayLocationActivityTest {
         val activityScenario: ActivityScenario<DisplayLocationActivity> =
             ActivityScenario.launch(intent)
 
-        activityScenario.use {
-
-        }
+        activityScenario.use {  }
 
         assertNotNull(cameraOptions)
         assertEquals(14.0, cameraOptions!!.zoom)
-        assertTrue(pointAnnotationManagerCreated)
+        assertTrue(pointAnnotationManagerHasBeenCreated)
 
     }
 

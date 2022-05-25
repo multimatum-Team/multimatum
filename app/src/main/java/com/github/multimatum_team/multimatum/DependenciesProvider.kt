@@ -154,8 +154,18 @@ object GroupsActivityModule {
 
 }
 
+/**
+ * @param produce Given a function returning a MapView,
+ * returns a MapView, potentially using the given function
+ */
 data class MapViewProducer(val produce: (() -> MapView) -> MapView)
 
+/**
+ * Intended to be used only on actions related to the view
+ *
+ * @param performViewAction Given a callable, executes some action,
+ * potentially using the callable
+ */
 data class ViewActionPerformer(val performViewAction: (() -> Unit) -> Unit)
 
 @Module
