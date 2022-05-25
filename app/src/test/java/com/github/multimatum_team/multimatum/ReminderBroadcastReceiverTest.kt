@@ -44,7 +44,7 @@ class ReminderBroadcastReceiverTest {
     fun setUp() {
         Intents.init()
         hiltRule.inject()
-        context = ApplicationProvider.getApplicationContext<Context>()
+        context = ApplicationProvider.getApplicationContext()
     }
 
     @After

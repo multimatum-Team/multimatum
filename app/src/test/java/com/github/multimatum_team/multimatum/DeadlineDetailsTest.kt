@@ -333,23 +333,23 @@ class DeadlineDetailsTest {
             // Add a notification and check the displayed information
             onView(withId(R.id.deadline_details_activity_notifications)).perform(click())
             val dialog = ShadowAlertDialog.getLatestAlertDialog()
-            Assert.assertEquals(
+            assertEquals(
                 "2 hours before",
                 (dialog.listView.adapter.getView(4, null, null) as TextView).text
             )
-            Assert.assertEquals(
+            assertEquals(
                 "3 hours before",
                 (dialog.listView.adapter.getView(5, null, null) as TextView).text
             )
-            Assert.assertEquals(
+            assertEquals(
                 "4 hours before",
                 (dialog.listView.adapter.getView(6, null, null) as TextView).text
             )
-            Assert.assertEquals(
+            assertEquals(
                 "2 days before",
                 (dialog.listView.adapter.getView(7, null, null) as TextView).text
             )
-            Assert.assertEquals(
+            assertEquals(
                 "4 days before",
                 (dialog.listView.adapter.getView(8, null, null) as TextView).text
             )

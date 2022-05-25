@@ -2,7 +2,6 @@ package com.github.multimatum_team.multimatum.repository
 
 import android.net.Uri
 import com.github.multimatum_team.multimatum.model.GroupID
-import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserID
 
