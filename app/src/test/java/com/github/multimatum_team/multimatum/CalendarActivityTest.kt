@@ -3,7 +3,7 @@ package com.github.multimatum_team.multimatum
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ListView
-import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
@@ -64,7 +64,7 @@ class CalendarActivityTest {
     fun `we should be able to select a date, show the deadline from this date and go to the details of the deadline`() {
         activityRule.scenario.onActivity { activity ->
             // Check if no deadline are shown
-            Espresso.onView(withId(R.id.calendar_view_listView))
+            onView(withId(R.id.calendar_view_listView))
                 .check(matches(withListSize(0)))
             // Select the day with a deadline
             val selectDate = Calendar.getInstance()
@@ -74,11 +74,11 @@ class CalendarActivityTest {
                 .setCurrentSelectedDate(selectDate)
 
             // Check if the deadline is shown
-            Espresso.onView(withId(R.id.calendar_view_listView))
+            onView(withId(R.id.calendar_view_listView))
                 .check(matches(withListSize(1)))
 
             // Check if we can go to the details of the deadline
-            Espresso.onData(Matchers.anything()).inAdapterView(withId(R.id.calendar_view_listView))
+            onData(Matchers.anything()).inAdapterView(withId(R.id.calendar_view_listView))
                 .atPosition(0)
                 .perform(longClick())
 
@@ -97,38 +97,38 @@ class CalendarActivityTest {
 
     @Test
     fun `text input field should be clickable`() {
-        Espresso.onView(withId(R.id.textInputEditCalendar))
+        onView(withId(R.id.textInputEditCalendar))
             .check(matches(isClickable()))
     }
 
     @Test
     fun `text input screen should be released after adding deadline with button`() {
-        Espresso.onView(withId(R.id.textInputEditCalendar))
+        onView(withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase"))
-        Espresso.onView(withId(R.id.calendar_add_deadline_button))
+        onView(withId(R.id.calendar_add_deadline_button))
             .perform(click())
-        Espresso.onView(withId(R.id.textInputEditCalendar))
+        onView(withId(R.id.textInputEditCalendar))
             .check(matches(isClickable()))
     }
 
     @Test
     fun `text input screen should be released after adding deadline with enter key`() {
-        Espresso.onView(withId(R.id.textInputEditCalendar))
+        onView(withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase2"))
             .perform(pressKey(KeyEvent.KEYCODE_ENTER))
-        Espresso.onView(withId(R.id.textInputEditCalendar))
+        onView(withId(R.id.textInputEditCalendar))
             .check(matches(isClickable()))
     }
 
     @Test
     fun `text input screen should be released after adding deadline with done on SoftKeyboard`() {
-        Espresso.onView(withId(R.id.textInputEditCalendar))
+        onView(withId(R.id.textInputEditCalendar))
             .perform(click())
             .perform(typeText("deadlineTestCase3"))
             .perform(pressImeActionButton())
-        Espresso.onView(withId(R.id.textInputEditCalendar))
+        onView(withId(R.id.textInputEditCalendar))
             .check(matches(isClickable()))
     }
 
