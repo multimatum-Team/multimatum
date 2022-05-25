@@ -8,7 +8,7 @@ import org.mockito.kotlin.doNothing
 import java.io.File
 
 class MockPdfRepository: PdfRepository() {
-    override fun uploadPdf(data: Uri, context: Context, callback: (String) -> Unit) {
+    override fun uploadPdf(data: Uri, context: Context, callback: (String, Boolean) -> Unit) {
         doNothing()
     }
 
@@ -16,7 +16,12 @@ class MockPdfRepository: PdfRepository() {
         doNothing()
     }
 
-    override fun downloadPdf(path: String, title: String, callback: (File) -> Unit) {
-        callback(any())
+    override fun downloadPdf(
+        path: String,
+        title: String,
+        context: Context,
+        callback: (File?, Boolean) -> Unit
+    ) {
+        callback(any(), true)
     }
 }
