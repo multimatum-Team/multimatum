@@ -6,7 +6,6 @@ import android.content.Context.MODE_PRIVATE
 import android.content.Context.SENSOR_SERVICE
 import android.content.SharedPreferences
 import android.hardware.SensorManager
-import androidx.lifecycle.ViewModel
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.CodeScannerView
 import com.github.multimatum_team.multimatum.repository.*
@@ -18,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.mapbox.maps.MapView
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -151,5 +151,23 @@ object GroupsActivityModule {
     @Provides
     fun provideGroupViewModelProducer(): GroupViewModelProducer =
         GroupViewModelProducer { normalViewModel -> normalViewModel }
+
+}
+
+data class MapViewProducer(val produce: (() -> MapView) -> MapView)
+
+data class ViewActionPerformer(val performViewAction: (() -> Unit) -> Unit)
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DisplayLocationActivityModule {
+
+    @Provides
+    fun provideMapViewProducer(): MapViewProducer =
+        MapViewProducer { defaultMapViewCreator -> defaultMapViewCreator() }
+
+    @Provides
+    fun provideViewActionPerformer(): ViewActionPerformer =
+        ViewActionPerformer { viewAction -> viewAction() }
 
 }
