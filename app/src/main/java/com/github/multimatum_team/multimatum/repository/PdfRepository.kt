@@ -15,7 +15,6 @@ abstract class PdfRepository {
     abstract fun downloadPdf(
         path: String,
         title: String,
-        context: Context,
         callback: (File?, Boolean) -> Unit
     )
 }

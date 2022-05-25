@@ -464,8 +464,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
 
         pdfRepository.downloadPdf(
             pdfLink,
-            downloadLinkText.text.toString(),
-            this
+            downloadLinkText.text.toString()
         ) { ref, downloadSuccess ->
             if (downloadSuccess) {
                 val intent = Intent(Intent.ACTION_VIEW)

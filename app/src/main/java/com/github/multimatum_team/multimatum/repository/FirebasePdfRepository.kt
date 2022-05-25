@@ -17,7 +17,8 @@ import javax.inject.Inject
 
 class FirebasePdfRepository @Inject constructor(
     database: FirebaseStorage,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val connectivityManager: ConnectivityManager
 ) : PdfRepository() {
     private val storageReference = database.reference
 
@@ -35,7 +36,7 @@ class FirebasePdfRepository @Inject constructor(
                         ), 16
                     )
                 )
-            if (isOnline(context)) {
+            if (isOnline()) {
                 ref.putFile(data).addOnSuccessListener {
                     callback(ref.path, true)
                 }.addOnFailureListener {
@@ -55,8 +56,8 @@ class FirebasePdfRepository @Inject constructor(
             .addOnFailureListener { LogUtil.debugLog("PDF has failed to be deleted") }
     }
 
-    override fun downloadPdf(path: String, title: String, context: Context, callback: (File?, Boolean) -> Unit) {
-        if(isOnline(context)) {
+    override fun downloadPdf(path: String, title: String, callback: (File?, Boolean) -> Unit) {
+        if(isOnline()) {
             val ref = storageReference.child(path)
 
             val rootPath = File("file_name")
@@ -79,9 +80,7 @@ class FirebasePdfRepository @Inject constructor(
         }
     }
 
-    private fun isOnline(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private fun isOnline(): Boolean {
         val capabilities =
             connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         if (capabilities != null) {

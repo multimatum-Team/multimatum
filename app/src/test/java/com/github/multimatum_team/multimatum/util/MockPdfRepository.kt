@@ -17,12 +17,7 @@ class MockPdfRepository: PdfRepository() {
         doNothing()
     }
 
-    override fun downloadPdf(
-        path: String,
-        title: String,
-        context: Context,
-        callback: (File?, Boolean) -> Unit
-    ) {
+    override fun downloadPdf(path: String, title: String, callback: (File?, Boolean) -> Unit) {
         callback(any(), true)
     }
 }
