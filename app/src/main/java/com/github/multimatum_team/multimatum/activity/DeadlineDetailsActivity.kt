@@ -73,7 +73,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     private var pdfLink: String = ""
 
     // Memorisation of which checkBox is selected for the notifications
-    private var notificationSelected: BooleanArray = AddDeadlineActivity.defaultNotificationSelected.toBooleanArray()
+    private var notificationSelected: BooleanArray =
+        AddDeadlineActivity.defaultNotificationSelected.toBooleanArray()
     private var nameNotifications = AddDeadlineActivity.defaultNameNotifications.toTypedArray()
     private var timeNotifications = AddDeadlineActivity.defaultTimeNotifications.toTypedArray()
 
@@ -460,29 +461,37 @@ class DeadlineDetailsActivity : AppCompatActivity() {
      * download the pdf from firebaseStorage
      */
     fun downloadPdf(view: View) {
+
         pdfRepository.downloadPdf(
             pdfLink,
-            downloadLinkText.text.toString()
-        ) {
-            LogUtil.debugLog(it.path)
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-            val pdfUri = FileProvider.getUriForFile(
-                this,
-                this.applicationContext.packageName.toString() + ".provider",
-                it
-            )
-            intent.setDataAndType(pdfUri, "application/pdf")
-            val intentChosen = Intent.createChooser(intent, "Open File")
-            try {
-                startActivity(intentChosen)
-            } catch (e: ActivityNotFoundException) {
-                // Instruct the user to install a PDF reader here
-                val alertDialog = AlertDialog.Builder(this).setMessage("No PDF reader available")
-                    .setTitle("Error")
+            downloadLinkText.text.toString(),
+            this
+        ) { ref, downloadSuccess ->
+            if (downloadSuccess) {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+                val pdfUri = FileProvider.getUriForFile(
+                    this,
+                    this.applicationContext.packageName.toString() + ".provider",
+                    ref!!
+                )
+                intent.setDataAndType(pdfUri, "application/pdf")
+                val intentChosen = Intent.createChooser(intent, "Open File")
+                try {
+                    startActivity(intentChosen)
+                } catch (e: ActivityNotFoundException) {
+                    // Instruct the user to install a PDF reader here
+                    val alertDialog =
+                        AlertDialog.Builder(this).setMessage("No PDF reader available")
+                            .setTitle("Error")
+                            .setNeutralButton("ok") { dialogInterface, _ -> dialogInterface.cancel() }
+                    alertDialog.show()
+                }
+            } else {
+                AlertDialog.Builder(this).setMessage(R.string.pdf_download_offline_alert)
                     .setNeutralButton("ok") { dialogInterface, _ -> dialogInterface.cancel() }
-                alertDialog.show()
+                    .show()
             }
         }
     }

@@ -8,13 +8,14 @@ abstract class PdfRepository {
     abstract fun uploadPdf(
         data: Uri,
         context: Context,
-        callback: (String) -> Unit
+        callback: (String, Boolean) -> Unit
     )
     abstract fun delete(path: String)
 
     abstract fun downloadPdf(
         path: String,
         title: String,
-        callback: (File) -> Unit
+        context: Context,
+        callback: (File?, Boolean) -> Unit
     )
 }

@@ -354,12 +354,16 @@ class AddDeadlineActivity : AppCompatActivity() {
             //loading bar
             progressBar.visibility = View.VISIBLE
             // Start upload
-            pdfRepository.uploadPdf(pdfData, this) { ref ->
+            pdfRepository.uploadPdf(pdfData, this) { ref, uploadSuccess ->
                 // Hide loading bar
                 progressBar.visibility = View.GONE
-
+                val deadline = if (uploadSuccess) {
+                    recuperateDeadlineFromInputText(ref)
+                } else {
+                    recuperateDeadlineFromInputText("")
+                }
                 // Create the deadline
-                val deadline = recuperateDeadlineFromInputText(ref)
+
                 // Get notification setting
                 val notificationsTimes = retrieveNotificationsTimes()
 
@@ -372,6 +376,15 @@ class AddDeadlineActivity : AppCompatActivity() {
 
                 deadlineListViewModel.addDeadline(deadline) {
                     DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
+                }
+                if (!uploadSuccess) {
+                    AlertDialog.Builder(this).setTitle(R.string.pdf_upload_offline_alert)
+                        .setNeutralButton("ok") { dialogInterface, _ ->
+                            dialogInterface.cancel()
+                            finish()
+                        }
+                        .show()
+                } else {
                     finish()
                 }
             }
