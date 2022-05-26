@@ -11,6 +11,12 @@ made my 8 hours and I think I will work on test or in cleaning the last existing
 
 ### Joseph
 
+This week I worked on making the app more fault tolerant by emitting warnings
+instead of crashing when remote data is incorrectly formatted, but I couldn't
+find a clean way to do this. I also added a dialog to prevent anonymous
+users from using the groups feature, which could make the app crash. Next
+week I will try to clean up the code and improve the UI for the final demo.
+
 ### Lenny
 
 ### Léo
