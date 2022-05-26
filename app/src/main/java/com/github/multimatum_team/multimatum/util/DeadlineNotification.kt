@@ -134,7 +134,7 @@ object DeadlineNotification {
         val channelName: CharSequence = "reminders channel"
         val description = "channel for reminders notifications"
         val channel = NotificationChannel(
-            "remindersChannel",
+            ReminderBroadcastReceiver.REMINDER_NOTIFICATION_CHANNEL_ID,
             channelName,
             NotificationManager.IMPORTANCE_DEFAULT
         )
@@ -170,9 +170,9 @@ object DeadlineNotification {
         )
         //this create an intent of broadcast receiver
         //Adding extra parameter that will be used in the broadcast receiver to create the notification
-        intent.putExtra("title", deadline.title)
-        intent.putExtra("description", deadline.description)
-        intent.putExtra("id", id)
+        intent.putExtra(ReminderBroadcastReceiver.NOTIFICATION_TITLE_TAG, deadline.title)
+        intent.putExtra(ReminderBroadcastReceiver.NOTIFICATION_DESCRIPTION_TAG, deadline.description)
+        intent.putExtra(ReminderBroadcastReceiver.NOTIFICATION_ID_TAG, id)
 
         //compute the time where the alarm will be triggered in millis.
         val alarmTriggerTimeMS: Long = deadline.dateTime.atZone(ZoneId.systemDefault()).toInstant()

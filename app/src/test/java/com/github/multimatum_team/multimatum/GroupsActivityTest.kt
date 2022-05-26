@@ -1,8 +1,6 @@
 package com.github.multimatum_team.multimatum
 
-import android.app.AlertDialog
 import androidx.test.espresso.Espresso.onData
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -25,9 +23,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import junit.framework.Assert.assertTrue
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.allOf
 import org.junit.After
@@ -35,9 +30,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.shadows.ShadowAlertDialog
-import org.robolectric.shadows.ShadowToast
-import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton

@@ -1,16 +1,39 @@
 package com.github.multimatum_team.multimatum
 
+import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
+import android.database.MatrixCursor
+import android.net.Uri
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.util.PDFUtil
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 
 
 @RunWith(AndroidJUnit4::class)
 class PDFUtilTest {
+    private var context: Context = ApplicationProvider.getApplicationContext<Context>()
+
+    @Before
+    fun setUp() {
+        Intents.init()
+    }
+
+    @After
+    fun teardown() {
+        Intents.release()
+    }
+
+
     @Test
     fun `selecting a PDF should produce the correct intent`() {
         PDFUtil.selectPdfIntent {
@@ -25,5 +48,36 @@ class PDFUtilTest {
         val out2 = PDFUtil.addRdmCharToStr(input, 16)
         assertEquals(out1.length, input.length + 16)
         assert(out1 != out2)
+    }
+
+    @Test
+    fun `get empty Uri file name should return empty name`(){
+        val input = Uri.EMPTY
+        val out = PDFUtil.getFileNameFromUri(input, context)
+        assertEquals("", out)
+    }
+
+    @Test
+    fun `getting name from Uri`(){
+        val inputUri: Uri = Uri.parse("fooDir1/fooDir2/someFile.pdf")
+        val expectedOutput = "someFile.pdf"
+        val cursorColumn: Array<String> = arrayOf<String>("Uri")
+        val matrixCursor = MatrixCursor(cursorColumn)
+        matrixCursor.addRow(arrayOf("fooDir1/fooDir2/someFile.pdf"))
+
+        val contentResolver : ContentResolver = mock {
+            on {
+                query(
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull()
+                )
+            } doReturn matrixCursor
+        }
+
+        val actualOutput = PDFUtil.getFileNameFromUri(inputUri, context)
+        assertEquals(expectedOutput, actualOutput)
     }
 }

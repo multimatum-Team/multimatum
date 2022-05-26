@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.core.app.NotificationCompat
 import com.github.multimatum_team.multimatum.activity.MainActivity
+import com.github.multimatum_team.multimatum.activity.MainSettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -22,8 +23,11 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
     lateinit var preferences: SharedPreferences
 
     companion object {
-        private const val NOTIF_ENABLED_PREF_KEY =
-            "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.NotifEnabled"
+        const val NOTIFICATION_TITLE_TAG = "title"
+        const val NOTIFICATION_ID_TAG = "description"
+        const val NOTIFICATION_DESCRIPTION_TAG = "id"
+        const val REMINDER_NOTIFICATION_CHANNEL_ID = "remindersChannel"
+
     }
 
     /**
@@ -31,14 +35,14 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
      */
     override fun onReceive(context: Context, intent: Intent) {
         if (preferences
-                .getBoolean(NOTIF_ENABLED_PREF_KEY, true)
+                .getBoolean(MainSettingsActivity.NOTIF_ENABLED_PREF_KEY, true)
         ) {
-            val channelId = "remindersChannel"
+            val channelId = REMINDER_NOTIFICATION_CHANNEL_ID
 
             //retrieving some parameters for the notification
-            val title = intent!!.getStringExtra("title")
-            val content = intent!!.getStringExtra("description")
-            val notificationId = intent!!.getStringExtra("id")
+            val title = intent!!.getStringExtra(NOTIFICATION_TITLE_TAG)
+            val content = intent!!.getStringExtra(NOTIFICATION_ID_TAG)
+            val notificationId = intent!!.getStringExtra(NOTIFICATION_DESCRIPTION_TAG)
 
 
             val intent2 = Intent(context, MainActivity::class.java)

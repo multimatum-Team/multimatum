@@ -23,7 +23,8 @@ class GroupMemberAdapter(
     private val context: Context,
     private val userRepository: UserRepository,
     private val authViewModel: AuthViewModel,
-    private val groupViewModel: GroupViewModel
+    private val groupViewModel: GroupViewModel,
+    private val buildAlertDialog: (Context) -> AlertDialog.Builder = AlertDialog::Builder
 ) : RecyclerView.Adapter<GroupMemberAdapter.MemberItemViewHolder>() {
     private var dataSource: MutableList<UserInfo> = mutableListOf()
     private lateinit var group: UserGroup
@@ -56,7 +57,7 @@ class GroupMemberAdapter(
     private fun showConfirmMemberRemovalDialog(memberInfo: UserInfo, position: Int) {
         val message =
             context.getString(R.string.group_member_removal_confirmation_dialog, memberInfo.name)
-        AlertDialog.Builder(context)
+        buildAlertDialog(context)
             .setMessage(message)
             .setPositiveButton(context.getString(R.string.group_member_confirm_removal)) { _, _ ->
                 groupViewModel.removeMember(group.id, memberInfo.id)

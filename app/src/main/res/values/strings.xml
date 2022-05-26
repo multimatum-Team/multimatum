@@ -46,7 +46,7 @@
     <string name="not_done">Not Done</string>
     <string name="groups">Groups</string>
     <string name="mapbox_access_token" tools:ignore="Typos">pk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNHdvaHYwZ21nM2JtdW42MWY0cTRyIn0.T61NTFU2NdeqmCu1CdO9mg</string>
-    <string name="search_location">Search location</string>
+    <string name="display_location_default_msg">No location</string>
     <string name="location_default_msg">No location selected</string>
     <string name="select_notifications">Select Notifications</string>
     <string name="write_description_here">Write description here</string>

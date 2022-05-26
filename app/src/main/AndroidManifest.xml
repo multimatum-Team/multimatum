@@ -22,6 +22,9 @@
         android:theme="@style/Theme.Multimatum"
         tools:ignore="ExtraText">
         <activity
+            android:name=".activity.DisplayLocationActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.SearchLocationActivity"
             android:exported="false" />
         <activity
@@ -82,16 +85,19 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
         <activity
             android:name=".activity.GroupInviteActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="multimatum.page.link"
-                    android:scheme="https"/>
+                    android:scheme="https" />
             </intent-filter>
         </activity>
 
