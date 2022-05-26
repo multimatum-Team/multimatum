@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.viewmodel
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,6 +41,6 @@ class AuthViewModel @Inject constructor(
 
     fun signOut() = viewModelScope.launch {
         LogUtil.debugLog("signing out from ${_user.value}")
-        authRepository.signOut()
+            authRepository.signOut()
     }
 }
