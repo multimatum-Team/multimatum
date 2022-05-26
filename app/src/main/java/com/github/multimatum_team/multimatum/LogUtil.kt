@@ -25,6 +25,11 @@ object LogUtil {
     fun debugLog(str: String) = instance.debugLog(str)
 
     /**
+     * Displays the message in the logs with level 'warning', inferring the tag
+     */
+    fun warningLog(str: String) = instance.warningLog(str)
+
+    /**
      * Reports that the function in which it is called has been called
      */
     fun logFunctionCall() = instance.logFunctionCall()
@@ -40,6 +45,11 @@ object LogUtil {
          * Displays the message in the logs with level 'debug', inferring the tag
          */
         fun debugLog(str: String)
+
+        /**
+         * Displays the message in the logs with level 'warning', inferring the tag
+         */
+        fun warningLog(str: String)
 
         /**
          * Reports that the function in which it is called has been called
