@@ -13,22 +13,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.github.multimatum_team.multimatum.AlertDialogBuilderProducer
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.adaptater.DeadlineAdapter
 import com.github.multimatum_team.multimatum.adaptater.DeadlineFilterAdapter
 import com.github.multimatum_team.multimatum.adaptater.NoFilter
+import com.github.multimatum_team.multimatum.model.AnonymousUser
+import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.hudomju.swipe.SwipeToDismissTouchListener
 import com.hudomju.swipe.adapter.ListViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -42,8 +46,10 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var pdfRepository: PdfRepository
 
+    @Inject
+    lateinit var alertDialogBuilderProducer: AlertDialogBuilderProducer
 
-
+    private val authViewModel: AuthViewModel by viewModels()
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private val groupViewModel: GroupViewModel by viewModels()
 
@@ -51,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Firebase.initialize(this)
+        Firebase.firestore.clearPersistence()
 
         setContentView(R.layout.activity_main)
 
@@ -68,7 +75,12 @@ class MainActivity : AppCompatActivity() {
         groupViewModel.getGroups().observe(this, filterAdapter::setGroups)
         filterSpinner.adapter = filterAdapter
         filterSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) =
                 listViewAdapter.setFilter(filterAdapter.getItem(position))
 
             override fun onNothingSelected(parent: AdapterView<*>?) =
@@ -119,7 +131,12 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    private fun onDismissOverride(view: ListViewAdapter?, position: Int, lv:ListView, viewModel: DeadlineListViewModel){
+    private fun onDismissOverride(
+        view: ListViewAdapter?,
+        position: Int,
+        lv: ListView,
+        viewModel: DeadlineListViewModel
+    ) {
         val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
         val (idToDelete, deadline) = adapter.getItem(position)
         if (deadline.pdfPath != "") {
@@ -194,8 +211,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun goToGroups(view: View) {
-        val intent = Intent(this, GroupsActivity::class.java)
-        startActivity(intent)
+        when (authViewModel.getUser().value!!) {
+            is SignedInUser -> {
+                val intent = Intent(this, GroupsActivity::class.java)
+                startActivity(intent)
+            }
+            is AnonymousUser ->
+                alertDialogBuilderProducer
+                    .produce(this)
+                    .setTitle(getString(R.string.main_activity_go_to_groups_error_dialog_title))
+                    .setMessage(getString(R.string.main_activity_go_to_groups_error_dialog_message))
+                    .setPositiveButton(getString(R.string.main_activity_go_to_groups_error_dialog_go_to_sign_in_page)) { dialog, _ ->
+                        val intent = Intent(this, SignInActivity::class.java)
+                        startActivity(intent)
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(R.string.main_activity_go_to_groups_error_dialog_cancel) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+        }
     }
 
     companion object {
