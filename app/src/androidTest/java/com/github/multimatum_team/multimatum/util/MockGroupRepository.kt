@@ -40,8 +40,8 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
             })
         }
 
-    override suspend fun fetch(id: GroupID): UserGroup =
-        groups[id]!!
+    override suspend fun fetch(id: GroupID): UserGroup? =
+        groups[id]
 
     override suspend fun fetchAll(): Map<GroupID, UserGroup> =
         groups.filterValues { group -> group.members.contains(_userID) }

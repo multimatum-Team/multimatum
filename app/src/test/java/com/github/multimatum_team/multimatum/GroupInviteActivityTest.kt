@@ -98,7 +98,7 @@ class GroupInviteActivityTest {
     private suspend fun groupInviteIntent(groupID: GroupID): Intent {
         val intent =
             Intent(context, GroupInviteActivity::class.java)
-        val group = groupRepository.fetch(groupID)
+        val group = groupRepository.fetch(groupID)!!
         val linkTitle = context.getString(R.string.group_invite_link_title, group.name)
         val linkDescription = context.getString(R.string.group_invite_link_description)
         val inviteLink = groupRepository.generateInviteLink(groupID, linkTitle, linkDescription)
@@ -119,7 +119,7 @@ class GroupInviteActivityTest {
                 .perform(click())
             assertThat(
                 "Group contains invited user",
-                groupRepository.fetch("2").members,
+                groupRepository.fetch("2")!!.members,
                 hasItem(joseph.id)
             )
         }
@@ -137,7 +137,7 @@ class GroupInviteActivityTest {
                 .perform(click())
             assertThat(
                 "Group contains invited user",
-                groupRepository.fetch("2").members,
+                groupRepository.fetch("2")!!.members,
                 not(hasItem(joseph.id))
             )
         }
