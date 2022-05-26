@@ -1,7 +1,9 @@
 package com.github.multimatum_team.multimatum.repository
 
 import android.util.Log
+import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.*
+import com.github.multimatum_team.multimatum.util.associateNotNull
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.tasks.await
@@ -43,10 +45,9 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
                 Log.w("FirebaseDeadlineRepository", "Failed to retrieve data from database")
                 return@addSnapshotListener
             }
-            val deadlineMap: MutableMap<DeadlineID, Deadline> = mutableMapOf()
-            deadlineSnapshots!!.forEach { deadlineSnapshot ->
-                deadlineMap[deadlineSnapshot.id] = deserializeDeadline(deadlineSnapshot)
-            }
+            val deadlineMap = deadlineSnapshots!!
+                .toList()
+                .associateNotNull { it.id to deserializeDeadline(it) }
             for (callback in updateCallbacks) {
                 callback(deadlineMap)
             }
@@ -86,23 +87,87 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
     /**
      * Convert a document snapshot from Firebase to a Deadline instance.
      */
-    private fun deserializeDeadline(deadlineSnapshot: DocumentSnapshot): Deadline {
-        val title = deadlineSnapshot["title"] as String
-        val state = DeadlineState.values()[(deadlineSnapshot["state"] as Long).toInt()]
-        val timestamp = deadlineSnapshot["date"] as Timestamp
+    private fun deserializeDeadline(deadlineSnapshot: DocumentSnapshot): Deadline? {
+        val title = when (val title = deadlineSnapshot["title"]) {
+            is String -> title
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"title\"")
+                return null
+            }
+        }
+        val stateIndex = when (val stateIndex = deadlineSnapshot["state"]) {
+            is Long ->
+                if (0 <= stateIndex && stateIndex < DeadlineState.values().size) {
+                    stateIndex.toInt()
+                } else {
+                    LogUtil.warningLog("Value of the \"state\" field is out of range")
+                    return null
+                }
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"state\"")
+                return null
+            }
+        }
+        val state = DeadlineState.values()[stateIndex]
+        val timestamp = when (val timestamp = deadlineSnapshot["date"]) {
+            is Timestamp -> timestamp
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"date\"")
+                return null
+            }
+        }
         val milliseconds = timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
         val date =
             Instant.ofEpochMilli(milliseconds).atZone(ZoneId.systemDefault()).toLocalDateTime()
-        val description = deadlineSnapshot["description"] as String
-        val ownerMap = deadlineSnapshot["owner"] as Map<String, String>
-        val owner = when (ownerMap["type"]) {
-            "user" -> UserOwned
-            "group" -> GroupOwned(ownerMap["id"] as String)
-            else -> throw IllegalArgumentException("provided serialized deadline has ill-formed owner type, expected \"user\" or \"group\"")
+        val description = when (val description = deadlineSnapshot["description"]) {
+            is String -> description
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"description\"")
+                return null
+            }
         }
-        val pdfPath = deadlineSnapshot["pdfPath"] as String
-        val locationName = deadlineSnapshot["locationName"] as String?
-        val location = deadlineSnapshot["location"] as GeoPoint?
+        val ownerMap = when (val ownerMap = deadlineSnapshot["owner"]) {
+            is Map<*, *> -> ownerMap
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"owner\"")
+                return null
+            }
+        }
+        val owner = when (ownerMap["type"] ?: return null) {
+            "user" -> UserOwned
+            "group" -> when (val groupID = ownerMap["id"]) {
+                is String -> GroupOwned(groupID)
+                else -> {
+                    LogUtil.warningLog("Missing or ill-formed field \"id\" of owner map")
+                    return null
+                }
+            }
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"type\" of owner map")
+                return null
+            }
+        }
+        val pdfPath = when (val pdfPath = deadlineSnapshot["pdfPath"]) {
+            is String -> pdfPath
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"pdfPath\"")
+                return null
+            }
+        }
+        val locationName = when (val locationName = deadlineSnapshot["locationName"]) {
+            is String? -> locationName
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"locationName\"")
+                return null
+            }
+        }
+        val location = when (val location = deadlineSnapshot["location"]) {
+            is GeoPoint? -> location
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"location\"")
+                return null
+            }
+        }
         return Deadline(
             title, state, date, description, owner,
             pdfPath = pdfPath,
@@ -114,7 +179,7 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
     /**
      * Fetch a single deadline given its unique ID.
      */
-    override suspend fun fetch(id: DeadlineID): Deadline =
+    override suspend fun fetch(id: DeadlineID): Deadline? =
         deserializeDeadline(deadlinesRef.document(id).get().await())
 
     private suspend fun fetchQuery(query: Query): Map<DeadlineID, Deadline> =
@@ -122,7 +187,7 @@ class FirebaseDeadlineRepository @Inject constructor(database: FirebaseFirestore
             .get()
             .await()
             .documents
-            .associate { it.id to deserializeDeadline(it) }
+            .associateNotNull { it.id to deserializeDeadline(it) }
 
     /**
      * Fetch all personal deadlines from the database.
