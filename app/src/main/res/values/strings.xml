@@ -4,6 +4,10 @@
     <string name="calendar_deadline_input_text">Enter new deadline…</string>
     <string name="calender_add_new_deadline_button_text">Add</string>
     <string name="calendar_button_text">Calendar</string>
+    <string name="main_activity_go_to_groups_error_dialog_title">Error</string>
+    <string name="main_activity_go_to_groups_error_dialog_message">Cannot use groups when signed-in anonymously\nPlease sign-in with a Google account</string>
+    <string name="main_activity_go_to_groups_error_dialog_go_to_sign_in_page">Go to sign-in page</string>
+    <string name="main_activity_go_to_groups_error_dialog_cancel">Cancel</string>
     <string name="main_settings_activity_title">Settings</string>
     <string name="main_settings_account_section_title">Account</string>
     <string name="main_settings_account_button">My account</string>
