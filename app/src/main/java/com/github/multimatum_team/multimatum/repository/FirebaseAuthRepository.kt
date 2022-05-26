@@ -61,14 +61,14 @@ class FirebaseAuthRepository @Inject constructor(
      * to their Google account.
      */
     private suspend fun anonymousSignIn(): AnonymousUser {
-            when (val authResultUser = auth.signInAnonymously().await()?.user) {
-                null -> throw RuntimeException("Failed to sign-in anonymously")
-                else -> {
-                    val newUser = AnonymousUser(authResultUser.uid)
-                    _user = newUser
-                    return newUser
-                }
+        when (val authResultUser = auth.signInAnonymously().await()?.user) {
+            null -> throw RuntimeException("Failed to sign-in anonymously")
+            else -> {
+                val newUser = AnonymousUser(authResultUser.uid)
+                _user = newUser
+                return newUser
             }
+        }
     }
 
     /**
