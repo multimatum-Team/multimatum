@@ -14,6 +14,13 @@ made my 8 hours and I think I will work on test or in cleaning the last existing
 ### Lenny
 
 ### Léo
+This week, my job was to implement a map that gives the user the ability to visualize the deadline
+location on a map, if he/she provides it. I have done that using Mapbox and it can be accessed from
+DeadlineDetailsActivity. I also added a category search feature. When the user search a place using
+the Mapbox view, he can click a category (hotel, cafe, ...) and Mapbox will select the closest one and
+add it to the deadline. I also made new tests for these activites, but it was limited because I encountered
+the same testing issue (with Mapbox) than the previous weeks. I also made minor UI improvements over the
+project. Next week, I will work on the offline mode of Mapbox, improve its UI and try to improve the coverage.
 
 ### Louis
 My task this week was to search for bug with offline mod I spotted 4 or 5 including log out without connection or non displaying of pdf when offline. I manage to fix the log out. At begining I tried to let the user log out and making very complicated stuff with false user and so on but it leads to multiple problem like not saving deadlines and making false login. So finnaly I choose to just make the user don't log out and display toast. 
