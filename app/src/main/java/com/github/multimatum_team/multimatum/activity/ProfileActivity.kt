@@ -1,5 +1,7 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -36,9 +38,11 @@ class ProfileActivity : AppCompatActivity() {
 
         logOutButton.setOnClickListener {
             Log.d(TAG, "Logging out...")
-            userViewModel.signOut()
-            AuthUI.getInstance().signOut(this).addOnFailureListener{
-                Toast.makeText(this, "You need to have internet connexion to log out", Toast.LENGTH_SHORT).show()
+            if((this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetwork != null) {
+                userViewModel.signOut()
+                AuthUI.getInstance().signOut(this)
+            }else{
+                Toast.makeText(this, "You cannot log out without internet connection", Toast.LENGTH_SHORT).show()
             }
             finish()
         }
