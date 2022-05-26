@@ -19,7 +19,7 @@ abstract class AuthRepository {
      * Sign-out from the current account.
      * We return the freshly created anonymous user on which the application falls back.
      */
-    abstract suspend fun signOut(): AnonymousUser?
+    abstract suspend fun signOut(): AnonymousUser
 
     /**
      * Add a callback to run when the user is updated (e.g. on sign-in and sign-out events).
