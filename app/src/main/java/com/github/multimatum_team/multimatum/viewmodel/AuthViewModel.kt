@@ -41,6 +41,6 @@ class AuthViewModel @Inject constructor(
 
     fun signOut() = viewModelScope.launch {
         LogUtil.debugLog("signing out from ${_user.value}")
-            authRepository.signOut()
+        authRepository.signOut()
     }
 }
