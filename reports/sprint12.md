@@ -2,6 +2,12 @@ Sprint 12 summary
 ================
 
 ### Florian
+This week, I have implemented a listView in the calendarViewActivity to show the deadlines 
+if the user select a date in it. I have also solved a problem of drakmode in this activity.
+I was also supposed to make tests for `FirebaseGroupReopository` but I didn't succeed as
+multiple incomprehensible errors appear at every tests I made, so I have decided to make a
+cleaning of the code in it globality to remove every warning I could. With all of this, I have
+made my 8 hours and I think I will work on test or in cleaning the last existing warnings 
 
 ### Joseph
 
