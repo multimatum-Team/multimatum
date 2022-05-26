@@ -28,7 +28,7 @@ abstract class GroupRepository {
      * Fetch a single group from its ID.
      * @param id the ID of the group to fetch
      */
-    abstract suspend fun fetch(id: GroupID): UserGroup
+    abstract suspend fun fetch(id: GroupID): UserGroup?
 
     /**
      * Fetch all groups of which the user is a member.

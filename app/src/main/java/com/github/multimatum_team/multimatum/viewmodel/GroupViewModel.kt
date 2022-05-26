@@ -141,11 +141,15 @@ class GroupViewModel @Inject constructor(
      * Generate invite link to join a group given from its ID.
      * @param id the ID of the group to which we want to invite users
      */
-    fun generateInviteLink(id: GroupID, callback: (Uri) -> Unit) =
+    fun generateInviteLink(id: GroupID, callback: (Uri?) -> Unit) =
         viewModelScope.launch {
-            val group = groupRepository.fetch(id)
-            val linkTitle = context.getString(R.string.group_invite_link_title, group.name)
-            val linkDescription = context.getString(R.string.group_invite_link_description)
-            callback(groupRepository.generateInviteLink(id, linkTitle, linkDescription))
+            when (val group = groupRepository.fetch(id)) {
+                null -> callback(null)
+                else -> {
+                    val linkTitle = context.getString(R.string.group_invite_link_title, group.name)
+                    val linkDescription = context.getString(R.string.group_invite_link_description)
+                    callback(groupRepository.generateInviteLink(id, linkTitle, linkDescription))
+                }
+            }
         }
 }

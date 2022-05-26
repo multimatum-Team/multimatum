@@ -6,6 +6,7 @@ import com.github.multimatum_team.multimatum.LogUtil
 import com.github.multimatum_team.multimatum.model.GroupID
 import com.github.multimatum_team.multimatum.model.UserGroup
 import com.github.multimatum_team.multimatum.model.UserID
+import com.github.multimatum_team.multimatum.util.associateNotNull
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.dynamiclinks.ktx.androidParameters
 import com.google.firebase.dynamiclinks.ktx.dynamicLink
@@ -39,19 +40,48 @@ class FirebaseGroupRepository @Inject constructor(
     /**
      * Convert a document snapshot from Firebase to a UserGroup instance.
      */
-    private fun deserializeGroup(groupSnapshot: DocumentSnapshot): UserGroup =
-        UserGroup(
-            id = groupSnapshot.id,
-            name = groupSnapshot["name"] as String,
-            owner = groupSnapshot["owner"] as String,
-            members = (groupSnapshot["members"] as List<String>).toSet()
-        )
+    private fun deserializeGroup(groupSnapshot: DocumentSnapshot): UserGroup? {
+        val name = when (val name = groupSnapshot["name"]) {
+            is String -> name
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"name\"")
+                return null
+            }
+        }
+        val owner = when (val owner = groupSnapshot["owner"]) {
+            is String -> owner
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"owner\"")
+                return null
+            }
+        }
+        val members = when (val memberList = groupSnapshot["members"]) {
+            is List<*> -> {
+                val members: MutableSet<String> = mutableSetOf()
+                for (member in memberList) {
+                    when (member) {
+                        is String -> members.add(member)
+                        else -> {
+                            LogUtil.warningLog("Element of field \"members\" is ill-formed")
+                            return null
+                        }
+                    }
+                }
+                members
+            }
+            else -> {
+                LogUtil.warningLog("Missing or ill-formed field \"members\"")
+                return null
+            }
+        }
+        return UserGroup(groupSnapshot.id, name, owner, members)
+    }
 
     /**
      * Fetch a single deadline given its unique ID.
      * @param id the ID of the group to fetch
      */
-    override suspend fun fetch(id: GroupID): UserGroup =
+    override suspend fun fetch(id: GroupID): UserGroup? =
         deserializeGroup(groupsRef.document(id).get().await())
 
     /**
@@ -63,7 +93,7 @@ class FirebaseGroupRepository @Inject constructor(
             .get()
             .await()
             .documents
-            .associate { it.id to deserializeGroup(it) }
+            .associateNotNull { it.id to deserializeGroup(it) }
 
     /**
      * Fetch all groups from the database that are owned by the current user.
@@ -74,7 +104,7 @@ class FirebaseGroupRepository @Inject constructor(
             .get()
             .await()
             .documents
-            .associate { it.id to deserializeGroup(it) }
+            .associateNotNull { it.id to deserializeGroup(it) }
 
     /**
      * Create a new group in the database.
@@ -183,10 +213,9 @@ class FirebaseGroupRepository @Inject constructor(
                     Log.w("FirebaseDeadlineRepository", "Failed to retrieve data from database")
                     return@addSnapshotListener
                 }
-                val groupMap: MutableMap<GroupID, UserGroup> = mutableMapOf()
-                groupSnapshots!!.forEach { groupSnapshot ->
-                    groupMap[groupSnapshot.id] = deserializeGroup(groupSnapshot)
-                }
+                val groupMap = groupSnapshots!!
+                    .toList()
+                    .associateNotNull { it.id to deserializeGroup(it) }
                 callback(groupMap)
             }
     }
