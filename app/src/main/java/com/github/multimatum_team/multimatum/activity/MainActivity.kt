@@ -9,7 +9,6 @@ import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.Spinner
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
@@ -46,6 +45,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var pdfRepository: PdfRepository
+
+    @Inject
+    lateinit var alertDialogBuilderProducer: AlertDialogBuilderProducer
 
     private val authViewModel: AuthViewModel by viewModels()
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
@@ -214,7 +216,8 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             is AnonymousUser ->
-                AlertDialog.Builder(this)
+                alertDialogBuilderProducer
+                    .produce(this)
                     .setTitle(getString(R.string.main_activity_go_to_groups_error_dialog_title))
                     .setMessage(getString(R.string.main_activity_go_to_groups_error_dialog_message))
                     .setPositiveButton(getString(R.string.main_activity_go_to_groups_error_dialog_go_to_sign_in_page)) { dialog, _ ->
