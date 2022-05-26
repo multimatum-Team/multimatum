@@ -11,12 +11,6 @@ made my 8 hours and I think I will work on test or in cleaning the last existing
 
 ### Joseph
 
-This week I worked on making the app more fault tolerant by emitting warnings
-instead of crashing when remote data is incorrectly formatted, but I couldn't
-find a clean way to do this. I also added a dialog to prevent anonymous
-users from using the groups feature, which could make the app crash. Next
-week I will try to clean up the code and improve the UI for the final demo.
-
 ### Lenny
 
 ### Léo
@@ -51,3 +45,6 @@ will have to do next week, but it is likely to be some testing again and/or work
 on the video demo.
 
 ### Overall team
+Overall, this week was based on adding tests and removing bugs to make our app work in offline
+and finish some feature. This was complicated as some of the solving of bug has decreased the coverage
+and some tests or bug had some strange behavior but this was a good week otherwise.
