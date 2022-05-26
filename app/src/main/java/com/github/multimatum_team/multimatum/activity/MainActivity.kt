@@ -57,7 +57,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Firebase.initialize(this)
-        Firebase.firestore.clearPersistence()
 
         setContentView(R.layout.activity_main)
 
