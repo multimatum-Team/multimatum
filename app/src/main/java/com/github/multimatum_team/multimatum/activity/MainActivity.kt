@@ -23,7 +23,6 @@ import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
-import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
 import com.google.firebase.firestore.ktx.firestore
