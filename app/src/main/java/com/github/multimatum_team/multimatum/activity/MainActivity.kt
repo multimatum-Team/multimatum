@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var alertDialogBuilderProducer: AlertDialogBuilderProducer
 
-    private val authViewModel: AuthViewModel by viewModels()
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private val groupViewModel: GroupViewModel by viewModels()
 
