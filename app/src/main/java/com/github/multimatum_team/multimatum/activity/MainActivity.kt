@@ -25,7 +25,7 @@ import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
-import com.google.firebase.firestore.ktx.firestore
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.hudomju.swipe.SwipeToDismissTouchListener
@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var alertDialogBuilderProducer: AlertDialogBuilderProducer
 
+    private val authViewModel: AuthViewModel by viewModels()
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
     private val groupViewModel: GroupViewModel by viewModels()
 
