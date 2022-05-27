@@ -9,7 +9,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.TextInputEditText
 
 /**
  * Add a callback for when the user presses the "done" IME keyboard button.
@@ -17,7 +16,7 @@ import com.google.android.material.textfield.TextInputEditText
  * @param callback the callback to run when the button is pressed, providing the text input value
  */
 fun EditText.setOnIMEActionDone(activity: Activity, callback: (String) -> Unit) {
-    setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, _ ->
+    setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             callback(text.toString())
             val focus = activity.currentFocus
@@ -38,7 +37,7 @@ fun EditText.hideKeyboard(activity: Activity) {
     clearFocus()
     val imm =
         activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(getWindowToken(), 0)
+    imm.hideSoftInputFromWindow(windowToken, 0)
 }
 
 /**

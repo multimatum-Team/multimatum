@@ -3,7 +3,6 @@ package com.github.multimatum_team.multimatum.service
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.util.GenerateQRCodeUtility
-import com.google.zxing.*
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test

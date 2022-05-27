@@ -31,7 +31,7 @@ class QRCodeReaderActivity : AppCompatActivity() {
     lateinit var codeScannerProducer: CodeScannerProducer
 
     @Inject
-    lateinit var jsonconverter: JsonDeadlineConverter
+    lateinit var jsonConverter: JsonDeadlineConverter
 
     private lateinit var codeScanner: CodeScanner
     private val deadlineListViewModel: DeadlineListViewModel by viewModels()
@@ -73,7 +73,7 @@ class QRCodeReaderActivity : AppCompatActivity() {
     private fun scanDeadline(scan: String) {
         runOnUiThread {
             try {
-                val deadline = jsonconverter.fromJson(scan)
+                val deadline = jsonConverter.fromJson(scan)
                 deadlineListViewModel.addDeadline(deadline)
                 Toast.makeText(this, "Deadline successfully added", Toast.LENGTH_LONG).show()
             } catch (e: JsonSyntaxException) {

@@ -67,7 +67,7 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun `Repository is updated when signing out from the viewmodel`() {
+    fun `Repository is updated when signing out from the viewModel`() {
         viewModel.signOut()
         assertEquals(viewModel.getUser().value!!, AnonymousUser("1"))
     }

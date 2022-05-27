@@ -5,8 +5,6 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.github.multimatum_team.multimatum.LogUtil
-import java.util.*
 
 
 object PDFUtil {
@@ -25,7 +23,7 @@ object PDFUtil {
      */
     fun getFileNameFromUri(pdfData: Uri, context: Context): String {
         val cursor: Cursor? = context.contentResolver.query(pdfData, null, null, null, null)
-        var fileName = ""
+        val fileName: String
         if (cursor != null) {
             if (cursor.count <= 0) {
                 cursor.close()

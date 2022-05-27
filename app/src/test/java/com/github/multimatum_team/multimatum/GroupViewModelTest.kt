@@ -113,7 +113,7 @@ class GroupViewModelTest {
     }
 
     @Test
-    fun `Adding a group in the viewmodel updates the repository`() {
+    fun `Adding a group in the viewModel updates the repository`() {
         viewModel.createGroup("Group 4") { id ->
             assertEquals(
                 UserGroup("3", "Group 4", "alice"),
@@ -123,7 +123,7 @@ class GroupViewModelTest {
     }
 
     @Test
-    fun `Deleting a group from the viewmodel updates the repository`() = runTest {
+    fun `Deleting a group from the viewModel updates the repository`() = runTest {
         viewModel.deleteGroup("1")
         assertEquals(
             mapOf(
@@ -134,7 +134,7 @@ class GroupViewModelTest {
     }
 
     @Test
-    fun `Modifying a group from the viewmodel updates the repository`() = runTest {
+    fun `Modifying a group from the viewModel updates the repository`() = runTest {
         val newName = "New group 1 name"
         val renamedGroup = groups[0].copy(name = newName)
         viewModel.renameGroup("0", newName)
@@ -142,7 +142,7 @@ class GroupViewModelTest {
     }
 
     @Test
-    fun `Authenticating as a different user updates the viewmodel`() = runTest {
+    fun `Authenticating as a different user updates the viewModel`() = runTest {
         (authRepository as MockAuthRepository).logIn(AnonymousUser("bob"))
         val groups = viewModel.getGroups().getOrAwaitValue()
         assertEquals(

@@ -113,7 +113,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     }
 
     /**
-     * @param View: the current view
+     * @param view: the current view
      * when clicking ont the button create an intent to launch the QR activity
      */
     fun goQRGenerator(view: View) {
@@ -338,7 +338,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             val description = deadline.description
             val group = deadline.owner
 
-            LogUtil.debugLog(pdfLink.toString())
+            LogUtil.debugLog(pdfLink)
             //display download button if there's a pdf
             if (pdfLink != "") {
                 downloadLinkText.text = PDFUtil.getFileNameFromUri(pdfLink.toUri(), this).drop(16)

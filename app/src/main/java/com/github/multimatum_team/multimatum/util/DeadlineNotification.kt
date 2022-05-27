@@ -20,7 +20,7 @@ import java.time.ZoneId
 
 /**
  * This provides util function to manage notifications
- * It provide functions to access and modifiy notifications that are set for a deadline,
+ * It provide functions to access and modify notifications that are set for a deadline,
  * A function that verify that notification are bound to existing deadline,
  * and a function to create notification channel
  */
@@ -32,7 +32,7 @@ object DeadlineNotification {
     fun listDeadlineNotification(deadlineId: DeadlineID, context: Context): List<Long> {
         val res = readFromSharedPreference(deadlineId, context)
         //this is just to remove decimal to the number
-        return res.map { it.toLong() }
+        return res.map { it }
     }
 
     /**
@@ -82,7 +82,7 @@ object DeadlineNotification {
     }
 
     /**
-     * write an array of notification mapped to the daedline id to a sharedpreference file for storing notifications
+     * write an array of notification mapped to the deadline id to a sharedPreference file for storing notifications
      */
     private fun writeToSharedPreference(id: String, value: List<Long>, context: Context) {
         val jsonString = Gson().toJson(value)
@@ -96,7 +96,7 @@ object DeadlineNotification {
     }
 
     /**
-     * read the array of notification mapped to this daedline id from a sharedpreference file
+     * read the array of notification mapped to this deadline id from a sharedPreference file
      * return an empty list if there isn't any notification set for this deadline
      */
     private fun readFromSharedPreference(id: String, context: Context): List<Long> {
@@ -104,7 +104,7 @@ object DeadlineNotification {
             context.getString(R.string.notification_shared_preference),
             Context.MODE_PRIVATE
         ).getString(id, "0")
-        if (jsonString == "0") return ArrayList<Long>()
+        if (jsonString == "0") return ArrayList()
         return Gson().fromJson(jsonString, ArrayList<Long>()::class.java)
     }
 

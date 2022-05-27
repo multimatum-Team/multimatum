@@ -41,16 +41,14 @@ class MockFirebaseFirestore(
         }.toMutableMap()
 
     private val deadlines: MutableMap<DeadlineID, DeadlineData> =
-        deadlines.associate { deadlineData ->
+        deadlines.associateBy {
             val id = deadlineCounter.toString()
             deadlineCounter++
-            id to deadlineData
+            id
         }.toMutableMap()
 
     private val users: MutableMap<UserID, UserInfo> =
-        users.associate { userInfo ->
-            userInfo.id to userInfo
-        }.toMutableMap()
+        users.associateBy { userInfo -> userInfo.id }.toMutableMap()
 
     val database: FirebaseFirestore = mock(FirebaseFirestore::class.java)
 
@@ -155,7 +153,7 @@ class MockFirebaseFirestore(
             (serializedGroup["owner"]!! as UserID),
             (serializedGroup["members"]!! as List<UserID>).toSet()
         )
-        groups.put(newID, group)
+        groups[newID] = group
         return generateGroupDocument(group)
     }
 

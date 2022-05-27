@@ -67,7 +67,7 @@ class QRGeneratorActivityTest {
     @Test
     fun `displayed QR code should be correct`() {
         val data = Deadline(
-            "Appeller Robert", DeadlineState.TODO, LocalDateTime.of(2020, Month.JUNE, 2, 14, 27)
+            "Appeler Robert", DeadlineState.TODO, LocalDateTime.of(2020, Month.JUNE, 2, 14, 27)
         )
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
