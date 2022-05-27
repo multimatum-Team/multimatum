@@ -1,6 +1,7 @@
 package com.github.multimatum_team.multimatum
 
 import android.Manifest
+import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
@@ -19,9 +20,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.multimatum_team.multimatum.activity.*
-import com.github.multimatum_team.multimatum.model.Deadline
-import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.github.multimatum_team.multimatum.model.UserGroup
+import com.github.multimatum_team.multimatum.model.*
 import com.github.multimatum_team.multimatum.repository.*
 import com.github.multimatum_team.multimatum.util.*
 import dagger.Module
@@ -32,6 +31,8 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
@@ -44,15 +45,20 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.robolectric.shadow.api.Shadow.extract
+import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowApplication
 import java.time.LocalDateTime
+import javax.inject.Inject
 import javax.inject.Singleton
 
 
 @UninstallModules(DependenciesProvider::class, FirebaseRepositoryModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
+@ExperimentalCoroutinesApi
 class MainActivityTest {
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
@@ -135,10 +141,37 @@ class MainActivityTest {
 
     @Test
     fun `clicking on the group button should open GroupsActivity`() {
+        (authRepository as MockAuthRepository).logIn(signedInUser)
         onView(withId(R.id.groupButton)).check(matches(isDisplayed())).perform(click())
         Intents.intended(
             allOf(
                 hasComponent(GroupsActivity::class.java.name),
+                toPackage("com.github.multimatum_team.multimatum")
+            )
+        )
+    }
+
+    @Test
+    fun `Clicking the groups button while being signed-in anonymously shows an error message`() = runTest {
+        (authRepository as MockAuthRepository).logIn(anonymousUser)
+        onView(withId(R.id.groupButton)).perform(click())
+        ShadowAlertDialog.getShownDialogs()
+        (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+            .getButton(AlertDialog.BUTTON_NEGATIVE)
+            .performClick()
+    }
+
+    @Test
+    fun `Clicking the groups button while being signed-in anonymously and clicking the button to go to the sign-in page starts the right intent`() = runTest {
+        (authRepository as MockAuthRepository).logIn(anonymousUser)
+        onView(withId(R.id.groupButton)).perform(click())
+        ShadowAlertDialog.getShownDialogs()
+        (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+            .getButton(AlertDialog.BUTTON_POSITIVE)
+            .performClick()
+        Intents.intended(
+            allOf(
+                hasComponent(SignInActivity::class.java.name),
                 toPackage("com.github.multimatum_team.multimatum")
             )
         )
@@ -257,11 +290,28 @@ class MainActivityTest {
         @Singleton
         @Provides
         fun provideUserRepository(): UserRepository =
-            MockUserRepository(listOf())
+            MockUserRepository(
+                listOf(
+                    UserInfo(id = "joseph", name = "Joseph"),
+                    UserInfo(id = "louis", name = "Louis"),
+                    UserInfo(id = "florian", name = "Florian"),
+                    UserInfo(id = "lenny", name = "Lenny"),
+                    UserInfo(id = "leo", name = "Léo"),
+                    UserInfo(id = "valentin", name = "Valentin"),
+                )
+            )
     }
 
 
     companion object {
         val mockSharedPreferences: SharedPreferences = mock()
+
+        val signedInUser: SignedInUser = SignedInUser(
+            id = "joseph",
+            name = "Joseph",
+            email = "fake.email@epfl.ch"
+        )
+
+        val anonymousUser: AnonymousUser = AnonymousUser("anonymous")
     }
 }
