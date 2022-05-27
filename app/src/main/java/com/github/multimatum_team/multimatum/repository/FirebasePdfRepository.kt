@@ -49,7 +49,7 @@ class FirebasePdfRepository @Inject constructor(
                 callback("", false)
             }
         } else {
-            callback("", false)
+            callback("", true)
         }
     }
 
