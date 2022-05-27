@@ -2,10 +2,10 @@ package com.github.multimatum_team.multimatum
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import android.content.Context.SENSOR_SERVICE
+import android.content.Context.*
 import android.content.SharedPreferences
 import android.hardware.SensorManager
+import android.net.ConnectivityManager
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.CodeScannerView
 import com.github.multimatum_team.multimatum.repository.*
@@ -39,6 +39,14 @@ object DependenciesProvider {
     @Provides
     fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
         applicationContext.getSystemService(SENSOR_SERVICE) as SensorManager
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+    @Provides
+    fun provideNetworkManager(@ApplicationContext applicationContext: Context): ConnectivityManager =
+        applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 }
 
 @Module
