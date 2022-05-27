@@ -14,7 +14,9 @@ import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import javax.inject.Inject
 
-
+/**
+ * Remote Firebase repository for storing pdf files.
+ */
 class FirebasePdfRepository @Inject constructor(
     database: FirebaseStorage,
     private val auth: FirebaseAuth,
