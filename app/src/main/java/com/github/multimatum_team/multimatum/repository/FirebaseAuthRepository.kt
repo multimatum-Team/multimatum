@@ -1,13 +1,17 @@
 package com.github.multimatum_team.multimatum.repository
 
 import android.util.Log
+import android.widget.Toast
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+import com.mapbox.bindgen.None
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import java.lang.Exception
 import javax.inject.Inject
 
 /**
@@ -55,15 +59,16 @@ class FirebaseAuthRepository @Inject constructor(
      * Create an anonymous user so that the user can try the application before having to link it
      * to their Google account.
      */
-    private suspend fun anonymousSignIn(): AnonymousUser =
+    private suspend fun anonymousSignIn(): AnonymousUser {
         when (val authResultUser = auth.signInAnonymously().await()?.user) {
-            null ->  throw RuntimeException("Failed to sign-in anonymously")
+            null -> throw RuntimeException("Failed to sign-in anonymously")
             else -> {
                 val newUser = AnonymousUser(authResultUser.uid)
                 _user = newUser
-                newUser
+                return newUser
             }
         }
+    }
 
     /**
      * Sign-out from the current account.

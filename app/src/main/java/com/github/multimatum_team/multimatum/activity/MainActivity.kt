@@ -23,10 +23,9 @@ import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.repository.DeadlineRepository
 import com.github.multimatum_team.multimatum.repository.PdfRepository
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
-import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.github.multimatum_team.multimatum.viewmodel.DeadlineListViewModel
 import com.github.multimatum_team.multimatum.viewmodel.GroupViewModel
-import com.google.firebase.firestore.ktx.firestore
+import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.hudomju.swipe.SwipeToDismissTouchListener
@@ -55,7 +54,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         Firebase.initialize(this)
 
         setContentView(R.layout.activity_main)
