@@ -40,9 +40,9 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
             val channelId = REMINDER_NOTIFICATION_CHANNEL_ID
 
             //retrieving some parameters for the notification
-            val title = intent!!.getStringExtra(NOTIFICATION_TITLE_TAG)
-            val content = intent!!.getStringExtra(NOTIFICATION_ID_TAG)
-            val notificationId = intent!!.getStringExtra(NOTIFICATION_DESCRIPTION_TAG)
+            val title = intent.getStringExtra(NOTIFICATION_TITLE_TAG)
+            val content = intent.getStringExtra(NOTIFICATION_ID_TAG)
+            val notificationId = intent.getStringExtra(NOTIFICATION_DESCRIPTION_TAG)
 
 
             val intent2 = Intent(context, MainActivity::class.java)

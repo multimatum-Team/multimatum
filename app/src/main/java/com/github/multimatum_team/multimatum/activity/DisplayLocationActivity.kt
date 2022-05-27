@@ -9,6 +9,8 @@ import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import com.github.multimatum_team.multimatum.ViewActionPerformer
+import com.github.multimatum_team.multimatum.MapViewProducer
 import com.github.multimatum_team.multimatum.R
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -17,8 +19,17 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DisplayLocationActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var mapViewProducer: MapViewProducer
+
+    @Inject
+    lateinit var viewActionPerformer: ViewActionPerformer
 
     private var mapView: MapView? = null
     private var latitude: Double = 0.0
@@ -27,14 +38,14 @@ class DisplayLocationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_display_location)
+        viewActionPerformer.performViewAction { setContentView(R.layout.activity_display_location) }
 
         // Initializing the map
         initializeMapView()
     }
 
     private fun initializeMapView() {
-        mapView = findViewById(R.id.mapView)
+        mapView = mapViewProducer.produce { findViewById(R.id.mapView) }
         mapView?.getMapboxMap()?.loadStyleUri(
             Style.MAPBOX_STREETS
         ) { addAnnotationToMap() }

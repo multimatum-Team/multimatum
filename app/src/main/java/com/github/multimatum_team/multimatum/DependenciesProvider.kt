@@ -2,11 +2,10 @@ package com.github.multimatum_team.multimatum
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import android.content.Context.SENSOR_SERVICE
+import android.content.Context.*
 import android.content.SharedPreferences
 import android.hardware.SensorManager
-import androidx.lifecycle.ViewModel
+import android.net.ConnectivityManager
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.CodeScannerView
 import com.github.multimatum_team.multimatum.repository.*
@@ -18,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.mapbox.maps.MapView
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -39,6 +39,14 @@ object DependenciesProvider {
     @Provides
     fun provideSensorManager(@ApplicationContext applicationContext: Context): SensorManager =
         applicationContext.getSystemService(SENSOR_SERVICE) as SensorManager
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+    @Provides
+    fun provideNetworkManager(@ApplicationContext applicationContext: Context): ConnectivityManager =
+        applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 }
 
 @Module
@@ -151,5 +159,33 @@ object GroupsActivityModule {
     @Provides
     fun provideGroupViewModelProducer(): GroupViewModelProducer =
         GroupViewModelProducer { normalViewModel -> normalViewModel }
+
+}
+
+/**
+ * @param produce Given a function returning a MapView,
+ * returns a MapView, potentially using the given function
+ */
+data class MapViewProducer(val produce: (() -> MapView) -> MapView)
+
+/**
+ * Intended to be used only on actions related to the view
+ *
+ * @param performViewAction Given a callable, executes some action,
+ * potentially using the callable
+ */
+data class ViewActionPerformer(val performViewAction: (() -> Unit) -> Unit)
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DisplayLocationActivityModule {
+
+    @Provides
+    fun provideMapViewProducer(): MapViewProducer =
+        MapViewProducer { defaultMapViewCreator -> defaultMapViewCreator() }
+
+    @Provides
+    fun provideViewActionPerformer(): ViewActionPerformer =
+        ViewActionPerformer { viewAction -> viewAction() }
 
 }

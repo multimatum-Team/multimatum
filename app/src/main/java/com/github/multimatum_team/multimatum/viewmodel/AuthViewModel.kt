@@ -23,7 +23,7 @@ class AuthViewModel @Inject constructor(
 
     init {
         authRepository.getUser().let { user ->
-            LogUtil.debugLog("initiating viewmodel with user $user")
+            LogUtil.debugLog("initiating viewModel with user $user")
             _user.value = user
         }
 

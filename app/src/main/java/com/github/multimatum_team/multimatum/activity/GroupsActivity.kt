@@ -1,6 +1,5 @@
 package com.github.multimatum_team.multimatum.activity
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -48,8 +47,6 @@ class GroupsActivity : AppCompatActivity() {
             val group = adapter.getItem(position)
             val detailIntent = GroupDetailsActivity.newIntent(this, group.id)
             startActivity(detailIntent)
-            // Last line necessary to use this function
-            true
         }
 
         listView.adapter = adapter
@@ -73,8 +70,8 @@ class GroupsActivity : AppCompatActivity() {
         alertDialogBuilder.setView(input)
 
         //add cancel and create button
-        alertDialogBuilder.setPositiveButton("Create") { dialog, _ ->
-            createGroup(dialog, input)
+        alertDialogBuilder.setPositiveButton("Create") { _, _ ->
+            createGroup(input)
         }
         alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
@@ -83,7 +80,7 @@ class GroupsActivity : AppCompatActivity() {
         alertDialogBuilder.show()
     }
 
-    private fun createGroup(dialog: DialogInterface, editText: EditText) {
+    private fun createGroup( editText: EditText) {
         groupViewModel.createGroup(editText.text.toString()) { groupID ->
             Toast.makeText(this, "Group created", Toast.LENGTH_SHORT).show()
             Log.d("passBy", "Toast created")

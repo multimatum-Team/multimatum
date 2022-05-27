@@ -149,7 +149,7 @@ class DeadlineListViewModelTest {
     }
 
     @Test
-    fun `Adding deadlines in the viewmodel updates the repository`() = runTest {
+    fun `Adding deadlines in the viewModel updates the repository`() = runTest {
         val newDeadline =
             Deadline("Alice's deadline 4", DeadlineState.TODO, LocalDateTime.of(2022, 6, 13, 0, 0))
         viewModel.addDeadline(newDeadline) { id ->
@@ -158,7 +158,7 @@ class DeadlineListViewModelTest {
     }
 
     @Test
-    fun `Deleting deadlines from the viewmodel updates the repository`() = runTest {
+    fun `Deleting deadlines from the viewModel updates the repository`() = runTest {
         val newDeadlineMap = deadlines["alice"]!!
             .withIndex()
             .associate { Pair(it.index.toString(), it.value) }
@@ -169,7 +169,7 @@ class DeadlineListViewModelTest {
     }
 
     @Test
-    fun `Modifying deadlines from the viewmodel updates the repository`() = runTest {
+    fun `Modifying deadlines from the viewModel updates the repository`() = runTest {
         val modifiedDeadline =
             Deadline("Alice's deadline 2", DeadlineState.TODO, LocalDateTime.of(2022, 3, 20, 0, 0))
         viewModel.modifyDeadline("1", modifiedDeadline)
@@ -177,7 +177,7 @@ class DeadlineListViewModelTest {
     }
 
     @Test
-    fun `Authenticating as a different user updates the viewmodel`() = runTest {
+    fun `Authenticating as a different user updates the viewModel`() = runTest {
         (authRepository as MockAuthRepository).logIn(AnonymousUser("bob"))
         val deadlines = viewModel.getDeadlines().getOrAwaitValue()
         assertEquals(

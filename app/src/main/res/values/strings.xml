@@ -4,6 +4,10 @@
     <string name="calendar_deadline_input_text">Enter new deadline…</string>
     <string name="calender_add_new_deadline_button_text">Add</string>
     <string name="calendar_button_text">Calendar</string>
+    <string name="main_activity_go_to_groups_error_dialog_title">Error</string>
+    <string name="main_activity_go_to_groups_error_dialog_message">Cannot use groups when signed-in anonymously\nPlease sign-in with a Google account</string>
+    <string name="main_activity_go_to_groups_error_dialog_go_to_sign_in_page">Go to sign-in page</string>
+    <string name="main_activity_go_to_groups_error_dialog_cancel">Cancel</string>
     <string name="main_settings_activity_title">Settings</string>
     <string name="main_settings_account_section_title">Account</string>
     <string name="main_settings_account_button">My account</string>
@@ -28,8 +32,6 @@
     <string name="pick_pdf">Select a PDF</string>
     <string name="you_re_logged_in_as">You\'re logged in as %1s</string>
     <string name="logout">LOGOUT</string>
-    <string name="procrastination_fighter_enable_msg">Procrastination fighter is enabled</string>
-    <string name="procrastination_fighter_disabled_msg">Procrastination fighter is disabled</string>
     <string name="procrastination_fighter_permanent_notif_title">Procrastination detector</string>
     <string name="procrastination_fighter_permanent_notif_content_text">Procrastination is bad…</string>
     <string name="deleted">Deleted</string>
@@ -55,7 +57,6 @@
     <string name="not_in_any_group">Not in any group</string>
     <string name="in_the_group_X">In the group: %s</string>
     <string name="select_group">Select Group</string>
-    <string name="selected_item">Selected item:</string>
     <string name="group_owner">Owner: %s</string>
     <string name="group_invite">Invite</string>
     <string name="group_details_group_name_hint">Group name</string>
@@ -86,4 +87,6 @@
     <string name="group_invite_link_to">Invite link to %s</string>
     <string name="multiple_alarms_planned">Multiple Alarms Planned</string>
     <string name="no_associated_location">No associated location</string>
+    <string name="pdf_upload_offline_alert">No Internet connexion, the pdf will not be added</string>
+    <string name="pdf_download_offline_alert">Download failed: No Internet Connexion</string>
 </resources>

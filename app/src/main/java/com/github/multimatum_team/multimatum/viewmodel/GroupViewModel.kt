@@ -1,5 +1,6 @@
 package com.github.multimatum_team.multimatum.viewmodel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
@@ -26,8 +27,9 @@ import javax.inject.Inject
  * user has changed.
  */
 @HiltViewModel
+@SuppressLint("StaticFieldLeak")
 class GroupViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+     @ApplicationContext private val context: Context,
     private val authRepository: AuthRepository,
     private val groupRepository: GroupRepository
 ) : ViewModel() {

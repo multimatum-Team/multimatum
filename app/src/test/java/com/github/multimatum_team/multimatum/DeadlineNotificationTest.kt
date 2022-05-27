@@ -9,7 +9,6 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.multimatum_team.multimatum.model.Deadline
 import com.github.multimatum_team.multimatum.model.DeadlineState
-import com.github.multimatum_team.multimatum.repository.DeadlineID
 import com.github.multimatum_team.multimatum.service.ClockService
 import com.github.multimatum_team.multimatum.util.DeadlineNotification
 import com.github.multimatum_team.multimatum.util.MockClockService
@@ -47,7 +46,7 @@ class DeadlineNotificationTest {
     @Throws(Exception::class)
     fun setUp() {
         Intents.init()
-        context = ApplicationProvider.getApplicationContext<Context>()
+        context = ApplicationProvider.getApplicationContext()
         hiltRule.inject()
         val notificationManager =
             ApplicationProvider.getApplicationContext<Context>()
@@ -109,7 +108,7 @@ class DeadlineNotificationTest {
         val deadline2 = getDeadlineSample(2)
         val notificationDeadline2 = getNotificationsSample(2)
 
-        val deadlineList = mapOf<DeadlineID, Deadline>(id1 to deadline1)
+        val deadlineList = mapOf(id1 to deadline1)
 
         DeadlineNotification.editNotification(id1, deadline1, notificationDeadline1, context)
         DeadlineNotification.editNotification(id2, deadline2, notificationDeadline2, context)
@@ -135,7 +134,7 @@ class DeadlineNotificationTest {
     private fun getNotificationsSample(tag: Long): List<Long> {
         val notif1: Long = 1000 + tag
         val notif2: Long = Duration.ofDays(1).toMillis()
-        return listOf<Long>(notif1, notif2)
+        return listOf(notif1, notif2)
     }
 
     /**
