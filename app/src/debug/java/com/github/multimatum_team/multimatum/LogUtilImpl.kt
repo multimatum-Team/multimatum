@@ -16,6 +16,11 @@ object LogUtilImpl: LogUtil.FunctionsProvider {
         Log.d(createTag(currFunc), str)
     }
 
+    override fun warningLog(str: String) = safeExec {
+        val currFunc = Thread.currentThread().stackTrace[STACK_IDX_FOR_ENV_FUNC]
+        Log.w(createTag(currFunc), str)
+    }
+
     override fun logFunctionCall() = safeExec {
         val currFunc = Thread.currentThread().stackTrace[STACK_IDX_FOR_ENV_FUNC]
         val msg = "${currFunc.methodName} called"

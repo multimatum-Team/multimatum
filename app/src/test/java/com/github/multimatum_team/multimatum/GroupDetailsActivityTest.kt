@@ -127,7 +127,7 @@ class GroupDetailsActivityTest {
                 .perform(ViewActions.pressImeActionButton())
             assertThat(
                 "Group name has been updated",
-                groupRepository.fetch("0").name,
+                groupRepository.fetch("0")!!.name,
                 equalTo("Multimatum")
             )
         }
