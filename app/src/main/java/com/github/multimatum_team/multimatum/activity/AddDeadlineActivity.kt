@@ -119,7 +119,7 @@ class AddDeadlineActivity : AppCompatActivity() {
         }
         KeyboardVisibilityEvent.setEventListener(this, object : KeyboardVisibilityEventListener {
             override fun onVisibilityChanged(isOpen: Boolean) {
-                if (!isOpen){
+                if (!isOpen) {
                     updateDisplayedInfoAfterTitleChange()
                 }
             }
@@ -163,7 +163,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     private fun updateDisplayedInfoAfterTitleChange() {
         // if title parsing was refused the first time then do not ask again
         val currentTitle = textTitle.text.toString()
-        if (currentTitle != titleToIgnoreInParsing){
+        if (currentTitle != titleToIgnoreInParsing) {
             titleToIgnoreInParsing = currentTitle
             val dateTimeExtractionResult = dateTimeExtractor.parse(currentTitle)
             if (dateTimeExtractionResult.dateFound || dateTimeExtractionResult.timeFound) {
@@ -191,17 +191,19 @@ class AddDeadlineActivity : AppCompatActivity() {
 
     private fun launchParsingValidationAlert(res: DateTimeExtractionResult) {
         val alertBuilder = AlertDialog.Builder(this)
-        var message = "title: " + res.text
-        if (res.date != null) (message + "\ndate: " + res.date.toString()).also { message = it }
-        if (res.time != null) (message + "\ntime: " + res.time.toString()).also { message = it }
-        alertBuilder.setCancelable(true).setTitle(R.string.parsing_validation_title)
+        var message = "Title: " + res.text
+        if (res.dateFound) (message + "\nDate: " + res.date.toString()).also { message = it }
+        if (res.timeFound) (message + "\nTime: " + res.time.toString()).also { message = it }
+        alertBuilder.setCancelable(true)
+            .setTitle(R.string.parsing_validation_title)
             .setMessage(message)
-        alertBuilder.setNegativeButton(
-            "Cancel"
-        ) { dialogInterface, _ -> dialogInterface.cancel() }
-        alertBuilder.setPositiveButton(
-            "OK"
-        ) { _, _ -> applyParsing(res) }
+            // swapping negative and positive buttons because we want "yes" before "no"
+            .setNegativeButton(
+                "Yes"
+            ) { _, _ -> applyParsing(res) }
+            .setPositiveButton(
+                "No"
+            ) { dialogInterface, _ -> dialogInterface.cancel() }
         alertBuilder.show()
     }
 
