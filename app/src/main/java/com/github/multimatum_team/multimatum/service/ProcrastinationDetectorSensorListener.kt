@@ -7,6 +7,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.widget.Toast
 import com.github.multimatum_team.multimatum.LogUtil
+import com.github.multimatum_team.multimatum.MultimatumApp
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService.Companion.DEFAULT_SENSITIVITY
@@ -84,6 +85,8 @@ class ProcrastinationDetectorSensorListener(
     private fun reactToSignificantMove() {
         if (nonReportedDetectionsCnt > 0) {
             nonReportedDetectionsCnt -= 1
+        } else if (MultimatumApp.isAppOnForeground(applicationContext)) {
+            ProcrastinationDetectorService.stop(applicationContext)
         } else {
             Toast.makeText(
                 applicationContext,
