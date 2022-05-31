@@ -6,7 +6,6 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
@@ -35,6 +34,8 @@ import com.google.firebase.firestore.GeoPoint
 import com.hamsa.twosteppickerdialog.OnStepPickListener
 import com.hamsa.twosteppickerdialog.TwoStepPickerDialog
 import dagger.hilt.android.AndroidEntryPoint
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -92,6 +93,10 @@ class AddDeadlineActivity : AppCompatActivity() {
     private var locationName: String? = null
     private var location: GeoPoint? = null
 
+    // title that should not be considered by the parser because the user
+    // already refused to parse it
+    private var titleToIgnoreInParsing: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -112,6 +117,13 @@ class AddDeadlineActivity : AppCompatActivity() {
             }
             return@setOnKeyListener false
         }
+        KeyboardVisibilityEvent.setEventListener(this, object : KeyboardVisibilityEventListener {
+            override fun onVisibilityChanged(isOpen: Boolean) {
+                if (!isOpen){
+                    updateDisplayedInfoAfterTitleChange()
+                }
+            }
+        })
 
         setGroupObserver()
     }
@@ -149,9 +161,14 @@ class AddDeadlineActivity : AppCompatActivity() {
      * then uses it to update the displayed fields
      */
     private fun updateDisplayedInfoAfterTitleChange() {
-        val dateTimeExtractionResult = dateTimeExtractor.parse(textTitle.text.toString())
-        if (dateTimeExtractionResult.date != null || dateTimeExtractionResult.time != null) {
-            launchParsingValidationAlert(dateTimeExtractionResult)
+        // if title parsing was refused the first time then do not ask again
+        val currentTitle = textTitle.text.toString()
+        if (currentTitle != titleToIgnoreInParsing){
+            titleToIgnoreInParsing = currentTitle
+            val dateTimeExtractionResult = dateTimeExtractor.parse(currentTitle)
+            if (dateTimeExtractionResult.dateFound || dateTimeExtractionResult.timeFound) {
+                launchParsingValidationAlert(dateTimeExtractionResult)
+            }
         }
     }
 
@@ -169,6 +186,7 @@ class AddDeadlineActivity : AppCompatActivity() {
         }
         updateDisplayedDateAndTime()
         textTitle.text = dateTimeExtractionResult.text
+        titleToIgnoreInParsing = dateTimeExtractionResult.text
     }
 
     private fun launchParsingValidationAlert(res: DateTimeExtractionResult) {
