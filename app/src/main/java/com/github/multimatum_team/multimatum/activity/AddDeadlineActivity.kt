@@ -213,6 +213,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Setup a DatePickerDialog that will select a date for the deadline and show it
      */
+    @Suppress("UNUSED_PARAMETER")
     fun selectDate(view: View) {
         // Set what will happen when a date is selected
         val dateSetListener =
@@ -240,6 +241,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Setup a TimePickerDialog that will select a time for the deadline and show it
      */
+    @Suppress("UNUSED_PARAMETER")
     fun selectTime(view: View) {
         // Set what will happen when a time is selected
         val timeSetListener =
@@ -341,6 +343,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Setup an AlertDialog that will select the group of the deadline
      */
+    @Suppress("UNUSED_PARAMETER")
     fun selectGroups(view: View) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
@@ -364,6 +367,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      *  Add a deadline based on the data recuperated on the other TextViews
      */
+    @Suppress("UNUSED_PARAMETER")
     fun addDeadline(view: View) {
 
         // Check if the title is not empty
@@ -414,6 +418,7 @@ class AddDeadlineActivity : AppCompatActivity() {
      *  Go to SearchLocationActivity, which allows the user to select a location
      *  for a deadline.
      */
+    @Suppress("UNUSED_PARAMETER")
     fun searchLocation(view: View) {
         val intent = Intent(applicationContext, SearchLocationActivity::class.java)
         getResult.launch(intent)
@@ -477,6 +482,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Launch pdf selection menu
      */
+    @Suppress("UNUSED_PARAMETER")
     fun selectPDF(view: View) {
         PDFUtil.selectPdfIntent {
             startForResult.launch(it)

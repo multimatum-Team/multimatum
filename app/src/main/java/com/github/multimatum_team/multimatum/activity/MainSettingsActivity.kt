@@ -173,6 +173,7 @@ class MainSettingsActivity : AppCompatActivity() {
             "com.github.multimatum_team.multimatum.activity.MainSettingsActivity.ProcrastinationFighterSensitivity"
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun goToAccountSettings(view: View) {
         Log.d(TAG, "goToAccountSettings: ${userViewModel.getUser().value}")
         val intent = when (userViewModel.getUser().value!!) {

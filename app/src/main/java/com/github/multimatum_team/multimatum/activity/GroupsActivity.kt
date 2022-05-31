@@ -55,6 +55,7 @@ class GroupsActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun addGroup(view: View) {
         val alertDialogBuilder = alertDialogBuilderProducer.produce(this)
         alertDialogBuilder.setTitle("Create group")

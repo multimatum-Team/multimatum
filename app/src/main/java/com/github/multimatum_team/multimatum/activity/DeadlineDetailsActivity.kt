@@ -116,6 +116,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
      * @param view: the current view
      * when clicking ont the button create an intent to launch the QR activity
      */
+    @Suppress("UNUSED_PARAMETER")
     fun goQRGenerator(view: View) {
         val intent = Intent(this, QRGeneratorActivity::class.java)
         val deadline = deadlineListViewModel.getDeadline(id)
@@ -131,6 +132,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     /**
      * This display a DatePickerDialog and afterward a TimePickerDialog to modify the date
      */
+    @Suppress("UNUSED_PARAMETER")
     fun changeDateAndTime(view: View) {
         val dateSetListener =
             DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
@@ -184,6 +186,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     /**
      * Edit the notification preferences with an AlertDialog
      */
+    @Suppress("UNUSED_PARAMETER")
     fun updateNotifications(view: View) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
@@ -209,6 +212,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     /**
      * Function that put the activity to the Edit Mode or to the Uneditable Mode
      */
+    @Suppress("UNUSED_PARAMETER")
     fun goToEditOrNormalMode(view: View) {
         // Put the title, the date, the done button and the notification text to the edit mode or not
         editTitle(editMode)
@@ -234,6 +238,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
         editMode = editMode.not()
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun displayLocationOnMap(view: View) {
         val deadline = deadlineListViewModel.getDeadline(id)
 
@@ -471,6 +476,7 @@ class DeadlineDetailsActivity : AppCompatActivity() {
     /**
      * download the pdf from firebaseStorage
      */
+    @Suppress("UNUSED_PARAMETER")
     fun downloadPdf(view: View) {
 
         pdfRepository.downloadPdf(
