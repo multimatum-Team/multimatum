@@ -9,12 +9,8 @@ pluginManagement {
                 basic(BasicAuthentication)
             }
             credentials {
-                // Do not change the username below.
-                // This should always be `mapbox` (not your username).
                 username = "mapbox"
-                // Use the secret token you stored in gradle.properties as the password
-                password = gradle.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
-                //password = "sk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNWZsODgxN2dyM2Nqenk2dGt0NzFtIn0.Wgj-43xPKrBmAP7TkzFGBQ"
+                password = "sk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNWZsODgxN2dyM2Nqenk2dGt0NzFtIn0.Wgj-43xPKrBmAP7TkzFGBQ"
             }
         }
         maven { url "https://jcenter.bintray.com/" }
@@ -32,12 +28,8 @@ dependencyResolutionManagement {
                 basic(BasicAuthentication)
             }
             credentials {
-                // Do not change the username below.
-                // This should always be `mapbox` (not your username).
                 username = "mapbox"
-                // Use the secret token you stored in gradle.properties as the password
-                password = gradle.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
-                //password = "sk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNWZsODgxN2dyM2Nqenk2dGt0NzFtIn0.Wgj-43xPKrBmAP7TkzFGBQ"
+                password = "sk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNWZsODgxN2dyM2Nqenk2dGt0NzFtIn0.Wgj-43xPKrBmAP7TkzFGBQ"
             }
         }
         maven { url 'https://jitpack.io' }
