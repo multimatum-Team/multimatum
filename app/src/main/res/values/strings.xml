@@ -86,7 +86,7 @@
     <string name="group_invite_link_copied_to_clipboard">Copied invite link to clipboard</string>
     <string name="group_invite_link_to">Invite link to %s</string>
     <string name="multiple_alarms_planned">Multiple Alarms Planned</string>
-    <string name="no_associated_location">No associated location</string>
     <string name="pdf_upload_offline_alert">No Internet connexion, the pdf will not be added</string>
     <string name="pdf_download_offline_alert">Download failed: No Internet Connexion</string>
+    <string name="location_search_error">Check Internet connection for results</string>
 </resources>

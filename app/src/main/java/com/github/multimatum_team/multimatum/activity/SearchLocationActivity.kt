@@ -1,10 +1,20 @@
 package com.github.multimatum_team.multimatum.activity
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.R
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.mapbox.geojson.Point
 import com.mapbox.search.*
 import com.mapbox.search.result.SearchResult
 import com.mapbox.search.result.SearchSuggestion
@@ -24,7 +34,13 @@ class SearchLocationActivity : AppCompatActivity() {
         ) {
         }
 
-        override fun onError(e: Exception) {}
+        override fun onError(e: Exception) {
+            Toast.makeText(
+                applicationContext,
+                getString(R.string.location_search_error),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
         override fun onResult(
             suggestions: List<SearchSuggestion>,
@@ -73,6 +89,15 @@ class SearchLocationActivity : AppCompatActivity() {
                 favoriteTemplates = listOf()
             )
         )
+
+        if (!isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_LOCATION
+            )
+        }
+
         searchBottomSheetView.visibility = View.VISIBLE
         searchBottomSheetView.isClickable = true
         searchBottomSheetView.isHideableByDrag = false
@@ -122,5 +147,16 @@ class SearchLocationActivity : AppCompatActivity() {
         resultIntent.putExtra("longitude", it.coordinate!!.longitude())
         setResult(RESULT_OK, resultIntent)
         finish()
+    }
+
+    private companion object {
+        private const val PERMISSIONS_REQUEST_LOCATION = 0
+
+        fun Context.isPermissionGranted(permission: String): Boolean {
+            return ContextCompat.checkSelfPermission(
+                this,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        }
     }
 }
