@@ -6,7 +6,6 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
@@ -35,6 +34,8 @@ import com.google.firebase.firestore.GeoPoint
 import com.hamsa.twosteppickerdialog.OnStepPickListener
 import com.hamsa.twosteppickerdialog.TwoStepPickerDialog
 import dagger.hilt.android.AndroidEntryPoint
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -92,6 +93,10 @@ class AddDeadlineActivity : AppCompatActivity() {
     private var locationName: String? = null
     private var location: GeoPoint? = null
 
+    // title that should not be considered by the parser because the user
+    // already refused to parse it
+    private var titleToIgnoreInParsing: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -112,6 +117,13 @@ class AddDeadlineActivity : AppCompatActivity() {
             }
             return@setOnKeyListener false
         }
+        KeyboardVisibilityEvent.setEventListener(this, object : KeyboardVisibilityEventListener {
+            override fun onVisibilityChanged(isOpen: Boolean) {
+                if (!isOpen) {
+                    updateDisplayedInfoAfterTitleChange()
+                }
+            }
+        })
 
         setGroupObserver()
     }
@@ -149,9 +161,14 @@ class AddDeadlineActivity : AppCompatActivity() {
      * then uses it to update the displayed fields
      */
     private fun updateDisplayedInfoAfterTitleChange() {
-        val dateTimeExtractionResult = dateTimeExtractor.parse(textTitle.text.toString())
-        if (dateTimeExtractionResult.date != null || dateTimeExtractionResult.time != null) {
-            launchParsingValidationAlert(dateTimeExtractionResult)
+        // if title parsing was refused the first time then do not ask again
+        val currentTitle = textTitle.text.toString()
+        if (currentTitle != titleToIgnoreInParsing) {
+            titleToIgnoreInParsing = currentTitle
+            val dateTimeExtractionResult = dateTimeExtractor.parse(currentTitle)
+            if (dateTimeExtractionResult.dateFound || dateTimeExtractionResult.timeFound) {
+                launchParsingValidationAlert(dateTimeExtractionResult)
+            }
         }
     }
 
@@ -169,21 +186,24 @@ class AddDeadlineActivity : AppCompatActivity() {
         }
         updateDisplayedDateAndTime()
         textTitle.text = dateTimeExtractionResult.text
+        titleToIgnoreInParsing = dateTimeExtractionResult.text
     }
 
     private fun launchParsingValidationAlert(res: DateTimeExtractionResult) {
         val alertBuilder = AlertDialog.Builder(this)
-        var message = "title: " + res.text
-        if (res.date != null) (message + "\ndate: " + res.date.toString()).also { message = it }
-        if (res.time != null) (message + "\ntime: " + res.time.toString()).also { message = it }
-        alertBuilder.setCancelable(true).setTitle(R.string.parsing_validation_title)
+        var message = "Title: " + res.text
+        if (res.dateFound) (message + "\nDate: " + res.date.toString()).also { message = it }
+        if (res.timeFound) (message + "\nTime: " + res.time.toString()).also { message = it }
+        alertBuilder.setCancelable(true)
+            .setTitle(R.string.parsing_validation_title)
             .setMessage(message)
-        alertBuilder.setNegativeButton(
-            "Cancel"
-        ) { dialogInterface, _ -> dialogInterface.cancel() }
-        alertBuilder.setPositiveButton(
-            "OK"
-        ) { _, _ -> applyParsing(res) }
+            // swapping negative and positive buttons because we want "yes" before "no"
+            .setNegativeButton(
+                "Yes"
+            ) { _, _ -> applyParsing(res) }
+            .setPositiveButton(
+                "No"
+            ) { dialogInterface, _ -> dialogInterface.cancel() }
         alertBuilder.show()
     }
 
@@ -195,6 +215,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Setup a DatePickerDialog that will select a date for the deadline and show it
      */
+    @Suppress("UNUSED_PARAMETER")
     fun selectDate(view: View) {
         // Set what will happen when a date is selected
         val dateSetListener =
@@ -222,6 +243,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Setup a TimePickerDialog that will select a time for the deadline and show it
      */
+    @Suppress("UNUSED_PARAMETER")
     fun selectTime(view: View) {
         // Set what will happen when a time is selected
         val timeSetListener =
@@ -323,6 +345,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Setup an AlertDialog that will select the group of the deadline
      */
+    @Suppress("UNUSED_PARAMETER")
     fun selectGroups(view: View) {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
@@ -346,6 +369,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      *  Add a deadline based on the data recuperated on the other TextViews
      */
+    @Suppress("UNUSED_PARAMETER")
     fun addDeadline(view: View) {
 
         // Check if the title is not empty
@@ -396,6 +420,7 @@ class AddDeadlineActivity : AppCompatActivity() {
      *  Go to SearchLocationActivity, which allows the user to select a location
      *  for a deadline.
      */
+    @Suppress("UNUSED_PARAMETER")
     fun searchLocation(view: View) {
         val intent = Intent(applicationContext, SearchLocationActivity::class.java)
         getResult.launch(intent)
@@ -459,6 +484,7 @@ class AddDeadlineActivity : AppCompatActivity() {
     /**
      * Launch pdf selection menu
      */
+    @Suppress("UNUSED_PARAMETER")
     fun selectPDF(view: View) {
         PDFUtil.selectPdfIntent {
             startForResult.launch(it)

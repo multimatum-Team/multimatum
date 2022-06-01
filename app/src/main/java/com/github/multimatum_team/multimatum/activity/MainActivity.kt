@@ -128,6 +128,7 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun onDismissOverride(
         view: ListViewAdapter?,
         position: Int,
@@ -156,12 +157,13 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-
+    @Suppress("UNUSED_PARAMETER")
     fun goToAddDeadline(view: View) {
         val intent = Intent(this, AddDeadlineActivity::class.java)
         startActivity(intent)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun openCodeScanner(view: View) {
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -197,16 +199,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun launchSettingsActivity(view: View) {
         val intent = Intent(this, MainSettingsActivity::class.java)
         startActivity(intent)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun openCalendar(view: View) {
         val intent = Intent(this, CalendarActivity::class.java)
         startActivity(intent)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun goToGroups(view: View) {
         when (authViewModel.getUser().value!!) {
             is SignedInUser -> {

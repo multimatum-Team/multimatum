@@ -6,6 +6,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Toast
 import com.github.multimatum_team.multimatum.LogUtil.debugLog
 import com.github.multimatum_team.multimatum.LogUtil.logFunctionCall
 import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_ENABLED_PREF_KEY
@@ -41,7 +42,7 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
 
     override fun onActivityResumed(activity: Activity) {
         logFunctionCall("resumed ${activity.localClassName}")
-        val onForeground = isAppOnForeground()
+        val onForeground = isAppOnForeground(applicationContext)
         debugLog(if (onForeground) "app is on foreground" else "app is on background")
         if (onForeground){
             stopProcrastinationDetectorIfActive()
@@ -54,7 +55,7 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
 
     override fun onActivityStopped(activity: Activity) {
         logFunctionCall("stopped ${activity.localClassName}")
-        val onForeground = isAppOnForeground()
+        val onForeground = isAppOnForeground(applicationContext)
         debugLog(if (onForeground) "app is on foreground" else "app is on background")
         if (!onForeground){
             startProcrastinationDetectorIfNeeded()
@@ -85,6 +86,7 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
             )
         ) {
             debugLog("launching ${ProcrastinationDetectorService::class.simpleName}")
+            Toast.makeText(this, R.string.procrastination_fighter_enabled_msg, Toast.LENGTH_SHORT).show()
             ProcrastinationDetectorService.launch(this)
         }
     }
@@ -101,18 +103,20 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
         }
     }
 
-    // Strongly inspired from https://localcoder.org/run-code-when-android-app-is-closed-sent-to-background
-    private fun isAppOnForeground(): Boolean {
-        val activityManager =
-            applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        val appProcesses = activityManager.runningAppProcesses
-        return if (appProcesses == null) {
-            false
-        } else {
-            val packageName = applicationContext.packageName
-            appProcesses.any { appProcess ->
-                appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-                        && appProcess.processName == packageName
+    companion object {
+        // Strongly inspired from https://localcoder.org/run-code-when-android-app-is-closed-sent-to-background
+        fun isAppOnForeground(applicationContext: Context): Boolean {
+            val activityManager =
+                applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val appProcesses = activityManager.runningAppProcesses
+            return if (appProcesses == null) {
+                false
+            } else {
+                val packageName = applicationContext.packageName
+                appProcesses.any { appProcess ->
+                    appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                            && appProcess.processName == packageName
+                }
             }
         }
     }

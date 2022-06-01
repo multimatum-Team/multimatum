@@ -24,6 +24,7 @@ class QRGeneratorActivity : AppCompatActivity() {
     }
 
     //function to return to the main activity
+    @Suppress("UNUSED_PARAMETER")
     fun returnMain(view: View) {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)

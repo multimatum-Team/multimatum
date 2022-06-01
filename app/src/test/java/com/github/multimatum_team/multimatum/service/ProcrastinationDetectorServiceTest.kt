@@ -10,7 +10,9 @@ import android.widget.Toast
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ServiceTestRule
+import com.github.multimatum_team.multimatum.AppOnForegroundChecker
 import com.github.multimatum_team.multimatum.DependenciesProvider
+import com.github.multimatum_team.multimatum.ProcrastinationDetectorModule
 import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.activity.MainSettingsActivity
 import dagger.Module
@@ -40,7 +42,7 @@ import org.robolectric.android.controller.ServiceController
 import org.robolectric.shadows.ShadowToast
 import javax.inject.Singleton
 
-@UninstallModules(DependenciesProvider::class)
+@UninstallModules(DependenciesProvider::class, ProcrastinationDetectorModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class ProcrastinationDetectorServiceTest {
@@ -374,6 +376,11 @@ class ProcrastinationDetectorServiceTest {
         @Singleton
         @Provides
         fun provideSharedPreferences(): SharedPreferences = mockSharedPreferences
+
+        @Singleton
+        @Provides
+        fun provideAppOnForegroundChecker(): AppOnForegroundChecker =
+            AppOnForegroundChecker { false }
 
     }
 

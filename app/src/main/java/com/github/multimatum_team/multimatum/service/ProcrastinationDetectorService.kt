@@ -12,6 +12,7 @@ import android.hardware.SensorManager
 import android.os.Binder
 import android.os.IBinder
 import android.os.PowerManager
+import com.github.multimatum_team.multimatum.AppOnForegroundChecker
 import com.github.multimatum_team.multimatum.LogUtil.debugLog
 import com.github.multimatum_team.multimatum.LogUtil.logFunctionCall
 import com.github.multimatum_team.multimatum.R
@@ -32,6 +33,9 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
+
+    @Inject
+    lateinit var appOnForegroundChecker: AppOnForegroundChecker
 
     private var isServiceStarted = false
     private var wakeLock: PowerManager.WakeLock? = null
@@ -76,7 +80,11 @@ class ProcrastinationDetectorService : Service(), SensorEventListener {
     private fun initListenerIfNeeded() {
         if (!this::sensorListener.isInitialized) {
             sensorListener =
-                ProcrastinationDetectorSensorListener(applicationContext, sharedPreferences)
+                ProcrastinationDetectorSensorListener(
+                    applicationContext,
+                    sharedPreferences,
+                    appOnForegroundChecker
+                )
         }
     }
 

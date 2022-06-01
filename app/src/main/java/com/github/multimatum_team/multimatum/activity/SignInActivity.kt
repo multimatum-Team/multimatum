@@ -59,6 +59,7 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun launchSignInIntent(view: View) {
         // For now we only support Google accounts
         val providers = arrayListOf(

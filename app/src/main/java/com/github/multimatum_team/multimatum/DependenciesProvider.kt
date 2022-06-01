@@ -189,3 +189,18 @@ object DisplayLocationActivityModule {
         ViewActionPerformer { viewAction -> viewAction() }
 
 }
+
+/**
+ * Container for a function that returns true iff the app is on foreground
+ */
+data class AppOnForegroundChecker(val isAppOnForeground: (Context) -> Boolean)
+
+@Module
+@InstallIn(SingletonComponent::class)
+object ProcrastinationDetectorModule {
+
+    @Provides
+    fun provideAppOnForegroundChecker(): AppOnForegroundChecker =
+        AppOnForegroundChecker(MultimatumApp::isAppOnForeground)
+
+}
