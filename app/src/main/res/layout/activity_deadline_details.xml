@@ -124,7 +124,7 @@
         android:id="@+id/deadline_details_activity_modify"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="36dp"
+        android:layout_marginTop="16dp"
         android:onClick="goToEditOrNormalMode"
         app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
         app:layout_constraintTop_toBottomOf="@+id/download_pdf"
@@ -136,7 +136,6 @@
         android:id="@+id/display_location_on_map"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="36dp"
         android:onClick="displayLocationOnMap"
         app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
         app:layout_constraintTop_toBottomOf="@+id/deadline_details_activity_modify"
@@ -152,7 +151,7 @@
         android:text="@string/done"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/deadline_details_activity_modify"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+        app:layout_constraintTop_toBottomOf="@+id/download_pdf" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout5"
@@ -184,6 +183,7 @@
         android:textColor="@color/link_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout5" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout5"
+        tools:ignore="TouchTargetSizeCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
