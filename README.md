@@ -39,10 +39,6 @@ Alternatively, you can open the project with Android Studio and press the
 'Run' button, which will run multimatum on the emulator or on your phone if
 connected via USB.
 
-Note that for some reason we haven't been able to figure out, building
-the application from Windows causes the API keys to not be bundled
-with the APK, which makes the sign-in fail.
-
 ## Screenshots
 
 Here are a few screenshots to showcase a few of our app's features (hover for
@@ -59,4 +55,3 @@ description):
   <img src="./screenshots/group-view.jpg" width="350" title="Viewing and administrating groups">
   <img src="./screenshots/qrcode.jpg" width="350" title="Sharing deadlines via QR codes">
 </p>
-
