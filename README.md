@@ -59,4 +59,3 @@ description):
   <img src="./screenshots/group-view.jpg" width="350" title="Viewing and administrating groups">
   <img src="./screenshots/qrcode.jpg" width="350" title="Sharing deadlines via QR codes">
 </p>
-
