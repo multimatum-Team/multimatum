@@ -55,11 +55,11 @@ dependencies {
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation platform('com.google.firebase:firebase-bom:30.0.2')
+    implementation platform('com.google.firebase:firebase-bom:30.1.0')
     implementation 'com.google.firebase:firebase-firestore-ktx'
-    implementation 'com.google.firebase:firebase-auth:21.0.4'
+    implementation 'com.google.firebase:firebase-auth:21.0.5'
     implementation 'com.firebaseui:firebase-ui-auth:8.0.1'
     implementation 'com.mapbox.search:mapbox-search-android-ui:1.0.0-beta.30'
     implementation 'com.google.android.gms:play-services-location:19.0.1'

@@ -9,6 +9,8 @@ pluginManagement {
                 basic(BasicAuthentication)
             }
             credentials {
+                // Do not change the username below.
+                // This should always be `mapbox` (not your username).
                 username = "mapbox"
                 password = "sk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNWZsODgxN2dyM2Nqenk2dGt0NzFtIn0.Wgj-43xPKrBmAP7TkzFGBQ"
             }
@@ -28,6 +30,8 @@ dependencyResolutionManagement {
                 basic(BasicAuthentication)
             }
             credentials {
+                // Do not change the username below.
+                // This should always be `mapbox` (not your username).
                 username = "mapbox"
                 password = "sk.eyJ1IjoibXVsdGltYXR1bSIsImEiOiJjbDMwNWZsODgxN2dyM2Nqenk2dGt0NzFtIn0.Wgj-43xPKrBmAP7TkzFGBQ"
             }
