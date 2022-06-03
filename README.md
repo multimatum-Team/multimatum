@@ -15,12 +15,15 @@ Its main purpose is to provide the user a easy tool to display, manage and even 
 friday" as a title will automatically resolve the date)
 - Upload files to associate them with deadlines
 - Attach geolocation information to deadlines
-- Notifications
+- Notifications (optional)
 - Procrastination fighter, which will harass you with notifications if you're
-not working (based on device motion)
+not working (based on device motion, optional)
 - Sharing deadlines via QRCode
-- Synchronization via Google accounts
-- Creating groups of people working on common deadlines
+- Synchronization via Google accounts (optional)
+- Creating groups of people working on common deadlines (only available when
+signed-in with a Google account)
+- Offline support
+- Dark theme
 
 ## Building
 
@@ -36,3 +39,19 @@ Alternatively, you can open the project with Android Studio and press the
 'Run' button, which will run multimatum on the emulator or on your phone if
 connected via USB.
 
+## Screenshots
+
+Here are a few screenshots to showcase a few of our app's features (hover for
+description):
+
+<p align="center">
+  <img src="./screenshots/main-view.jpg" width="350" title="Main screen">
+  <img src="./screenshots/add-deadline-menu.jpg" width="350" title="Adding a deadline">
+  <img src="./screenshots/calendar-view.jpg" width="350" title="Calendar view">
+  <img src="./screenshots/dark-mode.jpg" width="350" title="Dark mode">
+  <img src="./screenshots/datetime-preselection.jpg" width="350" title="Date & time preselection">
+  <img src="./screenshots/details-view.jpg" width="350" title="Details view">
+  <img src="./screenshots/group-filters.jpg" width="350" title="Filtering deadlines by groups">
+  <img src="./screenshots/group-view.jpg" width="350" title="Viewing and administrating groups">
+  <img src="./screenshots/qrcode.jpg" width="350" title="Sharing deadlines via QR codes">
+</p>
