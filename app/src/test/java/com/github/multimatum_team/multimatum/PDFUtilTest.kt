@@ -47,14 +47,14 @@ class PDFUtilTest {
     }
 
     @Test
-    fun `get empty Uri file name should return empty name`(){
+    fun `get empty Uri file name should return empty name`() {
         val input = Uri.EMPTY
         val out = PDFUtil.getFileNameFromUri(input, context)
         assertEquals("", out)
     }
 
     @Test
-    fun `getting name from Uri`(){
+    fun `getting name from Uri`() {
         val inputUri: Uri = Uri.parse("fooDir1/fooDir2/someFile.pdf")
         val expectedOutput = "someFile.pdf"
         val cursorColumn: Array<String> = arrayOf("Uri")

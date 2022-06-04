@@ -9,10 +9,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class QRCodeGeneratorTest{
+class QRCodeGeneratorTest {
 
     @Test
-    fun `Test right bitmap result for arbitrary string`(){
+    fun `Test right bitmap result for arbitrary string`() {
         val string: DeadlineID = "This is a test"
         val qrGenerator = QRCodeGenerator(string)
         val bitmap = qrGenerator.generateQRCode()

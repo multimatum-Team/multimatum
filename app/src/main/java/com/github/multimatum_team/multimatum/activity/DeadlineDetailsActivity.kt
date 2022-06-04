@@ -364,7 +364,8 @@ class DeadlineDetailsActivity : AppCompatActivity() {
             dateView.text =
                 getString(R.string.DueTheXatX, dateTime.toLocalDate(), dateTime.toLocalTime())
             titleView.text = SpannableStringBuilder(title)
-            locationView.text = deadline.locationName ?: getString(R.string.display_location_default_msg)
+            locationView.text =
+                deadline.locationName ?: getString(R.string.display_location_default_msg)
             descriptionView.text = SpannableStringBuilder(description)
             doneButton.isChecked = (state == DeadlineState.DONE)
             updateDetail()

@@ -16,7 +16,7 @@ abstract class PdfRepository {
     abstract fun uploadPdf(
         data: Uri,
         context: Context,
-        callback: (String, Boolean) -> Unit
+        callback: (String, Boolean) -> Unit,
     )
 
     /**
@@ -30,6 +30,6 @@ abstract class PdfRepository {
     abstract fun downloadPdf(
         path: String,
         title: String,
-        callback: (File?, Boolean) -> Unit
+        callback: (File?, Boolean) -> Unit,
     )
 }

@@ -5,4 +5,4 @@ fun <T, K, V> List<T>.associateNotNull(transform: (T) -> Pair<K, V?>): Map<K, V>
         val (k, v) = transform(it)
         v?.let { k to v }
     }
-    .toMap()
+        .toMap()

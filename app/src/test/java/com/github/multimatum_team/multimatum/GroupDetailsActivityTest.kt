@@ -47,7 +47,9 @@ import javax.inject.Singleton
 /**
  * Tests for the GroupDetailsActivity class
  */
-@UninstallModules(FirebaseRepositoryModule::class, FirebaseDynamicLinksModule::class, ClockModule::class)
+@UninstallModules(FirebaseRepositoryModule::class,
+    FirebaseDynamicLinksModule::class,
+    ClockModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi

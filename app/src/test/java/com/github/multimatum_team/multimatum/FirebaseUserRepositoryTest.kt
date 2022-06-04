@@ -100,6 +100,7 @@ class FirebaseUserRepositoryTest {
                     UserInfo("5", "Joseph"),
                 )
             ).database
+
         @Singleton
         @Provides
         fun provideFirebaseAuth(): FirebaseAuth =

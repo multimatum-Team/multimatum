@@ -11,8 +11,8 @@ import java.time.LocalTime
 data class PatternMatchCase(
     val pattern: List<(Token) -> Any?>,
     val extractionFunc: (List<Any?>) -> ExtractedInfo?,
-    val name: String
-){
+    val name: String,
+) {
     override fun toString(): String = name
 }
 
@@ -25,7 +25,7 @@ data class PatternMatchCase(
 data class DateTimeExtractionResult(
     val text: String,
     val date: LocalDate? = null,
-    val time: LocalTime? = null
+    val time: LocalTime? = null,
 ) {
     val dateFound get() = (date != null)
     val timeFound get() = (time != null)
@@ -48,7 +48,7 @@ class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsG
         val extractedValues: List<Any?>,
         val extractor: (List<Any?>) -> ExtractedInfo?,
         val remainingTokens: List<Token>,
-        val consumedTokens: List<Token>
+        val consumedTokens: List<Token>,
     )
 
 
@@ -62,21 +62,21 @@ class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsG
     private data class ExtractionResult(
         val extractedInfo: ExtractedInfo,
         val remaining: List<Token>,
-        val consumed: List<Token>
+        val consumed: List<Token>,
     )
 
     /**
      * Filters out the patterns involving more tokens than the pattern
      */
     private fun Sequence<PatternMatchCase>.filterForMaxLength(
-        maxLength: Int
+        maxLength: Int,
     ) = filter { (pat, _) -> pat.size <= maxLength }
 
     /**
      * Applies the functions of the patterns to the corresponding tokens
      */
     private fun Sequence<PatternMatchCase>.matchTokensAgainstPattern(
-        tokens: List<Token>
+        tokens: List<Token>,
     ): Sequence<MatchingResult> = map { (pattern, createExtractedInfoFunc) ->
         val currentTokens = tokens.take(pattern.size)
         val nextTokens = tokens.drop(pattern.size)
@@ -135,7 +135,7 @@ class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsG
 
     private fun firstFoundTimeIfAny(
         extractedInfo: ExtractedInfo,
-        previouslySelectedTime: LocalTime?
+        previouslySelectedTime: LocalTime?,
     ) =
         if (extractedInfo is ExtractedTime && previouslySelectedTime == null)
             extractedInfo.time
@@ -143,7 +143,7 @@ class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsG
 
     private fun firstFoundDateIfAny(
         extractedInfo: ExtractedInfo,
-        previouslySelectedDate: LocalDate?
+        previouslySelectedDate: LocalDate?,
     ) =
         if (extractedInfo is ExtractedDate && previouslySelectedDate == null)
             extractedInfo.date
@@ -153,7 +153,7 @@ class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsG
         extractedInfo: ExtractedInfo,
         date: LocalDate?,
         consumed: List<Token>,
-        time: LocalTime?
+        time: LocalTime?,
     ) = when (extractedInfo) {
         is ExtractedDate -> if (date == null) listOf(RemovedToken) else consumed
         is ExtractedTime -> if (time == null) listOf(RemovedToken) else consumed
@@ -167,7 +167,7 @@ class DateTimeExtractor(private val dateTimePatternsGenerator: DateTimePatternsG
         remTokens: List<Token>,
         date: LocalDate?,
         time: LocalTime?,
-        alreadyProcessedTokensList: MutableList<Token>
+        alreadyProcessedTokensList: MutableList<Token>,
     ): Pair<LocalDate?, LocalTime?> =
         if (remTokens.isEmpty()) Pair(date, time)  // end of list, return found info
         else {

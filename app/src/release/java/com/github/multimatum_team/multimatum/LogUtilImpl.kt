@@ -5,7 +5,7 @@ package com.github.multimatum_team.multimatum
  * This file is used in the release builds. The methods simply do nothing
  * because logging is not needed in a release version of the app.
  */
-object LogUtilImpl: LogUtil.FunctionsProvider {
+object LogUtilImpl : LogUtil.FunctionsProvider {
 
     override fun debugLog(str: String) = doNothing()
 
@@ -15,6 +15,6 @@ object LogUtilImpl: LogUtil.FunctionsProvider {
 
     override fun logFunctionCall(str: String) = doNothing()
 
-    private fun doNothing() { }
+    private fun doNothing() {}
 
 }

@@ -180,7 +180,7 @@ class MainSettingsActivityTest {
     private fun twoStatesButtonToSharedPreferencesTestScenario(
         initNotifEnabled: Boolean, initDarkModeEnabled: Boolean,
         clickedButtonId: Int,
-        expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean
+        expectedFinalNotifEnabled: Boolean, expectedFinalDarkModeEnabled: Boolean,
     ) {
         `when`(
             mockSharedPreferences.getBoolean(

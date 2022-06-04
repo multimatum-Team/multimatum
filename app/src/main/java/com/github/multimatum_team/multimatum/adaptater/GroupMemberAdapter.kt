@@ -24,7 +24,7 @@ class GroupMemberAdapter(
     private val userRepository: UserRepository,
     private val authViewModel: AuthViewModel,
     private val groupViewModel: GroupViewModel,
-    private val buildAlertDialog: (Context) -> AlertDialog.Builder = AlertDialog::Builder
+    private val buildAlertDialog: (Context) -> AlertDialog.Builder = AlertDialog::Builder,
 ) : RecyclerView.Adapter<GroupMemberAdapter.MemberItemViewHolder>() {
     private var dataSource: MutableList<UserInfo> = mutableListOf()
     private lateinit var group: UserGroup

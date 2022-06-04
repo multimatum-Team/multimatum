@@ -44,7 +44,7 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
         logFunctionCall("resumed ${activity.localClassName}")
         val onForeground = isAppOnForeground(applicationContext)
         debugLog(if (onForeground) "app is on foreground" else "app is on background")
-        if (onForeground){
+        if (onForeground) {
             stopProcrastinationDetectorIfActive()
         }
     }
@@ -57,7 +57,7 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
         logFunctionCall("stopped ${activity.localClassName}")
         val onForeground = isAppOnForeground(applicationContext)
         debugLog(if (onForeground) "app is on foreground" else "app is on background")
-        if (!onForeground){
+        if (!onForeground) {
             startProcrastinationDetectorIfNeeded()
         }
     }
@@ -86,7 +86,8 @@ class MultimatumApp : Application(), Application.ActivityLifecycleCallbacks {
             )
         ) {
             debugLog("launching ${ProcrastinationDetectorService::class.simpleName}")
-            Toast.makeText(this, R.string.procrastination_fighter_enabled_msg, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.procrastination_fighter_enabled_msg, Toast.LENGTH_SHORT)
+                .show()
             ProcrastinationDetectorService.launch(this)
         }
     }

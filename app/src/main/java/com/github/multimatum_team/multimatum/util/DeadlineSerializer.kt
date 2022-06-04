@@ -13,7 +13,7 @@ internal class DeadlineSerializer : JsonSerializer<Deadline> {
     override fun serialize(
         deadline: Deadline,
         srcType: Type?,
-        context: JsonSerializationContext?
+        context: JsonSerializationContext?,
     ): JsonElement {
         val obj = JsonObject()
         obj.addProperty("title", deadline.title)
@@ -21,7 +21,7 @@ internal class DeadlineSerializer : JsonSerializer<Deadline> {
         obj.addProperty("dateTime", formatter.format(deadline.dateTime))
         obj.addProperty("description", deadline.description)
         obj.addProperty("pdfPath", deadline.pdfPath)
-        if(deadline.locationName != null){
+        if (deadline.locationName != null) {
             obj.addProperty("locationName", deadline.locationName)
         } else {
             obj.add("locationName", JsonNull.INSTANCE)

@@ -306,7 +306,7 @@ class ProcrastinationDetectorServiceTest {
         val x: Float,
         val y: Float,
         val z: Float,
-        val timestamp: Long
+        val timestamp: Long,
     )
 
     /**
@@ -318,7 +318,7 @@ class ProcrastinationDetectorServiceTest {
     private fun simulateEvents(
         events: List<EventToSimulate>,
         mockSensorEvent: SensorEvent,
-        service: ProcrastinationDetectorService
+        service: ProcrastinationDetectorService,
     ) {
         var remaining = events.size
         for (event in events) {
@@ -343,7 +343,7 @@ class ProcrastinationDetectorServiceTest {
     // Configures a MockSensorEvent to simulate an event with values x, y and z and that happened at the given timestamp
     private fun configureMockSensorEventFor(
         mockSensorEvent: SensorEvent, x: Float, y: Float, z: Float,
-        timestampNanosec: Long
+        timestampNanosec: Long,
     ) {
         forceSet(mockSensorEvent, "values", floatArrayOf(x, y, z))
         forceSet(mockSensorEvent, "timestamp", timestampNanosec)

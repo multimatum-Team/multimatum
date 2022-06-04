@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
-                id: Long
+                id: Long,
             ) =
                 listViewAdapter.setFilter(filterAdapter.getItem(position))
 
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
         view: ListViewAdapter?,
         position: Int,
         lv: ListView,
-        viewModel: DeadlineListViewModel
+        viewModel: DeadlineListViewModel,
     ) {
         val adapter: DeadlineAdapter = lv.adapter as DeadlineAdapter
         val (idToDelete, deadline) = adapter.getItem(position)
@@ -188,7 +188,7 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {

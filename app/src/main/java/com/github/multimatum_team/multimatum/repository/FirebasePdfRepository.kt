@@ -3,11 +3,8 @@ package com.github.multimatum_team.multimatum.repository
 import android.app.AlertDialog
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
-import androidx.core.content.ContextCompat.getSystemService
 import com.github.multimatum_team.multimatum.LogUtil
-import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.util.PDFUtil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
@@ -20,14 +17,14 @@ import javax.inject.Inject
 class FirebasePdfRepository @Inject constructor(
     database: FirebaseStorage,
     private val auth: FirebaseAuth,
-    private val connectivityManager: ConnectivityManager
+    private val connectivityManager: ConnectivityManager,
 ) : PdfRepository() {
     private val storageReference = database.reference
 
     override fun uploadPdf(
         data: Uri,
         context: Context,
-        callback: (String, Boolean) -> Unit
+        callback: (String, Boolean) -> Unit,
     ) {
         if (data != Uri.EMPTY) {
             val ref =
@@ -59,7 +56,7 @@ class FirebasePdfRepository @Inject constructor(
     }
 
     override fun downloadPdf(path: String, title: String, callback: (File?, Boolean) -> Unit) {
-        if(isOnline()) {
+        if (isOnline()) {
             val ref = storageReference.child(path)
 
             val rootPath = File("file_name")

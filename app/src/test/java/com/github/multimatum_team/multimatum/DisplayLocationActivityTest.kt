@@ -77,7 +77,8 @@ class DisplayLocationActivityTest {
             null
         }
         // mocking getPlugin instead of annotations because it is a delegate property (and calls getPlugin)
-        whenever(mockMapView.getPlugin<AnnotationPlugin>(Plugin.MAPBOX_ANNOTATION_PLUGIN_ID)).thenReturn(mockAnnotationsPlugin)
+        whenever(mockMapView.getPlugin<AnnotationPlugin>(Plugin.MAPBOX_ANNOTATION_PLUGIN_ID)).thenReturn(
+            mockAnnotationsPlugin)
         whenever(mockAnnotationsPlugin.createPointAnnotationManager()).thenReturn(
             mockPointAnnotationManager
         )
@@ -91,7 +92,7 @@ class DisplayLocationActivityTest {
         val activityScenario: ActivityScenario<DisplayLocationActivity> =
             ActivityScenario.launch(intent)
 
-        activityScenario.use {  }
+        activityScenario.use { }
 
         assertNotNull(cameraOptions)
         assertEquals(14.0, cameraOptions!!.zoom)

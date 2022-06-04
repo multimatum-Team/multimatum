@@ -60,7 +60,8 @@ class QRCodeReaderActivity : AppCompatActivity() {
 
         // Callback for the initialization error of the camera
         codeScanner.errorCallback = ErrorCallback {
-            Toast.makeText(this, "Camera initialization error: ${it.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Camera initialization error: ${it.message}", Toast.LENGTH_LONG)
+                .show()
         }
 
         // Start the scanner

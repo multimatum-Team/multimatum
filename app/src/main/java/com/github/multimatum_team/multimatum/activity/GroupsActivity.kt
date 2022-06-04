@@ -81,7 +81,7 @@ class GroupsActivity : AppCompatActivity() {
         alertDialogBuilder.show()
     }
 
-    private fun createGroup( editText: EditText) {
+    private fun createGroup(editText: EditText) {
         groupViewModel.createGroup(editText.text.toString()) { groupID ->
             Toast.makeText(this, "Group created", Toast.LENGTH_SHORT).show()
             Log.d("passBy", "Toast created")

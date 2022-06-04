@@ -136,7 +136,7 @@ class QRCodeReaderActivityTestRobolectric {
     }
 
     @Test
-    fun `onPause should call releaseResources`(){
+    fun `onPause should call releaseResources`() {
         var wasCalled = false
         whenever(mockCodeScanner.startPreview()).then {
             wasCalled = true
@@ -149,7 +149,7 @@ class QRCodeReaderActivityTestRobolectric {
     // invokes the method with the given name, on the given activity, regardless of its visibility
     private fun invokeNonPublicMethodOnActivity(
         methodName: String,
-        activity: QRCodeReaderActivity
+        activity: QRCodeReaderActivity,
     ) {
         val onResumeMethod =
             QRCodeReaderActivity::class.java.declaredMethods.find { it.name == methodName }!!

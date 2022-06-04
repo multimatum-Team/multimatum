@@ -16,7 +16,7 @@ data class UserGroup(
     val id: GroupID,
     val name: String,
     val owner: UserID,
-    val members: Set<UserID>
+    val members: Set<UserID>,
 ) {
     init {
         require(members.contains(owner))

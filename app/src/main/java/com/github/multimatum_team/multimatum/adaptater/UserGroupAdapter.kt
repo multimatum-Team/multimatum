@@ -18,7 +18,7 @@ import kotlinx.coroutines.runBlocking
 class UserGroupAdapter(
     context: Context,
     private val groupViewModel: GroupViewModel,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) : BaseAdapter() {
     private var dataSource: List<UserGroup> = listOf()
     private val inflater: LayoutInflater =

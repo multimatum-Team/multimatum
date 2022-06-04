@@ -19,7 +19,7 @@ class DateTimeExtractorTest {
     private fun assertFound(
         expText: String,
         expTime: LocalTime? = null,
-        expDate: LocalDate? = null
+        expDate: LocalDate? = null,
     ): (DateTimeExtractionResult) -> Unit = { dateTimeExtractionRes ->
         assertEquals(expText, dateTimeExtractionRes.text)
         if (expTime == null) {

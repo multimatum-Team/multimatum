@@ -152,30 +152,32 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Clicking the groups button while being signed-in anonymously shows an error message`() = runTest {
-        (authRepository as MockAuthRepository).logIn(anonymousUser)
-        onView(withId(R.id.groupButton)).perform(click())
-        ShadowAlertDialog.getShownDialogs()
-        (ShadowAlertDialog.getLatestDialog() as AlertDialog)
-            .getButton(AlertDialog.BUTTON_NEGATIVE)
-            .performClick()
-    }
+    fun `Clicking the groups button while being signed-in anonymously shows an error message`() =
+        runTest {
+            (authRepository as MockAuthRepository).logIn(anonymousUser)
+            onView(withId(R.id.groupButton)).perform(click())
+            ShadowAlertDialog.getShownDialogs()
+            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                .getButton(AlertDialog.BUTTON_NEGATIVE)
+                .performClick()
+        }
 
     @Test
-    fun `Clicking the groups button while being signed-in anonymously and clicking the button to go to the sign-in page starts the right intent`() = runTest {
-        (authRepository as MockAuthRepository).logIn(anonymousUser)
-        onView(withId(R.id.groupButton)).perform(click())
-        ShadowAlertDialog.getShownDialogs()
-        (ShadowAlertDialog.getLatestDialog() as AlertDialog)
-            .getButton(AlertDialog.BUTTON_POSITIVE)
-            .performClick()
-        Intents.intended(
-            allOf(
-                hasComponent(SignInActivity::class.java.name),
-                toPackage("com.github.multimatum_team.multimatum")
+    fun `Clicking the groups button while being signed-in anonymously and clicking the button to go to the sign-in page starts the right intent`() =
+        runTest {
+            (authRepository as MockAuthRepository).logIn(anonymousUser)
+            onView(withId(R.id.groupButton)).perform(click())
+            ShadowAlertDialog.getShownDialogs()
+            (ShadowAlertDialog.getLatestDialog() as AlertDialog)
+                .getButton(AlertDialog.BUTTON_POSITIVE)
+                .performClick()
+            Intents.intended(
+                allOf(
+                    hasComponent(SignInActivity::class.java.name),
+                    toPackage("com.github.multimatum_team.multimatum")
+                )
             )
-        )
-    }
+        }
 
     @Test
     fun `button does not open QR code reader if permission not granted`() {

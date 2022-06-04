@@ -10,7 +10,8 @@ import java.time.*
 class MockClockService(private val dateTime: LocalDateTime) : ClockService {
     override fun getClock(): Clock =
         Clock.fixed(
-            Instant.ofEpochSecond(dateTime.toLocalDate().atStartOfDay(ZoneId.of("UTC")).toEpochSecond()),
+            Instant.ofEpochSecond(dateTime.toLocalDate().atStartOfDay(ZoneId.of("UTC"))
+                .toEpochSecond()),
             ZoneId.of("UTC")
         )
 }
