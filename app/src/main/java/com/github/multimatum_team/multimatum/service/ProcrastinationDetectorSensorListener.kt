@@ -12,14 +12,12 @@ import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.activity.MainSettingsActivity.Companion.PROCRASTINATION_FIGHTER_SENSITIVITY_PREF_KEY
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService.Companion.DEFAULT_SENSITIVITY
 import com.github.multimatum_team.multimatum.service.ProcrastinationDetectorService.Companion.MAX_SENSITIVITY
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlin.math.abs
 
 class ProcrastinationDetectorSensorListener(
     private val applicationContext: Context,
     private val sharedPreferences: SharedPreferences,
-    private val appOnForegroundChecker: AppOnForegroundChecker
+    private val appOnForegroundChecker: AppOnForegroundChecker,
 ) :
     SensorEventListener {
 
@@ -86,16 +84,20 @@ class ProcrastinationDetectorSensorListener(
     }
 
     private fun reactToSignificantMove() {
-        if (nonReportedDetectionsCnt > 0) {
-            nonReportedDetectionsCnt -= 1
-        } else if (appOnForegroundChecker.isAppOnForeground(applicationContext)) {
-            ProcrastinationDetectorService.stop(applicationContext)
-        } else {
-            Toast.makeText(
-                applicationContext,
-                applicationContext.getString(R.string.stop_procrastinating_msg),
-                Toast.LENGTH_SHORT
-            ).show()
+        when {
+            nonReportedDetectionsCnt > 0 -> {
+                nonReportedDetectionsCnt -= 1
+            }
+            appOnForegroundChecker.isAppOnForeground(applicationContext) -> {
+                ProcrastinationDetectorService.stop(applicationContext)
+            }
+            else -> {
+                Toast.makeText(
+                    applicationContext,
+                    applicationContext.getString(R.string.stop_procrastinating_msg),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 

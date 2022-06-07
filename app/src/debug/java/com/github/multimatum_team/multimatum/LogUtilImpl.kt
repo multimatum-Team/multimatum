@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * but it should not be used in release builds because calls
  * to reflection methods are uselessly costly
  */
-object LogUtilImpl: LogUtil.FunctionsProvider {
+object LogUtilImpl : LogUtil.FunctionsProvider {
 
     override fun debugLog(str: String) = safeExec {
         val currFunc = Thread.currentThread().stackTrace[STACK_IDX_FOR_ENV_FUNC]

@@ -17,7 +17,7 @@ internal class DeadlineDeserializer : JsonDeserializer<Deadline> {
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ): Deadline {
         val obj = json.asJsonObject
         val title = obj.get("title").asString
@@ -40,6 +40,12 @@ internal class DeadlineDeserializer : JsonDeserializer<Deadline> {
                 location = GeoPoint(latitude, longitude)
             )
         }
-        return Deadline(title, state, dateTime, description, pdfPath = pdfPath, locationName = null, location = null)
+        return Deadline(title,
+            state,
+            dateTime,
+            description,
+            pdfPath = pdfPath,
+            locationName = null,
+            location = null)
     }
 }

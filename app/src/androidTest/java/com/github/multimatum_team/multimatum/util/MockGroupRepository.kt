@@ -68,7 +68,7 @@ class MockGroupRepository(initialContents: List<UserGroup>) : GroupRepository() 
     override fun generateInviteLink(
         id: GroupID,
         linkTitle: String,
-        linkDescription: String
+        linkDescription: String,
     ): Uri {
         val inviteLink = Uri.Builder()
             .scheme("https")

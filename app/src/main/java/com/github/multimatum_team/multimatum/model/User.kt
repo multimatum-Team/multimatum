@@ -7,7 +7,7 @@ typealias UserID = String
  */
 data class UserInfo(
     val id: UserID,
-    val name: String
+    val name: String,
 )
 
 /**
@@ -31,8 +31,8 @@ data class AnonymousUser(override val id: UserID) : User
 data class SignedInUser(
     override val id: UserID,
     val name: String,
-    val email: String
+    val email: String,
 ) : User {
     val info: UserInfo
-      get() = UserInfo(id, name)
+        get() = UserInfo(id, name)
 }

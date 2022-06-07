@@ -42,7 +42,7 @@ object DeadlineNotification {
         deadlineId: DeadlineID,
         deadline: Deadline,
         newNotificationTime: List<Long>,
-        context: Context
+        context: Context,
     ) {
         cancelDeadlineNotifications(deadlineId, context)
         writeToSharedPreference(deadlineId, newNotificationTime, context)
@@ -160,7 +160,7 @@ object DeadlineNotification {
         id: String,
         deadline: Deadline,
         timeBeforeDeadline: Long,
-        context: Context
+        context: Context,
     ) {
         val alarmManager =
             context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager  //this get an service instance of AlarmManager
@@ -171,7 +171,8 @@ object DeadlineNotification {
         //this create an intent of broadcast receiver
         //Adding extra parameter that will be used in the broadcast receiver to create the notification
         intent.putExtra(ReminderBroadcastReceiver.NOTIFICATION_TITLE_TAG, deadline.title)
-        intent.putExtra(ReminderBroadcastReceiver.NOTIFICATION_DESCRIPTION_TAG, deadline.description)
+        intent.putExtra(ReminderBroadcastReceiver.NOTIFICATION_DESCRIPTION_TAG,
+            deadline.description)
         intent.putExtra(ReminderBroadcastReceiver.NOTIFICATION_ID_TAG, id)
 
         //compute the time where the alarm will be triggered in millis.
@@ -200,7 +201,7 @@ object DeadlineNotification {
         deadlineId: DeadlineID,
         deadline: Deadline,
         notificationTimes: List<Long>,
-        context: Context
+        context: Context,
     ) {
         for (notifTime in notificationTimes) {
             setNotification(deadlineId + notifTime.toString(), deadline, notifTime, context)

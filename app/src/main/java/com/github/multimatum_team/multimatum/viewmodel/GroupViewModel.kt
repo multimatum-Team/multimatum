@@ -29,9 +29,9 @@ import javax.inject.Inject
 @HiltViewModel
 @SuppressLint("StaticFieldLeak")
 class GroupViewModel @Inject constructor(
-     @ApplicationContext private val context: Context,
+    @ApplicationContext private val context: Context,
     private val authRepository: AuthRepository,
-    private val groupRepository: GroupRepository
+    private val groupRepository: GroupRepository,
 ) : ViewModel() {
     private val _groups: MutableLiveData<Map<GroupID, UserGroup>> = MutableLiveData()
 

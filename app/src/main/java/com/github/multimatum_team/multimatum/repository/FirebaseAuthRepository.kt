@@ -1,17 +1,13 @@
 package com.github.multimatum_team.multimatum.repository
 
 import android.util.Log
-import android.widget.Toast
 import com.github.multimatum_team.multimatum.model.AnonymousUser
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
-import com.mapbox.bindgen.None
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import java.lang.Exception
 import javax.inject.Inject
 
 /**
@@ -19,7 +15,7 @@ import javax.inject.Inject
  * Acts as a wrapper around the Firebase authentication library.
  */
 class FirebaseAuthRepository @Inject constructor(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
 ) : AuthRepository() {
 
     /**

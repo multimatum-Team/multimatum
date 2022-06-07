@@ -22,13 +22,13 @@ data class DeadlineData(
     val dateTime: LocalDateTime,
     val description: String,
     val ownerData: DeadlineOwnerData,
-    val pdfPath: String
+    val pdfPath: String,
 )
 
 class MockFirebaseFirestore(
     deadlines: List<DeadlineData>,
     groups: List<UserGroup>,
-    users: List<UserInfo>
+    users: List<UserInfo>,
 ) {
     private var deadlineCounter = 0
     private var groupCounter = 0
@@ -199,7 +199,7 @@ class MockFirebaseFirestore(
 
     private fun generateDeadlineDocumentSnapshot(
         id: DeadlineID,
-        deadlineData: DeadlineData
+        deadlineData: DeadlineData,
     ): DocumentSnapshot {
         val snapshot = mock(DocumentSnapshot::class.java)
         `when`(snapshot.id).thenReturn(id)
@@ -232,7 +232,7 @@ class MockFirebaseFirestore(
 
     private fun generateDeadlineDocument(
         id: DeadlineID,
-        deadlineData: DeadlineData
+        deadlineData: DeadlineData,
     ): DocumentReference {
         val snapshot = generateDeadlineDocumentSnapshot(id, deadlineData)
         val document = mock(DocumentReference::class.java)
@@ -249,7 +249,7 @@ class MockFirebaseFirestore(
 
     private fun generateDeadlineQueryDocumentSnapshot(
         id: DeadlineID,
-        deadlineData: DeadlineData
+        deadlineData: DeadlineData,
     ): QueryDocumentSnapshot {
         val snapshot = mock(QueryDocumentSnapshot::class.java)
         `when`(snapshot.id).thenReturn(id)
@@ -381,7 +381,7 @@ class MockFirebaseFirestore(
     // Users
 
     private fun generateUserQueryDocumentSnapshot(
-        userInfo: UserInfo
+        userInfo: UserInfo,
     ): QueryDocumentSnapshot {
         val snapshot = mock(QueryDocumentSnapshot::class.java)
         `when`(snapshot.id).thenReturn(userInfo.id)
@@ -390,7 +390,7 @@ class MockFirebaseFirestore(
     }
 
     private fun generateUserQuerySnapshot(
-        userInfo: List<UserInfo>
+        userInfo: List<UserInfo>,
     ): QuerySnapshot {
         val snapshot = mock(QuerySnapshot::class.java)
         `when`(snapshot.iterator()).then {

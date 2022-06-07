@@ -29,7 +29,7 @@ class DeadlineListViewModel @Inject constructor(
     application: Application,
     authRepository: AuthRepository,
     groupRepository: GroupRepository,
-    private val deadlineRepository: DeadlineRepository
+    private val deadlineRepository: DeadlineRepository,
 ) : AndroidViewModel(application) {
     private val _deadlines: MutableLiveData<Map<DeadlineID, Deadline>> = MutableLiveData()
 

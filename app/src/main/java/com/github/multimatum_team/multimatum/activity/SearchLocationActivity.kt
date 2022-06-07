@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -12,9 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.multimatum_team.multimatum.R
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.mapbox.geojson.Point
 import com.mapbox.search.*
 import com.mapbox.search.result.SearchResult
 import com.mapbox.search.result.SearchSuggestion
@@ -30,7 +26,7 @@ class SearchLocationActivity : AppCompatActivity() {
         override fun onCategoryResult(
             suggestion: SearchSuggestion,
             results: List<SearchResult>,
-            responseInfo: ResponseInfo
+            responseInfo: ResponseInfo,
         ) {
         }
 
@@ -45,7 +41,7 @@ class SearchLocationActivity : AppCompatActivity() {
         override fun onResult(
             suggestions: List<SearchSuggestion>,
             results: List<SearchResult>,
-            responseInfo: ResponseInfo
+            responseInfo: ResponseInfo,
         ) {
             results.firstOrNull()?.let {
                 initializeResultIntent(it)
@@ -55,14 +51,14 @@ class SearchLocationActivity : AppCompatActivity() {
         override fun onResult(
             suggestion: SearchSuggestion,
             result: SearchResult,
-            responseInfo: ResponseInfo
+            responseInfo: ResponseInfo,
         ) {
             initializeResultIntent(result)
         }
 
         override fun onSuggestions(
             suggestions: List<SearchSuggestion>,
-            responseInfo: ResponseInfo
+            responseInfo: ResponseInfo,
         ) {
             suggestions.firstOrNull()?.let {
                 searchEngine.select(suggestions, this)

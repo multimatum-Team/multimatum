@@ -61,7 +61,7 @@ data class Deadline(
     val owner: DeadlineOwner = UserOwned,
     val pdfPath: String = "",
     val locationName: String? = null,
-    val location: GeoPoint? = null
+    val location: GeoPoint? = null,
 ) {
     init {
         if (title.isEmpty()) {

@@ -7,7 +7,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import java.io.File
 
-class MockPdfRepository: PdfRepository() {
+class MockPdfRepository : PdfRepository() {
     override fun uploadPdf(data: Uri, context: Context, callback: (String, Boolean) -> Unit) {
         doNothing()
     }

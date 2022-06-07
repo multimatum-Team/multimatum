@@ -31,7 +31,7 @@ interface ClockServiceEntryPoint {
 
 class DeadlineAdapter(
     private val context: Context,
-    private val deadlineListViewModel: DeadlineListViewModel
+    private val deadlineListViewModel: DeadlineListViewModel,
 ) : BaseAdapter() {
     companion object {
         // value who define when there is not much time left for a deadline

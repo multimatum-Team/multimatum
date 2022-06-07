@@ -108,7 +108,7 @@ object WhitespaceToken : Token() {
 /**
  * Token indicating that there was initially another token at its place, that was removed
  */
-object RemovedToken : Token(){
+object RemovedToken : Token() {
     override val str: String = ""
     override fun toString(): String = "RemovedToken"
 }

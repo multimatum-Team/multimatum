@@ -14,7 +14,6 @@ import com.github.multimatum_team.multimatum.R
 import com.github.multimatum_team.multimatum.model.SignedInUser
 import com.github.multimatum_team.multimatum.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Exception
 import java.lang.IllegalStateException
 
 /**
@@ -38,11 +37,13 @@ class ProfileActivity : AppCompatActivity() {
 
         logOutButton.setOnClickListener {
             Log.d(TAG, "Logging out...")
-            if((this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetwork != null) {
+            if ((this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetwork != null) {
                 userViewModel.signOut()
                 AuthUI.getInstance().signOut(this)
-            }else{
-                Toast.makeText(this, "You cannot log out without internet connection", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this,
+                    "You cannot log out without internet connection",
+                    Toast.LENGTH_SHORT).show()
             }
             finish()
         }
