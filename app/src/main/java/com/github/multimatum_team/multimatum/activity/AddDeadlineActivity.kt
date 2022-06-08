@@ -8,6 +8,7 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ProgressBar
@@ -399,18 +400,18 @@ class AddDeadlineActivity : AppCompatActivity() {
                 // Reset the text input for future use
                 textTitle.text = ""
 
+                if (!uploadSuccess) {
+                    AlertDialog.Builder(this).setTitle(R.string.pdf_upload_offline_alert)
+                        .setNeutralButton("ok") { dialogInterface, _ ->
+                            dialogInterface.cancel()
+                            finish()
+                        }
+                        .show()
+                }
+
                 deadlineListViewModel.addDeadline(deadline) {
                     DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
-                    if (!uploadSuccess) {
-                        AlertDialog.Builder(this).setTitle(R.string.pdf_upload_offline_alert)
-                            .setNeutralButton("ok") { dialogInterface, _ ->
-                                dialogInterface.cancel()
-                                finish()
-                            }
-                            .show()
-                    } else {
-                        finish()
-                    }
+                    finish()
                 }
             }
         }
