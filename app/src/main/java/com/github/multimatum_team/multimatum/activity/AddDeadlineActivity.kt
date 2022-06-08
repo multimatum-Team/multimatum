@@ -401,16 +401,16 @@ class AddDeadlineActivity : AppCompatActivity() {
 
                 deadlineListViewModel.addDeadline(deadline) {
                     DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
-                }
-                if (!uploadSuccess) {
-                    AlertDialog.Builder(this).setTitle(R.string.pdf_upload_offline_alert)
-                        .setNeutralButton("ok") { dialogInterface, _ ->
-                            dialogInterface.cancel()
-                            finish()
-                        }
-                        .show()
-                } else {
-                    finish()
+                    if (!uploadSuccess) {
+                        AlertDialog.Builder(this).setTitle(R.string.pdf_upload_offline_alert)
+                            .setNeutralButton("ok") { dialogInterface, _ ->
+                                dialogInterface.cancel()
+                                finish()
+                            }
+                            .show()
+                    } else {
+                        finish()
+                    }
                 }
             }
         }
