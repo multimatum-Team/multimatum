@@ -399,9 +399,6 @@ class AddDeadlineActivity : AppCompatActivity() {
                 // Reset the text input for future use
                 textTitle.text = ""
 
-                deadlineListViewModel.addDeadline(deadline) {
-                    DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
-                }
                 if (!uploadSuccess) {
                     AlertDialog.Builder(this).setTitle(R.string.pdf_upload_offline_alert)
                         .setNeutralButton("ok") { dialogInterface, _ ->
@@ -409,7 +406,10 @@ class AddDeadlineActivity : AppCompatActivity() {
                             finish()
                         }
                         .show()
-                } else {
+                }
+
+                deadlineListViewModel.addDeadline(deadline) {
+                    DeadlineNotification.editNotification(it, deadline, notificationsTimes, this)
                     finish()
                 }
             }
